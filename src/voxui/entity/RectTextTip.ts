@@ -6,7 +6,7 @@ import { ICoMaterial } from "../../cospace/voxmaterial/ICoMaterial";
 import { ICoMath } from "../../cospace/math/ICoMath";
 import ICanvasTexAtlas from "../../cospace/voxtexture/atlas/ICanvasTexAtlas";
 import { IImageTexture } from "../../vox/render/texture/IImageTexture";
-import { ICoUIScene } from "../../voxui/scene/ICoUIScene";
+import { IVoxUIScene } from "../scene/IVoxUIScene";
 import IColor4 from "../../vox/material/IColor4";
 import { ICoRScene } from "../../cospace/voxengine/ICoRScene";
 import { IUIEntity } from "./IUIEntity";
@@ -24,7 +24,7 @@ class RectTextTip extends UIEntityBase implements IRectTextTip {
 	private m_pw = 10;
 	private m_ph = 10;
 	private m_rpi = 0;
-	private m_uiScene: ICoUIScene;
+	private m_uiScene: IVoxUIScene;
 	private m_fontColor: IColor4;
 	private m_bgColor: IColor4;
 	private m_texAtlas: ICanvasTexAtlas = null;
@@ -37,7 +37,7 @@ class RectTextTip extends UIEntityBase implements IRectTextTip {
 		this.premultiplyAlpha = true;
 	}
 
-	initialize(uiScene: ICoUIScene, rpi: number = 0, fontSize: number = 24, fontColor: IColor4 = null, bgColor: IColor4 = null): void {
+	initialize(uiScene: IVoxUIScene, rpi: number = 0, fontSize: number = 24, fontColor: IColor4 = null, bgColor: IColor4 = null): void {
 
 		if (this.isIniting()) {
 

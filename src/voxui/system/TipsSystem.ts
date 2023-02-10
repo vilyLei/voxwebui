@@ -1,4 +1,4 @@
-import { ICoUIScene } from "../scene/ICoUIScene";
+import { IVoxUIScene } from "../scene/IVoxUIScene";
 import { IMouseEvtUIEntity } from "../../voxui/entity/IMouseEvtUIEntity";
 import { IRectTextTip } from "../../voxui/entity/IRectTextTip";
 import { ITipsSystem } from "./ITipsSystem";
@@ -9,11 +9,11 @@ declare var VoxUI: IVoxUI;
  */
 class TipsSystem implements ITipsSystem {
 
-	private m_uiscene: ICoUIScene;
+	private m_uiscene: IVoxUIScene;
 	private m_tipEntity: IRectTextTip = null;
 	constructor(){}
 
-	initialize(uiscene: ICoUIScene, rpi: number = 2): void {
+	initialize(uiscene: IVoxUIScene, rpi: number = 2): void {
 		if(this.m_tipEntity == null) {
 			this.m_uiscene = uiscene;
 			let tip = VoxUI.createRectTextTip();

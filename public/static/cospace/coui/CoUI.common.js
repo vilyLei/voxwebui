@@ -2240,7 +2240,7 @@ function createPromptPanel() {
 exports.createPromptPanel = createPromptPanel;
 
 function createUIScene(uiConfig = null, crscene = null, atlasSize = 512, renderProcessesTotal = 3) {
-  let uisc = new CoUIScene_1.CoUIScene();
+  let uisc = new CoUIScene_1.VoxUIScene();
 
   if (crscene != null) {
     uisc.initialize(crscene, atlasSize, renderProcessesTotal);
@@ -2433,7 +2433,7 @@ class UIPanel extends UIEntityContainer_1.UIEntityContainer {
     }
 
     return this;
-  } // initialize(scene: ICoUIScene, rpi: number, panelW: number, panelH: number): void {
+  } // initialize(scene: IVoxUIScene, rpi: number, panelW: number, panelH: number): void {
   // 	if (this.isIniting()) {
   // 		this.init();
   // 		this.m_scene = scene;
@@ -4040,7 +4040,7 @@ Object.defineProperty(exports, "__esModule", {
 
 const UILayout_1 = __webpack_require__("e9cf");
 
-class CoUIScene {
+class VoxUIScene {
   constructor() {
     this.texAtlas = null;
     this.transparentTexAtlas = null;
@@ -4163,7 +4163,7 @@ class CoUIScene {
 
 }
 
-exports.CoUIScene = CoUIScene;
+exports.VoxUIScene = VoxUIScene;
 
 /***/ }),
 

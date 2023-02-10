@@ -1,10 +1,10 @@
 import ITransformEntity from "../../vox/entity/ITransformEntity";
 import IDisplayEntityContainer from "../../vox/entity/IDisplayEntityContainer";
-import { ICoUIScene } from "./ICoUIScene";
+import { IVoxUIScene } from "./IVoxUIScene";
 
 interface IUISceneEntity {
-	__$setScene(sc: ICoUIScene): void;
-	getScene(): ICoUIScene;
+	__$setScene(sc: IVoxUIScene): void;
+	getScene(): IVoxUIScene;
 	
 	setVisible(v: boolean): void;
 	isVisible(): boolean;

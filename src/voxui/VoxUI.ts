@@ -12,8 +12,8 @@ import { FlagButton } from "./button/FlagButton";
 import { ITextParam, ButtonBuilder } from "./button/ButtonBuilder";
 import { SelectButtonGroup } from "./button/SelectButtonGroup";
 
-import { ICoUIScene } from "./scene/ICoUIScene";
-import { CoUIScene } from "./scene/CoUIScene";
+import { IVoxUIScene } from "./scene/IVoxUIScene";
+import { VoxUIScene } from "./scene/VoxUIScene";
 import { RectTextTip } from "./entity/RectTextTip";
 import { TipInfo } from "./base/TipInfo";
 import { UILayout } from "./layout/UILayout";
@@ -72,8 +72,8 @@ function createPromptPanel(): PromptPanel {
 	return new PromptPanel();
 }
 
-function createUIScene(uiConfig: IUIConfig = null, crscene: IRendererScene = null, atlasSize: number = 512, renderProcessesTotal: number = 3): ICoUIScene {
-	let uisc = new CoUIScene();
+function createUIScene(uiConfig: IUIConfig = null, crscene: IRendererScene = null, atlasSize: number = 512, renderProcessesTotal: number = 3): IVoxUIScene {
+	let uisc = new VoxUIScene();
 	if(crscene != null) {
 		uisc.initialize(crscene, atlasSize, renderProcessesTotal);
 	}

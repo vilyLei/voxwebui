@@ -6,7 +6,7 @@ import { IMouseEvtUIEntity } from "../../voxui/entity/IMouseEvtUIEntity";
  */
 interface ITipsSystem {
 
-	// initialize(uiscene: ICoUIScene, rpi?: number): void;
+	// initialize(uiscene: IVoxUIScene, rpi?: number): void;
 	/**
 	 * get tip entity
 	 * @param type the default value is 0

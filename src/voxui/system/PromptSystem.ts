@@ -1,4 +1,4 @@
-import { ICoUIScene } from "../scene/ICoUIScene";
+import { IVoxUIScene } from "../scene/IVoxUIScene";
 import { IPromptPanel } from "../panel/IPromptPanel";
 import { PromptPanel } from "../panel/PromptPanel";
 import { IPromptSystem } from "./IPromptSystem";
@@ -9,11 +9,11 @@ declare var CoMaterial: ICoMaterial;
 
 class PromptSystem implements IPromptSystem {
 
-	private m_uiscene: ICoUIScene;
+	private m_uiscene: IVoxUIScene;
 	private m_promptPanel: PromptPanel = null;
 	constructor() { }
 
-	initialize(uiscene: ICoUIScene, rpi: number = 3): void {
+	initialize(uiscene: IVoxUIScene, rpi: number = 3): void {
 		if (this.m_promptPanel == null) {
 			this.m_uiscene = uiscene;
 

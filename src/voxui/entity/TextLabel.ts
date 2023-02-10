@@ -2,7 +2,7 @@ import IDefault3DMaterial from "../../vox/material/mcase/IDefault3DMaterial";
 import { ITextLabel } from "./ITextLabel";
 import IColor4 from "../../vox/material/IColor4";
 import { UIEntityBase } from "./UIEntityBase";
-import { ICoUIScene } from "../../voxui/scene/ICoUIScene";
+import { IVoxUIScene } from "../scene/IVoxUIScene";
 
 import { ICoRScene } from "../../cospace/voxengine/ICoRScene";
 declare var CoRScene: ICoRScene;
@@ -22,7 +22,7 @@ class TextLabel extends UIEntityBase implements ITextLabel {
 	private m_sy = 1.0;
 	// private m_rpi = 0;
 	private m_material: IDefault3DMaterial = null;
-	private m_uiScene: ICoUIScene;
+	private m_uiScene: IVoxUIScene;
 	private m_fontColor: IColor4;
 	private m_bgColor: IColor4;
 	private m_tex: IImageTexture = null;
@@ -32,7 +32,7 @@ class TextLabel extends UIEntityBase implements ITextLabel {
 		super();
 	}
 
-	initialize(text: string, uiScene: ICoUIScene, fontSize: number = 24): void {
+	initialize(text: string, uiScene: IVoxUIScene, fontSize: number = 24): void {
 
 		if (text != "" && this.isIniting()) {
 

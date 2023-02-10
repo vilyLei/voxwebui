@@ -3,7 +3,7 @@ import { ICoMaterial } from "../../cospace/voxmaterial/ICoMaterial";
 import { ICoEntity } from "../../cospace/voxentity/ICoEntity";
 
 import { ICoRScene } from "../../cospace/voxengine/ICoRScene";
-import { ICoUIScene } from "../scene/ICoUIScene";
+import { IVoxUIScene } from "../scene/IVoxUIScene";
 import { UIPanel } from "./UIPanel";
 import IColor4 from "../../vox/material/IColor4";
 import IRenderTexture from "../../vox/render/texture/IRenderTexture";
@@ -24,7 +24,7 @@ class ColorPickPanel extends UIPanel implements IColorPickPanel {
 
 	constructor() { super(); }
 
-	initialize(scene: ICoUIScene, rpi: number, panelW: number = 260, panelH: number = 260, marginWidth: number = 3): void {
+	initialize(scene: IVoxUIScene, rpi: number, panelW: number = 260, panelH: number = 260, marginWidth: number = 3): void {
 		if (this.isIniting()) {
 			this.init();
 

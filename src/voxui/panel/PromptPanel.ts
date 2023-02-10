@@ -3,7 +3,7 @@ import { ICoMaterial } from "../../cospace/voxmaterial/ICoMaterial";
 import { ICoRScene } from "../../cospace/voxengine/ICoRScene";
 import { IButton } from "../button/IButton";
 import { IPromptPanel } from "./IPromptPanel";
-import { ICoUIScene } from "../scene/ICoUIScene";
+import { IVoxUIScene } from "../scene/IVoxUIScene";
 import { TextLabel } from "../entity/TextLabel";
 import { UIPanel } from "./UIPanel";
 import { ButtonBuilder, ITextParam } from "../button/ButtonBuilder";
@@ -41,7 +41,7 @@ class PromptPanel extends UIPanel implements IPromptPanel {
 
 	constructor() { super(); }
 
-	initialize(scene: ICoUIScene, rpi: number, panelW: number, panelH: number, btnW: number, btnH: number, confirmNS: string = "Confirm", cancelNS: string = "Cancel"): void {
+	initialize(scene: IVoxUIScene, rpi: number, panelW: number, panelH: number, btnW: number, btnH: number, confirmNS: string = "Confirm", cancelNS: string = "Cancel"): void {
 		if (this.isIniting()) {
 			this.init();
 

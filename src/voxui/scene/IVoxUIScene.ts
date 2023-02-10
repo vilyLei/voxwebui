@@ -11,7 +11,7 @@ import { IPanelSystem } from "../system/IPanelSystem";
 import {IUIConfig} from "../system/IUIConfig";
 import { ICoKeyboardInteraction } from "../../cospace/voxengine/ui/ICoKeyboardInteraction";
 
-interface ICoUIScene {
+interface IVoxUIScene {
 	
 	readonly rscene: IRendererScene;
 	readonly texAtlas: ICanvasTexAtlas;
@@ -30,8 +30,8 @@ interface ICoUIScene {
 	 * @param renderProcessesTotal the default value is 3
 	 */
 	initialize(crscene?: IRendererScene, atlasSize?: number, renderProcessesTotal?: number): void;
-	addEventListener(type: number, listener: any, func: (evt: any) => void, captureEnabled?: boolean, bubbleEnabled?: boolean): ICoUIScene;
-	removeEventListener(type: number, listener: any, func: (evt: any) => void): ICoUIScene;
+	addEventListener(type: number, listener: any, func: (evt: any) => void, captureEnabled?: boolean, bubbleEnabled?: boolean): IVoxUIScene;
+	removeEventListener(type: number, listener: any, func: (evt: any) => void): IVoxUIScene;
 	getStage(): IRenderStage3D;
 	getRect(): IAABB2D;
 	addEntity(entity: IUISceneEntity, processid?: number): void;
@@ -39,4 +39,4 @@ interface ICoUIScene {
 	run(): void;
 }
 
-export { ICoUIScene };
+export { IVoxUIScene };

@@ -4,12 +4,15 @@ import { ICoRScene } from "../cospace/voxengine/ICoRScene";
 import { ICoUIInteraction } from "../cospace/voxengine/ui/ICoUIInteraction";
 import { IMouseInteraction } from "../cospace/voxengine/ui/IMouseInteraction";
 import { IVoxUI } from "../voxui/IVoxUI";
+import { IVoxUIScene } from "../voxui/scene/IVoxUIScene";
+import { VoxUIScene } from "../voxui/scene/VoxUIScene";
 
 import { ModuleLoader } from "../common/loaders/ModuleLoader";
 
 declare var CoRenderer: ICoRenderer;
 declare var CoRScene: ICoRScene;
 declare var CoUIInteraction: ICoUIInteraction;
+declare var VoxUI: IVoxUI;
 
 export class DemoBase {
 
@@ -68,7 +71,7 @@ export class DemoBase {
                                         console.log("CoEntity module loaded ...");
                                         new ModuleLoader(1, (): void => {
                                             console.log("ready to build ui ...");
-                                            // this.initUIScene();
+                                            this.initUIScene();
                                             // this.initUISC();
                                         }).load(url8);
                                     }).load(url7);
@@ -91,6 +94,19 @@ export class DemoBase {
         mouseInteractML.load(url);
     }
 
+	private m_uiScene: IVoxUIScene = null;
+	private initUIScene(): void {
+		// let uisc = CoUI.createUIScene(); //new VoxUIScene();
+		console.log("create the VoxUIScene instance...");
+		let uisc = new VoxUIScene();
+		uisc.texAtlasNearestFilter = true;
+		this.m_uiScene = uisc;
+		uisc.initialize(this.m_rscene, 512);
+		console.log("uisc: ", uisc);
+		console.log("uisc.rscene: ", uisc.rscene);
+
+		//this.testUIEntity(uisc);
+	}
 	private initUserInteract(): void {
 
 		let r = this.m_rscene;

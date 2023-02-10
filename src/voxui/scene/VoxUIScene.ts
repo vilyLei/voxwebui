@@ -4,7 +4,7 @@ import IRendererScene from "../../vox/scene/IRendererScene";
 import ICanvasTexAtlas from "../../cospace/voxtexture/atlas/ICanvasTexAtlas";
 
 import { IUIEntity } from "../entity/IUIEntity";
-import { ICoUIScene } from "./ICoUIScene";
+import { IVoxUIScene } from "./IVoxUIScene";
 import { IPromptSystem } from "../system/IPromptSystem";
 import { ITipsSystem } from "../system/ITipsSystem";
 import {IUIConfig} from "../system/IUIConfig";
@@ -23,7 +23,7 @@ import IAABB2D from "../../vox/geom/IAABB2D";
 import { IPanelSystem } from "../system/IPanelSystem";
 declare var CoTexture: ICoTexture;
 
-class CoUIScene implements ICoUIScene {
+class VoxUIScene implements IVoxUIScene {
 	private m_crscene: IRendererScene;
 	private m_rstage: IRenderStage3D;
 	private m_stageRect: IAABB2D;
@@ -83,11 +83,11 @@ class CoUIScene implements ICoUIScene {
 		}
 	}
 	
-	addEventListener(type: number, listener: any, func: (evt: any) => void, captureEnabled: boolean = true, bubbleEnabled: boolean = false): ICoUIScene {
+	addEventListener(type: number, listener: any, func: (evt: any) => void, captureEnabled: boolean = true, bubbleEnabled: boolean = false): IVoxUIScene {
 		this.m_rstage.addEventListener(type, listener, func, captureEnabled, bubbleEnabled);
 		return this;
 	}
-	removeEventListener(type: number, listener: any, func: (evt: any) => void): ICoUIScene {
+	removeEventListener(type: number, listener: any, func: (evt: any) => void): IVoxUIScene {
 		this.m_rstage.removeEventListener(type, listener, func);
 		return this;
 	}
@@ -142,4 +142,4 @@ class CoUIScene implements ICoUIScene {
 	}
 }
 
-export { CoUIScene };
+export { VoxUIScene };

@@ -1,4 +1,4 @@
-import { ICoUIScene } from "../scene/ICoUIScene";
+import { IVoxUIScene } from "../scene/IVoxUIScene";
 import { IUIPanel } from "../panel/IUIPanel";
 // import { IPromptPanel } from "../panel/IPromptPanel";
 // import { PromptPanel } from "../panel/PromptPanel";
@@ -11,12 +11,12 @@ declare var CoMaterial: ICoMaterial;
 
 class PanelSystem implements IPanelSystem {
 
-	private m_uiscene: ICoUIScene;
+	private m_uiscene: IVoxUIScene;
 	private m_colorPickPanel = new ColorPickPanel();
 	private m_curPanel: IUIPanel = null;
 	constructor() { }
 
-	initialize(uiscene: ICoUIScene, rpi: number = 1): void {
+	initialize(uiscene: IVoxUIScene, rpi: number = 1): void {
 		if (this.m_uiscene == null) {
 			this.m_uiscene = uiscene;
 			this.m_colorPickPanel.setBGColor(CoMaterial.createColor4(0.4, 0.4, 0.4));

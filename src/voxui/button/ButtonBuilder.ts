@@ -5,7 +5,7 @@ import ICanvasTexAtlas from "../../cospace/voxtexture/atlas/ICanvasTexAtlas";
 import IColor4 from "../../vox/material/IColor4";
 
 import { IButton } from "./IButton";
-import { ICoUIScene } from "../scene/ICoUIScene";
+import { IVoxUIScene } from "../scene/IVoxUIScene";
 import { IUIPanelConfig } from "../system/uiconfig/IUIPanelConfig";
 
 
@@ -58,7 +58,7 @@ class ButtonBuilder {
 		
 		return ButtonBuilder.createCurrTextBtn(width, height, idns, texAtlas, textParam, colors);
 	}
-	static createPanelBtnWithCfg(couiScene: ICoUIScene, px: number, py: number, btnIndex: number, uiConfig: IUIPanelConfig): IButton {
+	static createPanelBtnWithCfg(couiScene: IVoxUIScene, px: number, py: number, btnIndex: number, uiConfig: IUIPanelConfig): IButton {
 		
 		let tta = couiScene.transparentTexAtlas;
 		let cfg = couiScene.uiConfig;

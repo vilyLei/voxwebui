@@ -7,13 +7,13 @@ import { ColorLabel } from "../entity/ColorLabel";
 import IColor4 from "../../vox/material/IColor4";
 import ITransformEntity from "../../vox/entity/ITransformEntity";
 import { IUIPanel } from "../panel/IUIPanel";
-import { ICoUIScene } from "../scene/ICoUIScene";
+import { IVoxUIScene } from "../scene/IVoxUIScene";
 
 declare var CoRScene: ICoRScene;
 declare var CoMaterial: ICoMaterial;
 class UIPanel extends UIEntityContainer implements IUIPanel {
 
-	protected m_scene: ICoUIScene;
+	protected m_scene: IVoxUIScene;
 	protected m_rpi: number;
 	protected m_bgColor: IColor4;
 	protected m_bgLabel: ColorLabel;
@@ -38,7 +38,7 @@ class UIPanel extends UIEntityContainer implements IUIPanel {
 		}
 		return this;
 	}
-	// initialize(scene: ICoUIScene, rpi: number, panelW: number, panelH: number): void {
+	// initialize(scene: IVoxUIScene, rpi: number, panelW: number, panelH: number): void {
 	// 	if (this.isIniting()) {
 	// 		this.init();
 	// 		this.m_scene = scene;
@@ -56,7 +56,7 @@ class UIPanel extends UIEntityContainer implements IUIPanel {
 			super.init();
 		}
 	}
-	setUIscene(scene: ICoUIScene, rpi: number = -1): void {
+	setUIscene(scene: IVoxUIScene, rpi: number = -1): void {
 		if (this.m_scene == null && scene != null) {
 			this.m_scene = scene;
 			if(rpi >= 0) this.m_rpi = rpi;
@@ -73,7 +73,7 @@ class UIPanel extends UIEntityContainer implements IUIPanel {
 		this.m_openListener = openListener;
 		this.m_closeListener = closeListener;
 	}
-	open(uiscene: ICoUIScene = null, rpi: number = -1): void {
+	open(uiscene: IVoxUIScene = null, rpi: number = -1): void {
 
 		if (!this.m_isOpen) {
 			if (this.isIniting()) {

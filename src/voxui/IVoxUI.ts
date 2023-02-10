@@ -6,7 +6,7 @@ import { IColorLabel } from "./entity/IColorLabel";
 import { IButton } from "./button/IButton";
 import { IFlagButton } from "./button/IFlagButton";
 import { ISelectButtonGroup } from "./button/ISelectButtonGroup";
-import { ICoUIScene } from "./scene/ICoUIScene";
+import { IVoxUIScene } from "./scene/IVoxUIScene";
 import { IRectTextTip } from "./entity/IRectTextTip";
 import { ITipInfo } from "./base/ITipInfo";
 import { IUILayout } from "./layout/IUILayout";
@@ -48,6 +48,6 @@ interface IVoxUI {
 	 * @param atlasSize the default value is 512
 	 * @param renderProcessesTotal the default value is 3
 	 */
-	createUIScene(uiConfig?: IUIConfig, crscene?: IRendererScene, atlasSize?: number, renderProcessesTotal?: number): ICoUIScene;
+	createUIScene(uiConfig?: IUIConfig, crscene?: IRendererScene, atlasSize?: number, renderProcessesTotal?: number): IVoxUIScene;
 }
 export { ITextParam, IVoxUI };

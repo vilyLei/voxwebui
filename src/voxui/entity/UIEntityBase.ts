@@ -12,12 +12,12 @@ declare var CoRScene: ICoRScene;
 import { ICoMath } from "../../cospace/math/ICoMath";
 declare var CoMath: ICoMath;
 import { ICoMaterial } from "../../cospace/voxmaterial/ICoMaterial";
-import { ICoUIScene } from "../scene/ICoUIScene";
+import { IVoxUIScene } from "../scene/IVoxUIScene";
 declare var CoMaterial: ICoMaterial;
 
 class UIEntityBase {
 
-	private m_sc: ICoUIScene = null;
+	private m_sc: IVoxUIScene = null;
 	private m_parent: IUIEntity = null;
 
 	protected m_rotation = 0;
@@ -94,13 +94,13 @@ class UIEntityBase {
 	protected updateParent(): void {
 
 	}
-	__$setScene(sc: ICoUIScene): void {
+	__$setScene(sc: IVoxUIScene): void {
 		if(this.m_sc != sc) {
 			this.m_sc = sc;
 			this.updateScene();
 		}
 	}
-	getScene(): ICoUIScene {
+	getScene(): IVoxUIScene {
 		return this.m_sc;
 	}
 	

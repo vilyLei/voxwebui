@@ -1,7 +1,7 @@
 import IDefault3DMaterial from "../../vox/material/mcase/IDefault3DMaterial";
 import IColor4 from "../../vox/material/IColor4";
 import { UIEntityBase } from "./UIEntityBase";
-import { ICoUIScene } from "../../voxui/scene/ICoUIScene";
+import { IVoxUIScene } from "../scene/IVoxUIScene";
 import IRenderTexture from "../../vox/render/texture/IRenderTexture";
 import {ITextureLabel} from "./ITextureLabel";
 
@@ -21,14 +21,14 @@ class TextureLabel extends UIEntityBase implements ITextureLabel {
 	private m_sx = 1.0;
 	private m_sy = 1.0;
 	private m_material: IDefault3DMaterial = null;
-	private m_uiScene: ICoUIScene;
+	private m_uiScene: IVoxUIScene;
 	private m_color: IColor4;
 	private m_tex: IRenderTexture = null;
 	constructor() {
 		super();
 	}
 
-	initialize(uiScene: ICoUIScene, tex: IRenderTexture, width: number = 128, height = 128): void {
+	initialize(uiScene: IVoxUIScene, tex: IRenderTexture, width: number = 128, height = 128): void {
 
 		if (tex != null && this.isIniting()) {
 
