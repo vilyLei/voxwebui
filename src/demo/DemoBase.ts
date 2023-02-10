@@ -3,6 +3,7 @@ import { ICoRenderer } from "../cospace/voxengine/ICoRenderer";
 import { ICoRScene } from "../cospace/voxengine/ICoRScene";
 import { ICoUIInteraction } from "../cospace/voxengine/ui/ICoUIInteraction";
 import { IMouseInteraction } from "../cospace/voxengine/ui/IMouseInteraction";
+import { IVoxUI } from "../voxui/IVoxUI";
 
 import { ModuleLoader } from "../common/loaders/ModuleLoader";
 
@@ -17,6 +18,10 @@ export class DemoBase {
 
     initialize(): void {
         console.log("DemoBase::initialize() ...");
+        
+		document.oncontextmenu = function (e) {
+			e.preventDefault();
+		}
         this.initEngineModule();
     }
 
@@ -33,7 +38,7 @@ export class DemoBase {
         let url3 = "static/cospace/ageom/CoAGeom.umd.js";
         let url4 = "static/cospace/coMaterial/CoMaterial.umd.js";
         let url5 = "static/cospace/comesh/CoMesh.umd.js";
-        let url6 = " static/cospace/cotexture/CoTexture.umd.js";
+        let url6 = "static/cospace/cotexture/CoTexture.umd.js";
         let url7 = "static/cospace/coentity/CoEntity.umd.js";
         let url8 = "static/cospace/coui/CoUI.umd.js";
 
