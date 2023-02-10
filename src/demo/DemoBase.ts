@@ -36,7 +36,7 @@ export class DemoBase {
                 console.log("ready to build render ...");
 
                 this.initRenderer();
-                // this.initScene();
+                this.init3DScene();
 
                 new ModuleLoader(1, (): void => {
                     console.log("math module loaded ...");
@@ -94,6 +94,11 @@ export class DemoBase {
 			this.m_rscene = CoRScene.createRendererScene(rparam, 3);
 			this.m_rscene.setClearUint24Color(0x888888);
 		}
+	}
+    
+	private init3DScene(): void {
+        let axis = CoRScene.createAxis3DEntity();
+		this.m_rscene.addEntity(axis);
 	}
     isEngineEnabled(): boolean {
         return typeof CoRenderer !== "undefined" && typeof CoRScene !== "undefined";
