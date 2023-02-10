@@ -1,4 +1,3 @@
-import ITransformEntity from "../../vox/entity/ITransformEntity";
 import IVector3D from "../../vox/math/IVector3D";
 import { IUILayouter } from "./IUILayouter";
 import IAABB2D from "../../vox/geom/IAABB2D";
@@ -17,11 +16,11 @@ class LeftTopLayouter extends LayouterBase implements IUILayouter {
 
 		const ls = this.m_entities;
 		const len = ls.length;
-		
 		let pv = CoMath.createVec3();
 		for (let i = 0; i < len; ++i) {
 			pv.copyFrom(this.m_offsetvs[i]);
 			pv.y = rect.height - pv.y;
+			pv.addBy(this.m_offsetV);
 			ls[i].setPosition(pv);
 			ls[i].update();
 		}

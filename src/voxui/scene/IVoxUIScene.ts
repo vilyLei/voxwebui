@@ -37,6 +37,8 @@ interface IVoxUIScene {
 	addEntity(entity: IUISceneEntity, processid?: number): void;
 	removeEntity(entity: IUISceneEntity): void;
 	run(): void;
+	resize(): void;
+	updateLayout(): void;
 }
 
 export { IVoxUIScene };
