@@ -33,9 +33,9 @@ export class DemoBase {
 
         new ModuleLoader(2, (): void => {
             if (this.isEngineEnabled()) {
-                console.log("engine modules loaded ...");
+                console.log("ready to build render ...");
 
-                // this.initRenderer();
+                this.initRenderer();
                 // this.initScene();
 
                 new ModuleLoader(1, (): void => {
@@ -80,11 +80,35 @@ export class DemoBase {
         // mouseInteractML.load(url);
     }
 
+	private initRenderer(): void {
+		if (this.m_rscene == null) {
+			let RendererDevice = CoRScene.RendererDevice;
+			RendererDevice.SHADERCODE_TRACE_ENABLED = false;
+			RendererDevice.VERT_SHADER_PRECISION_GLOBAL_HIGHP_ENABLED = true;
+			RendererDevice.SetWebBodyColor("#888888");
+
+			let rparam = CoRScene.createRendererSceneParam();
+			rparam.setAttriAntialias(!RendererDevice.IsMobileWeb());
+			rparam.setCamPosition(1000.0, 1000.0, 1000.0);
+			rparam.setCamProject(45, 20.0, 9000.0);
+			this.m_rscene = CoRScene.createRendererScene(rparam, 3);
+			this.m_rscene.setClearUint24Color(0x888888);
+		}
+	}
     isEngineEnabled(): boolean {
         return typeof CoRenderer !== "undefined" && typeof CoRScene !== "undefined";
     }
     run(): void {
-
+        if (this.m_rscene != null) {
+			// if (this.m_interact != null) {
+			// 	this.m_interact.setLookAtPosition(null);
+			// 	this.m_interact.run();
+			// }
+			this.m_rscene.run();
+			// if (this.m_uiScene != null) {
+			// 	this.m_uiScene.run();
+			// }
+		}
     }
 }
 
