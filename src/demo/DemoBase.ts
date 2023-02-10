@@ -1,14 +1,20 @@
 import IRendererScene from "../vox/scene/IRendererScene";
 import { ICoRenderer } from "../cospace/voxengine/ICoRenderer";
 import { ICoRScene } from "../cospace/voxengine/ICoRScene";
+import { ICoUIInteraction } from "../cospace/voxengine/ui/ICoUIInteraction";
+import { IMouseInteraction } from "../cospace/voxengine/ui/IMouseInteraction";
+
 import { ModuleLoader } from "../common/loaders/ModuleLoader";
 
 declare var CoRenderer: ICoRenderer;
 declare var CoRScene: ICoRScene;
+declare var CoUIInteraction: ICoUIInteraction;
 
 export class DemoBase {
 
     private m_rscene: IRendererScene = null;
+	private m_interact: IMouseInteraction = null;
+
     initialize(): void {
         console.log("DemoBase::initialize() ...");
         this.initEngineModule();
@@ -16,10 +22,10 @@ export class DemoBase {
 
     private initEngineModule(): void {
 
-        // let url = "static/cospace/engine/uiInteract/CoUIInteraction.umd.js";
-        // let mouseInteractML = new ModuleLoader(2, (): void => {
-        // 	this.initInteract();
-        // });
+        let url = "static/cospace/engine/uiInteract/CoUIInteraction.umd.js";
+        let mouseInteractML = new ModuleLoader(2, (): void => {
+        	this.initUserInteract();
+        });
 
         let url0 = "static/cospace/engine/renderer/CoRenderer.umd.js";
         let url1 = "static/cospace/engine/rscene/CoRScene.umd.js";
@@ -73,13 +79,23 @@ export class DemoBase {
                 // });
             }
         })
-            // .addLoader(mouseInteractML)
+            .addLoader(mouseInteractML)
             .load(url0)
             .load(url1);
 
-        // mouseInteractML.load(url);
+        mouseInteractML.load(url);
     }
 
+	private initUserInteract(): void {
+
+		let r = this.m_rscene;
+		if (r != null && this.m_interact == null && typeof CoUIInteraction !== "undefined") {
+
+			this.m_interact = CoUIInteraction.createMouseInteraction();
+			this.m_interact.initialize(this.m_rscene, 0, true);
+			this.m_interact.setSyncLookAtEnabled(true);            
+		}
+	}
 	private initRenderer(): void {
 		if (this.m_rscene == null) {
 			let RendererDevice = CoRScene.RendererDevice;
@@ -105,10 +121,10 @@ export class DemoBase {
     }
     run(): void {
         if (this.m_rscene != null) {
-			// if (this.m_interact != null) {
-			// 	this.m_interact.setLookAtPosition(null);
-			// 	this.m_interact.run();
-			// }
+			if (this.m_interact != null) {
+				this.m_interact.setLookAtPosition(null);
+				this.m_interact.run();
+			}
 			this.m_rscene.run();
 			// if (this.m_uiScene != null) {
 			// 	this.m_uiScene.run();
