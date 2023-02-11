@@ -4,6 +4,7 @@ import { ICoUIInteraction } from "../cospace/voxengine/ui/ICoUIInteraction";
 import { IMouseInteraction } from "../cospace/voxengine/ui/IMouseInteraction";
 import { IVoxUIScene } from "../voxui/scene/IVoxUIScene";
 import { VoxUIScene } from "../voxui/scene/VoxUIScene";
+// import { IVoxUI } from "../voxui/IVoxUI";
 import { ICoMaterial } from "../cospace/voxmaterial/ICoMaterial";
 
 import { Button } from "../voxui/button/Button";
@@ -11,10 +12,12 @@ import { ClipLabel } from "../voxui/entity/ClipLabel";
 import { ClipColorLabel } from "../voxui/entity/ClipColorLabel";
 import { ColorLabel } from "../voxui/entity/ColorLabel";
 import VoxRuntime from "../common/VoxRuntime";
+import { ColorClipLabel } from "../voxui/entity/ColorClipLabel";
 
 declare var CoRScene: ICoRScene;
 declare var CoUIInteraction: ICoUIInteraction;
 declare var CoMaterial: ICoMaterial;
+// declare var VoxUI: IVoxUI;
 
 export class DemoBase {
 
@@ -60,7 +63,11 @@ export class DemoBase {
 		//this.testUIEntity(uisc);
 	}
     private initUIObjs(): void {
-        this.test01();
+        // this.test01();
+        this.test02();
+        // this.test03();
+        // this.test04();
+        // this.test05();
     }
     
 	private test01(): void {
@@ -74,7 +81,7 @@ export class DemoBase {
 
 		let ta = texAtlas;
 		let tta = transparentTexAtlas;
-		/*
+		///*
 		let fontColor = CoMaterial.createColor4(0,1,0,1);
 		let bgColor = CoMaterial.createColor4(1,1,1,0);
 		urls = ["BBB-0", "BBB-1", "BBB-2", "BBB-3"];
@@ -93,8 +100,84 @@ export class DemoBase {
 		// iconLable.update();
 		this.m_uiScene.addEntity(iconLable);
 		//*/
-		//return;
-		/*
+	}
+	
+	private test02(): void {
+		console.log("test02()................");
+
+		let uisc = this.m_uiScene;
+		let texAtlas = uisc.texAtlas;
+		let transparentTexAtlas = uisc.transparentTexAtlas;
+		let urls: string[];
+		let img: HTMLCanvasElement;
+
+		let ta = texAtlas;
+		let tta = transparentTexAtlas;
+		
+		///*
+		let colorLabel = new ColorLabel();
+		colorLabel.initialize(200, 130);
+		colorLabel.setXY(330, 400);
+		this.m_uiScene.addEntity(colorLabel, 1);
+
+		let pw = 60;
+		let ph = 30;
+		let colorClipLabel2 = new ClipColorLabel();
+		colorClipLabel2.initializeWithoutTex(pw, ph, 4);
+		// let colorClipLabel2 = new ColorClipLabel();
+		// colorClipLabel2.initialize(csLable2, 4);
+		// colorClipLabel2.getColorAt(0).setRGB3f(0.0, 0.8, 0.8);
+		colorClipLabel2.getColorAt(0).setRGB3Bytes(40, 40, 40);
+		colorClipLabel2.getColorAt(1).setRGB3f(0.2, 1.0, 0.2);
+		colorClipLabel2.getColorAt(2).setRGB3f(1.0, 0.2, 1.0);
+		// colorClipLabel2.setLabelClipIndex( 1 );
+		// colorClipLabel.setXY(200,0);
+		// colorClipLabel.setClipIndex(2);
+		// this.m_uiScene.addEntity(colorClipLabel);
+		// let colorBtn = CoUI.createButton(); //new Button();
+
+		let fontColor = CoMaterial.createColor4(1, 1, 1, 1);
+		let bgColor = CoMaterial.createColor4(1, 1, 1, 0);
+		console.log("create file label...");
+		urls = ["File", "Global", "Color", "BBB-3"];
+		img = tta.createCharsCanvasFixSize(pw, ph, urls[0], 20, fontColor, bgColor);
+		tta.addImageToAtlas(urls[0], img);
+		img = tta.createCharsCanvasFixSize(pw, ph, urls[1], 20, fontColor, bgColor);
+		tta.addImageToAtlas(urls[1], img);
+
+		let iconLable = new ClipLabel();
+		iconLable.transparent = true;
+		iconLable.premultiplyAlpha = true;
+		iconLable.initialize(tta, [urls[1]]);
+		// iconLable.setClipIndex(1);
+		// iconLable.setXY(500, 70);
+		// iconLable.setScaleXY(1.5, 1.5);
+		// iconLable.update();
+		// this.m_uiScene.addEntity(iconLable);
+        
+		let colorBtn2 = new Button();
+		colorBtn2.addLabel(iconLable);
+		colorBtn2.initializeWithLable(colorClipLabel2);
+		colorBtn2.setXY(500, 600);
+		this.m_uiScene.addEntity(colorBtn2, 0);
+
+		let layouter = uisc.layout.createLeftTopLayouter();
+		layouter.addUIEntity(colorBtn2);
+		//*/
+	}
+	private test03(): void {
+		console.log("test03()................");
+
+		let uisc = this.m_uiScene;
+		let texAtlas = uisc.texAtlas;
+		let transparentTexAtlas = uisc.transparentTexAtlas;
+		let urls: string[];
+		let img: HTMLCanvasElement;
+
+		let ta = texAtlas;
+		let tta = transparentTexAtlas;
+		
+		///*
 		let canvas = texAtlas.createCharsCanvasFixSize(100, 40, "ABC", 30);
 		document.body.appendChild(canvas);
 		// canvas = texAtlas.createCharsCanvasFixSize(100, 40, "ABCD", 30);
@@ -103,20 +186,30 @@ export class DemoBase {
 
 		texAtlas.addImageToAtlas("ABC", canvas);
 		let clipColorLabel = new ClipColorLabel();
-		// let clipColorLabel = CoUI.createClipColorLabel();
 		// clipColorLabel.initialize(texAtlas, "ABC", 4);
-		// clipColorLabel.initializeWithoutTex(50, 32, 4);
+		clipColorLabel.initializeWithoutTex(50, 32, 4);
 		clipColorLabel.getColorAt(0).setRGB3f(0.0, 0.8, 0.8);
 		clipColorLabel.getColorAt(1).setRGB3f(0.2, 1.0, 0.2);
 		clipColorLabel.getColorAt(2).setRGB3f(1.0, 0.2, 1.0);
 		// this.m_uiScene.addEntity(clipColorLabel);
 		// clipColorLabel.setClipIndex(0);
-		let btn01 = CoUI.createButton();
+		let btn01 = new Button;
 		btn01.initializeWithLable(clipColorLabel);
 		this.m_uiScene.addEntity(btn01);
-		return;
-		//*/
-		/*
+	}
+	
+	private test04(): void {
+		console.log("test04()................");
+
+		let uisc = this.m_uiScene;
+		let texAtlas = uisc.texAtlas;
+		let transparentTexAtlas = uisc.transparentTexAtlas;
+		let urls: string[];
+		let img: HTMLCanvasElement;
+
+		let ta = texAtlas;
+		let tta = transparentTexAtlas;
+		
 		let pw = 32;
 		let ph = 32;
 		let borderWidth = 4;
@@ -128,10 +221,20 @@ export class DemoBase {
 		ctx2D.fillRect(borderWidth, borderWidth, pw - 2 * borderWidth, ph - 2 * borderWidth);
 		document.body.append(canvas);
 		texAtlas.addImageToAtlas("selectR_01", canvas);
+	}
+	private test05(): void {
+		console.log("test05()................");
 
+		let uisc = this.m_uiScene;
+		let texAtlas = uisc.texAtlas;
+		let transparentTexAtlas = uisc.transparentTexAtlas;
+		let urls: string[];
+		let img: HTMLCanvasElement;
 
-		//*/
-		/*
+		let ta = texAtlas;
+		let tta = transparentTexAtlas;
+		
+		///*
 		urls = ["AAA-0", "AAA-1", "AAA-2", "AAA-3"];
 		img = texAtlas.createCharsCanvasFixSize(90, 40, urls[0], 30);
 		texAtlas.addImageToAtlas(urls[0], img);
@@ -187,7 +290,7 @@ export class DemoBase {
 		// btn.initializeWithLable(lable01);
 		this.m_uiScene.addEntity(btn);
 		//*/
-		/*
+		///*
 		let csLable = new ClipLabel();
 		csLable.initialize(texAtlas, urls);
 
@@ -209,57 +312,6 @@ export class DemoBase {
 
 		// let csLable2 = new ClipLabel();
 		// csLable2.initialize(texAtlas, urls);
-		//*/
-        
-		///*
-		let colorLabel = new ColorLabel();
-		colorLabel.initialize(200, 130);
-		colorLabel.setXY(330, 400);
-		this.m_uiScene.addEntity(colorLabel, 1);
-
-		let pw = 60;
-		let ph = 30;
-		let colorClipLabel2 = new ClipColorLabel();
-		colorClipLabel2.initializeWithoutTex(pw, ph, 4);
-		// let colorClipLabel2 = new ColorClipLabel();
-		// colorClipLabel2.initialize(csLable2, 4);
-		// colorClipLabel2.getColorAt(0).setRGB3f(0.0, 0.8, 0.8);
-		colorClipLabel2.getColorAt(0).setRGB3Bytes(40, 40, 40);
-		colorClipLabel2.getColorAt(1).setRGB3f(0.2, 1.0, 0.2);
-		colorClipLabel2.getColorAt(2).setRGB3f(1.0, 0.2, 1.0);
-		// colorClipLabel2.setLabelClipIndex( 1 );
-		// colorClipLabel.setXY(200,0);
-		// colorClipLabel.setClipIndex(2);
-		// this.m_uiScene.addEntity(colorClipLabel);
-		// let colorBtn = CoUI.createButton(); //new Button();
-
-		let fontColor = CoMaterial.createColor4(1, 1, 1, 1);
-		let bgColor = CoMaterial.createColor4(1, 1, 1, 0);
-		console.log("create file label...");
-		urls = ["File", "Global", "Color", "BBB-3"];
-		img = tta.createCharsCanvasFixSize(pw, ph, urls[0], 20, fontColor, bgColor);
-		tta.addImageToAtlas(urls[0], img);
-		img = tta.createCharsCanvasFixSize(pw, ph, urls[1], 20, fontColor, bgColor);
-		tta.addImageToAtlas(urls[1], img);
-
-		let iconLable = new ClipLabel();
-		iconLable.transparent = true;
-		iconLable.premultiplyAlpha = true;
-		iconLable.initialize(tta, [urls[1]]);
-		// iconLable.setClipIndex(1);
-		// iconLable.setXY(500, 70);
-		// iconLable.setScaleXY(1.5, 1.5);
-		// iconLable.update();
-		// this.m_uiScene.addEntity(iconLable);
-        
-		let colorBtn2 = new Button();
-		colorBtn2.addLabel(iconLable);
-		colorBtn2.initializeWithLable(colorClipLabel2);
-		colorBtn2.setXY(500, 600);
-		this.m_uiScene.addEntity(colorBtn2, 0);
-
-		let layouter = uisc.layout.createLeftTopLayouter();
-		layouter.addUIEntity(colorBtn2);
 		//*/
 	}
 	private initUserInteract(): void {
