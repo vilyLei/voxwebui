@@ -31,7 +31,7 @@ export default class VoxRuntime {
         let url5 = "static/cospace/comesh/CoMesh.umd.js";
         let url6 = "static/cospace/cotexture/CoTexture.umd.js";
         let url7 = "static/cospace/coentity/CoEntity.umd.js";
-        let url8 = "static/cospace/coui/CoUI.umd.js";
+        // let url8 = "static/cospace/coui/CoUI.umd.js";
 
         let loader = new ModuleLoader(2, (): void => {
             if (this.isEngineEnabled()) {
@@ -56,12 +56,10 @@ export default class VoxRuntime {
 
                                         new ModuleLoader(1, (): void => {
                                             console.log("CoEntity module loaded ...");
-                                            new ModuleLoader(1, (): void => {
-                                                console.log("ready to build ui ...");
-                                                if (uiCallback) {
-                                                    uiCallback();
-                                                }
-                                            }).load(url8);
+                                            console.log("ready to build ui ...");
+                                            if (uiCallback) {
+                                                uiCallback();
+                                            }
                                         }).load(url7);
                                     }).load(url6);
                                 }).load(url5);
@@ -76,7 +74,7 @@ export default class VoxRuntime {
                 }
             }
         });
-        
+
         if (interactCallback) {
             loader.addLoader(mouseInteractML).load(url0).load(url1);
 
