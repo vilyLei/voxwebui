@@ -1,23 +1,19 @@
 import IRendererScene from "../vox/scene/IRendererScene";
-import { ICoRenderer } from "../cospace/voxengine/ICoRenderer";
 import { ICoRScene } from "../cospace/voxengine/ICoRScene";
 import { ICoUIInteraction } from "../cospace/voxengine/ui/ICoUIInteraction";
 import { IMouseInteraction } from "../cospace/voxengine/ui/IMouseInteraction";
-// import { IVoxUI } from "../voxui/IVoxUI";
 import { IVoxUIScene } from "../voxui/scene/IVoxUIScene";
 import { VoxUIScene } from "../voxui/scene/VoxUIScene";
 import { ICoMaterial } from "../cospace/voxmaterial/ICoMaterial";
 
-import { ModuleLoader } from "../common/loaders/ModuleLoader";
 import { Button } from "../voxui/button/Button";
 import { ClipLabel } from "../voxui/entity/ClipLabel";
 import { ClipColorLabel } from "../voxui/entity/ClipColorLabel";
 import { ColorLabel } from "../voxui/entity/ColorLabel";
+import VoxRuntime from "../common/VoxRuntime";
 
-declare var CoRenderer: ICoRenderer;
 declare var CoRScene: ICoRScene;
 declare var CoUIInteraction: ICoUIInteraction;
-// declare var VoxUI: IVoxUI;
 declare var CoMaterial: ICoMaterial;
 
 export class DemoBase {
@@ -31,75 +27,25 @@ export class DemoBase {
 		document.oncontextmenu = function (e) {
 			e.preventDefault();
 		}
-        this.initEngineModule();
+		this.initSysModule();
     }
 
-    private initEngineModule(): void {
-
-        let url = "static/cospace/engine/uiInteract/CoUIInteraction.umd.js";
-        let mouseInteractML = new ModuleLoader(2, (): void => {
-        	this.initUserInteract();
-        });
-
-        let url0 = "static/cospace/engine/renderer/CoRenderer.umd.js";
-        let url1 = "static/cospace/engine/rscene/CoRScene.umd.js";
-        let url2 = "static/cospace/math/CoMath.umd.js";
-        let url3 = "static/cospace/ageom/CoAGeom.umd.js";
-        let url4 = "static/cospace/coMaterial/CoMaterial.umd.js";
-        let url5 = "static/cospace/comesh/CoMesh.umd.js";
-        let url6 = "static/cospace/cotexture/CoTexture.umd.js";
-        let url7 = "static/cospace/coentity/CoEntity.umd.js";
-        let url8 = "static/cospace/coui/CoUI.umd.js";
-
-        new ModuleLoader(2, (): void => {
-            if (this.isEngineEnabled()) {
-                console.log("ready to build render ...");
-
+    private initSysModule(): void {
+        let rt = new VoxRuntime();
+        rt.initialize(
+            (): void => {
+                this.initUserInteract();
+            },
+            (): void => {
                 this.initRenderer();
                 this.init3DScene();
-
-                new ModuleLoader(1, (): void => {
-                    console.log("math module loaded ...");
-
-                    new ModuleLoader(1, (): void => {
-                        console.log("ageom module loaded ...");
-
-                        new ModuleLoader(1, (): void => {
-                            console.log("CoMaterial module loaded ...");
-
-                            new ModuleLoader(1, (): void => {
-                                console.log("CoMesh module loaded ...");
-
-                                new ModuleLoader(1, (): void => {
-                                    console.log("CoTexture module loaded ...");
-
-                                    new ModuleLoader(1, (): void => {
-                                        console.log("CoEntity module loaded ...");
-                                        new ModuleLoader(1, (): void => {
-                                            console.log("ready to build ui ...");
-                                            this.initUIScene();
-                                            this.initUISCObjs();
-                                        }).load(url8);
-                                    }).load(url7);
-                                }).load(url6);
-                            }).load(url5);
-                        }).load(url4);
-                    }).load(url3);
-                }).load(url2);
-
-                // this.m_vcoapp = new ViewerCoSApp();
-                // this.m_vcoapp.initialize((): void => {
-                // 	this.loadOBJ();
-                // });
-            }
-        })
-            .addLoader(mouseInteractML)
-            .load(url0)
-            .load(url1);
-
-        mouseInteractML.load(url);
+            },
+            (): void => {
+				this.initUIScene();
+				this.initUIObjs();
+			}
+        );
     }
-
 	private m_uiScene: IVoxUIScene = null;
 	private initUIScene(): void {
 		// let uisc = CoUI.createUIScene(); //new VoxUIScene();
@@ -113,12 +59,12 @@ export class DemoBase {
 
 		//this.testUIEntity(uisc);
 	}
-    private initUISCObjs(): void {
-        this.createCanvasClips();
+    private initUIObjs(): void {
+        this.test01();
     }
     
-	private createCanvasClips(): void {
-		console.log("createCanvasClips()................");
+	private test01(): void {
+		console.log("test01()................");
 
 		let uisc = this.m_uiScene;
 		let texAtlas = uisc.texAtlas;
@@ -346,9 +292,6 @@ export class DemoBase {
         let axis = CoRScene.createAxis3DEntity();
 		this.m_rscene.addEntity(axis);
 	}
-    isEngineEnabled(): boolean {
-        return typeof CoRenderer !== "undefined" && typeof CoRScene !== "undefined";
-    }
     run(): void {
         if (this.m_rscene != null) {
 			if (this.m_interact != null) {
