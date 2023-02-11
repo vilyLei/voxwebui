@@ -3,12 +3,12 @@ import {DemoBase as Demo} from "./demo/DemoBase";
 // import {DemoUIBase as Demo} from "./demo/DemoUIBase";
 
 document.title = "Vox Web UI";
-let demoIns: Demo = new Demo();
-let ins: any = demoIns; function main(): void {
+let ins = new Demo();
+function main(): void {
     console.log("------ demo --- init ------");
-    demoIns.initialize();
+    ins.initialize();
     function mainLoop(now: any): void {
-        demoIns.run();
+        ins.run();
         window.requestAnimationFrame(mainLoop);
     }
     window.requestAnimationFrame(mainLoop);

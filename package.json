@@ -9,10 +9,10 @@
 
 
     "build": "vue-cli-service build --target lib --name VoxApp --dest dist ./src/dev.ts",
-    "build:vox": "vue-cli-service build --target lib --name VoxApp --dest dist ./src/dev.ts",
+    "build:vox": "vue-cli-service build --target lib --name VoxApp --dest dist ./src/main_vox.ts",
     
     "dev": "vue-cli-service serve --type=dev[./src/main.ts]",
-    "dev:vox": "vue-cli-service serve --type=dev[./src/dev.ts]"
+    "dev:vox": "vue-cli-service serve --type=dev[./src/main_vox.ts]"
   },
   "dependencies": {
     "@tweenjs/tween.js": "^18.4.2",
