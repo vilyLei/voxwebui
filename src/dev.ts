@@ -1,5 +1,6 @@
 
 import {DemoBase as Demo} from "./demo/DemoBase";
+// import {DemoUIBase as Demo} from "./demo/DemoUIBase";
 
 document.title = "Vox Web UI";
 let demoIns: Demo = new Demo();
