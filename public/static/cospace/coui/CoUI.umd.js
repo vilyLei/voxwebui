@@ -211,6 +211,11 @@ class LayouterBase {
     this.m_entities = [];
     this.m_opvs = [];
     this.m_initRect = null;
+    this.m_offsetV = CoMath.createVec3();
+  }
+
+  setOffset(offsetV) {
+    this.m_offsetV.copyFrom(offsetV);
   }
 
   addUIEntity(entity) {
@@ -1829,8 +1834,8 @@ class RightBottomLayouter extends LayouterBase_1.LayouterBase {
 
     for (let i = 0; i < len; ++i) {
       pv.copyFrom(this.m_offsetvs[i]);
-      pv.x = rect.width - pv.x; // pv.y = rect.height - pv.y;
-
+      pv.x = rect.width - pv.x;
+      pv.addBy(this.m_offsetV);
       ls[i].setPosition(pv);
       ls[i].update();
     }
@@ -2249,7 +2254,7 @@ function createPromptPanel() {
 exports.createPromptPanel = createPromptPanel;
 
 function createUIScene(uiConfig = null, crscene = null, atlasSize = 512, renderProcessesTotal = 3) {
-  let uisc = new CoUIScene_1.VoxUIScene();
+  let uisc = new CoUIScene_1.CoUIScene();
 
   if (crscene != null) {
     uisc.initialize(crscene, atlasSize, renderProcessesTotal);
@@ -2442,7 +2447,7 @@ class UIPanel extends UIEntityContainer_1.UIEntityContainer {
     }
 
     return this;
-  } // initialize(scene: IVoxUIScene, rpi: number, panelW: number, panelH: number): void {
+  } // initialize(scene: ICoUIScene, rpi: number, panelW: number, panelH: number): void {
   // 	if (this.isIniting()) {
   // 		this.init();
   // 		this.m_scene = scene;
@@ -2804,6 +2809,7 @@ class UIEntityBase {
 
   getPosition(pv) {
     pv.copyFrom(this.m_pos);
+    return pv;
   }
 
   setRotation(r) {
@@ -2941,8 +2947,11 @@ class FreeLayouter extends LayouterBase_1.LayouterBase {
   update(rect) {
     const ls = this.m_entities;
     const len = ls.length;
+    let pv = CoMath.createVec3();
 
     for (let i = 0; i < len; ++i) {
+      ls[i].getPosition(pv).addBy(this.m_offsetV);
+      ls[i].setPosition(pv);
       ls[i].update();
     }
   }
@@ -3487,6 +3496,7 @@ class LeftTopLayouter extends LayouterBase_1.LayouterBase {
     for (let i = 0; i < len; ++i) {
       pv.copyFrom(this.m_offsetvs[i]);
       pv.y = rect.height - pv.y;
+      pv.addBy(this.m_offsetV);
       ls[i].setPosition(pv);
       ls[i].update();
     }
@@ -3609,6 +3619,7 @@ class RightTopLayouter extends LayouterBase_1.LayouterBase {
       pv.copyFrom(this.m_offsetvs[i]);
       pv.x = rect.width - pv.x;
       pv.y = rect.height - pv.y;
+      pv.addBy(this.m_offsetV);
       ls[i].setPosition(pv);
       ls[i].update();
     }
@@ -3653,9 +3664,9 @@ const FreeLayouter_1 = __webpack_require__("b997");
 
 class UILayout {
   constructor() {
-    this.m_layouters = [];
-    this.m_uirsc = null;
-    this.m_stage = null;
+    this.m_layouters = []; // private m_uirsc: IRendererScene = null;
+    // private m_stage: IRenderStage3D = null;
+
     this.m_rect = null;
   }
 
@@ -4049,7 +4060,7 @@ Object.defineProperty(exports, "__esModule", {
 
 const UILayout_1 = __webpack_require__("e9cf");
 
-class VoxUIScene {
+class CoUIScene {
   constructor() {
     this.texAtlas = null;
     this.transparentTexAtlas = null;
@@ -4073,7 +4084,7 @@ class VoxUIScene {
       this.m_crscene = crscene != null ? crscene : CoRScene.getRendererScene();
       crscene = this.m_crscene;
       let stage = this.m_crscene.getStage3D();
-      crscene.addEventListener(CoRScene.EventBase.RESIZE, this, this.resize);
+      crscene.addEventListener(CoRScene.EventBase.RESIZE, this, this.resizeHandle);
       let rparam = CoRScene.createRendererSceneParam();
       rparam.cameraPerspectiveEnabled = false;
       rparam.setAttriAlpha(false);
@@ -4155,12 +4166,17 @@ class VoxUIScene {
     return this.m_stageRect;
   }
 
-  resize(evt) {
+  resize() {
     let st = this.m_rstage;
     let uicamera = this.rscene.getCamera();
     uicamera.translationXYZ(st.stageHalfWidth, st.stageHalfHeight, 1500.0);
     uicamera.update();
-    this.m_stageRect.setTo(0, 0, st.stageWidth, st.stageHeight);
+    this.m_stageRect.setTo(0, 0, st.stageWidth, st.stageHeight); // this.layout.update( this.m_stageRect );
+
+    this.updateLayout();
+  }
+
+  updateLayout() {
     this.layout.update(this.m_stageRect);
   }
 
@@ -4170,9 +4186,13 @@ class VoxUIScene {
     }
   }
 
+  resizeHandle(evt) {
+    this.resize();
+  }
+
 }
 
-exports.VoxUIScene = VoxUIScene;
+exports.CoUIScene = CoUIScene;
 
 /***/ }),
 
