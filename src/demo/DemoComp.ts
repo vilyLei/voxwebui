@@ -13,12 +13,12 @@ import { ClipColorLabel } from "../voxui/entity/ClipColorLabel";
 import { ColorLabel } from "../voxui/entity/ColorLabel";
 import VoxRuntime from "../common/VoxRuntime";
 import { ColorClipLabel } from "../voxui/entity/ColorClipLabel";
-import { ICoMath } from "../cospace/math/ICoMath";
+import { VoxMath } from "../cospace/math/VoxMath";
+// import { VoxMath } from "../cospace/math/VoxMath";
 
 declare var CoRScene: ICoRScene;
 declare var CoUIInteraction: ICoUIInteraction;
 declare var CoMaterial: ICoMaterial;
-declare var CoMath: ICoMath;
 // declare var VoxUI: IVoxUI;
 
 export class DemoComp {
@@ -134,7 +134,8 @@ export class DemoComp {
 		// console.log("XXXXX ipx: ", ipx);
 		colorBtn2.setXY(ipx, 70);
 		colorBtn2.update();
-		let pv = CoMath.createVec3();
+		let pv = VoxMath.createVec3();
+		console.log("VoxMath.MathConst.MATH_1_OVER_PI: ",  VoxMath.MathConst.MATH_1_OVER_PI );
 		console.log("XXXXX iconLable.getX(): ", iconLable.getX());
 		iconLable.getPosition(pv);
 		console.log("XXXXX iconLable A pv: ", pv);
