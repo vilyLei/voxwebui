@@ -28,11 +28,11 @@ class RightBottomLayouter extends LayouterBase implements IUILayouter {
 	}
 
 	protected initEntityLayout(entity: IUIEntity, initRect: IAABB2D): void {
-
+		
+		entity.update();
 		let pv = CoMath.createVec3();
-		entity.getPosition(pv);
+		entity.getPosition(pv);		
 		pv.x = initRect.width - pv.x;
-		// pv.y = initRect.height - pv.y;
 		this.m_offsetvs.push( pv );
 
 	}

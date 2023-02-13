@@ -99,12 +99,14 @@ class VoxUIScene implements IVoxUIScene {
 	}
 	addEntity(entity: IUIEntity, processid: number = 0): void {
 		if (entity != null) {
+			
 			entity.__$setScene( this );
 			entity.update();
 			let container = entity.getRContainer();
 			if (container != null) {
 				this.rscene.addContainer(container, processid);
 			}
+
 			let ls = entity.getREntities();
 			for (let i = 0; i < ls.length; ++i) {
 				this.rscene.addEntity(ls[i], processid, true);
