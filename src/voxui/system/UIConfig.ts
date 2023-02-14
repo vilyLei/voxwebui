@@ -1,16 +1,15 @@
 
 import IColor4 from "../../vox/material/IColor4";
-import { TextPackedLoader } from "../../common/loaders/TextPackedLoader";
+import { TextPackedLoader } from "../../cospace/modules/loaders/TextPackedLoader";
+import { CoModuleLoader } from "../../cospace/app/utils/CoModuleLoader";
 import { IUIFontFormat, IUIConfig } from "./IUIConfig";
 import { IUIButtonColor, IUIGlobalColor } from "./uiconfig/IUIGlobalColor";
 import { IUIGlobalText } from "./uiconfig/IUIGlobalText";
 
-import { ICoRScene } from "../../cospace/voxengine/ICoRScene";
 import { IButton } from "../button/IButton";
 import { IColorClipLabel } from "../entity/IColorClipLabel";
 import { IUIPanelConfig } from "./uiconfig/IUIPanelConfig";
-import { CoModuleLoader } from "../../common/loaders/CoModuleLoader";
-declare var CoRScene: ICoRScene;
+import { VoxRScene } from "../../cospace/voxengine/VoxRScene";
 
 class UIConfig implements IUIConfig {
 	private m_callback: () => void;
@@ -36,7 +35,7 @@ class UIConfig implements IUIConfig {
 		}).load(configUrl);
 	}
 	createColorByData(bytesArray3: number[]): IColor4 {
-		let c = CoRScene.createColor4();
+		let c = VoxRScene.createColor4();
 		c.fromBytesArray3(bytesArray3);
 		return c;
 	}

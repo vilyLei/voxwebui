@@ -1,11 +1,6 @@
 
-import { ModuleLoader } from "../common/loaders/ModuleLoader";
-import { ICoRenderer } from "../cospace/voxengine/ICoRenderer";
-import { ICoRScene } from "../cospace/voxengine/ICoRScene";
+import { ModuleLoader } from "../cospace/modules/loaders/ModuleLoader";
 import { VoxRScene } from "../cospace/voxengine/VoxRScene";
-
-declare var CoRenderer: ICoRenderer;
-declare var CoRScene: ICoRScene;
 
 export default class VoxRuntime {
     constructor() { }
@@ -17,10 +12,7 @@ export default class VoxRuntime {
         if (interactCallback) {
             url = "static/cospace/engine/uiInteract/CoUIInteraction.umd.js";
             mouseInteractML = new ModuleLoader(2, (): void => {
-                // this.initUserInteract();
-                // if(interactCallback) {
                 interactCallback();
-                // }
             });
         }
 

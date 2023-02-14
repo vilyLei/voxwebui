@@ -50,7 +50,6 @@ interface I_CoRScene {
 var RendererDevice: CoRendererDevice = null;
 
 class T_CoRScene {
-	
 	private m_init = true;
 	private init(): void {
 
