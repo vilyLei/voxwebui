@@ -2,6 +2,7 @@
 import { ModuleLoader } from "../common/loaders/ModuleLoader";
 import { ICoRenderer } from "../cospace/voxengine/ICoRenderer";
 import { ICoRScene } from "../cospace/voxengine/ICoRScene";
+import { VoxRScene } from "../cospace/voxengine/VoxRScene";
 
 declare var CoRenderer: ICoRenderer;
 declare var CoRScene: ICoRScene;
@@ -31,10 +32,11 @@ export default class VoxRuntime {
         let url5 = "static/cospace/comesh/CoMesh.umd.js";
         let url6 = "static/cospace/cotexture/CoTexture.umd.js";
         let url7 = "static/cospace/coentity/CoEntity.umd.js";
-        // let url8 = "static/cospace/coui/CoUI.umd.js";
 
         let loader = new ModuleLoader(2, (): void => {
+            
             if (this.isEngineEnabled()) {
+                VoxRScene.initialize();
                 console.log("ready to build render ...");
                 if (rendererCallback) {
                     rendererCallback();
@@ -84,6 +86,6 @@ export default class VoxRuntime {
         }
     }
     isEngineEnabled(): boolean {
-        return typeof CoRenderer !== "undefined" && typeof CoRScene !== "undefined";
+        return VoxRScene.isEnabled();
     }
 }
