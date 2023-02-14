@@ -1,119 +1,102 @@
 import { IClipLabel } from "./entity/IClipLabel";
-import { ClipLabel } from "./entity/ClipLabel";
 import { IClipColorLabel } from "./entity/IClipColorLabel";
-import { ClipColorLabel } from "./entity/ClipColorLabel";
-import { ColorClipLabel } from "./entity/ColorClipLabel";
-import { ColorLabel } from "./entity/ColorLabel";
-import { TextLabel } from "./entity/TextLabel";
-
+import { IColorClipLabel } from "./entity/IColorClipLabel";
+import { ITextLabel } from "./entity/ITextLabel";
+import { IColorLabel } from "./entity/IColorLabel";
 import { IButton } from "./button/IButton";
-import { Button } from "./button/Button";
-import { FlagButton } from "./button/FlagButton";
-import { ITextParam, ButtonBuilder } from "./button/ButtonBuilder";
-import { SelectButtonGroup } from "./button/SelectButtonGroup";
-
+import { IFlagButton } from "./button/IFlagButton";
+import { ISelectButtonGroup } from "./button/ISelectButtonGroup";
 import { IVoxUIScene } from "./scene/IVoxUIScene";
-import { VoxUIScene } from "./scene/VoxUIScene";
-import { RectTextTip } from "./entity/RectTextTip";
-import { TipInfo } from "./base/TipInfo";
-import { UILayout } from "./layout/UILayout";
-import { PromptPanel } from "./panel/PromptPanel";
-import { UIPanel } from "./panel/UIPanel";
+import { IRectTextTip } from "./entity/IRectTextTip";
+import { ITipInfo } from "./base/ITipInfo";
+import { IUILayout } from "./layout/IUILayout";
+import { IUIPanel } from "./panel/IUIPanel";
+import { IPromptPanel } from "./panel/IPromptPanel";
 import ICanvasTexAtlas from "../cospace/voxtexture/atlas/ICanvasTexAtlas";
 import IColor4 from "../vox/material/IColor4";
-
-import { ICoMaterial } from "../cospace/voxmaterial/ICoMaterial";
-import { PromptSystem } from "./system/PromptSystem";
-import { TipsSystem } from "./system/TipsSystem";
 import { IUIConfig } from "./system/IUIConfig";
 import IRendererScene from "../vox/scene/IRendererScene";
-import { PanelSystem } from "./system/PanelSystem";
-declare var CoMaterial: ICoMaterial;
+import { ModuleLoader } from "../cospace/modules/loaders/ModuleLoader";
 
-function createColorLabel(): ColorLabel {
-	return new ColorLabel();
-}
-function createRectTextTip(): RectTextTip {
-	return new RectTextTip();
-}
-function createClipLabel(): IClipLabel {
-	return new ClipLabel();
-}
-function createClipColorLabel(): IClipColorLabel {
-	return new ClipColorLabel();
-}
-function createColorClipLabel(): ColorClipLabel {
-	return new ColorClipLabel();
-}
-function createTextLabel(): TextLabel {
-	return new TextLabel();
-}
+import { ITextParam, ILib_VoxUI } from "./ILib_VoxUI";
+declare var Lib_VoxUI: ILib_VoxUI;
 
-function createButton(): IButton {
-	return new Button();
+interface I_Lib_VoxUI {
 }
-function createFlagButton(): FlagButton {
-	return new FlagButton();
-}
+class T_Lib_VoxUI {
 
-function createSelectButtonGroup(): SelectButtonGroup {
-	return new SelectButtonGroup();
-}
+	private m_init = true;
+	initialize(callback: (urls: string[]) => void = null, url: string = ""): boolean {
 
-function createTextButton(width: number, height: number, idns: string, texAtlas: ICanvasTexAtlas, textParam: ITextParam, colors: IColor4[]): Button {
-	return ButtonBuilder.createTextButton(width, height, idns, texAtlas, textParam, colors);
-}
+		if (this.m_init) {
+			this.m_init = false;
+			if (url == "" || url === undefined) {
+				url = "static/cospace/ui/VoxUI.umd.min.js";
+			}
+			new ModuleLoader(1, (): void => {
+				if (callback != null && this.isEnabled()) callback([url]);
+			}).load(url);
 
-
-function createUIPanel(): UIPanel {
-	return new UIPanel();
-}
-function createPromptPanel(): PromptPanel {
-	return new PromptPanel();
-}
-
-function createUIScene(uiConfig: IUIConfig = null, crscene: IRendererScene = null, atlasSize: number = 512, renderProcessesTotal: number = 3): IVoxUIScene {
-	let uisc = new VoxUIScene();
-	if(crscene != null) {
-		uisc.initialize(crscene, atlasSize, renderProcessesTotal);
+			return true;
+		}
+		return false;
 	}
-	uisc.uiConfig = uiConfig;
-	if (uiConfig != null) {
-		let promptSys = new PromptSystem();
-		promptSys.initialize(uisc);
-		uisc.prompt = promptSys;
-		let tipsSys = new TipsSystem();
-		tipsSys.initialize(uisc);
-		uisc.tips = tipsSys;
-		let panelSys = new PanelSystem();
-		panelSys.initialize(uisc);
-		uisc.panel = panelSys;
+	isEnabled(): boolean {
+		return typeof Lib_VoxUI !== "undefined";
 	}
-	return uisc;
-}
-function createTipInfo(): TipInfo {
-	return new TipInfo();
-}
-function createUILayout(): UILayout {
-	return new UILayout();
-}
+	createColorLabel(): IColorLabel {
+		return Lib_VoxUI.createColorLabel();
+	}
+	createUILayout(): IUILayout {
+		return Lib_VoxUI.createUILayout();
+	}
+	createTipInfo(): ITipInfo {
+		return Lib_VoxUI.createTipInfo();
+	}
+	createRectTextTip(): IRectTextTip {
+		return Lib_VoxUI.createRectTextTip();
+	}
+	createClipLabel(): IClipLabel {
+		return Lib_VoxUI.createClipLabel();
+	}
+	createClipColorLabel(): IClipColorLabel {
+		return Lib_VoxUI.createClipColorLabel();
+	}
+	createColorClipLabel(): IColorClipLabel {
+		return Lib_VoxUI.createColorClipLabel();
+	}
+	createTextLabel(): ITextLabel {
+		return Lib_VoxUI.createTextLabel();
+	}
+	
+	createButton(): IButton {
+		return Lib_VoxUI.createButton();
+	}
+	createFlagButton(): IFlagButton {
+		return Lib_VoxUI.createFlagButton();
+	}
+	createSelectButtonGroup(): ISelectButtonGroup {
+		return Lib_VoxUI.createSelectButtonGroup();
+	}
+	createTextButton(width: number, height: number, idns: string, texAtlas: ICanvasTexAtlas, textParam: ITextParam, colors: IColor4[]): IButton {
+		return Lib_VoxUI.createTextButton(width, height, idns, texAtlas, textParam, colors);
+	}
 
-export {
-
-	createColorLabel,
-	createUILayout,
-	createTipInfo,
-	createRectTextTip,
-	createClipLabel,
-	createClipColorLabel,
-	createColorClipLabel,
-	createTextLabel,
-	createButton,
-	createFlagButton,
-	createSelectButtonGroup,
-	createTextButton,
-
-	createUIPanel,
-	createPromptPanel,
-	createUIScene
-};
+	createUIPanel(): IUIPanel {
+		return Lib_VoxUI.createUIPanel();
+	}
+	createPromptPanel(): IPromptPanel {
+		return Lib_VoxUI.createPromptPanel();
+	}
+	/**
+	 * @param uiConfig IUIConfig instance, its default value is null
+	 * @param crscene IRendererScene instance, its default value is null
+	 * @param atlasSize the default value is 512
+	 * @param renderProcessesTotal the default value is 3
+	 */
+	createUIScene(uiConfig?: IUIConfig, crscene?: IRendererScene, atlasSize?: number, renderProcessesTotal?: number): IVoxUIScene {
+		return Lib_VoxUI.createUIScene(uiConfig, crscene, atlasSize, renderProcessesTotal);
+	}
+}
+const VoxUI = new T_Lib_VoxUI();
+export { VoxUI };

@@ -24,11 +24,11 @@ interface ITextParam {
 	fontSize: number;
 	font: string;
 }
-interface IVoxUI {
+interface ILib_VoxUI {
+	
 	createColorLabel(): IColorLabel;
 	createUILayout(): IUILayout;
 	createTipInfo(): ITipInfo;
-	createRectTextTip(): IRectTextTip;
 	createRectTextTip(): IRectTextTip;
 	createClipLabel(): IClipLabel;
 	createClipColorLabel(): IClipColorLabel;
@@ -50,4 +50,4 @@ interface IVoxUI {
 	 */
 	createUIScene(uiConfig?: IUIConfig, crscene?: IRendererScene, atlasSize?: number, renderProcessesTotal?: number): IVoxUIScene;
 }
-export { ITextParam, IVoxUI };
+export { ITextParam, ILib_VoxUI };

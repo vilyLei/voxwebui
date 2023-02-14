@@ -8,12 +8,10 @@ import { IButton } from "./IButton";
 import { IVoxUIScene } from "../scene/IVoxUIScene";
 import { IUIPanelConfig } from "../system/uiconfig/IUIPanelConfig";
 
+import { VoxMaterial } from "../../cospace/voxmaterial/VoxMaterial";
 
-import { IVoxUI } from "../../voxui/IVoxUI";
-import { ICoMaterial } from "../../cospace/voxmaterial/ICoMaterial";
-declare var VoxUI: IVoxUI;
-declare var CoMaterial: ICoMaterial;
-
+import { ILib_VoxUI } from "../ILib_VoxUI";
+declare var Lib_VoxUI: ILib_VoxUI;
 
 interface ITextParam {
 
@@ -53,7 +51,7 @@ class ButtonBuilder {
 	static createTextButton(width: number, height: number, idns: string, texAtlas: ICanvasTexAtlas, textParam: ITextParam, colors: IColor4[]): Button {
 	
 		let tp = textParam;
-		let img = texAtlas.createCharsCanvasFixSize(width, height, tp.text, tp.fontSize, CoMaterial.createColor4(), CoMaterial.createColor4(1.0, 1.0, 1.0, 0.0));
+		let img = texAtlas.createCharsCanvasFixSize(width, height, tp.text, tp.fontSize, VoxMaterial.createColor4(), VoxMaterial.createColor4(1.0, 1.0, 1.0, 0.0));
 		texAtlas.addImageToAtlas(tp.text, img);
 		
 		return ButtonBuilder.createCurrTextBtn(width, height, idns, texAtlas, textParam, colors);
@@ -72,21 +70,21 @@ class ButtonBuilder {
 
 		let fontFormat = uiConfig.btnTextFontFormat;
 		tta.setFontName(fontFormat.font);
-		let fontColor = CoMaterial.createColor4();
+		let fontColor = VoxMaterial.createColor4();
 		fontColor.fromBytesArray3(cfg.getUIGlobalColor().text);
-		let bgColor = CoMaterial.createColor4(1, 1, 1, 0);
+		let bgColor = VoxMaterial.createColor4(1, 1, 1, 0);
 		let img = tta.createCharsCanvasFixSize(pw, ph, names[btnIndex], fontFormat.fontSize, fontColor, bgColor);
 		tta.addImageToAtlas(names[btnIndex], img);
 
-		let label = VoxUI.createClipColorLabel();
+		let label = Lib_VoxUI.createClipColorLabel();
 		label.initializeWithoutTex(pw, ph, 4);
 
-		let iconLable = VoxUI.createClipLabel();
+		let iconLable = Lib_VoxUI.createClipLabel();
 		iconLable.transparent = true;
 		iconLable.premultiplyAlpha = true;
 		iconLable.initialize(tta, [names[btnIndex]]);
 
-		let btn = VoxUI.createButton();
+		let btn = Lib_VoxUI.createButton();
 		btn.uuid = keys[btnIndex];
 		btn.addLabel(iconLable);
 		btn.initializeWithLable(label);
@@ -101,7 +99,7 @@ class ButtonBuilder {
 		}
 		if (tips.length > btnIndex) {
 			couiScene.tips.addTipsTarget(btn);
-			let tipInfo = VoxUI.createTipInfo().setContent(tips[btnIndex]);
+			let tipInfo = Lib_VoxUI.createTipInfo().setContent(tips[btnIndex]);
 			switch(tipsAlign) {
 				case "top":
 					btn.info = tipInfo.alignTop();

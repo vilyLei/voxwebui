@@ -1,12 +1,7 @@
 import IRendererScene from "../vox/scene/IRendererScene";
-import { ICoRScene } from "../cospace/voxengine/ICoRScene";
-import { ICoUIInteraction } from "../cospace/voxengine/ui/ICoUIInteraction";
 import { IMouseInteraction } from "../cospace/voxengine/ui/IMouseInteraction";
 import { IVoxUIScene } from "../voxui/scene/IVoxUIScene";
 import { VoxUIScene } from "../voxui/scene/VoxUIScene";
-// import { IVoxUI } from "../voxui/IVoxUI";
-import { ICoMaterial } from "../cospace/voxmaterial/ICoMaterial";
-
 import { Button } from "../voxui/button/Button";
 import { ClipLabel } from "../voxui/entity/ClipLabel";
 import { ClipColorLabel } from "../voxui/entity/ClipColorLabel";
@@ -14,12 +9,9 @@ import { ColorLabel } from "../voxui/entity/ColorLabel";
 import VoxRuntime from "../common/VoxRuntime";
 import { ColorClipLabel } from "../voxui/entity/ColorClipLabel";
 import { VoxMath } from "../cospace/math/VoxMath";
-// import { VoxMath } from "../cospace/math/VoxMath";
-
-declare var CoRScene: ICoRScene;
-declare var CoUIInteraction: ICoUIInteraction;
-declare var CoMaterial: ICoMaterial;
-// declare var VoxUI: IVoxUI;
+import { VoxRScene } from "../cospace/voxengine/VoxRScene";
+import { VoxUIInteraction } from "../cospace/voxengine/ui/VoxUIInteraction";
+import { VoxMaterial } from "../cospace/voxmaterial/VoxMaterial";
 
 export class DemoComp {
 
@@ -107,8 +99,8 @@ export class DemoComp {
 		// this.m_uiScene.addEntity(colorClipLabel);
 		// let colorBtn = CoUI.createButton(); //new Button();
 
-		let fontColor = CoMaterial.createColor4(1, 1, 1, 1);
-		let bgColor = CoMaterial.createColor4(1, 1, 1, 0);
+		let fontColor = VoxMaterial.createColor4(1, 1, 1, 1);
+		let bgColor = VoxMaterial.createColor4(1, 1, 1, 0);
 		console.log("create file label...");
 		urls = ["File", "Global", "Color", "BBB-3"];
 		img = tta.createCharsCanvasFixSize(pw, ph, urls[0], 20, fontColor, bgColor);
@@ -162,8 +154,8 @@ export class DemoComp {
 		let ta = texAtlas;
 		let tta = transparentTexAtlas;
 		///*
-		let fontColor = CoMaterial.createColor4(0,1,0,1);
-		let bgColor = CoMaterial.createColor4(1,1,1,0);
+		let fontColor = VoxMaterial.createColor4(0,1,0,1);
+		let bgColor = VoxMaterial.createColor4(1,1,1,0);
 		urls = ["BBB-0", "BBB-1", "BBB-2", "BBB-3"];
 		img = tta.createCharsCanvasFixSize(90, 40, urls[0], 30, fontColor,bgColor);
 		tta.addImageToAtlas(urls[0], img);
@@ -216,8 +208,8 @@ export class DemoComp {
 		// this.m_uiScene.addEntity(colorClipLabel);
 		// let colorBtn = CoUI.createButton(); //new Button();
 
-		let fontColor = CoMaterial.createColor4(1, 1, 1, 1);
-		let bgColor = CoMaterial.createColor4(1, 1, 1, 0);
+		let fontColor = VoxMaterial.createColor4(1, 1, 1, 1);
+		let bgColor = VoxMaterial.createColor4(1, 1, 1, 0);
 		console.log("create file label...");
 		urls = ["File", "Global", "Color", "BBB-3"];
 		img = tta.createCharsCanvasFixSize(pw, ph, urls[0], 20, fontColor, bgColor);
@@ -293,8 +285,8 @@ export class DemoComp {
 		let pw = 32;
 		let ph = 32;
 		let borderWidth = 4;
-		let borderColor = CoMaterial.createColor4(0.7, 0.7, 0.7);
-		let bgColor = CoMaterial.createColor4(0.3, 0.3, 0.3);
+		let borderColor = VoxMaterial.createColor4(0.7, 0.7, 0.7);
+		let bgColor = VoxMaterial.createColor4(0.3, 0.3, 0.3);
 		let canvas = texAtlas.createCanvas(pw, ph, borderColor, false);
 		let ctx2D = canvas.getContext("2d");
 		ctx2D.fillStyle = bgColor.getCSSDecRGBAColor();
@@ -331,7 +323,7 @@ export class DemoComp {
 		lable.setClipIndex(1);
 		lable.setXY(50, 600);
 		this.m_uiScene.addEntity(lable);
-		lable.setColor(CoMaterial.createColor4(0.1, 1.0, 0.4));
+		lable.setColor(VoxMaterial.createColor4(0.1, 1.0, 0.4));
 		let layouter = uisc.layout.createLeftTopLayouter();
 		layouter.addUIEntity(lable);
 		
@@ -340,7 +332,7 @@ export class DemoComp {
 		// lable.setClipIndex(1);
 		// lable.setXY(850, 600);
 		// this.m_uiScene.addEntity(lable);
-		// lable.setColor(CoMaterial.createColor4(0.1, 1.0, 0.4));
+		// lable.setColor(VoxMaterial.createColor4(0.1, 1.0, 0.4));
 		// layouter = uisc.layout.createRightTopLayouter();
 		// layouter.addUIEntity(lable);
 		// //createRightBottomLayouter
@@ -349,7 +341,7 @@ export class DemoComp {
 		// lable.setClipIndex(1);
 		// lable.setXY(600, 100);
 		// this.m_uiScene.addEntity(lable);
-		// lable.setColor(CoMaterial.createColor4(0.1, 1.0, 0.4));
+		// lable.setColor(VoxMaterial.createColor4(0.1, 1.0, 0.4));
 		// layouter = uisc.layout.createRightBottomLayouter();
 		// layouter.addUIEntity(lable);
 		// //return;
@@ -397,9 +389,9 @@ export class DemoComp {
 	private initUserInteract(): void {
 
 		let r = this.m_rscene;
-		if (r != null && this.m_interact == null && typeof CoUIInteraction !== "undefined") {
+		if (r != null && this.m_interact == null && typeof VoxUIInteraction !== "undefined") {
 
-			this.m_interact = CoUIInteraction.createMouseInteraction();
+			this.m_interact = VoxUIInteraction.createMouseInteraction();
 			this.m_interact.initialize(this.m_rscene, 0, true);
 			this.m_interact.setSyncLookAtEnabled(true);            
 		}
@@ -407,22 +399,22 @@ export class DemoComp {
 	private initRenderer(): void {
 		if (this.m_rscene == null) {
 			
-			let RD = CoRScene.RendererDevice;
+			let RD = VoxRScene.RendererDevice;
 			RD.SHADERCODE_TRACE_ENABLED = false;
 			RD.VERT_SHADER_PRECISION_GLOBAL_HIGHP_ENABLED = true;
 			RD.SetWebBodyColor("#888888");
 
-			let rparam = CoRScene.createRendererSceneParam();
+			let rparam = VoxRScene.createRendererSceneParam();
 			rparam.setAttriAntialias(!RD.IsMobileWeb());
 			rparam.setCamPosition(1000.0, 1000.0, 1000.0);
 			rparam.setCamProject(45, 20.0, 9000.0);
-			this.m_rscene = CoRScene.createRendererScene(rparam, 3);
+			this.m_rscene = VoxRScene.createRendererScene(rparam, 3);
 			this.m_rscene.setClearUint24Color(0x888888);
 		}
 	}
     
 	private init3DScene(): void {
-        let axis = CoRScene.createAxis3DEntity();
+        let axis = VoxRScene.createAxis3DEntity();
 		this.m_rscene.addEntity(axis);
 	}
     run(): void {

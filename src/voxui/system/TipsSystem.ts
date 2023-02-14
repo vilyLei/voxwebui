@@ -2,8 +2,10 @@ import { IVoxUIScene } from "../scene/IVoxUIScene";
 import { IMouseEvtUIEntity } from "../../voxui/entity/IMouseEvtUIEntity";
 import { IRectTextTip } from "../../voxui/entity/IRectTextTip";
 import { ITipsSystem } from "./ITipsSystem";
-import { IVoxUI } from "../../voxui/IVoxUI";
-declare var VoxUI: IVoxUI;
+
+import { ILib_VoxUI } from "../ILib_VoxUI";
+declare var Lib_VoxUI: ILib_VoxUI;
+
 /**
  * 光标移入的信息提示系统
  */
@@ -16,7 +18,7 @@ class TipsSystem implements ITipsSystem {
 	initialize(uiscene: IVoxUIScene, rpi: number = 2): void {
 		if(this.m_tipEntity == null) {
 			this.m_uiscene = uiscene;
-			let tip = VoxUI.createRectTextTip();
+			let tip = Lib_VoxUI.createRectTextTip();
 			tip.initialize(uiscene, rpi);
 			this.m_tipEntity = tip;
 		}
