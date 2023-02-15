@@ -1,19 +1,6 @@
-
-// import SelectionEntity from "../../orthoui/button/SelectionEntity";
-// import ProgressEntity from "../../orthoui/button/ProgressEntity";
-// import ProgressDataEvent from "../../vox/event/ProgressDataEvent";
-// import CanvasTextureTool from "../../orthoui/assets/CanvasTextureTool";
-// import SelectionEvent from "../../vox/event/SelectionEvent";
-// import RGBColorPanel, { RGBColoSelectEvent } from "../../orthoui/panel/RGBColorPanel";
-// import Color4 from "../../vox/material/Color4";
-// import Vector3D from "../../vox/math/Vector3D";
-// import MathConst from "../../vox/math/MathConst";
-// import AABB2D from "../../vox/geom/AABB2D";
-// import Plane3DEntity from "../../vox/entity/Plane3DEntity";
+;
 
 import { CtrlInfo, ItemCallback, CtrlItemParam, CtrlItemObj } from "./item/CtrlItemObj";
-import IRendererScene from "../../vox/scene/IRendererScene";
-// import EventBase from "../../vox/event/EventBase";
 import { SelectionEvent, ProgressDataEvent, RendererDevice, MouseEvent, VoxRScene } from "../../cospace/voxengine/VoxRScene";
 import { Vector3D, MathConst, VoxMath } from "../../cospace/math/VoxMath";
 import { IVoxUIScene } from "../scene/IVoxUIScene";
@@ -24,12 +11,15 @@ import IVector3D from "../../vox/math/IVector3D";
 import ISelectionEvent from "../../vox/event/ISelectionEvent";
 import IProgressDataEvent from "../../vox/event/IProgressDataEvent";
 import { UIPanel } from "../panel/UIPanel";
+import { Button } from "../button/Button";
+import { IColorPickPanel } from "../panel/IColorPickPanel";
+import IColor4 from "../../vox/material/IColor4";
 
 export default class ParamCtrlUI {
 
     private m_ruisc: IVoxUIScene = null;
     rgbPanel = new UIPanel();
-
+    private m_colorPickPanel: IColorPickPanel = null;
     constructor() { }
 
     initialize(uisc: IVoxUIScene, buildDisplay: boolean = true): void {
@@ -58,33 +48,60 @@ export default class ParamCtrlUI {
     isOpen(): boolean {
         return this.m_menuBtn != null && !this.m_menuBtn.isSelected();
     }
+    
+	private layoutPickColorPanel(btnUUID: string): void {
+		let panel = this.m_colorPickPanel;
+		if(panel != null && panel.isOpen()) {
+            let btn = new Button();
+			btn.update();
+			let bounds = btn.getGlobalBounds();
+			panel.setXY(bounds.max.x - panel.getWidth(), bounds.max.y + 2);
+			panel.setZ(btn.getZ() + 0.3);
+			panel.update();
+		}
+	}
+	private colorSelectListener(evt: any): void {
+
+		console.log("color select...evt: ", evt);
+		let panel = this.m_colorPickPanel;
+		if(panel != null && panel.isOpen()) {
+			panel.close();
+			this.m_colorPickPanel = null;
+		} else {
+            //IColorPickPanel
+			let panel = this.m_ruisc.panel.getPanel("colorPickPanel") as IColorPickPanel;			
+			if (panel != null) {
+				if (panel.isOpen()) {
+					panel.close();
+				} else {
+					this.m_colorPickPanel = panel;
+					panel.open();
+					this.layoutPickColorPanel(evt.uuid);
+					panel.setSelectColorCallback((color: IColor4): void => {
+						// this.setColor(color, true);
+					});
+				}
+			}
+		}
+	}
     private initUIScene(buildDisplay: boolean): void {
         this.m_pos = VoxMath.createVec3();
         if (buildDisplay) {
             this.initUI();
         }
     }
-    // private resize(evt: any): void {
-    //     // let stage = this.m_ruisc.getStage3D();
-    //     // this.ruisc.getCamera().translationXYZ(stage.stageHalfWidth, stage.stageHalfHeight, 1500.0);
-    //     // this.ruisc.getCamera().update();
-    // }
     private initUI(): void {
         this.initCtrlBars();
 
     }
     private m_fontSize = 30;
-    private m_bgLength = 200.0;
     private m_btnPX = 122.0;
-    private m_btnPY = 10.0;
-    private m_btnYSpace = 4.0;
     private m_pos: IVector3D = null;
     private m_selectPlane: ITransformEntity = null;
 
     private m_visiBtns: (SelectionEntity | ProgressEntity)[] = [];
     private m_btns: (SelectionEntity | ProgressEntity)[] = [];
     private m_menuBtn: SelectionEntity = null;
-    private m_minBtnX = 10000;
     private createSelectBtn(ns: string, uuid: string, selectNS: string, deselectNS: string, flag: boolean, visibleAlways: boolean = false): SelectionEntity {
 
         let selectBar = new SelectionEntity();
@@ -144,7 +161,6 @@ export default class ParamCtrlUI {
         if (RendererDevice.IsMobileWeb()) {
             this.m_fontSize = 64;
             this.m_btnPX = 300;
-            this.m_btnPY = 30;
         }
         if (RendererDevice.IsWebGL1()) {
             this.m_btnPX += 32;
@@ -312,7 +328,6 @@ export default class ParamCtrlUI {
     }
     private valueChange(evt: IProgressDataEvent): void {
 
-        // let progEvt = evt as ProgressDataEvent;
         let value = evt.value;
         let uuid = evt.uuid;
         let map = this.m_btnMap;

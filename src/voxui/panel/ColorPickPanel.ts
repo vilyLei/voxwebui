@@ -1,7 +1,5 @@
-import { ICoMesh } from "../../cospace/voxmesh/ICoMesh";
-import { ICoMaterial } from "../../cospace/voxmaterial/ICoMaterial";
-import { ICoEntity } from "../../cospace/voxentity/ICoEntity";
 
+import { ICoMaterial } from "../../cospace/voxmaterial/ICoMaterial";
 import { ICoRScene } from "../../cospace/voxengine/ICoRScene";
 import { IVoxUIScene } from "../scene/IVoxUIScene";
 import { UIPanel } from "./UIPanel";
@@ -11,9 +9,7 @@ import { TextureLabel } from "../entity/TextureLabel";
 import { IColorPickPanel } from "./IColorPickPanel";
 
 declare var CoRScene: ICoRScene;
-declare var CoMesh: ICoMesh;
 declare var CoMaterial: ICoMaterial;
-declare var CoEntity: ICoEntity;
 
 class ColorPickPanel extends UIPanel implements IColorPickPanel {
 

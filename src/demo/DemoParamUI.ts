@@ -49,6 +49,7 @@ export class DemoParamUI {
 		console.log("uisc: ", uisc);
 		console.log("uisc.rscene: ", uisc.rscene);
 
+		uisc
 		//this.testUIEntity(uisc);
 	}
     private initUIObjs(): void {
