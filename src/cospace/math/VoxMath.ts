@@ -1,10 +1,43 @@
 
+import { ModuleLoader } from "../modules/loaders/ModuleLoader";
 import { IVector3D, CoMathConst, CoOrientationType, CoVec3, IMatrix4, IAABB, IAABB2D, ICoMath } from "./ICoMath";
 
 declare var CoMath: ICoMath;
 interface inter_T_CoMath{
 }
+var OrientationType: CoOrientationType;
+var MathConst: CoMathConst;
+var Vector3D: CoVec3;
 class T_CoMath {
+    
+    private init(): void {
+        if(this.isEnabled()) {
+            OrientationType = CoMath.OrientationType;
+            MathConst = CoMath.MathConst;
+            Vector3D = CoMath.Vector3D;
+        }
+    }
+	private m_init = true;
+	initialize(callback: (urls: string[]) => void = null, url: string = ""): boolean {
+        this.init();
+		this.m_init = !this.isEnabled();
+		if (this.m_init) {
+			this.m_init = false;
+			if (url == "" || url === undefined) {
+                url = "static/cospace/math/CoMath.umd.js";
+			}
+			new ModuleLoader(1, (): void => {
+                this.init();
+				if (callback != null && this.isEnabled()) callback([url]);
+			}).load(url);
+
+            return true;
+		}
+        return false;
+	}
+    isEnabled(): boolean {
+        return typeof CoMath !== "undefined";
+    }
     get Vector3D(): CoVec3 {
         return CoMath.Vector3D;
     }
@@ -105,4 +138,4 @@ class T_CoMath {
     }
 }
 const VoxMath = new T_CoMath();
-export { CoMath, VoxMath, ICoMath };
+export { OrientationType, Vector3D, MathConst, VoxMath };

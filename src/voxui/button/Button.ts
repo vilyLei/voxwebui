@@ -21,6 +21,7 @@ class Button extends UIEntityBase implements IButton {
 	private m_lb: IClipEntity = null;
 	private m_lbs: IClipEntity[] = [];
 	uuid = "btn";
+	syncLabelClip = true;
 	constructor() { super(); }
 	addLabel(label: IClipEntity): void {
 		this.m_lbs.push(label);
@@ -121,28 +122,28 @@ class Button extends UIEntityBase implements IButton {
 		this.m_dp.removeEventListener(type, listener, func);
 		return this;
 	}
+	private setLabelsClipAt(index: number): void {
+		if(this.syncLabelClip) {
+			let ls = this.m_lbs;
+			if (ls.length > 0) {
+				for (let i = 0; i < ls.length; ++i) {
+					ls[i].setClipIndex(index);
+				}
+			}
+		}
+	}
 	protected mouseOverListener(evt: any): void {
 		// console.log("Button::mouseOverListener() ...");
 		if (this.m_enabled) {
 			this.m_lb.setClipIndex(1);
-			let ls = this.m_lbs;
-			if (ls.length > 0) {
-				for (let i = 0; i < ls.length; ++i) {
-					ls[i].setClipIndex(1);
-				}
-			}
+			this.setLabelsClipAt(1);
 		}
 	}
 	protected mouseOutListener(evt: any): void {
 		// console.log("Button::mouseOutListener() ...");
 		if (this.m_enabled) {
 			this.m_lb.setClipIndex(0);
-			let ls = this.m_lbs;
-			if (ls.length > 0) {
-				for (let i = 0; i < ls.length; ++i) {
-					ls[i].setClipIndex(0);
-				}
-			}
+			this.setLabelsClipAt(0);
 		}
 	}
 	
@@ -150,23 +151,13 @@ class Button extends UIEntityBase implements IButton {
 		// console.log("Button::mouseDownListener() ...");
 		if (this.m_enabled) {
 			this.m_lb.setClipIndex(2);
-			let ls = this.m_lbs;
-			if (ls.length > 0) {
-				for (let i = 0; i < ls.length; ++i) {
-					ls[i].setClipIndex(2);
-				}
-			}
+			this.setLabelsClipAt(2);
 		}
 	}
 	protected mouseUpListener(evt: any): void {
 		if (this.m_enabled) {
 			this.m_lb.setClipIndex(3);
-			let ls = this.m_lbs;
-			if (ls.length > 0) {
-				for (let i = 0; i < ls.length; ++i) {
-					ls[i].setClipIndex(3);
-				}
-			}
+			this.setLabelsClipAt(3);
 		}
 	}
 	setClipIndex(i: number): IButton {

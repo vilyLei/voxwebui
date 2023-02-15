@@ -33780,6 +33780,10 @@ class RendererSceneGraph {
   createRendererParam() {
     return new RendererParam_1.default();
   }
+
+  createRendererSceneParam() {
+    return new RendererParam_1.default();
+  }
   /**
    * @param rparam IRendererParam instance, the default value is null
    * @param renderProcessesTotal the default value is 3
@@ -33808,6 +33812,7 @@ class RendererSceneGraph {
       let node = new RendererSceneNode_1.default(sc);
       this.m_nodes.push(node);
       this.m_map.set(sc.getUid(), node);
+      return sc;
     }
 
     return null;

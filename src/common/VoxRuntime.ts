@@ -1,4 +1,5 @@
 
+import { VoxMath } from "../cospace/math/VoxMath";
 import { ModuleLoader } from "../cospace/modules/loaders/ModuleLoader";
 import { VoxRScene } from "../cospace/voxengine/VoxRScene";
 
@@ -49,6 +50,7 @@ export default class VoxRuntime {
                                         console.log("CoTexture module loaded ...");
 
                                         new ModuleLoader(1, (): void => {
+                                            VoxMath.initialize();
                                             console.log("CoEntity module loaded ...");
                                             console.log("ready to build ui ...");
                                             if (uiCallback) {

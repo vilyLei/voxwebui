@@ -9,9 +9,13 @@ import { ColorLabel } from "../voxui/entity/ColorLabel";
 import VoxRuntime from "../common/VoxRuntime";
 import { ColorClipLabel } from "../voxui/entity/ColorClipLabel";
 import { VoxMath } from "../cospace/math/VoxMath";
-import { VoxRScene } from "../cospace/voxengine/VoxRScene";
+import { ProgressDataEvent, SelectionEvent, VoxRScene } from "../cospace/voxengine/VoxRScene";
 import { VoxUIInteraction } from "../cospace/voxengine/ui/VoxUIInteraction";
 import { VoxMaterial } from "../cospace/voxmaterial/VoxMaterial";
+import { SelectionEntity } from "../voxui/component/SelectionEntity";
+import ISelectionEvent from "../vox/event/ISelectionEvent";
+import { ProgressEntity } from "../voxui/component/ProgressEntity";
+import IProgressDataEvent from "../vox/event/IProgressDataEvent";
 
 export class DemoComp {
 
@@ -57,7 +61,9 @@ export class DemoComp {
 		//this.testUIEntity(uisc);
 	}
     private initUIObjs(): void {
-        this.testComp01();
+        // this.testComp01();
+        this.testComp02();
+        this.testComp03();
         // this.test01();
         // this.test02();
         // this.test03();
@@ -65,6 +71,54 @@ export class DemoComp {
         // this.test05();
     }
     
+	private testComp03(): void {
+		let uisc = this.m_uiScene;
+		
+		let proBar = new ProgressEntity();
+		proBar.setRange(20, 100);
+		proBar.initialize(uisc);
+		proBar.setXY(100,100);
+		this.m_uiScene.addEntity(proBar);
+
+		proBar.addEventListener(ProgressDataEvent.PROGRESS, this, this.progressListener);
+
+		// // let layouter = uisc.layout.createLeftTopLayouter();
+		// let layouter = uisc.layout.createRightBottomLayouter();
+		// layouter.addUIEntity(selectEntity);
+		// uisc.layout.addLayouter(layouter);
+		// uisc.updateLayout();
+	}
+	
+	private progressListener(evt: IProgressDataEvent): void {
+		// console.log("progressListener(), evt.uuid: ", evt.uuid);
+		console.log("progressListener(), evt.progress: ", evt.progress);
+		console.log("progressListener(), evt.value: ", evt.value, "status: ", evt.status);
+		// console.log("progressListener(), evt.currentTarget: ", evt.currentTarget);
+	}
+	private testComp02(): void {
+		let uisc = this.m_uiScene;
+		let selectEntity = new SelectionEntity();
+		selectEntity.initialize(uisc);
+		
+		let ipx = uisc.getRect().getRight() - 200;
+		// console.log("XXXXX ipx: ", ipx);
+		selectEntity.setXY(ipx, 70);
+		// selectEntity.update();
+		this.m_uiScene.addEntity(selectEntity);
+
+		selectEntity.addEventListener(SelectionEvent.SELECT, this, this.selectListener);
+
+		// let layouter = uisc.layout.createLeftTopLayouter();
+		let layouter = uisc.layout.createRightBottomLayouter();
+		layouter.addUIEntity(selectEntity);
+		uisc.layout.addLayouter(layouter);
+		uisc.updateLayout();
+	}
+	private selectListener(evt: ISelectionEvent): void {
+		console.log("selectListener(), evt.uuid: ", evt.uuid);
+		console.log("selectListener(), evt.flag: ", evt.flag);
+		console.log("selectListener(), evt.currentTarget: ", evt.currentTarget);
+	}
 	private testComp01(): void {
 		console.log("testComp01()................");
 
@@ -83,8 +137,8 @@ export class DemoComp {
 		// colorLabel.setXY(330, 400);
 		// this.m_uiScene.addEntity(colorLabel, 1);
 
-		let pw = 60;
-		let ph = 30;
+		let pw = 90;
+		let ph = 50;
 		let colorClipLabel2 = new ClipColorLabel();
 		colorClipLabel2.initializeWithoutTex(pw, ph, 4);
 		// let colorClipLabel2 = new ColorClipLabel();
@@ -92,33 +146,35 @@ export class DemoComp {
 		// colorClipLabel2.getColorAt(0).setRGB3f(0.0, 0.8, 0.8);
 		colorClipLabel2.getColorAt(0).setRGB3Bytes(40, 40, 40);
 		colorClipLabel2.getColorAt(1).setRGB3f(0.2, 1.0, 0.2);
-		colorClipLabel2.getColorAt(2).setRGB3f(1.0, 0.2, 1.0);
+		colorClipLabel2.getColorAt(2).setRGB3f(0.2, 0.4, 1.0);
+		colorClipLabel2.getColorAt(3).setRGB3f(0.2, 1.0, 0.2);
 		// colorClipLabel2.setLabelClipIndex( 1 );
 		// colorClipLabel.setXY(200,0);
 		// colorClipLabel.setClipIndex(2);
 		// this.m_uiScene.addEntity(colorClipLabel);
 		// let colorBtn = CoUI.createButton(); //new Button();
 
-		let fontColor = VoxMaterial.createColor4(1, 1, 1, 1);
+		let fontColor = VoxMaterial.createColor4(1, 0, 0, 1);
 		let bgColor = VoxMaterial.createColor4(1, 1, 1, 0);
 		console.log("create file label...");
-		urls = ["File", "Global", "Color", "BBB-3"];
-		img = tta.createCharsCanvasFixSize(pw, ph, urls[0], 20, fontColor, bgColor);
-		tta.addImageToAtlas(urls[0], img);
-		img = tta.createCharsCanvasFixSize(pw, ph, urls[1], 20, fontColor, bgColor);
-		tta.addImageToAtlas(urls[1], img);
+		urls = ["File", "Global", "Size", "BBB-3"];
+		for(let i = 0; i < urls.length; ++i) {
+			img = tta.createCharsCanvasFixSize(pw, ph, urls[i], 30, fontColor, bgColor);
+			tta.addImageToAtlas(urls[i], img);
+		}
 
 		let iconLable = new ClipLabel();
 		iconLable.transparent = true;
 		iconLable.premultiplyAlpha = true;
-		iconLable.initialize(tta, [urls[1]]);
-		// iconLable.setClipIndex(1);
+		iconLable.initialize(tta, [urls[1], urls[2]]);
+		iconLable.setClipIndex(1);
 		// iconLable.setXY(500, 70);
 		// iconLable.setScaleXY(1.5, 1.5);
 		// iconLable.update();
 		// this.m_uiScene.addEntity(iconLable);
         
 		let colorBtn2 = new Button();
+		colorBtn2.syncLabelClip = false;
 		colorBtn2.addLabel(iconLable);
 		colorBtn2.initializeWithLable(colorClipLabel2);
 		// colorBtn2.setXY(500, 600);
@@ -126,15 +182,8 @@ export class DemoComp {
 		// console.log("XXXXX ipx: ", ipx);
 		colorBtn2.setXY(ipx, 70);
 		colorBtn2.update();
-		let pv = VoxMath.createVec3();
-		console.log("VoxMath.MathConst.MATH_1_OVER_PI: ",  VoxMath.MathConst.MATH_1_OVER_PI );
-		console.log("XXXXX iconLable.getX(): ", iconLable.getX());
-		iconLable.getPosition(pv);
-		console.log("XXXXX iconLable A pv: ", pv);
 		this.m_uiScene.addEntity(colorBtn2, 0);
-		iconLable.getPosition(pv);
-		console.log("XXXXX iconLable B pv: ", pv);
-
+		
 		// let layouter = uisc.layout.createLeftTopLayouter();
 		let layouter = uisc.layout.createRightBottomLayouter();
 		layouter.addUIEntity(colorBtn2);
