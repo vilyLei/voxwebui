@@ -193,17 +193,18 @@ class ProgressEntity extends CompEntityBase {
 		return this.m_progress;
 	}
 	private sendEvt(status: number): void {
-
-		this.m_currEvent.target = this;
-		this.m_currEvent.status = status;
-		this.m_currEvent.type = ProgressDataEvent.PROGRESS;
-		this.m_currEvent.minValue = this.m_minValue;
-		this.m_currEvent.maxValue = this.m_maxValue;
-		this.m_currEvent.value = this.m_value;
-		this.m_currEvent.progress = this.m_progress;
-		this.m_currEvent.phase = 1;
-		this.m_currEvent.uuid = this.uuid;
-		this.m_dispatcher.dispatchEvt(this.m_currEvent);
+		let t = this.m_currEvent;
+		t.target = this;
+		t.status = status;
+		t.type = ProgressDataEvent.PROGRESS;
+		t.minValue = this.m_minValue;
+		t.maxValue = this.m_maxValue;
+		t.value = this.m_value;
+		t.progress = this.m_progress;
+		t.phase = 1;
+		t.uuid = this.uuid;
+		this.m_dispatcher.dispatchEvt( t );
+		t.target = null;
 	}
 	setProgressLength(length: number, sendEvtEnabled: boolean = true): void {
 

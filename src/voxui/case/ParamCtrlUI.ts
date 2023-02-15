@@ -14,12 +14,14 @@ import { UIPanel } from "../panel/UIPanel";
 import { Button } from "../button/Button";
 import { IColorPickPanel } from "../panel/IColorPickPanel";
 import IColor4 from "../../vox/material/IColor4";
+import { UIEntityContainer } from "../entity/UIEntityContainer";
+import { UIEntityBase } from "../entity/UIEntityBase";
 
 export default class ParamCtrlUI {
 
     private m_ruisc: IVoxUIScene = null;
-    rgbPanel = new UIPanel();
-    private m_colorPickPanel: IColorPickPanel = null;
+    // rgbPanel = new UIPanel();
+    private rgbPanel: IColorPickPanel = null;
     constructor() { }
 
     initialize(uisc: IVoxUIScene, buildDisplay: boolean = true): void {
@@ -49,24 +51,22 @@ export default class ParamCtrlUI {
         return this.m_menuBtn != null && !this.m_menuBtn.isSelected();
     }
     
-	private layoutPickColorPanel(btnUUID: string): void {
-		let panel = this.m_colorPickPanel;
+	private layoutPickColorPanel(tar: UIEntityBase): void {
+		let panel = this.rgbPanel;
 		if(panel != null && panel.isOpen()) {
-            let btn = new Button();
-			btn.update();
-			let bounds = btn.getGlobalBounds();
+			let bounds = tar.getGlobalBounds();
 			panel.setXY(bounds.max.x - panel.getWidth(), bounds.max.y + 2);
-			panel.setZ(btn.getZ() + 0.3);
+			panel.setZ(tar.getZ() + 0.3);
 			panel.update();
 		}
 	}
-	private colorSelectListener(evt: any): void {
+	private colorSelectListener(uuid: string, tar: UIEntityBase): void {
 
-		console.log("color select...evt: ", evt);
-		let panel = this.m_colorPickPanel;
+		console.log("color select..., tar: ", tar);
+		let panel = this.rgbPanel;
 		if(panel != null && panel.isOpen()) {
 			panel.close();
-			this.m_colorPickPanel = null;
+			this.rgbPanel = null;
 		} else {
             //IColorPickPanel
 			let panel = this.m_ruisc.panel.getPanel("colorPickPanel") as IColorPickPanel;			
@@ -74,11 +74,13 @@ export default class ParamCtrlUI {
 				if (panel.isOpen()) {
 					panel.close();
 				} else {
-					this.m_colorPickPanel = panel;
+					this.rgbPanel = panel;
 					panel.open();
-					this.layoutPickColorPanel(evt.uuid);
+					this.layoutPickColorPanel(tar);
 					panel.setSelectColorCallback((color: IColor4): void => {
+                        console.log("pick color: ", color)
 						// this.setColor(color, true);
+                        this.selectColor(uuid, color);
 					});
 				}
 			}
@@ -311,7 +313,20 @@ export default class ParamCtrlUI {
         if (this.rgbPanel != null) this.rgbPanel.close();
     }
     private m_currUUID = "";
-    private selectColor(evt: any): void {
+    private selectColor(uuid: string, color: IColor4): void {
+
+        // let currEvt = evt as RGBColoSelectEvent;
+        // console.log("selectColor, currEvt: ", currEvt);
+        // let uuid = this.m_currUUID;
+        let map = this.m_btnMap;
+        if (map.has(uuid)) {
+            let obj = map.get(uuid);
+            let param = obj.param;
+            if (param.colorPick) {
+                // obj.colorId = currEvt.colorId;
+                obj.sendColorOut(color);
+            }
+        }
 
         // let currEvt = evt as RGBColoSelectEvent;
         // console.log("selectColor, currEvt: ", currEvt);
@@ -328,6 +343,7 @@ export default class ParamCtrlUI {
     }
     private valueChange(evt: IProgressDataEvent): void {
 
+        console.log("valueChange(), evt.target: ", evt.target);
         let value = evt.value;
         let uuid = evt.uuid;
         let map = this.m_btnMap;
@@ -345,10 +361,11 @@ export default class ParamCtrlUI {
             } else if (evt.status == 0) {
                 console.log("only select the btn");
                 if (param.colorPick) {
-                    if (this.rgbPanel != null && this.rgbPanel.isClosed()) {
-                        this.rgbPanel.open();
-                    }
+                    // if (this.rgbPanel != null && this.rgbPanel.isClosed()) {
+                    //     this.rgbPanel.open();
+                    // }
                     // if (obj.colorId >= 0) this.rgbPanel.selectColorById(obj.colorId);
+                    this.colorSelectListener(evt.uuid, evt.target);
                 } else {
                     if (this.rgbPanel != null) this.rgbPanel.close();
                 }

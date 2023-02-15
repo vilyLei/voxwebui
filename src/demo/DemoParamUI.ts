@@ -6,6 +6,7 @@ import VoxRuntime from "../common/VoxRuntime";
 import { ProgressDataEvent, SelectionEvent, VoxRScene } from "../cospace/voxengine/VoxRScene";
 import { VoxUIInteraction } from "../cospace/voxengine/ui/VoxUIInteraction";
 import {CtrlInfo, ParamCtrlUI} from "../voxui/case/ParamCtrlUI";
+import { PanelSystem } from "../voxui/system/PanelSystem";
 
 export class DemoParamUI {
 
@@ -41,16 +42,15 @@ export class DemoParamUI {
     }
 	private m_uiScene: IVoxUIScene = null;
 	private initUIScene(): void {
-		console.log("create the VoxUIScene instance...");
+        
 		let uisc = new VoxUIScene();
 		uisc.texAtlasNearestFilter = true;
 		this.m_uiScene = uisc;
 		uisc.initialize(this.m_rscene, 1024);
-		console.log("uisc: ", uisc);
-		console.log("uisc.rscene: ", uisc.rscene);
 
-		uisc
-		//this.testUIEntity(uisc);
+        let panel = new PanelSystem();
+        panel.initialize(uisc);
+        uisc.panel = panel;
 	}
     private initUIObjs(): void {
 

@@ -83,13 +83,14 @@ class SelectionEntity extends CompEntityBase {
 		}
 	}
 	private sendEvt(): void {
-
-		this.m_currEvent.target = this;
-		this.m_currEvent.type = SelectionEvent.SELECT;
-		this.m_currEvent.flag = this.m_flag;
-		this.m_currEvent.phase = 1;
-		this.m_currEvent.uuid = this.uuid;
-		this.m_dispatcher.dispatchEvt(this.m_currEvent);
+		let t = this.m_currEvent;
+		t.target = this;
+		t.type = SelectionEvent.SELECT;
+		t.flag = this.m_flag;
+		t.phase = 1;
+		t.uuid = this.uuid;
+		this.m_dispatcher.dispatchEvt(t);
+		t.target = null;
 	}
 	private updateState(): void {
 
