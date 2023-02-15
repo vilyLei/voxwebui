@@ -16,6 +16,7 @@ import { IColorPickPanel } from "../panel/IColorPickPanel";
 import IColor4 from "../../vox/material/IColor4";
 import { UIEntityContainer } from "../entity/UIEntityContainer";
 import { UIEntityBase } from "../entity/UIEntityBase";
+import { VoxMaterial } from "../../cospace/voxmaterial/VoxMaterial";
 
 export default class ParamCtrlUI {
 
@@ -60,7 +61,7 @@ export default class ParamCtrlUI {
 			panel.update();
 		}
 	}
-	private colorSelectListener(uuid: string, tar: UIEntityBase): void {
+	private colorSelectListener(uuid: string, tar: UIEntityBase, color: IColor4): void {
 
 		console.log("color select..., tar: ", tar);
 		let panel = this.rgbPanel;
@@ -76,6 +77,7 @@ export default class ParamCtrlUI {
 				} else {
 					this.rgbPanel = panel;
 					panel.open();
+                    panel.setColor(color);
 					this.layoutPickColorPanel(tar);
 					panel.setSelectColorCallback((color: IColor4): void => {
                         console.log("pick color: ", color)
@@ -365,7 +367,9 @@ export default class ParamCtrlUI {
                     //     this.rgbPanel.open();
                     // }
                     // if (obj.colorId >= 0) this.rgbPanel.selectColorById(obj.colorId);
-                    this.colorSelectListener(evt.uuid, evt.target);
+                    let color = VoxMaterial.createColor4();
+                    color.fromArray3(obj.color);
+                    this.colorSelectListener(evt.uuid, evt.target, color);
                 } else {
                     if (this.rgbPanel != null) this.rgbPanel.close();
                 }

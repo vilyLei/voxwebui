@@ -7,6 +7,7 @@ import IColor4 from "../../vox/material/IColor4";
 import IRenderTexture from "../../vox/render/texture/IRenderTexture";
 import { TextureLabel } from "../entity/TextureLabel";
 import { IColorPickPanel } from "./IColorPickPanel";
+import { ColorLabel } from "../entity/ColorLabel";
 
 declare var CoRScene: ICoRScene;
 declare var CoMaterial: ICoMaterial;
@@ -37,6 +38,19 @@ class ColorPickPanel extends UIPanel implements IColorPickPanel {
 	destroy(): void {
 		super.destroy();
 
+	}
+	private m_colorLabel: ColorLabel = null;
+	setColor(color: IColor4): void {
+		if (this.isOpen() && color != null) {
+			if (this.m_colorLabel == null) {
+				this.m_colorLabel = new ColorLabel();
+				this.m_colorLabel.initialize(32, 32);
+				this.m_colorLabel.setXY(2, this.m_panelH);
+				this.addEntity(this.m_colorLabel);
+			}
+			this.m_colorLabel.setColor(color);
+			this.m_colorLabel.setVisible(true);
+		}
 	}
 	private m_callback: (color: IColor4) => void = null;
 	setSelectColorCallback(callback: (color: IColor4) => void): void {
@@ -134,6 +148,7 @@ class ColorPickPanel extends UIPanel implements IColorPickPanel {
 			this.m_scene.removeEventListener(ME.MOUSE_DOWN, this, this.stMouseDownListener);
 		}
 		this.m_callback = null;
+		if (this.m_colorLabel != null) this.m_colorLabel.setVisible(false);
 	}
 	private stMouseDownListener(evt: any): void {
 
@@ -152,6 +167,7 @@ class ColorPickPanel extends UIPanel implements IColorPickPanel {
 			pv.y -= dis;
 			let color = this.getRGBAByXY(pv.x, pv.y);
 			if (this.m_callback != null) {
+				this.setColor(color);
 				this.m_callback(color);
 			}
 		}
