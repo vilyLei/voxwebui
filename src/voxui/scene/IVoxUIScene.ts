@@ -1,6 +1,7 @@
 import IAABB2D from "../../vox/geom/IAABB2D";
 import IRenderStage3D from "../../vox/render/IRenderStage3D";
 import IRendererScene from "../../vox/scene/IRendererScene";
+import IRendererSceneGraph from "../../vox/scene/IRendererSceneGraph";
 import ICanvasTexAtlas from "../../cospace/voxtexture/atlas/ICanvasTexAtlas";
 
 import { IUISceneEntity } from "./IUISceneEntity";
@@ -25,11 +26,11 @@ interface IVoxUIScene {
 	keyboardInteraction: ICoKeyboardInteraction;
 	
 	/**
-	 * @param crscene the default value is null
+	 * @param graph the default value is a IRendererSceneGraph instance
 	 * @param atlasSize the default value is 1024
 	 * @param renderProcessesTotal the default value is 3
 	 */
-	initialize(crscene?: IRendererScene, atlasSize?: number, renderProcessesTotal?: number): void;
+	initialize(graph: IRendererSceneGraph, atlasSize?: number, renderProcessesTotal?: number): void;
 	addEventListener(type: number, listener: any, func: (evt: any) => void, captureEnabled?: boolean, bubbleEnabled?: boolean): IVoxUIScene;
 	removeEventListener(type: number, listener: any, func: (evt: any) => void): IVoxUIScene;
 	getStage(): IRenderStage3D;

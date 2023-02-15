@@ -21,10 +21,12 @@ import { ICoTexture } from "../../cospace/voxtexture/ICoTexture";
 import { UILayout } from "../layout/UILayout";
 import IAABB2D from "../../vox/geom/IAABB2D";
 import { IPanelSystem } from "../system/IPanelSystem";
+import IRendererSceneGraph from "../../vox/scene/IRendererSceneGraph";
 declare var CoTexture: ICoTexture;
 
 class VoxUIScene implements IVoxUIScene {
-	private m_crscene: IRendererScene;
+
+	private m_graph: IRendererSceneGraph = null;
 	private m_rstage: IRenderStage3D;
 	private m_stageRect: IAABB2D;
 	
@@ -46,25 +48,25 @@ class VoxUIScene implements IVoxUIScene {
 		this.resize();
 	}
 	/**
-	 * @param crscene the default value is null
+	 * @param graph the value is a IRendererSceneGraph instance
 	 * @param atlasSize the default value is 1024
 	 * @param renderProcessesTotal the default value is 3
 	 */
-	initialize(crscene: IRendererScene = null, atlasSize: number = 1024, renderProcessesTotal: number = 3): void {
-		if (this.m_crscene == null) {
+	initialize(graph: IRendererSceneGraph, atlasSize: number = 1024, renderProcessesTotal: number = 3): void {
+		if (this.m_graph == null) {
 			
-			this.m_crscene = crscene != null ? crscene : CoRScene.getRendererScene();
-			crscene = this.m_crscene;
-			let stage = this.m_crscene.getStage3D();
+			this.m_graph = graph;
+			let crscene = graph.getSceneAt( 0 );
+			let stage = crscene.getStage3D();
 
 			crscene.addEventListener(CoRScene.EventBase.RESIZE, this, this.resizeHandle);
-			let rparam = CoRScene.createRendererSceneParam();
+			let rparam = graph.createRendererSceneParam();//CoRScene.createRendererSceneParam();
 			rparam.cameraPerspectiveEnabled = false;
 			rparam.setAttriAlpha(false);
 			rparam.setCamProject(45.0, 0.1, 3000.0);
 			rparam.setCamPosition(0.0, 0.0, 1500.0);
 
-			let subScene = crscene.createSubScene(rparam, renderProcessesTotal, true);
+			let subScene = graph.createSubScene( rparam, renderProcessesTotal, true );//crscene.createSubScene(rparam, renderProcessesTotal, true);
 			subScene.enableMouseEvent(true);
 			let t: any = this;
 			t.rscene = subScene;

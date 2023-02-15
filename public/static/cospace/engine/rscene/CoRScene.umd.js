@@ -33777,6 +33777,11 @@ class RendererSceneGraph {
     return null;
   }
 
+  getSceneAt(i) {
+    if (i >= 0 && i < this.m_nodes.length) return this.m_nodes[i].getRScene();
+    return null;
+  }
+
   createRendererParam() {
     return new RendererParam_1.default();
   }

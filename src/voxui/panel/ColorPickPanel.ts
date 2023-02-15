@@ -16,7 +16,7 @@ class ColorPickPanel extends UIPanel implements IColorPickPanel {
 	/**
 	 * 边距留白尺寸
 	 */
-	private m_marginWidth: number = 15;
+	private m_marginWidth = 15;
 
 	constructor() { super(); }
 
@@ -38,8 +38,8 @@ class ColorPickPanel extends UIPanel implements IColorPickPanel {
 		super.destroy();
 
 	}
-	private m_callback: (color: IColor4)=>void = null;
-	setSelectColorCallback(callback: (color: IColor4)=>void): void {
+	private m_callback: (color: IColor4) => void = null;
+	setSelectColorCallback(callback: (color: IColor4) => void): void {
 		this.m_callback = callback;
 	}
 
@@ -151,7 +151,7 @@ class ColorPickPanel extends UIPanel implements IColorPickPanel {
 			pv.x -= dis;
 			pv.y -= dis;
 			let color = this.getRGBAByXY(pv.x, pv.y);
-			if(this.m_callback != null) {
+			if (this.m_callback != null) {
 				this.m_callback(color);
 			}
 		}

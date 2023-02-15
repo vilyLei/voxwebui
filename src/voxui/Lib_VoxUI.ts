@@ -28,6 +28,7 @@ import { TipsSystem } from "./system/TipsSystem";
 import { IUIConfig } from "./system/IUIConfig";
 import IRendererScene from "../vox/scene/IRendererScene";
 import { PanelSystem } from "./system/PanelSystem";
+import IRendererSceneGraph from "../vox/scene/IRendererSceneGraph";
 declare var CoMaterial: ICoMaterial;
 
 function createColorLabel(): ColorLabel {
@@ -72,10 +73,10 @@ function createPromptPanel(): PromptPanel {
 	return new PromptPanel();
 }
 
-function createUIScene(uiConfig: IUIConfig = null, crscene: IRendererScene = null, atlasSize: number = 512, renderProcessesTotal: number = 3): IVoxUIScene {
+function createUIScene(graph: IRendererSceneGraph, uiConfig: IUIConfig = null, atlasSize: number = 512, renderProcessesTotal: number = 3): IVoxUIScene {
 	let uisc = new VoxUIScene();
-	if(crscene != null) {
-		uisc.initialize(crscene, atlasSize, renderProcessesTotal);
+	if(graph != null) {
+		uisc.initialize(graph, atlasSize, renderProcessesTotal);
 	}
 	uisc.uiConfig = uiConfig;
 	if (uiConfig != null) {

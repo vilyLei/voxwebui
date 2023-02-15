@@ -7,9 +7,11 @@ import { ProgressDataEvent, SelectionEvent, VoxRScene } from "../cospace/voxengi
 import { VoxUIInteraction } from "../cospace/voxengine/ui/VoxUIInteraction";
 import {CtrlInfo, ParamCtrlUI} from "../voxui/case/ParamCtrlUI";
 import { PanelSystem } from "../voxui/system/PanelSystem";
+import IRendererSceneGraph from "../vox/scene/IRendererSceneGraph";
 
 export class DemoParamUI {
 
+    private m_graph: IRendererSceneGraph = null;
     private m_rscene: IRendererScene = null;
 	private m_interact: IMouseInteraction = null;
 	private m_paramUI = new ParamCtrlUI();
@@ -46,7 +48,7 @@ export class DemoParamUI {
 		let uisc = new VoxUIScene();
 		uisc.texAtlasNearestFilter = true;
 		this.m_uiScene = uisc;
-		uisc.initialize(this.m_rscene, 1024);
+		uisc.initialize(this.m_graph, 1024);
 
         let panel = new PanelSystem();
         panel.initialize(uisc);
@@ -129,11 +131,12 @@ export class DemoParamUI {
 			RD.VERT_SHADER_PRECISION_GLOBAL_HIGHP_ENABLED = true;
 			RD.SetWebBodyColor("#888888");
 
-			let rparam = VoxRScene.createRendererSceneParam();
+            let graph = this.m_graph = VoxRScene.createRendererSceneGraph();
+			let rparam = graph.createRendererSceneParam();
 			rparam.setAttriAntialias(!RD.IsMobileWeb());
 			rparam.setCamPosition(1000.0, 1000.0, 1000.0);
 			rparam.setCamProject(45, 20.0, 9000.0);
-			this.m_rscene = VoxRScene.createRendererScene(rparam, 3);
+			this.m_rscene = graph.createScene(rparam, 3);
 			this.m_rscene.setClearUint24Color(0x888888);
 		}
 	}
@@ -143,15 +146,16 @@ export class DemoParamUI {
 		this.m_rscene.addEntity(axis);
 	}
     run(): void {
-        if (this.m_rscene != null) {
+        if (this.m_graph != null) {
 			if (this.m_interact != null) {
 				this.m_interact.setLookAtPosition(null);
 				this.m_interact.run();
 			}
-			this.m_rscene.run();
-			if (this.m_uiScene != null) {
-				this.m_uiScene.run();
-			}
+			// this.m_rscene.run();
+			// if (this.m_uiScene != null) {
+			// 	this.m_uiScene.run();
+			// }
+            this.m_graph.run();
 		}
     }
 }

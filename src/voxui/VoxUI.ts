@@ -19,6 +19,7 @@ import IRendererScene from "../vox/scene/IRendererScene";
 import { ModuleLoader } from "../cospace/modules/loaders/ModuleLoader";
 
 import { ITextParam, ILib_VoxUI } from "./ILib_VoxUI";
+import IRendererSceneGraph from "../vox/scene/IRendererSceneGraph";
 declare var Lib_VoxUI: ILib_VoxUI;
 
 interface I_Lib_VoxUI {
@@ -89,13 +90,13 @@ class T_Lib_VoxUI {
 		return Lib_VoxUI.createPromptPanel();
 	}
 	/**
+	 * @param graph IRendererSceneGraph instance
 	 * @param uiConfig IUIConfig instance, its default value is null
-	 * @param crscene IRendererScene instance, its default value is null
 	 * @param atlasSize the default value is 512
 	 * @param renderProcessesTotal the default value is 3
 	 */
-	createUIScene(uiConfig?: IUIConfig, crscene?: IRendererScene, atlasSize?: number, renderProcessesTotal?: number): IVoxUIScene {
-		return Lib_VoxUI.createUIScene(uiConfig, crscene, atlasSize, renderProcessesTotal);
+	createUIScene(graph: IRendererSceneGraph, uiConfig?: IUIConfig, atlasSize?: number, renderProcessesTotal?: number): IVoxUIScene {
+		return Lib_VoxUI.createUIScene(graph, uiConfig, atlasSize, renderProcessesTotal);
 	}
 }
 const VoxUI = new T_Lib_VoxUI();

@@ -13,9 +13,12 @@ import { RendererDevice, VoxRScene } from "../cospace/voxengine/VoxRScene";
 import { VoxUIInteraction } from "../cospace/voxengine/ui/VoxUIInteraction";
 import { VoxMaterial } from "../cospace/voxmaterial/VoxMaterial";
 import { VoxMath } from "../cospace/math/VoxMath";
+import IRendererSceneGraph from "../vox/scene/IRendererSceneGraph";
+import IRendererSceneGraphStatus from "../vox/scene/IRendererSceneGraphStatus";
 
 export class DemoUIBase {
 
+    private m_graph: IRendererSceneGraph = null;
     private m_rscene: IRendererScene = null;
 	private m_interact: IMouseInteraction = null;
 
@@ -51,11 +54,18 @@ export class DemoUIBase {
 		let uisc = new VoxUIScene();
 		uisc.texAtlasNearestFilter = true;
 		this.m_uiScene = uisc;
-		uisc.initialize(this.m_rscene, 512);
+		uisc.initialize(this.m_graph, 512);
 		console.log("uisc: ", uisc);
 		console.log("uisc.rscene: ", uisc.rscene);
 
-		//this.testUIEntity(uisc);
+		
+        // let node = this.m_graph.getNodeAt(1);
+        // node.setPhase0Callback(null, (sc: IRendererScene, st: IRendererSceneGraphStatus): void => {
+        //     /**
+        //      * 设置摄像机转动操作的启用状态
+        //      */
+        //     // this.m_interact.cameraCtrlEnabled = !st.rayPickFlag;
+        // })
 	}
     private initUIObjs(): void {
         // this.test01();
@@ -400,18 +410,19 @@ export class DemoUIBase {
 		}
 	}
 	private initRenderer(): void {
-		if (this.m_rscene == null) {
+		if (this.m_graph == null) {
 			
 			let RD = VoxRScene.RendererDevice;
 			RD.SHADERCODE_TRACE_ENABLED = false;
 			RD.VERT_SHADER_PRECISION_GLOBAL_HIGHP_ENABLED = true;
 			RD.SetWebBodyColor("#888888");
 
-			let rparam = VoxRScene.createRendererSceneParam();
+            let graph = this.m_graph = VoxRScene.createRendererSceneGraph();
+			let rparam = graph.createRendererSceneParam();
 			rparam.setAttriAntialias(!RD.IsMobileWeb());
 			rparam.setCamPosition(1000.0, 1000.0, 1000.0);
 			rparam.setCamProject(45, 20.0, 9000.0);
-			this.m_rscene = VoxRScene.createRendererScene(rparam, 3);
+			this.m_rscene = graph.createScene(rparam, 3);
 			this.m_rscene.setClearUint24Color(0x888888);
 		}
 	}
@@ -421,15 +432,12 @@ export class DemoUIBase {
 		this.m_rscene.addEntity(axis);
 	}
     run(): void {
-        if (this.m_rscene != null) {
+        if (this.m_graph != null) {
 			if (this.m_interact != null) {
 				this.m_interact.setLookAtPosition(null);
 				this.m_interact.run();
 			}
-			this.m_rscene.run();
-			if (this.m_uiScene != null) {
-				this.m_uiScene.run();
-			}
+			this.m_graph.run();
 		}
     }
 }

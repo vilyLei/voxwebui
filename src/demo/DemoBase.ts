@@ -9,9 +9,11 @@ import VoxRuntime from "../common/VoxRuntime";
 import { RendererDevice, VoxRScene } from "../cospace/voxengine/VoxRScene";
 import { VoxUIInteraction } from "../cospace/voxengine/ui/VoxUIInteraction";
 import { VoxMaterial } from "../cospace/voxmaterial/VoxMaterial";
+import IRendererSceneGraph from "../vox/scene/IRendererSceneGraph";
 
 export class DemoBase {
 
+    private m_graph: IRendererSceneGraph = null;
     private m_rscene: IRendererScene = null;
 	private m_interact: IMouseInteraction = null;
 
@@ -47,7 +49,7 @@ export class DemoBase {
 		let uisc = new VoxUIScene();
 		uisc.texAtlasNearestFilter = true;
 		this.m_uiScene = uisc;
-		uisc.initialize(this.m_rscene, 512);
+		uisc.initialize(this.m_graph);
 		console.log("uisc: ", uisc);
 		console.log("uisc.rscene: ", uisc.rscene);
 
@@ -99,17 +101,19 @@ export class DemoBase {
 		}
 	}
 	private initRenderer(): void {
-		if (this.m_rscene == null) {
-			let RD = RendererDevice;
+		if (this.m_graph == null) {
+			
+			let RD = VoxRScene.RendererDevice;
 			RD.SHADERCODE_TRACE_ENABLED = false;
 			RD.VERT_SHADER_PRECISION_GLOBAL_HIGHP_ENABLED = true;
 			RD.SetWebBodyColor("#888888");
 
-			let rparam = VoxRScene.createRendererSceneParam();
+            let graph = this.m_graph = VoxRScene.createRendererSceneGraph();
+			let rparam = graph.createRendererSceneParam();
 			rparam.setAttriAntialias(!RD.IsMobileWeb());
 			rparam.setCamPosition(1000.0, 1000.0, 1000.0);
 			rparam.setCamProject(45, 20.0, 9000.0);
-			this.m_rscene = VoxRScene.createRendererScene(rparam, 3);
+			this.m_rscene = graph.createScene(rparam, 3);
 			this.m_rscene.setClearUint24Color(0x888888);
 		}
 	}
@@ -119,15 +123,12 @@ export class DemoBase {
 		this.m_rscene.addEntity(axis);
 	}
     run(): void {
-        if (this.m_rscene != null) {
+        if (this.m_graph != null) {
 			if (this.m_interact != null) {
 				this.m_interact.setLookAtPosition(null);
 				this.m_interact.run();
 			}
-			this.m_rscene.run();
-			if (this.m_uiScene != null) {
-				this.m_uiScene.run();
-			}
+			this.m_graph.run();
 		}
     }
 }
