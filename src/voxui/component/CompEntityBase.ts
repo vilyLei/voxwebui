@@ -18,15 +18,15 @@ class ButtonItem {
 		this.bgLabel = pBgLabel;
 	}
 	destroy(): void {
-		if(this.button != null) {
+		if (this.button != null) {
 			this.button.destroy();
 			this.button = null;
 		}
-		if(this.bgLabel != null) {
+		if (this.bgLabel != null) {
 			this.bgLabel.destroy();
 			this.bgLabel = null;
 		}
-		if(this.label != null) {
+		if (this.label != null) {
 			this.label.destroy();
 			this.label = null;
 		}
@@ -40,6 +40,9 @@ class CompEntityBase extends UIEntityContainer {
 	protected m_bgColors: IColor4[] = null;
 
 	constructor() { super(); }
+	getNameWidth(): number {
+		return 0.0;
+	}
 	setFontColor(fontColor: IColor4, bgColor: IColor4): void {
 		this.m_fontColor = fontColor;
 		this.m_fontBgColor = bgColor;
@@ -100,7 +103,6 @@ class CompEntityBase extends UIEntityContainer {
 		let img: HTMLCanvasElement;
 		let tta = uisc.transparentTexAtlas;
 
-		let bgLabel = this.createBgLabel(pw, ph, intensity);
 
 		let nameLabel: ClipLabel = null;
 
@@ -110,7 +112,8 @@ class CompEntityBase extends UIEntityContainer {
 		if (urls != null && urls.length > 0) {
 
 			for (let i = 0; i < urls.length; ++i) {
-				img = tta.createCharsCanvasFixSize(pw, ph, urls[i], fontSize, fontColor, bgColor);
+				// img = tta.createCharsCanvasFixSize(pw, ph, urls[i], fontSize, fontColor, bgColor);
+				img = tta.createCharsCanvasWithSize(pw, ph, 6, 4, urls[i], fontSize, fontColor, bgColor);
 				tta.addImageToAtlas(urls[i], img);
 			}
 
@@ -118,8 +121,11 @@ class CompEntityBase extends UIEntityContainer {
 			nameLabel.transparent = true;
 			nameLabel.premultiplyAlpha = true;
 			nameLabel.initialize(tta, urls);
+			nameLabel.update();
+			pw = nameLabel.getWidth();
 		}
 
+		let bgLabel = this.createBgLabel(pw, ph, intensity);
 		let btn = new Button();
 		if (uuid != "") btn.uuid = uuid;
 		if (urls != null && urls.length > 0) {
@@ -128,7 +134,8 @@ class CompEntityBase extends UIEntityContainer {
 		}
 
 		btn.initializeWithLable(bgLabel);
-		return new ButtonItem( btn, nameLabel, bgLabel );
+		btn.update();
+		return new ButtonItem(btn, nameLabel, bgLabel);
 	}
 }
 export { ButtonItem, CompEntityBase };

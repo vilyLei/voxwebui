@@ -101,6 +101,9 @@ class UIPanel extends UIEntityContainer implements IUIPanel {
 	isOpen(): boolean {
 		return this.m_isOpen;
 	}
+	isClosed(): boolean {
+		return !this.m_isOpen;
+	}
 	close(): void {
 
 		if (this.m_isOpen) {

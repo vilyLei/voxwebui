@@ -54,7 +54,7 @@ export class DemoComp {
 		let uisc = new VoxUIScene();
 		uisc.texAtlasNearestFilter = true;
 		this.m_uiScene = uisc;
-		uisc.initialize(this.m_rscene, 512);
+		uisc.initialize(this.m_rscene, 1024);
 		console.log("uisc: ", uisc);
 		console.log("uisc.rscene: ", uisc.rscene);
 
@@ -62,7 +62,7 @@ export class DemoComp {
 	}
     private initUIObjs(): void {
         // this.testComp01();
-        this.testComp02();
+        // this.testComp02();
         this.testComp03();
         // this.test01();
         // this.test02();
@@ -76,7 +76,8 @@ export class DemoComp {
 		
 		let proBar = new ProgressEntity();
 		proBar.setRange(20, 100);
-		proBar.initialize(uisc);
+		// proBar.initialize(uisc, "VVV-Progress");
+		proBar.initialize(uisc, "颜色-A");
 		proBar.setXY(100,100);
 		this.m_uiScene.addEntity(proBar);
 
@@ -98,9 +99,9 @@ export class DemoComp {
 	private testComp02(): void {
 		let uisc = this.m_uiScene;
 		let selectEntity = new SelectionEntity();
-		selectEntity.initialize(uisc);
+		selectEntity.initialize(uisc,"VVVSelect");
 		
-		let ipx = uisc.getRect().getRight() - 200;
+		let ipx = uisc.getRect().getRight() - 300;
 		// console.log("XXXXX ipx: ", ipx);
 		selectEntity.setXY(ipx, 70);
 		// selectEntity.update();

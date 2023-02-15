@@ -5,7 +5,7 @@ import { VoxUIScene } from "../voxui/scene/VoxUIScene";;
 import VoxRuntime from "../common/VoxRuntime";
 import { ProgressDataEvent, SelectionEvent, VoxRScene } from "../cospace/voxengine/VoxRScene";
 import { VoxUIInteraction } from "../cospace/voxengine/ui/VoxUIInteraction";
-import ParamCtrlUI from "../voxui/case/ParamCtrlUI";
+import {CtrlInfo, ParamCtrlUI} from "../voxui/case/ParamCtrlUI";
 
 export class DemoParamUI {
 
@@ -45,14 +45,69 @@ export class DemoParamUI {
 		let uisc = new VoxUIScene();
 		uisc.texAtlasNearestFilter = true;
 		this.m_uiScene = uisc;
-		uisc.initialize(this.m_rscene, 512);
+		uisc.initialize(this.m_rscene, 1024);
 		console.log("uisc: ", uisc);
 		console.log("uisc.rscene: ", uisc.rscene);
 
 		//this.testUIEntity(uisc);
 	}
     private initUIObjs(): void {
-        // this.m_paramUI.initialize(this.m_uiScene, true);
+
+        this.m_paramUI.initialize(this.m_uiScene, true);
+
+		let ui = this.m_paramUI;
+
+        // let ls = this.m_entities;
+        // let entity0 = ls[0];
+        // let entity1 = ls[1];
+        // entity0.getScaleXYZ(this.m_sv);
+
+        console.log("initUI --------------------------------------");
+		//*
+        ui.addStatusItem("显示-A", "visible-a", "Yes", "No", true, (info: CtrlInfo): void => {
+            console.log("显示-A", info.flag);
+            // entity0.setVisible(info.flag);
+        });
+        ui.addStatusItem("显示-B", "visible-b", "Yes", "No", true, (info: CtrlInfo): void => {
+            console.log("显示-B", info.flag);
+            // entity1.setVisible(info.flag);
+        });
+
+        ui.addProgressItem("缩放-A", "scale", 1.0, (info: CtrlInfo): void => {
+			console.log("缩放-A", info.values[0]);
+            // this.m_currSV.copyFrom(this.m_sv);
+            // let s = info.values[0];
+            // console.log("xxx s: ", s);
+            // this.m_currSV.scaleBy(s);
+            // entity0.setScale3(this.m_currSV);
+            // entity0.update();
+        });
+        ui.addValueItem("Y轴移动-B", "move-b", 0, -300, 300, (info: CtrlInfo): void => {
+
+            console.log("Y轴移动-B", info.values[0]);
+			
+            // let pv = new Vector3D();
+            // entity1.getPosition(pv);
+            // pv.y = info.values[0];
+            // entity1.setPosition(pv);
+            // entity1.update();
+        });
+		//*/
+        ui.addValueItem("颜色-A", "color-a", 0.8, 0.0, 10, (info: CtrlInfo): void => {
+            let values = info.values;
+            console.log("颜色-A, color-a values: ", values, ", colorPick: ", info.colorPick);
+            // let material = entity0.getMaterial() as EffectMaterial;
+            // material.setRGB3f(values[0], values[1], values[2]);
+        }, true);
+		/*
+        ui.addValueItem("颜色-B", "color-b", 0.6, 0.0, 2.0, (info: CtrlInfo): void => {
+            let values = info.values;
+            console.log("color-b, values: ", values, ", colorPick: ", info.colorPick);
+            // let material = entity1.getMaterial() as EffectMaterial;
+            // material.setRGB3f(values[0], values[1], values[2]);
+        }, true);
+        //*/
+        ui.updateLayout(true);
     }
     
 	private initUserInteract(): void {

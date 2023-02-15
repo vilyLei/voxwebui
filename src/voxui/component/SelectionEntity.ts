@@ -1,55 +1,23 @@
-
 import { MouseEvent, SelectionEvent, VoxRScene } from "../../cospace/voxengine/VoxRScene";
-import { VoxMaterial } from "../../cospace/voxmaterial/VoxMaterial";
 import IEvtDispatcher from "../../vox/event/IEvtDispatcher";
 import ISelectionEvent from "../../vox/event/ISelectionEvent";
-import IColor4 from "../../vox/material/IColor4";
-import { Button } from "../button/Button";
-import { ClipColorLabel } from "../entity/ClipColorLabel";
-import { ClipLabel } from "../entity/ClipLabel";
-import { UIEntityContainer } from "../entity/UIEntityContainer";
 import { IVoxUIScene } from "../scene/IVoxUIScene";
+import { ButtonItem, CompEntityBase } from "./CompEntityBase";
 
-type IButtonItem = { button: Button, label: ClipLabel };
-class SelectionEntity extends UIEntityContainer {
+class SelectionEntity extends CompEntityBase {
 
 	private m_dispatcher: IEvtDispatcher = null;
 	private m_currEvent: ISelectionEvent = null;
 
-	private m_nameItem: IButtonItem = null;
-	private m_flagItem: IButtonItem = null;
+	private m_nameItem: ButtonItem = null;
+	private m_flagItem: ButtonItem = null;
 
 	private m_flag = true;
 	private m_enabled = true;
 	private m_nameWidth = 0.0;
 
-	private m_fontColor: IColor4 = null;
-	private m_fontBgColor: IColor4 = null;
-	private m_bgColors: IColor4[] = null;
-
 	uuid = "SelectionEntity";
 	constructor() { super(); }
-	setFontColor(fontColor: IColor4, bgColor: IColor4): void {
-		this.m_fontColor = fontColor;
-		this.m_fontBgColor = bgColor;
-		// if (this.m_fontColor == null) this.m_fontColor = VoxMaterial.createColor4();
-		// if (this.m_fontBgColor == null) this.m_fontBgColor = VoxMaterial.createColor4();
-		// if (fontColor) {
-		// 	this.m_fontColor.copyFrom(fontColor);
-		// }
-		// if (bgColor) {
-		// 	this.m_fontBgColor.copyFrom(bgColor);
-		// }
-	}
-	setBGColors(colors: IColor4[]): void {
-		if (colors == null) {
-			throw Error("colors == null !!!");
-		}
-		if (colors.length < 4) {
-			throw Error("colors.length < 4 !!!");
-		}
-		this.m_bgColors = colors;
-	}
 	enable(): void {
 		this.m_enabled = true;
 	}
@@ -139,18 +107,13 @@ class SelectionEntity extends UIEntityContainer {
 		super.destroy();
 		if (this.m_flagItem != null) {
 
-			this.m_nameItem.button.destroy();
-			this.m_nameItem.label.destroy();
-
+			this.m_nameItem.destroy();
 			this.m_nameItem = null;
+			this.m_flagItem.destroy();
 			this.m_flagItem = null;
 
 			this.m_dispatcher.destroy();
 			this.m_dispatcher = null;
-
-			this.m_fontColor = null;
-			this.m_fontBgColor = null;
-			this.m_bgColors = null;
 		}
 	}
 	getNameWidth(): number {
@@ -164,16 +127,16 @@ class SelectionEntity extends UIEntityContainer {
 			this.m_dispatcher = VoxRScene.createEventBaseDispatcher();
 			this.m_currEvent = VoxRScene.createSelectionEvent();
 			if (barName != "") {
-				this.m_nameWidth = nameWidth;
-				let nameItem = this.createBtn(uisc, [barName], fontSize, nameWidth, height);
+				let nameItem = this.createBtn("name",uisc, [barName], fontSize, nameWidth, height);
 				this.addEntity(nameItem.button);
+				this.m_nameWidth = nameItem.button.getWidth();
 				this.m_nameItem = nameItem;
 				nameItem.button.addEventListener(MouseEvent.MOUSE_DOWN, this, this.nameBtnMouseDown);
 			}
 
-			let flagItem = this.createBtn(uisc, [select_name, deselect_name], fontSize, flagWidth, height);
+			let flagItem = this.createBtn("flag",uisc, [select_name, deselect_name], fontSize, flagWidth, height);
 			if (barName != "") {
-				flagItem.button.setX(nameWidth + dis);
+				flagItem.button.setX(this.m_nameWidth + dis);
 			}
 			this.addEntity(flagItem.button);
 			this.m_flagItem = flagItem;
@@ -181,7 +144,8 @@ class SelectionEntity extends UIEntityContainer {
 
 		}
 	}
-	private createBtn(uisc: IVoxUIScene, urls: string[], fontSize: number, pw: number, ph: number): IButtonItem {
+	/*
+	private createBtn(uisc: IVoxUIScene, urls: string[], fontSize: number, pw: number, ph: number): ButtonItem {
 
 		let img: HTMLCanvasElement;
 		let tta = uisc.transparentTexAtlas;
@@ -220,6 +184,6 @@ class SelectionEntity extends UIEntityContainer {
 		btn.initializeWithLable(bgLabel);
 		return { button: btn, label: nameLabel };
 	}
-
+	//*/
 }
 export { SelectionEntity };

@@ -18,9 +18,13 @@ interface IUIPanel extends IUIEntityContainer {
 	 */
 	open(scene?: IVoxUIScene,rpi?: number): void;
 	/**
-	 * @returns open or not
+	 * @returns open it or not
 	 */
 	isOpen(): boolean;
+	/**
+	 * @returns close it or not
+	 */
+	isClosed(): boolean;
 	close(): void;
 }
 export { IUIPanel };

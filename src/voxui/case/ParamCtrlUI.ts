@@ -23,26 +23,22 @@ import ITransformEntity from "../../vox/entity/ITransformEntity";
 import IVector3D from "../../vox/math/IVector3D";
 import ISelectionEvent from "../../vox/event/ISelectionEvent";
 import IProgressDataEvent from "../../vox/event/IProgressDataEvent";
+import { UIPanel } from "../panel/UIPanel";
 
 export default class ParamCtrlUI {
 
     private m_ruisc: IVoxUIScene = null;
+    rgbPanel = new UIPanel();
 
-    // ruisc: IRendererScene = null;
-    rgbPanel: any;
-    
     constructor() { }
 
     initialize(uisc: IVoxUIScene, buildDisplay: boolean = true): void {
 
         if (this.m_ruisc == null) {
 
-            this.m_ruisc = uisc;;
+            this.m_ruisc = uisc;
 
             this.m_ruisc.addEventListener(MouseEvent.MOUSE_BG_DOWN, this, this.mouseBgDown);
-
-            // CanvasTextureTool.GetInstance().initialize(this.m_ruisc);
-            // CanvasTextureTool.GetInstance().initializeAtlas(1024, 1024, new Color4(1.0, 1.0, 1.0, 0.0), true);
             this.initUIScene(buildDisplay);
         }
     }
@@ -77,7 +73,7 @@ export default class ParamCtrlUI {
         this.initCtrlBars();
 
     }
-    private m_btnSize = 30;
+    private m_fontSize = 30;
     private m_bgLength = 200.0;
     private m_btnPX = 122.0;
     private m_btnPY = 10.0;
@@ -93,7 +89,7 @@ export default class ParamCtrlUI {
 
         let selectBar = new SelectionEntity();
         selectBar.uuid = uuid;
-        selectBar.initialize(this.m_ruisc, ns, selectNS, deselectNS, this.m_btnSize);
+        selectBar.initialize(this.m_ruisc, ns, selectNS, deselectNS, this.m_fontSize);
         selectBar.addEventListener(SelectionEvent.SELECT, this, this.selectChange);
         if (flag) {
             selectBar.select(false);
@@ -101,40 +97,21 @@ export default class ParamCtrlUI {
         else {
             selectBar.deselect(false);
         }
-        selectBar.setXY(this.m_btnPX, this.m_btnPY);
-        this.m_btnPY += this.m_btnSize + this.m_btnYSpace;
         if (!visibleAlways) this.m_visiBtns.push(selectBar);
         this.m_btns.push(selectBar);
-
-        selectBar.update();
-        let bounds = selectBar.getGlobalBounds();
-        let minX = this.m_btnPX + bounds.min.x;
-
-        if (minX < this.m_minBtnX) {
-            this.m_minBtnX = minX;
-        }
+        this.m_ruisc.addEntity(selectBar);
         return selectBar;
     }
     private createProgressBtn(ns: string, uuid: string, progress: number, visibleAlways: boolean = false): ProgressEntity {
 
         let proBar = new ProgressEntity();
         proBar.uuid = uuid;
-        proBar.initialize(this.m_ruisc, ns, this.m_btnSize, this.m_bgLength);
+        proBar.initialize(this.m_ruisc, ns, this.m_fontSize);
         proBar.setProgress(progress, false);
         proBar.addEventListener(ProgressDataEvent.PROGRESS, this, this.valueChange);
-        proBar.setXY(this.m_btnPX, this.m_btnPY);
-        this.m_btnPY += this.m_btnSize + this.m_btnYSpace;
         if (!visibleAlways) this.m_visiBtns.push(proBar);
         this.m_btns.push(proBar);
-
-        proBar.update();
-        let bounds = proBar.getGlobalBounds();
-        let minX = this.m_btnPX + bounds.min.x;
-
-        // let minX = this.m_btnPX + proBar.getRect().x;
-        if (minX < this.m_minBtnX) {
-            this.m_minBtnX = minX;
-        }
+        this.m_ruisc.addEntity(proBar);
         return proBar;
     }
 
@@ -142,25 +119,14 @@ export default class ParamCtrlUI {
 
         let proBar = new ProgressEntity();
         proBar.uuid = uuid;
-        proBar.initialize(this.m_ruisc, ns, this.m_btnSize, this.m_bgLength);
-        // proBar.minValue = minValue;
-        // proBar.maxValue = maxValue;
+        proBar.initialize(this.m_ruisc, ns, this.m_fontSize);
         proBar.setRange(minValue, maxValue);
         proBar.setValue(value, false);
 
         proBar.addEventListener(ProgressDataEvent.PROGRESS, this, this.valueChange);
-        proBar.setXY(this.m_btnPX, this.m_btnPY);
-        this.m_btnPY += this.m_btnSize + this.m_btnYSpace;
         if (!visibleAlways) this.m_visiBtns.push(proBar);
         this.m_btns.push(proBar);
-
-        proBar.update();
-        let bounds = proBar.getGlobalBounds();
-        let minX = this.m_btnPX + bounds.min.x;
-        // let minX = this.m_btnPX + proBar.getRect().x;
-        if (minX < this.m_minBtnX) {
-            this.m_minBtnX = minX;
-        }
+        this.m_ruisc.addEntity(proBar);
         return proBar;
     }
     private moveSelectToBtn(btn: ProgressEntity | SelectionEntity): void {
@@ -176,16 +142,18 @@ export default class ParamCtrlUI {
     private initCtrlBars(): void {
 
         if (RendererDevice.IsMobileWeb()) {
-            this.m_btnSize = 64;
+            this.m_fontSize = 64;
             this.m_btnPX = 300;
             this.m_btnPY = 30;
         }
         if (RendererDevice.IsWebGL1()) {
             this.m_btnPX += 32;
-            this.m_btnSize = MathConst.CalcCeilPowerOfTwo(this.m_btnSize);
+            this.m_fontSize = MathConst.CalcCeilPowerOfTwo(this.m_fontSize);
         }
         this.m_menuBtn = this.createSelectBtn("", "menuCtrl", "Menu Open", "Menu Close", false, true);
+        // this.m_menuBtn = this.createSelectBtn("", "menuCtrl_T", "Menu Open_T", "Menu Close_T", false, true);
 
+        this.m_selectPlane = VoxRScene.createDisplayEntity();
         // this.m_selectPlane = new Plane3DEntity();
         // this.m_selectPlane.vertColorEnabled = true;
         // this.m_selectPlane.color0.setRGB3f(0.0, 0.3, 0.0);
@@ -291,17 +259,27 @@ export default class ParamCtrlUI {
     }
     updateLayout(force: boolean = false): void {
 
-        let dis = 5 - this.m_minBtnX;
-        let pos = VoxMath.createVec3();
+        let dis = 2.0;
         let btns = force ? this.m_btns : this.m_visiBtns;
+        let disY = 2.0;
+        let begin = VoxMath.createVec3(10, 110);
+        let pos = VoxMath.createVec3(begin.x, begin.y);
 
+        let maxNameW = -1;
         for (let i = 0; i < btns.length; ++i) {
-            btns[i].getPosition(pos);
-            pos.x += dis;
+            if(btns[i].getNameWidth() > maxNameW) {
+                maxNameW = btns[i].getNameWidth();
+            }
+        }
+        begin.x += maxNameW;
+        for (let i = 0; i < btns.length; ++i) {
+            let v = btns[i].getNameWidth() > 0 ? (btns[i].getNameWidth() + dis) : 0;
+            pos.x = begin.x - v;
             btns[i].setPosition(pos);
             btns[i].update();
+            pos.y += btns[i].getHeight() + disY;
         }
-        this.rgbPanel.setXY(this.m_btnPX, this.m_btnPY);
+        // this.rgbPanel.setXY(this.m_btnPX, this.m_btnPY);
     }
 
     private selectChange(evt: ISelectionEvent): void {
@@ -355,7 +333,7 @@ export default class ParamCtrlUI {
                     if (this.rgbPanel != null && this.rgbPanel.isClosed()) {
                         this.rgbPanel.open();
                     }
-                    if (obj.colorId >= 0) this.rgbPanel.selectColorById(obj.colorId);
+                    // if (obj.colorId >= 0) this.rgbPanel.selectColorById(obj.colorId);
                 } else {
                     if (this.rgbPanel != null) this.rgbPanel.close();
                 }
