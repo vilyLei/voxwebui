@@ -27,7 +27,7 @@ interface ITextParam {
 	font: string;
 }
 interface ILib_VoxUI {
-	
+	initialize(): void;
 	createColorLabel(): IColorLabel;
 	createUILayout(): IUILayout;
 	createTipInfo(): ITipInfo;

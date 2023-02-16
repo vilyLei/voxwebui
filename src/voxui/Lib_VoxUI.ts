@@ -22,16 +22,30 @@ import { UIPanel } from "./panel/UIPanel";
 import ICanvasTexAtlas from "../cospace/voxtexture/atlas/ICanvasTexAtlas";
 import IColor4 from "../vox/material/IColor4";
 
-import { ICoMaterial } from "../cospace/voxmaterial/ICoMaterial";
 import { PromptSystem } from "./system/PromptSystem";
 import { TipsSystem } from "./system/TipsSystem";
 import { IUIConfig } from "./system/IUIConfig";
-import IRendererScene from "../vox/scene/IRendererScene";
 import { PanelSystem } from "./system/PanelSystem";
 import IRendererSceneGraph from "../vox/scene/IRendererSceneGraph";
 import { ParamCtrlPanel } from "./panel/ParamCtrlPanel";
-declare var CoMaterial: ICoMaterial;
-
+import { VoxRScene } from "../cospace/voxengine/VoxRScene";
+import { VoxMath } from "../cospace/math/VoxMath";
+import { VoxMaterial } from "../cospace/voxmaterial/VoxMaterial";
+import { VoxEntity } from "../cospace/voxentity/VoxEntity";
+import { VoxMesh } from "../cospace/voxmesh/VoxMesh";
+let __$$__init = true;
+function initialize(): void {
+	if(__$$__init) {
+		__$$__init = false;
+		if(VoxRScene.isEnabled()) {
+			VoxRScene.initialize();
+			if(VoxMesh.isEnabled())VoxMesh.initialize();
+			if(VoxMath.isEnabled())VoxMath.initialize();
+			if(VoxMaterial.isEnabled())VoxMaterial.initialize();
+			if(VoxEntity.isEnabled())VoxEntity.initialize();
+		}
+	}
+}
 function createColorLabel(): ColorLabel {
 	return new ColorLabel();
 }
@@ -89,10 +103,12 @@ function createUIScene(graph: IRendererSceneGraph, uiConfig: IUIConfig = null, a
 		let tipsSys = new TipsSystem();
 		tipsSys.initialize(uisc);
 		uisc.tips = tipsSys;
-		let panelSys = new PanelSystem();
-		panelSys.initialize(uisc);
-		uisc.panel = panelSys;
 	}
+	
+	let panelSys = new PanelSystem();
+	panelSys.initialize(uisc);
+	uisc.panel = panelSys;
+
 	return uisc;
 }
 function createTipInfo(): TipInfo {
@@ -103,7 +119,7 @@ function createUILayout(): UILayout {
 }
 
 export {
-
+	initialize,
 	createColorLabel,
 	createUILayout,
 	createTipInfo,

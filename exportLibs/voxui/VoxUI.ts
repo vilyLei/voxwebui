@@ -29,15 +29,21 @@ class T_Lib_VoxUI {
 
 	private m_init = true;
 	initialize(callback: (urls: string[]) => void = null, url: string = ""): boolean {
-
+		console.log("T_Lib_VoxUI::initialize(), ", this.isEnabled());
+		if (this.isEnabled()) {
+			Lib_VoxUI.initialize();
+		}
+		this.m_init = !this.isEnabled();
 		if (this.m_init) {
 			this.m_init = false;
 			if (url == "" || url === undefined) {
-				url = "static/cospace/ui/VoxUI.umd.min.js";
+				url = "static/cospace/ui/Lib_VoxUI.umd.min.js";
 			}
-			new ModuleLoader(1, (): void => {
-				if (callback != null && this.isEnabled()) callback([url]);
-			}).load(url);
+			if (callback != null) {
+				new ModuleLoader(1, (): void => {
+					if (this.isEnabled()) callback([url]);
+				}).load(url);
+			}
 
 			return true;
 		}
@@ -70,7 +76,7 @@ class T_Lib_VoxUI {
 	createTextLabel(): ITextLabel {
 		return Lib_VoxUI.createTextLabel();
 	}
-	
+
 	createButton(): IButton {
 		return Lib_VoxUI.createButton();
 	}

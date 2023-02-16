@@ -4,6 +4,7 @@ import { IParamCtrlPanel } from "./IParamCtrlPanel";
 import { CtrlInfo, ItemCallback, CtrlItemParam, CtrlItemObj } from "./item/CtrlItemObj";
 import { SelectionEvent, ProgressDataEvent, RendererDevice, MouseEvent, VoxRScene } from "../../cospace/voxengine/VoxRScene";
 import { Vector3D, MathConst, VoxMath } from "../../cospace/math/VoxMath";
+import { VoxMaterial } from "../../cospace/voxmaterial/VoxMaterial";
 
 
 import { SelectionEntity } from "../component/SelectionEntity";
@@ -12,7 +13,6 @@ import { ColorLabel } from "../entity/ColorLabel";
 import { IUIEntity } from "../entity/IUIEntity";
 import IColor4 from "../../vox/material/IColor4";
 import { IColorPickPanel } from "./IColorPickPanel";
-import { VoxMaterial } from "../../cospace/voxmaterial/VoxMaterial";
 import ISelectionEvent from "../../vox/event/ISelectionEvent";
 import IProgressDataEvent from "../../vox/event/IProgressDataEvent";
 

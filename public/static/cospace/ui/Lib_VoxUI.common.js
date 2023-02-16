@@ -107,13 +107,13 @@ const VoxRScene_1 = __webpack_require__("d1de");
 
 const VoxMath_1 = __webpack_require__("f042");
 
+const VoxMaterial_1 = __webpack_require__("0efa");
+
 const SelectionEntity_1 = __webpack_require__("1dcc");
 
 const ProgressEntity_1 = __webpack_require__("822b");
 
 const ColorLabel_1 = __webpack_require__("9ba1");
-
-const VoxMaterial_1 = __webpack_require__("0efa");
 
 class ParamCtrlPanel extends UIPanel_1.UIPanel {
   constructor() {
@@ -3289,6 +3289,35 @@ const PanelSystem_1 = __webpack_require__("b6c0");
 
 const ParamCtrlPanel_1 = __webpack_require__("0241");
 
+const VoxRScene_1 = __webpack_require__("d1de");
+
+const VoxMath_1 = __webpack_require__("f042");
+
+const VoxMaterial_1 = __webpack_require__("0efa");
+
+const VoxEntity_1 = __webpack_require__("9b53");
+
+const VoxMesh_1 = __webpack_require__("228b");
+
+let __$$__init = true;
+
+function initialize() {
+  if (__$$__init) {
+    __$$__init = false;
+
+    if (VoxRScene_1.VoxRScene.isEnabled()) {
+      console.log("Lib_VoxUI::initialize(), lllll");
+      VoxRScene_1.VoxRScene.initialize();
+      if (VoxMesh_1.VoxMesh.isEnabled()) VoxMesh_1.VoxMesh.initialize();
+      if (VoxMath_1.VoxMath.isEnabled()) VoxMath_1.VoxMath.initialize();
+      if (VoxMaterial_1.VoxMaterial.isEnabled()) VoxMaterial_1.VoxMaterial.initialize();
+      if (VoxEntity_1.VoxEntity.isEnabled()) VoxEntity_1.VoxEntity.initialize();
+    }
+  }
+}
+
+exports.initialize = initialize;
+
 function createColorLabel() {
   return new ColorLabel_1.ColorLabel();
 }
@@ -3383,11 +3412,11 @@ function createUIScene(graph, uiConfig = null, atlasSize = 512, renderProcessesT
     let tipsSys = new TipsSystem_1.TipsSystem();
     tipsSys.initialize(uisc);
     uisc.tips = tipsSys;
-    let panelSys = new PanelSystem_1.PanelSystem();
-    panelSys.initialize(uisc);
-    uisc.panel = panelSys;
   }
 
+  let panelSys = new PanelSystem_1.PanelSystem();
+  panelSys.initialize(uisc);
+  uisc.panel = panelSys;
   return uisc;
 }
 
