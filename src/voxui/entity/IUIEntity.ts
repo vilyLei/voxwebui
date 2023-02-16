@@ -35,6 +35,7 @@ interface IUIEntity extends IUISceneEntity {
 	getY(): number;
 	getZ(): number;
 	setXY(px: number, py: number): void;
+	setXYZ(px: number, py: number, pz: number): void;
 	setPosition(pv: IVector3D): void;
 	getPosition(pv: IVector3D): IVector3D;
 	setRotation(r: number): void;

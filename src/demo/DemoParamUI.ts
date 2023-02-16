@@ -102,7 +102,6 @@ export class DemoParamUI {
             // let material = entity0.getMaterial() as EffectMaterial;
             // material.setRGB3f(values[0], values[1], values[2]);
         }, true);
-		/*
         ui.addValueItem("颜色-B", "color-b", 0.6, 0.0, 2.0, (info: CtrlInfo): void => {
             let values = info.values;
             console.log("color-b, values: ", values, ", colorPick: ", info.colorPick);

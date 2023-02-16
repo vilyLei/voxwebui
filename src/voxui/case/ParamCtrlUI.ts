@@ -10,13 +10,11 @@ import ITransformEntity from "../../vox/entity/ITransformEntity";
 import IVector3D from "../../vox/math/IVector3D";
 import ISelectionEvent from "../../vox/event/ISelectionEvent";
 import IProgressDataEvent from "../../vox/event/IProgressDataEvent";
-import { UIPanel } from "../panel/UIPanel";
-import { Button } from "../button/Button";
 import { IColorPickPanel } from "../panel/IColorPickPanel";
 import IColor4 from "../../vox/material/IColor4";
-import { UIEntityContainer } from "../entity/UIEntityContainer";
 import { UIEntityBase } from "../entity/UIEntityBase";
 import { VoxMaterial } from "../../cospace/voxmaterial/VoxMaterial";
+import { ColorLabel } from "../entity/ColorLabel";
 
 export default class ParamCtrlUI {
 
@@ -51,43 +49,43 @@ export default class ParamCtrlUI {
     isOpen(): boolean {
         return this.m_menuBtn != null && !this.m_menuBtn.isSelected();
     }
-    
-	private layoutPickColorPanel(tar: UIEntityBase): void {
-		let panel = this.rgbPanel;
-		if(panel != null && panel.isOpen()) {
-			let bounds = tar.getGlobalBounds();
-			panel.setXY(bounds.max.x - panel.getWidth(), bounds.max.y + 2);
-			panel.setZ(tar.getZ() + 0.3);
-			panel.update();
-		}
-	}
-	private colorSelectListener(uuid: string, tar: UIEntityBase, color: IColor4): void {
 
-		console.log("color select..., tar: ", tar);
-		let panel = this.rgbPanel;
-		if(panel != null && panel.isOpen()) {
-			panel.close();
-			this.rgbPanel = null;
-		} else {
+    private layoutPickColorPanel(tar: UIEntityBase): void {
+        let panel = this.rgbPanel;
+        if (panel != null && panel.isOpen()) {
+            let bounds = tar.getGlobalBounds();
+            panel.setXY(bounds.max.x - panel.getWidth(), bounds.max.y + 2);
+            panel.setZ(tar.getZ() + 0.3);
+            panel.update();
+        }
+    }
+    private colorSelectListener(uuid: string, tar: UIEntityBase, color: IColor4): void {
+
+        console.log("color select..., tar: ", tar);
+        let panel = this.rgbPanel;
+        if (panel != null && panel.isOpen()) {
+            panel.close();
+            this.rgbPanel = null;
+        } else {
             //IColorPickPanel
-			let panel = this.m_ruisc.panel.getPanel("colorPickPanel") as IColorPickPanel;			
-			if (panel != null) {
-				if (panel.isOpen()) {
-					panel.close();
-				} else {
-					this.rgbPanel = panel;
-					panel.open();
+            let panel = this.m_ruisc.panel.getPanel("colorPickPanel") as IColorPickPanel;
+            if (panel != null) {
+                if (panel.isOpen()) {
+                    panel.close();
+                } else {
+                    this.rgbPanel = panel;
+                    panel.open();
                     panel.setColor(color);
-					this.layoutPickColorPanel(tar);
-					panel.setSelectColorCallback((color: IColor4): void => {
+                    this.layoutPickColorPanel(tar);
+                    panel.setSelectColorCallback((color: IColor4): void => {
                         console.log("pick color: ", color)
-						// this.setColor(color, true);
+                        // this.setColor(color, true);
                         this.selectColor(uuid, color);
-					});
-				}
-			}
-		}
-	}
+                    });
+                }
+            }
+        }
+    }
     private initUIScene(buildDisplay: boolean): void {
         this.m_pos = VoxMath.createVec3();
         if (buildDisplay) {
@@ -101,7 +99,7 @@ export default class ParamCtrlUI {
     private m_fontSize = 30;
     private m_btnPX = 122.0;
     private m_pos: IVector3D = null;
-    private m_selectPlane: ITransformEntity = null;
+    private m_selectPlane: ColorLabel = null;
 
     private m_visiBtns: (SelectionEntity | ProgressEntity)[] = [];
     private m_btns: (SelectionEntity | ProgressEntity)[] = [];
@@ -151,14 +149,26 @@ export default class ParamCtrlUI {
         return proBar;
     }
     private moveSelectToBtn(btn: ProgressEntity | SelectionEntity): void {
+
         let bounds = btn.getGlobalBounds();
-        // let rect = btn.getRect();
-        btn.getPosition(this.m_pos);
-        this.m_pos.x += bounds.min.x;
-        this.m_selectPlane.setXYZ(this.m_pos.x, this.m_pos.y, -1.0);
-        this.m_selectPlane.setScaleXYZ(bounds.getWidth(), bounds.getHeight(), 1.0);
+        this.createSelectPlane();
+
+        let pv = bounds.min;
+        this.m_selectPlane.setXY(pv.x, pv.y);
+        this.m_selectPlane.setScaleXY(bounds.getWidth(), 3.0);
         this.m_selectPlane.update();
         this.m_selectPlane.setVisible(true);
+    }
+    private createSelectPlane(): void {
+        if(this.m_selectPlane == null) {
+            this.m_selectPlane = new ColorLabel();
+            this.m_selectPlane.initialize(1.0, 1.0);
+            // this.m_selectPlane.setZ(-1.0 );
+            this.m_selectPlane.depthTest = true;
+            this.m_ruisc.addEntity(this.m_selectPlane);
+            this.m_selectPlane.setColor(VoxMaterial.createColor4(0.1,0.2,0.2));
+            // this.m_selectPlane.setVisible(false);
+        }
     }
     private initCtrlBars(): void {
 
@@ -173,7 +183,9 @@ export default class ParamCtrlUI {
         this.m_menuBtn = this.createSelectBtn("", "menuCtrl", "Menu Open", "Menu Close", false, true);
         // this.m_menuBtn = this.createSelectBtn("", "menuCtrl_T", "Menu Open_T", "Menu Close_T", false, true);
 
-        this.m_selectPlane = VoxRScene.createDisplayEntity();
+        // this.m_selectPlane = VoxRScene.createDisplayEntity();
+
+
         // this.m_selectPlane = new Plane3DEntity();
         // this.m_selectPlane.vertColorEnabled = true;
         // this.m_selectPlane.color0.setRGB3f(0.0, 0.3, 0.0);
@@ -252,7 +264,7 @@ export default class ParamCtrlUI {
     }
     getItemByUUID(uuid: string): CtrlItemObj {
         if (this.m_btnMap.has(uuid)) {
-            return this.m_btnMap.get( uuid );
+            return this.m_btnMap.get(uuid);
         }
         return null;
     }
@@ -287,7 +299,7 @@ export default class ParamCtrlUI {
 
         let maxNameW = -1;
         for (let i = 0; i < btns.length; ++i) {
-            if(btns[i].getNameWidth() > maxNameW) {
+            if (btns[i].getNameWidth() > maxNameW) {
                 maxNameW = btns[i].getNameWidth();
             }
         }
@@ -309,7 +321,7 @@ export default class ParamCtrlUI {
         let map = this.m_btnMap;
         if (map.has(uuid)) {
             let obj = map.get(uuid);
-            obj.sendFlagOut( flag );
+            obj.sendFlagOut(flag);
             this.moveSelectToBtn(evt.target);
         }
         if (this.rgbPanel != null) this.rgbPanel.close();
@@ -351,7 +363,7 @@ export default class ParamCtrlUI {
         let map = this.m_btnMap;
         let changeFlag = this.m_currUUID != uuid;
         this.m_currUUID = uuid;
-        
+
         if (map.has(uuid)) {
             let obj = map.get(uuid);
             let param = obj.param;

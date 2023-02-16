@@ -3,15 +3,9 @@ import { IColorLabel } from "./IColorLabel";
 import IRawMesh from "../../vox/mesh/IRawMesh";
 import IColor4 from "../../vox/material/IColor4";
 import { UIEntityBase } from "./UIEntityBase";
-
-import { ICoMesh } from "../../cospace/voxmesh/ICoMesh";
-declare var CoMesh: ICoMesh;
-import { ICoMaterial } from "../../cospace/voxmaterial/ICoMaterial";
-declare var CoMaterial: ICoMaterial;
-import { ICoMath } from "../../cospace/math/ICoMath";
-declare var CoMath: ICoMath;
-import { ICoEntity } from "../../cospace/voxentity/ICoEntity";
-declare var CoEntity: ICoEntity;
+import { VoxEntity } from "../../cospace/voxentity/VoxEntity";
+import { VoxMesh } from "../../cospace/voxmesh/VoxMesh";
+import { VoxMaterial } from "../../cospace/voxmaterial/VoxMaterial";
 
 class ColorLabel extends UIEntityBase implements IColorLabel {
 
@@ -23,7 +17,7 @@ class ColorLabel extends UIEntityBase implements IColorLabel {
 		let ivs = new Uint16Array([0, 1, 2, 0, 2, 3]);
 		let vs = new Float32Array(this.createVS(0, 0, this.m_width, this.m_height));
 
-		let mesh = CoMesh.createRawMesh();
+		let mesh = VoxMesh.createRawMesh();
 		mesh.reset();
 		mesh.setBufSortFormat(material.getBufSortFormat());
 		mesh.setIVS(ivs);
@@ -39,11 +33,11 @@ class ColorLabel extends UIEntityBase implements IColorLabel {
 
 			this.m_width = width;
 			this.m_height = height;
-			let material = CoMaterial.createDefaultMaterial();
+			let material = VoxMaterial.createDefaultMaterial();
 			material.initializeByCodeBuf(false);
-			this.m_color = CoMaterial.createColor4();
+			this.m_color = VoxMaterial.createColor4();
 			let mesh = this.createMesh( material );
-			let et = CoEntity.createDisplayEntity();
+			let et = VoxEntity.createDisplayEntity();
 			et.setMaterial(material);
 			et.setMesh(mesh);
 			this.applyRST(et);

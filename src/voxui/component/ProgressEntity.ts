@@ -219,6 +219,7 @@ class ProgressEntity extends CompEntityBase {
 		this.sendEvt(0);
 	}
 	private barMouseDown(evt: any): void {
+		this.m_preProgress = -1;
 		this.m_moveMin = evt.mouseX - this.m_progress * this.m_barInitLength;
 		this.setProgressV(this.m_progress);
 		this.m_ruisc.addEventListener(MouseEvent.MOUSE_MOVE, this, this.barMouseMove, true, false);
