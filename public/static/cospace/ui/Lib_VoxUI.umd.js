@@ -96,6 +96,501 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ({
 
+/***/ "0241":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+const UIPanel_1 = __webpack_require__("d632");
+
+const CtrlItemObj_1 = __webpack_require__("7dab");
+
+exports.CtrlInfo = CtrlItemObj_1.CtrlInfo;
+
+const VoxRScene_1 = __webpack_require__("d1de");
+
+const VoxMath_1 = __webpack_require__("f042");
+
+const SelectionEntity_1 = __webpack_require__("1dcc");
+
+const ProgressEntity_1 = __webpack_require__("822b");
+
+const ColorLabel_1 = __webpack_require__("9ba1");
+
+const VoxMaterial_1 = __webpack_require__("0efa");
+
+class ParamCtrlPanel extends UIPanel_1.UIPanel {
+  constructor() {
+    super();
+    /**
+     * 边距留白尺寸
+     */
+
+    this.m_marginWidth = 10;
+    this.m_colorPanel = null;
+    this.m_selectedPlane = null;
+    this.m_btnMap = new Map();
+    this.m_contentW = 0;
+    this.m_contentH = 0;
+    this.m_initing = true;
+    this.m_fontSize = 30;
+    this.m_btnPX = 122.0;
+    this.m_visiBtns = [];
+    this.m_btns = [];
+    this.m_menuBtn = null;
+    this.m_currUUID = "";
+  }
+
+  initialize(scene, rpi, panelW = 300, panelH = 350, marginWidth = 3) {
+    if (this.isIniting()) {
+      this.init();
+      this.m_marginWidth = marginWidth;
+      this.m_scene = scene;
+      this.m_rpi = rpi;
+      this.m_panelW = panelW;
+      this.m_panelH = panelH;
+      this.buildItems();
+    }
+  }
+
+  destroy() {
+    super.destroy();
+  }
+
+  buildPanel(pw, ph) {}
+
+  buildItems() {
+    if (this.m_initing) {
+      this.m_initing = false;
+
+      if (VoxRScene_1.RendererDevice.IsMobileWeb()) {
+        this.m_fontSize = 64;
+        this.m_btnPX = 300;
+      }
+
+      if (VoxRScene_1.RendererDevice.IsWebGL1()) {
+        this.m_btnPX += 32;
+        this.m_fontSize = VoxMath_1.MathConst.CalcCeilPowerOfTwo(this.m_fontSize);
+      }
+
+      this.m_menuBtn = this.createSelectBtn("", "menuCtrl", "Menu Open", "Menu Close", false, true);
+    }
+  }
+
+  createSelectBtn(ns, uuid, selectNS, deselectNS, flag, visibleAlways = false) {
+    let sc = this.m_scene;
+    let selectBar = new SelectionEntity_1.SelectionEntity();
+    selectBar.uuid = uuid;
+    selectBar.initialize(sc, ns, selectNS, deselectNS, this.m_fontSize);
+    selectBar.addEventListener(VoxRScene_1.SelectionEvent.SELECT, this, this.selectChange);
+
+    if (flag) {
+      selectBar.select(false);
+    } else {
+      selectBar.deselect(false);
+    }
+
+    this.m_btns.push(selectBar);
+    this.addEntity(selectBar);
+    return selectBar;
+  }
+
+  createProgressBtn(ns, uuid, progress, visibleAlways = false) {
+    let sc = this.m_scene;
+    let proBar = new ProgressEntity_1.ProgressEntity();
+    proBar.uuid = uuid;
+    proBar.initialize(sc, ns, this.m_fontSize);
+    proBar.setProgress(progress, false);
+    proBar.addEventListener(VoxRScene_1.ProgressDataEvent.PROGRESS, this, this.valueChange);
+    this.m_btns.push(proBar);
+    this.addEntity(proBar);
+    return proBar;
+  }
+
+  createValueBtn(ns, uuid, value, minValue, maxValue, visibleAlways = false) {
+    let sc = this.m_scene;
+    let proBar = new ProgressEntity_1.ProgressEntity();
+    proBar.uuid = uuid;
+    proBar.initialize(sc, ns, this.m_fontSize);
+    proBar.setRange(minValue, maxValue);
+    proBar.setValue(value, false);
+    proBar.addEventListener(VoxRScene_1.ProgressDataEvent.PROGRESS, this, this.valueChange);
+    this.m_btns.push(proBar);
+    this.addEntity(proBar);
+    return proBar;
+  }
+
+  openThis() {
+    // let sc = this.getScene();
+    if (this.m_menuBtn != null) {
+      this.menuCtrl(true);
+      this.m_menuBtn.deselect(true);
+      this.layoutItem();
+    }
+  }
+
+  closeThis() {
+    if (this.m_menuBtn != null) {
+      this.menuCtrl(false);
+      this.m_menuBtn.select(false);
+      if (this.m_selectedPlane != null) this.m_selectedPlane.setVisible(false);
+    }
+  }
+
+  layout() {}
+
+  layoutPickColorPanel(tar) {
+    let panel = this.m_colorPanel;
+
+    if (panel != null && panel.isOpen()) {
+      let bounds = tar.getGlobalBounds();
+      panel.setXY(bounds.max.x - panel.getWidth(), bounds.max.y + 2);
+      panel.setZ(tar.getZ() + 0.3);
+      panel.update();
+    }
+  }
+
+  colorSelectListener(uuid, tar, color) {
+    console.log("color select..., tar: ", tar);
+    console.log("color select..., this.getScene(): ", this.getScene());
+    let panel = this.m_colorPanel;
+
+    if (panel != null && panel.isOpen()) {
+      panel.close();
+      this.m_colorPanel = null;
+    } else {
+      let panel = this.getScene().panel.getPanel("colorPickPanel");
+
+      if (panel != null) {
+        if (panel.isOpen()) {
+          panel.close();
+        } else {
+          this.m_colorPanel = panel;
+          panel.open();
+          panel.setPickXY(-1, -1);
+          panel.setColor(color);
+          this.layoutPickColorPanel(tar);
+          panel.setSelectColorCallback((color, pickX, pickY) => {
+            console.log("pick color: ", color, pickX, pickY); // this.setColor(color, true);
+
+            this.selectColor(uuid, color);
+          });
+        }
+      }
+    }
+  }
+
+  moveSelectToBtn(btn) {
+    // let bounds = btn.getGlobalBounds();
+    this.createSelectPlane(); // let pv = bounds.min;
+
+    let pv = VoxMath_1.VoxMath.createVec3(btn.getX(), btn.getY());
+    this.m_selectedPlane.setXY(pv.x, pv.y);
+    this.m_selectedPlane.setScaleXY(btn.getWidth(), 3.0);
+    this.m_selectedPlane.update();
+    this.m_selectedPlane.setVisible(true);
+  }
+
+  createSelectPlane() {
+    if (this.m_selectedPlane == null) {
+      this.m_selectedPlane = new ColorLabel_1.ColorLabel();
+      this.m_selectedPlane.initialize(1.0, 1.0); // this.m_selectedPlane.setZ(-1.0 );
+
+      this.m_selectedPlane.depthTest = true;
+      this.addEntity(this.m_selectedPlane);
+      this.m_selectedPlane.setColor(VoxMaterial_1.VoxMaterial.createColor4(0.05, 0.1, 0.05)); // this.m_selectedPlane.setVisible(false);
+    }
+  } // "number_value"(数值调节按钮),"progress"(百分比调节按钮),"status_select"(状态选择按钮)
+
+
+  addItem(param) {
+    let map = this.m_btnMap;
+
+    if (!map.has(param.uuid)) {
+      let obj = new CtrlItemObj_1.CtrlItemObj();
+      obj.param = param;
+      obj.type = param.type;
+      obj.uuid = param.uuid;
+      let t = param;
+      let visibleAlways = t.visibleAlways ? t.visibleAlways : false;
+      t.colorPick = t.colorPick ? t.colorPick : false;
+
+      switch (param.type) {
+        case "number_value":
+        case "number":
+          t.value = t.value ? t.value : 0.0;
+          t.minValue = t.minValue ? t.minValue : 0.0;
+          t.maxValue = t.maxValue ? t.maxValue : 10.0;
+          obj.btn = this.createValueBtn(t.name, t.uuid, t.value, t.minValue, t.maxValue);
+          map.set(obj.uuid, obj);
+
+          if (!t.colorPick) {
+            obj.info = {
+              type: param.type,
+              uuid: param.uuid,
+              values: [t.value],
+              flag: t.flag
+            };
+            param.callback(obj.info);
+          }
+
+          break;
+
+        case "progress":
+          t.progress = t.progress ? t.progress : 0.0;
+          obj.btn = this.createProgressBtn(t.name, t.uuid, t.progress, visibleAlways);
+          map.set(obj.uuid, obj);
+
+          if (!t.colorPick) {
+            obj.info = {
+              type: param.type,
+              uuid: param.uuid,
+              values: [t.progress],
+              flag: t.flag
+            };
+            param.callback(obj.info);
+          }
+
+          break;
+
+        case "status":
+        case "status_select":
+          t.flag = t.flag ? t.flag : false;
+          obj.btn = this.createSelectBtn(t.name, t.uuid, t.selectNS, t.deselectNS, t.flag, visibleAlways);
+          map.set(obj.uuid, obj);
+          obj.info = {
+            type: param.type,
+            uuid: param.uuid,
+            values: [],
+            flag: t.flag
+          };
+          param.callback(obj.info);
+          break;
+
+        default:
+          break;
+      }
+    }
+  }
+
+  addItems(params) {
+    for (let i = 0; i < params.length; ++i) {
+      this.addItem(params[i]);
+    }
+  }
+
+  getItemByUUID(uuid) {
+    if (this.m_btnMap.has(uuid)) {
+      return this.m_btnMap.get(uuid);
+    }
+
+    return null;
+  }
+
+  menuCtrl(flag) {
+    let ls = this.m_visiBtns;
+
+    if (ls.length > 0) {
+      if (flag && !ls[0].isOpen()) {
+        for (let i = 0; i < ls.length; ++i) {
+          ls[i].open();
+        }
+
+        this.m_menuBtn.getPosition(this.m_pos);
+        this.m_pos.x = this.m_btnPX;
+        this.m_menuBtn.setPosition(this.m_pos);
+      } else if (ls[0].isOpen()) {
+        for (let i = 0; i < ls.length; ++i) {
+          ls[i].close();
+        }
+
+        this.m_menuBtn.getPosition(this.m_pos);
+        this.m_pos.x = 0;
+        this.m_menuBtn.setPosition(this.m_pos);
+        if (this.m_selectedPlane != null) this.m_selectedPlane.setVisible(false);
+      }
+    }
+
+    if (this.m_colorPanel != null) this.m_colorPanel.close();
+  }
+
+  layoutItem() {
+    if (this.m_menuBtn != null) {
+      let disX = 2.0;
+      let disY = 2.0;
+      let offset = this.m_marginWidth;
+      let begin = VoxMath_1.VoxMath.createVec3(offset + disX, offset);
+      let pos = begin.clone();
+      let maxNameW = 0;
+      let btns = this.m_btns;
+
+      for (let i = 0; i < btns.length; ++i) {
+        btns[i].update(); // console.log("vw: ", btns[i].getNameWidth());
+
+        if (btns[i].getNameWidth() > maxNameW) {
+          maxNameW = btns[i].getNameWidth();
+        }
+      }
+
+      begin.x += maxNameW;
+      let pw = 0.0;
+      let py = pos.y;
+
+      for (let i = 0; i < btns.length; ++i) {
+        let v = btns[i].getNameWidth(); // console.log("v: ", v);
+
+        v = v > 0 ? v + disX : 0;
+        pos.x = begin.x - v;
+        btns[i].setPosition(pos);
+        btns[i].update();
+
+        if (btns[i].getWidth() > pw) {
+          pw = btns[i].getWidth();
+        }
+
+        pos.y += btns[i].getHeight() + disY;
+      }
+
+      this.m_contentW = pw + offset * 2.0;
+      this.m_contentH = pos.y - py + offset * 3.0;
+      this.updateBgSize();
+    }
+  }
+
+  updateBgSize() {
+    let pw = this.m_contentW;
+    let ph = this.m_contentH;
+    let flag = Math.abs(pw - this.m_panelW) > 0.0001;
+    flag = flag || Math.abs(ph - this.m_panelH) > 0.0001;
+
+    if (this.m_bgLabel != null && flag) {
+      let sx = pw / this.m_panelW;
+      let sy = ph / this.m_panelH;
+      this.m_bgLabel.setScaleXY(sx, sy);
+      this.m_bgLabel.update();
+      this.update();
+    }
+  }
+
+  selectChange(evt) {
+    let flag = evt.flag;
+    let uuid = evt.uuid;
+    let map = this.m_btnMap;
+
+    if (map.has(uuid)) {
+      let obj = map.get(uuid);
+      obj.sendFlagOut(flag);
+      this.moveSelectToBtn(evt.target);
+    }
+
+    if (this.m_colorPanel != null) this.m_colorPanel.close();
+  }
+
+  selectColor(uuid, color) {
+    let map = this.m_btnMap;
+
+    if (map.has(uuid)) {
+      let obj = map.get(uuid);
+      let param = obj.param;
+
+      if (param.colorPick) {
+        obj.sendColorOut(color);
+      }
+    }
+  }
+
+  valueChange(evt) {
+    console.log("valueChange(), evt.target: ", evt.target);
+    let value = evt.value;
+    let uuid = evt.uuid;
+    let map = this.m_btnMap;
+    let changeFlag = this.m_currUUID != uuid;
+    this.m_currUUID = uuid;
+
+    if (map.has(uuid)) {
+      let obj = map.get(uuid);
+      let param = obj.param;
+
+      if (evt.status == 2) {
+        obj.sendValueOut(value);
+        if (this.m_colorPanel != null && changeFlag) this.m_colorPanel.close();
+      } else if (evt.status == 0) {
+        console.log("only select the btn");
+
+        if (param.colorPick) {
+          // if (this.m_colorPanel != null && this.m_colorPanel.isClosed()) {
+          //     this.m_colorPanel.open();
+          // }
+          // if (obj.colorId >= 0) this.m_colorPanel.selectColorById(obj.colorId);
+          let color = VoxMaterial_1.VoxMaterial.createColor4();
+          color.fromArray3(obj.color);
+          this.colorSelectListener(evt.uuid, evt.target, color);
+        } else {
+          if (this.m_colorPanel != null) this.m_colorPanel.close();
+        }
+      }
+
+      this.moveSelectToBtn(evt.target);
+    }
+  } // private mouseBgDown(evt: any): void {
+  // 	if (this.m_colorPanel != null) this.m_colorPanel.close();
+  // }
+
+
+  addStatusItem(name, uuid, selectNS, deselectNS, flag, callback, visibleAlways = true) {
+    let param = {
+      type: "status_select",
+      name: name,
+      uuid: uuid,
+      selectNS: selectNS,
+      deselectNS: deselectNS,
+      flag: flag,
+      visibleAlways: visibleAlways,
+      callback: callback
+    };
+    this.addItem(param);
+  }
+
+  addProgressItem(name, uuid, progress, callback, colorPick, visibleAlways = true) {
+    let param = {
+      type: "progress",
+      name: name,
+      uuid: uuid,
+      progress: progress,
+      visibleAlways: visibleAlways,
+      colorPick: colorPick,
+      callback: callback
+    };
+    this.addItem(param);
+  }
+
+  addValueItem(name, uuid, value, minValue, maxValue, callback, colorPick, visibleAlways = true, values) {
+    let param = {
+      type: "number_value",
+      name: name,
+      uuid: uuid,
+      value: value,
+      minValue: minValue,
+      maxValue: maxValue,
+      visibleAlways: visibleAlways,
+      colorPick: colorPick,
+      values: values,
+      callback: callback
+    };
+    this.addItem(param);
+  }
+
+}
+
+exports.ParamCtrlPanel = ParamCtrlPanel;
+
+/***/ }),
+
 /***/ "05f0":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -805,6 +1300,184 @@ exports.RightTopLayouter = RightTopLayouter;
 
 /***/ }),
 
+/***/ "1dcc":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+const VoxRScene_1 = __webpack_require__("d1de");
+
+const CompEntityBase_1 = __webpack_require__("5ea3");
+
+class SelectionEntity extends CompEntityBase_1.CompEntityBase {
+  constructor() {
+    super();
+    this.m_dispatcher = null;
+    this.m_currEvent = null;
+    this.m_nameItem = null;
+    this.m_flagItem = null;
+    this.m_flag = true;
+    this.m_enabled = true;
+    this.m_nameWidth = 0.0;
+    this.uuid = "SelectionEntity";
+  }
+
+  enable() {
+    this.m_enabled = true;
+  }
+
+  disable() {
+    this.m_enabled = false;
+  }
+
+  open() {
+    this.setVisible(true);
+  }
+
+  close() {
+    this.setVisible(false);
+  }
+
+  isOpen() {
+    return this.isVisible();
+  }
+
+  isClosed() {
+    return !this.isVisible();
+  }
+
+  addEventListener(type, listener, func, captureEnabled = true, bubbleEnabled = false) {
+    this.m_dispatcher.addEventListener(type, listener, func, captureEnabled, bubbleEnabled);
+  }
+
+  removeEventListener(type, listener, func) {
+    this.m_dispatcher.removeEventListener(type, listener, func);
+  }
+  /**
+   * 选中
+   * @param sendEvtEnabled 是否发送选中的事件。 如果不发送事件，则只会改变状态。
+   */
+
+
+  select(sendEvtEnabled = false) {
+    if (!this.m_flag) {
+      this.m_flag = true;
+      this.updateState();
+      if (sendEvtEnabled) this.sendEvt();
+    }
+  }
+  /**
+   * 取消选中
+   * @param sendEvtEnabled 是否发送取消选中的事件。 如果不发送事件，则只会改变状态。
+   */
+
+
+  deselect(sendEvtEnabled = false) {
+    if (this.m_flag) {
+      this.m_flag = false;
+      this.updateState();
+      if (sendEvtEnabled) this.sendEvt();
+    }
+  }
+
+  setFlag(flag, sendEvtEnabled = false) {
+    if (flag) {
+      this.select(sendEvtEnabled);
+    } else {
+      this.deselect(sendEvtEnabled);
+    }
+  }
+
+  isSelected() {
+    return this.m_flag;
+  }
+
+  nameBtnMouseDown(evt) {
+    if (this.m_enabled) {
+      this.m_flag = !this.m_flag;
+      this.updateState();
+      this.sendEvt();
+    }
+  }
+
+  sendEvt() {
+    let t = this.m_currEvent;
+    t.target = this;
+    t.type = VoxRScene_1.SelectionEvent.SELECT;
+    t.flag = this.m_flag;
+    t.phase = 1;
+    t.uuid = this.uuid;
+    this.m_dispatcher.dispatchEvt(t);
+    t.target = null;
+  }
+
+  updateState() {
+    this.m_flagItem.label.setClipIndex(this.m_flag ? 0 : 1);
+  }
+
+  btnMouseUp(evt) {
+    if (this.m_enabled) {
+      this.m_flag = !this.m_flag;
+      this.updateState();
+      this.sendEvt();
+    }
+  }
+
+  destroy() {
+    super.destroy();
+
+    if (this.m_flagItem != null) {
+      this.m_nameItem.destroy();
+      this.m_nameItem = null;
+      this.m_flagItem.destroy();
+      this.m_flagItem = null;
+      this.m_dispatcher.destroy();
+      this.m_dispatcher = null;
+    }
+  }
+
+  getNameWidth() {
+    return this.m_nameWidth;
+  }
+
+  initialize(uisc, barName = "select", select_name = "Yes", deselect_name = "No", fontSize = 30.0, nameWidth = 70, flagWidth = 50, height = 40) {
+    if (this.isIniting()) {
+      this.init();
+      let dis = 2.0;
+      this.m_dispatcher = VoxRScene_1.VoxRScene.createEventBaseDispatcher();
+      this.m_currEvent = VoxRScene_1.VoxRScene.createSelectionEvent();
+
+      if (barName != "") {
+        let nameItem = this.createBtn("name", uisc, [barName], fontSize, nameWidth, height);
+        this.addEntity(nameItem.button);
+        this.m_nameWidth = nameItem.button.getWidth();
+        this.m_nameItem = nameItem;
+        nameItem.button.addEventListener(VoxRScene_1.MouseEvent.MOUSE_DOWN, this, this.nameBtnMouseDown);
+      }
+
+      let flagItem = this.createBtn("flag", uisc, [select_name, deselect_name], fontSize, flagWidth, height);
+
+      if (barName != "") {
+        flagItem.button.setX(this.m_nameWidth + dis);
+      }
+
+      this.addEntity(flagItem.button);
+      this.m_flagItem = flagItem;
+      flagItem.button.addEventListener(VoxRScene_1.MouseEvent.MOUSE_UP, this, this.btnMouseUp);
+    }
+  }
+
+}
+
+exports.SelectionEntity = SelectionEntity;
+
+/***/ }),
+
 /***/ "1eb2":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
@@ -1251,6 +1924,23 @@ exports.PackedLoader = PackedLoader;
 
 /***/ }),
 
+/***/ "2b5a":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+const CtrlInfo_1 = __webpack_require__("4041");
+
+exports.CtrlInfo = CtrlInfo_1.CtrlInfo;
+exports.ItemCallback = CtrlInfo_1.ItemCallback;
+
+/***/ }),
+
 /***/ "36f3":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1425,6 +2115,18 @@ exports.TextLabel = TextLabel;
 
 /***/ }),
 
+/***/ "4041":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+/***/ }),
+
 /***/ "5470":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1509,6 +2211,167 @@ class LayouterBase {
 }
 
 exports.LayouterBase = LayouterBase;
+
+/***/ }),
+
+/***/ "5ea3":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+const VoxMaterial_1 = __webpack_require__("0efa");
+
+const Button_1 = __webpack_require__("88b9");
+
+const ClipColorLabel_1 = __webpack_require__("05f0");
+
+const ClipLabel_1 = __webpack_require__("f35d");
+
+const UIEntityContainer_1 = __webpack_require__("23ac");
+
+class ButtonItem {
+  constructor(pbutton, plabel, pBgLabel) {
+    this.button = pbutton;
+    this.label = plabel;
+    this.bgLabel = pBgLabel;
+  }
+
+  destroy() {
+    if (this.button != null) {
+      this.button.destroy();
+      this.button = null;
+    }
+
+    if (this.bgLabel != null) {
+      this.bgLabel.destroy();
+      this.bgLabel = null;
+    }
+
+    if (this.label != null) {
+      this.label.destroy();
+      this.label = null;
+    }
+  }
+
+}
+
+exports.ButtonItem = ButtonItem;
+
+class CompEntityBase extends UIEntityContainer_1.UIEntityContainer {
+  constructor() {
+    super();
+    this.m_fontColor = null;
+    this.m_fontBgColor = null;
+    this.m_bgColors = null;
+  }
+
+  getNameWidth() {
+    return 0.0;
+  }
+
+  setFontColor(fontColor, bgColor) {
+    this.m_fontColor = fontColor;
+    this.m_fontBgColor = bgColor; // if (this.m_fontColor == null) this.m_fontColor = VoxMaterial.createColor4();
+    // if (this.m_fontBgColor == null) this.m_fontBgColor = VoxMaterial.createColor4();
+    // if (fontColor) {
+    // 	this.m_fontColor.copyFrom(fontColor);
+    // }
+    // if (bgColor) {
+    // 	this.m_fontBgColor.copyFrom(bgColor);
+    // }
+  }
+
+  setBGColors(colors) {
+    if (colors == null) {
+      throw Error("colors == null !!!");
+    }
+
+    if (colors.length < 4) {
+      throw Error("colors.length < 4 !!!");
+    }
+
+    this.m_bgColors = colors;
+  }
+
+  destroy() {
+    super.destroy();
+    this.m_fontColor = null;
+    this.m_fontBgColor = null;
+    this.m_bgColors = null;
+  }
+
+  createBgLabel(pw, ph, intensity = 1.0) {
+    let bgLabel = new ClipColorLabel_1.ClipColorLabel();
+    bgLabel.initializeWithoutTex(pw, ph, 4);
+    let sls = this.m_bgColors;
+    let dcls = bgLabel.getColors();
+
+    if (sls == null) {
+      bgLabel.getColorAt(0).setRGB3f(0.2, 0.2, 0.2);
+      bgLabel.getColorAt(1).setRGB3f(0.3, 0.3, 0.3);
+      bgLabel.getColorAt(2).setRGB3f(0.2, 0.6, 1.0);
+      bgLabel.getColorAt(3).setRGB3f(0.3, 0.3, 0.3);
+    } else {
+      for (let i = 0; i < dcls.length; ++i) {
+        dcls[i].copyFrom(sls[i]);
+      }
+    }
+
+    for (let i = 0; i < dcls.length; ++i) {
+      const c = dcls[i];
+      c.r *= intensity;
+      c.g *= intensity;
+      c.b *= intensity;
+    }
+
+    bgLabel.setClipIndex(0);
+    return bgLabel;
+  }
+
+  createBtn(uuid, uisc, urls, fontSize, pw, ph, intensity = 1.0) {
+    let img;
+    let tta = uisc.transparentTexAtlas;
+    let nameLabel = null;
+    let fontColor = this.m_fontColor != null ? this.m_fontColor : VoxMaterial_1.VoxMaterial.createColor4(1, 1, 1, 1);
+    let bgColor = this.m_fontBgColor != null ? this.m_fontBgColor : VoxMaterial_1.VoxMaterial.createColor4(1, 1, 1, 0);
+
+    if (urls != null && urls.length > 0) {
+      for (let i = 0; i < urls.length; ++i) {
+        // img = tta.createCharsCanvasFixSize(pw, ph, urls[i], fontSize, fontColor, bgColor);
+        img = tta.createCharsCanvasWithSize(pw, ph, 6, 4, urls[i], fontSize, fontColor, bgColor);
+        tta.addImageToAtlas(urls[i], img);
+      }
+
+      nameLabel = new ClipLabel_1.ClipLabel();
+      nameLabel.transparent = true;
+      nameLabel.premultiplyAlpha = true;
+      nameLabel.initialize(tta, urls);
+      nameLabel.update();
+      pw = nameLabel.getWidth();
+    }
+
+    let bgLabel = this.createBgLabel(pw, ph, intensity);
+    let btn = new Button_1.Button();
+    if (uuid != "") btn.uuid = uuid;
+
+    if (urls != null && urls.length > 0) {
+      btn.syncLabelClip = false;
+      btn.addLabel(nameLabel);
+    }
+
+    btn.initializeWithLable(bgLabel);
+    btn.update();
+    return new ButtonItem(btn, nameLabel, bgLabel);
+  }
+
+}
+
+exports.CompEntityBase = CompEntityBase;
 
 /***/ }),
 
@@ -2196,6 +3059,197 @@ exports.PromptPanel = PromptPanel;
 
 /***/ }),
 
+/***/ "7dab":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+const CtrlItemParam_1 = __webpack_require__("2b5a");
+
+exports.CtrlInfo = CtrlItemParam_1.CtrlInfo;
+exports.ItemCallback = CtrlItemParam_1.ItemCallback;
+exports.CtrlItemParam = CtrlItemParam_1.CtrlItemParam;
+
+class CtrlItemObj {
+  constructor() {
+    this.type = "";
+    this.uuid = "";
+    this.btn = null;
+    this.param = null;
+    this.color = [1.0, 1.0, 1.0];
+    this.colorId = -1;
+    this.info = null;
+    this.syncEnabled = false;
+  }
+
+  setValueToParam(value) {
+    let param = this.param;
+
+    if (param.type == "progress") {
+      param.progress = value;
+    } else {
+      param.value = value;
+    }
+  }
+  /**
+   * 将 flag 值由ui发送到外面
+   */
+
+
+  sendFlagOut(flag, force = false) {
+    let param = this.param;
+
+    if (param.callback != null && param.flag != flag || force) {
+      param.flag = flag;
+      this.info = {
+        type: param.type,
+        uuid: this.uuid,
+        values: [],
+        flag: flag
+      };
+      param.callback(this.info);
+    }
+  }
+  /**
+   * 将 颜色 值由ui发送到外面
+   */
+
+
+  sendColorOut(color, force = false) {
+    let param = this.param;
+    let vs = this.color;
+    color.toArray3(vs);
+
+    if (param.callback != null) {
+      let f = param.type == "progress" ? param.progress : param.value; // console.log("sendColorOut f: ", f);
+
+      let cvs = vs.slice();
+      cvs[0] *= f;
+      cvs[1] *= f;
+      cvs[2] *= f;
+      this.info = {
+        type: param.type,
+        uuid: this.uuid,
+        values: cvs,
+        flag: true,
+        colorPick: true
+      };
+      param.callback(this.info);
+    }
+  }
+  /**
+   * 将 数值 由ui发送到外面
+   */
+
+
+  sendValueOut(value, force = false) {
+    let param = this.param;
+    let fp = param.type == "progress";
+    let f = fp ? param.progress : param.value;
+
+    if (param.callback != null && Math.abs(f - value) > 0.00001 || force) {
+      if (fp) {
+        param.progress = value;
+      } else {
+        param.value = value;
+      }
+
+      if (param.colorPick) {
+        let cvs = this.color.slice();
+        cvs[0] *= value;
+        cvs[1] *= value;
+        cvs[2] *= value;
+        this.info = {
+          type: param.type,
+          uuid: this.uuid,
+          values: cvs,
+          flag: true,
+          colorPick: true
+        };
+      } else {
+        this.info = {
+          type: param.type,
+          uuid: this.uuid,
+          values: [value],
+          flag: true
+        };
+      }
+
+      param.callback(this.info);
+    }
+  }
+  /**
+   * 将(用户已经修改的)参数同步到ui
+   */
+
+
+  updateParamToUI() {
+    let param = this.param;
+    let t = param; // let visibleAlways = t.visibleAlways ? t.visibleAlways : false;
+
+    t.colorPick = t.colorPick ? t.colorPick : false;
+
+    switch (param.type) {
+      case "number_value":
+      case "number":
+        t.value = t.value ? t.value : 0.0;
+        t.minValue = t.minValue ? t.minValue : 0.0;
+        t.maxValue = t.maxValue ? t.maxValue : 10.0;
+        const b0 = this.btn;
+        b0.setRange(t.minValue, t.maxValue);
+        b0.setValue(t.value, false);
+        console.log("t.value: ", t.value);
+
+        if (this.syncEnabled) {
+          this.sendValueOut(t.value, true);
+        }
+
+        break;
+
+      case "progress":
+        t.progress = t.progress ? t.progress : 0.0;
+        const b1 = this.btn;
+        b1.setProgress(t.progress, false);
+
+        if (this.syncEnabled) {
+          this.sendValueOut(t.progress, true);
+        }
+
+        break;
+
+      case "status":
+      case "status_select":
+        t.flag = t.flag ? t.flag : false;
+        const b2 = this.btn;
+
+        if (t.flag) {
+          b2.select(false);
+        } else {
+          b2.deselect(false);
+        }
+
+        if (this.syncEnabled) {
+          this.sendFlagOut(t.flag, true);
+        }
+
+        break;
+
+      default:
+        break;
+    }
+  }
+
+}
+
+exports.CtrlItemObj = CtrlItemObj;
+
+/***/ }),
+
 /***/ "7dc1":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -2241,6 +3295,8 @@ const PromptSystem_1 = __webpack_require__("f280");
 const TipsSystem_1 = __webpack_require__("0aa4");
 
 const PanelSystem_1 = __webpack_require__("b6c0");
+
+const ParamCtrlPanel_1 = __webpack_require__("0241");
 
 function createColorLabel() {
   return new ColorLabel_1.ColorLabel();
@@ -2314,6 +3370,12 @@ function createPromptPanel() {
 
 exports.createPromptPanel = createPromptPanel;
 
+function createParamCtrlPanel() {
+  return new ParamCtrlPanel_1.ParamCtrlPanel();
+}
+
+exports.createParamCtrlPanel = createParamCtrlPanel;
+
 function createUIScene(graph, uiConfig = null, atlasSize = 512, renderProcessesTotal = 3) {
   let uisc = new VoxUIScene_1.VoxUIScene();
 
@@ -2351,6 +3413,288 @@ function createUILayout() {
 }
 
 exports.createUILayout = createUILayout;
+
+/***/ }),
+
+/***/ "822b":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+const VoxMath_1 = __webpack_require__("f042");
+
+const VoxRScene_1 = __webpack_require__("d1de");
+
+const CompEntityBase_1 = __webpack_require__("5ea3");
+
+class ProgressEntity extends CompEntityBase_1.CompEntityBase {
+  constructor() {
+    super();
+    this.m_dispatcher = null;
+    this.m_currEvent = null;
+    this.m_nameItem = null;
+    this.m_addItem = null;
+    this.m_subItem = null;
+    this.m_bgBarItem = null;
+    this.m_barPlane = null;
+    this.m_ruisc = null;
+    this.m_barInitLength = 1.0;
+    this.m_barLength = 1.0;
+    this.m_preProgress = -1.0;
+    this.m_progress = 0.0;
+    this.m_nameWidth = 0.0;
+    this.m_value = 0.0;
+    this.m_enabled = true;
+    this.m_minValue = 0.0;
+    this.m_maxValue = 1.0;
+    this.step = 0.1;
+    this.uuid = "ProgressEntity";
+    this.m_moveMin = 0;
+    this.m_autoDelay = 0;
+    this.m_changeStep = 0;
+  }
+
+  enable() {
+    this.m_enabled = true;
+  }
+
+  disable() {
+    this.m_enabled = false;
+  }
+
+  open() {
+    this.setVisible(true);
+  }
+
+  close() {
+    this.setVisible(false);
+  }
+
+  isOpen() {
+    return this.isVisible();
+  }
+
+  isClosed() {
+    return !this.isVisible();
+  }
+
+  addEventListener(type, listener, func, captureEnabled = true, bubbleEnabled = false) {
+    this.m_dispatcher.addEventListener(type, listener, func, captureEnabled, bubbleEnabled);
+  }
+
+  removeEventListener(type, listener, func) {
+    this.m_dispatcher.removeEventListener(type, listener, func);
+  }
+
+  destroy() {
+    super.destroy();
+
+    if (this.m_barPlane != null) {
+      this.m_dispatcher.destroy();
+      this.m_dispatcher = null;
+      this.m_nameItem.destroy();
+      this.m_nameItem = null;
+      this.m_subItem.destroy();
+      this.m_subItem = null;
+      this.m_addItem.destroy();
+      this.m_addItem = null;
+      this.m_bgBarItem.destroy();
+      this.m_bgBarItem = null;
+      this.m_barPlane.destroy();
+      this.m_barPlane = null;
+      this.m_ruisc = null;
+    }
+  }
+
+  getNameWidth() {
+    return this.m_nameWidth;
+  }
+
+  initialize(uisc, barName = "prog", fontSize = 30.0, nameWidth = 30, progLength = 200, height = 40) {
+    if (this.isIniting()) {
+      this.init();
+      this.m_ruisc = uisc;
+      this.m_barInitLength = progLength;
+      this.m_dispatcher = VoxRScene_1.VoxRScene.createEventBaseDispatcher();
+      this.m_currEvent = VoxRScene_1.VoxRScene.createProgressDataEvent();
+      let dis = 2.0;
+      let px = 0;
+
+      if (barName != "") {
+        let nameItem = this.createBtn("name", uisc, [barName], fontSize, nameWidth, height);
+        this.addEntity(nameItem.button);
+        this.m_nameWidth = nameWidth = nameItem.button.getWidth();
+        height = nameItem.button.getHeight(); // console.log(barName, ", nameWidth: ", nameWidth, "height: ",height);
+
+        this.m_nameItem = nameItem;
+        nameItem.button.addEventListener(VoxRScene_1.MouseEvent.MOUSE_DOWN, this, this.nameBtnMouseDown);
+        px += dis + this.m_nameWidth;
+      }
+
+      let subItem = this.createBtn("subProg", uisc, ["-"], fontSize, height, height);
+      let addItem = this.createBtn("addProg", uisc, ["+"], fontSize, height, height);
+      subItem.button.setX(px);
+      this.addEntity(subItem.button);
+      px += subItem.button.getWidth();
+      addItem.button.setX(this.m_barInitLength + px);
+      this.addEntity(addItem.button);
+      subItem.button.addEventListener(VoxRScene_1.MouseEvent.MOUSE_DOWN, this, this.btnMouseDown);
+      addItem.button.addEventListener(VoxRScene_1.MouseEvent.MOUSE_DOWN, this, this.btnMouseDown);
+      this.m_subItem = subItem;
+      this.m_addItem = addItem;
+      this.initProg(uisc, px, this.m_barInitLength, height);
+      this.setProgressV(this.m_progress);
+    }
+  }
+
+  initProg(uisc, posX, barLength, height) {
+    let bgItem = this.createBtn("progBarBg", uisc, [], 0, barLength, height, 0.8);
+    this.m_bgBarItem = bgItem;
+    let bgButon = bgItem.button;
+    bgButon.setX(posX);
+    this.addEntity(bgButon);
+    let bgLabel = bgItem.bgLabel;
+    bgLabel.getColorAt(2).copyFrom(bgLabel.getColorAt(1));
+    bgButon.addEventListener(VoxRScene_1.MouseEvent.MOUSE_DOWN, this, this.barMouseDown);
+    this.m_ruisc.addEventListener(VoxRScene_1.MouseEvent.MOUSE_UP, this, this.barMouseUp, true, false);
+    bgButon.addEventListener(VoxRScene_1.MouseEvent.MOUSE_OVER, this, this.barMouseOver);
+    bgButon.addEventListener(VoxRScene_1.MouseEvent.MOUSE_OUT, this, this.barMouseOut);
+    let barBgLabel = this.createBgLabel(1, height, 1.2);
+    barBgLabel.setX(posX);
+    barBgLabel.setZ(0.05);
+    this.addEntity(barBgLabel);
+    this.m_barPlane = barBgLabel;
+  }
+
+  setRange(min, max) {
+    this.m_preProgress = -1;
+    this.m_minValue = min;
+    this.m_maxValue = max;
+  }
+
+  setValue(value, sendEvtEnabled = true) {
+    this.m_preProgress = -1;
+    value = VoxMath_1.MathConst.Clamp(value, this.m_minValue, this.m_maxValue);
+    this.m_progress = (value - this.m_minValue) / (this.m_maxValue - this.m_minValue);
+    this.setProgressV(this.m_progress, sendEvtEnabled);
+  }
+
+  getValue() {
+    return this.m_value;
+  }
+
+  setProgress(barProgress, sendEvtEnabled = true) {
+    this.m_preProgress = -1;
+    this.setProgressV(barProgress, sendEvtEnabled);
+  }
+
+  setProgressV(barProgress, sendEvtEnabled = true) {
+    this.m_progress = VoxMath_1.MathConst.Clamp(barProgress, 0.0, 1.0);
+    this.m_barLength = this.m_barInitLength * this.m_progress;
+    this.sendValue(sendEvtEnabled);
+  }
+
+  sendValue(sendEvtEnabled) {
+    this.m_barPlane.setScaleX(this.m_barLength);
+    this.m_barPlane.update();
+    this.m_value = this.m_minValue + (this.m_maxValue - this.m_minValue) * this.m_progress;
+
+    if (sendEvtEnabled) {
+      let d = Math.abs(this.m_preProgress - this.m_progress);
+
+      if (d > VoxMath_1.MathConst.MATH_MIN_POSITIVE) {
+        this.m_preProgress = this.m_progress;
+        this.sendEvt(2);
+      }
+    }
+  }
+
+  getProgress() {
+    return this.m_progress;
+  }
+
+  sendEvt(status) {
+    let t = this.m_currEvent;
+    t.target = this;
+    t.status = status;
+    t.type = VoxRScene_1.ProgressDataEvent.PROGRESS;
+    t.minValue = this.m_minValue;
+    t.maxValue = this.m_maxValue;
+    t.value = this.m_value;
+    t.progress = this.m_progress;
+    t.phase = 1;
+    t.uuid = this.uuid;
+    this.m_dispatcher.dispatchEvt(t);
+    t.target = null;
+  }
+
+  setProgressLength(length, sendEvtEnabled = true) {
+    this.m_barLength = VoxMath_1.MathConst.Clamp(length, 0.0, this.m_barInitLength);
+    this.m_progress = this.m_barLength / this.m_barInitLength;
+    this.sendValue(sendEvtEnabled);
+  }
+
+  nameBtnMouseDown(evt) {
+    this.sendEvt(0);
+  }
+
+  barMouseDown(evt) {
+    this.m_preProgress = -1;
+    this.m_moveMin = evt.mouseX - this.m_progress * this.m_barInitLength;
+    this.setProgressV(this.m_progress);
+    this.m_ruisc.addEventListener(VoxRScene_1.MouseEvent.MOUSE_MOVE, this, this.barMouseMove, true, false);
+  }
+
+  barMouseMove(evt) {
+    this.setProgressV((evt.mouseX - this.m_moveMin) / this.m_barInitLength);
+  }
+
+  barMouseUp(evt) {
+    this.m_ruisc.removeEventListener(VoxRScene_1.MouseEvent.MOUSE_MOVE, this, this.barMouseMove);
+    this.m_ruisc.removeEventListener(VoxRScene_1.EventBase.ENTER_FRAME, this, this.barEnterFrame);
+  }
+
+  barEnterFrame(evt) {
+    // console.log("barEnterFrame");
+    if (this.m_autoDelay > 20) {
+      if (this.m_autoDelay % 7 == 0) {
+        this.setProgressLength(this.m_barLength + this.m_changeStep);
+      }
+    }
+
+    this.m_autoDelay++;
+  }
+
+  barMouseOver(evt) {
+    this.m_barPlane.setClipIndex(1);
+  }
+
+  barMouseOut(evt) {
+    this.m_barPlane.setClipIndex(0);
+  }
+
+  btnMouseDown(evt) {
+    this.m_autoDelay = 0;
+
+    if (evt.uuid == "subProg") {
+      this.m_changeStep = -this.step;
+      this.setProgressLength(this.m_barLength - this.step);
+      this.m_ruisc.addEventListener(VoxRScene_1.EventBase.ENTER_FRAME, this, this.barEnterFrame, true, false);
+    } else if (evt.uuid == "addProg") {
+      this.m_changeStep = this.step;
+      this.setProgressLength(this.m_barLength + this.step);
+      this.m_ruisc.addEventListener(VoxRScene_1.EventBase.ENTER_FRAME, this, this.barEnterFrame, true, false);
+    }
+  }
+
+}
+
+exports.ProgressEntity = ProgressEntity;
 
 /***/ }),
 
@@ -5243,6 +6587,189 @@ class LeftTopLayouter extends LayouterBase_1.LayouterBase {
 }
 
 exports.LeftTopLayouter = LeftTopLayouter;
+
+/***/ }),
+
+/***/ "f042":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+const ModuleLoader_1 = __webpack_require__("75f5");
+
+var OrientationType;
+exports.OrientationType = OrientationType;
+var MathConst;
+exports.MathConst = MathConst;
+var Vector3D;
+exports.Vector3D = Vector3D;
+
+class T_CoMath {
+  constructor() {
+    this.m_init = true;
+  }
+
+  init() {
+    if (this.isEnabled()) {
+      exports.OrientationType = OrientationType = CoMath.OrientationType;
+      exports.MathConst = MathConst = CoMath.MathConst;
+      exports.Vector3D = Vector3D = CoMath.Vector3D;
+    }
+  }
+
+  initialize(callback = null, url = "") {
+    this.init();
+    this.m_init = !this.isEnabled();
+
+    if (this.m_init) {
+      this.m_init = false;
+
+      if (url == "" || url === undefined) {
+        url = "static/cospace/math/CoMath.umd.js";
+      }
+
+      new ModuleLoader_1.ModuleLoader(1, () => {
+        this.init();
+        if (callback != null && this.isEnabled()) callback([url]);
+      }).load(url);
+      return true;
+    }
+
+    return false;
+  }
+
+  isEnabled() {
+    return typeof CoMath !== "undefined";
+  }
+
+  get Vector3D() {
+    return CoMath.Vector3D;
+  }
+
+  get MathConst() {
+    return CoMath.MathConst;
+  }
+
+  get OrientationType() {
+    return CoMath.OrientationType;
+  }
+  /**
+   * create a Vector3D instance
+   * @param px the default vaue is 0.0
+   * @param py the default vaue is 0.0
+   * @param pz the default vaue is 0.0
+   * @param pw the default vaue is 1.0
+   */
+
+
+  createVec3(px, py, pz, pw) {
+    return CoMath.createVec3(px, py, pz, pw);
+  }
+  /**
+   *
+   * @param pfs32 the default value is null
+   * @param index the default value is 0
+   * @returns IMatrix4 instance
+   */
+
+
+  createMat4(pfs32, index) {
+    return CoMath.createMat4(pfs32, index);
+  }
+
+  createAABB() {
+    return CoMath.createAABB();
+  }
+
+  createAABB2D(px, py, pwidth, pheight) {
+    return CoMath.createAABB2D(px, py, pwidth, pheight);
+  }
+
+  isZero(v) {
+    return CoMath.isZero(v);
+  }
+
+  isNotZero(v) {
+    return CoMath.isNotZero(v);
+  }
+  /**
+   * example:
+   *     isGreaterPositiveZero(0.1) is true
+   *     isGreaterPositiveZero(0.000000001) is false
+   *     isGreaterPositiveZero(-0.1) is false
+   * @param v number value
+   * @returns a positive number value and its value is greater zero, return true, otherwize false
+   */
+
+
+  isGreaterPositiveZero(v) {
+    return CoMath.isGreaterPositiveZero(v);
+  }
+  /**
+   * example:
+   *      isLessNegativeZero(-0.1) is true
+   *      isLessNegativeZero(-000000001) is false
+   *      isLessNegativeZero(0.1) is false
+   * @param v number value
+   * @returns a negative number value and its value is less zero, return true, otherwise false
+   */
+
+
+  isLessNegativeZero(v) {
+    return CoMath.isLessNegativeZero(v);
+  }
+  /**
+   * example:
+   * 	isLessPositiveZero(+0.00000001) is true
+   *  isLessPositiveZero(-1.3) is true
+   *  isLessPositiveZero(1.3) is false
+   * @param v number value
+   * @returns true or false
+   */
+
+
+  isLessPositiveZero(v) {
+    return CoMath.isLessPositiveZero(v);
+  }
+  /**
+   * example:
+   * 	isGreaterNegativeZero(-0.00000001) is true
+   *  isGreaterNegativeZero(+1.3) is true
+   *  isGreaterNegativeZero(-1.3) is false
+   * @param v number value
+   * @returns true or false
+   */
+
+
+  isGreaterNegativeZero(v) {
+    return CoMath.isGreaterNegativeZero(v);
+  }
+
+  isPostiveZero(v) {
+    return CoMath.isPostiveZero(v);
+  }
+
+  isNegativeZero(v) {
+    return CoMath.isNegativeZero(v);
+  }
+
+  isGreaterRealZero(v) {
+    return CoMath.isGreaterRealZero(v);
+  }
+
+  isLessRealZero(v) {
+    return CoMath.isLessRealZero(v);
+  }
+
+}
+
+const VoxMath = new T_CoMath();
+exports.VoxMath = VoxMath;
 
 /***/ }),
 

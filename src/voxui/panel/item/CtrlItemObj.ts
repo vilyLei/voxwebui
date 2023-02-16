@@ -2,8 +2,9 @@ import IColor4 from "../../../vox/material/IColor4";
 import { ProgressEntity } from "../../component/ProgressEntity";
 import { SelectionEntity } from "../../component/SelectionEntity";
 import { CtrlInfo, ItemCallback, CtrlItemParam } from "./CtrlItemParam";
+import { ICtrlItemObj } from "./ICtrlItemObj";
 
-class CtrlItemObj {
+class CtrlItemObj implements ICtrlItemObj {
     constructor() { }
     type = "";
     uuid = "";

@@ -29,6 +29,7 @@ import { IUIConfig } from "./system/IUIConfig";
 import IRendererScene from "../vox/scene/IRendererScene";
 import { PanelSystem } from "./system/PanelSystem";
 import IRendererSceneGraph from "../vox/scene/IRendererSceneGraph";
+import { ParamCtrlPanel } from "./panel/ParamCtrlPanel";
 declare var CoMaterial: ICoMaterial;
 
 function createColorLabel(): ColorLabel {
@@ -72,7 +73,9 @@ function createUIPanel(): UIPanel {
 function createPromptPanel(): PromptPanel {
 	return new PromptPanel();
 }
-
+function createParamCtrlPanel(): ParamCtrlPanel {
+	return new ParamCtrlPanel();
+}
 function createUIScene(graph: IRendererSceneGraph, uiConfig: IUIConfig = null, atlasSize: number = 512, renderProcessesTotal: number = 3): IVoxUIScene {
 	let uisc = new VoxUIScene();
 	if(graph != null) {
@@ -116,5 +119,6 @@ export {
 
 	createUIPanel,
 	createPromptPanel,
+	createParamCtrlPanel,
 	createUIScene
 };

@@ -1,4 +1,8 @@
 import { CtrlInfo, ItemCallback } from "./CtrlInfo";
+// ns: string, uuid: string, selectNS: string, deselectNS: string, flag: boolean, visibleAlways: boolean = false
+// ns: string, uuid: string, progress: number, visibleAlways: boolean = false
+// ns: string, uuid: string, value: number, minValue: number, maxValue: number, visibleAlways: boolean = false
+
 interface CtrlItemParam {
 
     name: string;
