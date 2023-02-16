@@ -3,7 +3,8 @@
 // import {DemoUIBase as Demo} from "./demo/DemoUIBase";
 // import {DemoComp as Demo} from "./demo/DemoComp";
 // import {DemoParamUI as Demo} from "./demo/DemoParamUI";
-import {DemoParamPanel as Demo} from "./demo/DemoParamPanel";
+// import {DemoParamPanel as Demo} from "./demo/DemoParamPanel";
+import {DemoShaderMaterial as Demo} from "./demo/shaderExample/DemoShaderMaterial";
 
 document.title = "Vox Web UI";
 let ins = new Demo();

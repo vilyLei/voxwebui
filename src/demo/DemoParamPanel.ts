@@ -3,7 +3,7 @@ import { IMouseInteraction } from "../cospace/voxengine/ui/IMouseInteraction";
 import { IVoxUIScene } from "../voxui/scene/IVoxUIScene";
 import { VoxUIScene } from "../voxui/scene/VoxUIScene";;
 import VoxRuntime from "../common/VoxRuntime";
-import { ProgressDataEvent, SelectionEvent, VoxRScene } from "../cospace/voxengine/VoxRScene";
+import { VoxRScene } from "../cospace/voxengine/VoxRScene";
 import { VoxUIInteraction } from "../cospace/voxengine/ui/VoxUIInteraction";
 import { PanelSystem } from "../voxui/system/PanelSystem";
 import IRendererSceneGraph from "../vox/scene/IRendererSceneGraph";
@@ -129,7 +129,7 @@ export class DemoParamPanel {
 		}
 	}
 	private initRenderer(): void {
-		if (this.m_rscene == null) {
+		if (this.m_graph == null) {
 			
 			let RD = VoxRScene.RendererDevice;
 			RD.SHADERCODE_TRACE_ENABLED = false;
