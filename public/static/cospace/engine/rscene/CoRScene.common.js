@@ -2082,7 +2082,13 @@ class ROTransform {
     unit.m_localMat = unit.m_omat;
 
     if (fs32 == null) {
-      unit.m_fs32.set(ROTransform.s_initData, 0);
+      let ida = ROTransform.s_initData;
+
+      if (unit.m_fs32 == null) {
+        unit.m_fs32 = ida.slice(0);
+      } else {
+        unit.m_fs32.set(ida, 0);
+      }
     }
 
     return unit;
@@ -11234,22 +11240,40 @@ function createMaterial(dcr) {
 
 exports.createMaterial = createMaterial;
 
-function createDisplayEntityFromModel(model, material = null, vbWhole = false) {
-  if (material == null) {
+function createDisplayEntityFromModel(model, material = null, texEnabled = true, vbWhole = false) {
+  if (!material) {
     material = new Default3DMaterial_1.default();
-    material.initializeByCodeBuf();
+    material.initializeByCodeBuf(texEnabled);
+  } else {
+    material.initializeByCodeBuf(texEnabled || material.getTextureAt(0) != null);
   }
 
   if (material.getCodeBuf() == null || material.getBufSortFormat() < 0x1) {
     throw Error("the material does not call the initializeByCodeBuf() function. !!!");
   }
 
+  let ivs = model.indices;
+  let vs = model.vertices;
+  let uvs;
+
+  if (model.uvsList) {
+    uvs = model.uvsList[0];
+  } else {
+    uvs = new Float32Array(2 * vs.length / 3);
+  }
+
+  let nvs = model.normals;
+
+  if (nvs && typeof CoAGeom !== "undefined") {
+    CoAGeom.SurfaceNormal.ClacTrisNormal(vs, vs.length, ivs.length / 3, ivs, nvs);
+  }
+
   const dataMesh = new DataMesh_1.default();
   dataMesh.vbWholeDataEnabled = vbWhole;
-  dataMesh.setVS(model.vertices);
-  dataMesh.setUVS(model.uvsList[0]);
-  dataMesh.setNVS(model.normals);
-  dataMesh.setIVS(model.indices);
+  dataMesh.setVS(vs);
+  dataMesh.setUVS(uvs);
+  dataMesh.setNVS(nvs);
+  dataMesh.setIVS(ivs);
   dataMesh.setVtxBufRenderData(material);
   dataMesh.initialize();
   const entity = new DisplayEntity_1.default();
@@ -11747,6 +11771,14 @@ class DisplayEntity {
 
   getVisible() {
     return this.m_visible;
+  }
+
+  isVisible() {
+    return this.m_visible;
+  }
+
+  getREType() {
+    return 1;
   }
 
   getTransform() {
@@ -25443,7 +25475,8 @@ class RendererSceneBase {
   }
 
   removeContainer(container) {
-    if (container != null && container.__$wuid == this.m_uid && container.getRenderer() == this.m_renderer) {
+    // if (container != null && container.__$wuid == this.m_uid && container.getRenderer() == this.m_renderer) {
+    if (container != null && container.__$wuid == this.m_uid && container.getRenderer() == this) {
       let i = 0;
 
       for (; i < this.m_containersTotal; ++i) {
@@ -25512,68 +25545,82 @@ class RendererSceneBase {
   }
   /**
    * add an entity to the renderer process of the renderer instance
-   * @param entity IRenderEntity instance(for example: DisplayEntity class instance)
+   * @param entity IRenderEntityBase instance(for example: DisplayEntity class instance)
    * @param processid this destination renderer process id
    * @param deferred if the value is true,the entity will not to be immediately add to the renderer process by its id
    */
 
 
   addEntity(entity, processid = 0, deferred = true) {
-    if (entity != null && entity.__$testSpaceEnabled()) {
-      if (entity.isPolyhedral()) {
-        if (entity.hasMesh()) {
-          this.m_renderer.addEntity(entity, this.m_processids[processid], deferred);
+    if (entity.getREType() < 12) {
+      let re = entity;
 
-          if (this.m_rspace != null) {
-            this.m_rspace.addEntity(entity);
+      if (re != null && re.__$testSpaceEnabled()) {
+        if (re.isPolyhedral()) {
+          if (re.hasMesh()) {
+            this.m_renderer.addEntity(re, this.m_processids[processid], deferred);
+
+            if (this.m_rspace != null) {
+              this.m_rspace.addEntity(re);
+            }
+          } else {
+            // 这里的等待队列可能会和加入容器的操作冲突
+            // wait queue
+            if (this.m_nodeWaitLinker == null) {
+              this.m_nodeWaitLinker = new Entity3DNodeLinker_1.default();
+              this.m_nodeWaitQueue = new EntityNodeQueue_1.default();
+            }
+
+            let node = this.m_nodeWaitQueue.addEntity(re);
+            node.rstatus = processid;
+            this.m_nodeWaitLinker.addNode(node);
           }
         } else {
-          // 这里的等待队列可能会和加入容器的操作冲突
-          // wait queue
-          if (this.m_nodeWaitLinker == null) {
-            this.m_nodeWaitLinker = new Entity3DNodeLinker_1.default();
-            this.m_nodeWaitQueue = new EntityNodeQueue_1.default();
+          this.m_renderer.addEntity(re, this.m_processids[processid], deferred);
+
+          if (this.m_rspace != null) {
+            this.m_rspace.addEntity(re);
           }
-
-          let node = this.m_nodeWaitQueue.addEntity(entity);
-          node.rstatus = processid;
-          this.m_nodeWaitLinker.addNode(node);
-        }
-      } else {
-        this.m_renderer.addEntity(entity, this.m_processids[processid], deferred);
-
-        if (this.m_rspace != null) {
-          this.m_rspace.addEntity(entity);
         }
       }
+    } else {
+      let re = entity;
+      this.addContainer(re, processid);
     }
   }
   /**
    * remove an entity from the rendererinstance
-   * @param entity IRenderEntity instance(for example: DisplayEntity class instance)
+   * @param entity IRenderEntityBase instance(for example: DisplayEntity class instance)
    */
 
 
   removeEntity(entity) {
-    if (entity != null) {
-      let node = null;
+    if (entity.getREType() < 12) {
+      let re = entity;
 
-      if (this.m_nodeWaitLinker != null) {
-        let node = this.m_nodeWaitQueue.getNodeByEntity(entity);
+      if (entity != null) {
+        let node = null;
 
-        if (node != null) {
-          this.m_nodeWaitLinker.removeNode(node);
-          this.m_nodeWaitQueue.removeEntity(entity);
+        if (this.m_nodeWaitLinker != null) {
+          let node = this.m_nodeWaitQueue.getNodeByEntity(re);
+
+          if (node != null) {
+            this.m_nodeWaitLinker.removeNode(node);
+            this.m_nodeWaitQueue.removeEntity(re);
+          }
+        }
+
+        if (node == null) {
+          this.m_renderer.removeEntity(re);
+
+          if (this.m_rspace != null) {
+            this.m_rspace.removeEntity(re);
+          }
         }
       }
-
-      if (node == null) {
-        this.m_renderer.removeEntity(entity);
-
-        if (this.m_rspace != null) {
-          this.m_rspace.removeEntity(entity);
-        }
-      }
+    } else {
+      let re = entity;
+      this.removeContainer(re);
     }
   }
 
@@ -27129,6 +27176,14 @@ class DisplayEntityContainer {
 
   getVisible() {
     return this.m_visible;
+  }
+
+  isVisible() {
+    return this.m_visible;
+  }
+
+  getREType() {
+    return 12;
   }
 
   getUid() {
