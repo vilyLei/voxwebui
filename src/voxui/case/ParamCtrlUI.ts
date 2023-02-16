@@ -1,5 +1,3 @@
-;
-
 import { CtrlInfo, ItemCallback, CtrlItemParam, CtrlItemObj } from "./item/CtrlItemObj";
 import { SelectionEvent, ProgressDataEvent, RendererDevice, MouseEvent, VoxRScene } from "../../cospace/voxengine/VoxRScene";
 import { Vector3D, MathConst, VoxMath } from "../../cospace/math/VoxMath";
@@ -19,7 +17,6 @@ import { ColorLabel } from "../entity/ColorLabel";
 export default class ParamCtrlUI {
 
     private m_ruisc: IVoxUIScene = null;
-    // rgbPanel = new UIPanel();
     private rgbPanel: IColorPickPanel = null;
     constructor() { }
 
@@ -166,7 +163,7 @@ export default class ParamCtrlUI {
             // this.m_selectPlane.setZ(-1.0 );
             this.m_selectPlane.depthTest = true;
             this.m_ruisc.addEntity(this.m_selectPlane);
-            this.m_selectPlane.setColor(VoxMaterial.createColor4(0.1,0.2,0.2));
+            this.m_selectPlane.setColor(VoxMaterial.createColor4(0.05,0.1,0.05));
             // this.m_selectPlane.setVisible(false);
         }
     }
@@ -181,28 +178,6 @@ export default class ParamCtrlUI {
             this.m_fontSize = MathConst.CalcCeilPowerOfTwo(this.m_fontSize);
         }
         this.m_menuBtn = this.createSelectBtn("", "menuCtrl", "Menu Open", "Menu Close", false, true);
-        // this.m_menuBtn = this.createSelectBtn("", "menuCtrl_T", "Menu Open_T", "Menu Close_T", false, true);
-
-        // this.m_selectPlane = VoxRScene.createDisplayEntity();
-
-
-        // this.m_selectPlane = new Plane3DEntity();
-        // this.m_selectPlane.vertColorEnabled = true;
-        // this.m_selectPlane.color0.setRGB3f(0.0, 0.3, 0.0);
-        // this.m_selectPlane.color1.setRGB3f(0.0, 0.3, 0.0);
-        // this.m_selectPlane.color2.setRGB3f(0.0, 0.5, 0.5);
-        // this.m_selectPlane.color3.setRGB3f(0.0, 0.5, 0.5);
-        // this.m_selectPlane.initializeXOY(0, 0, 1.0, 1.0);
-        // this.m_ruisc.addEntity(this.m_selectPlane);
-        // this.m_selectPlane.setVisible(false);
-
-        // let flag = RendererDevice.IsMobileWeb();
-        // this.rgbPanel = new RGBColorPanel();
-        // this.rgbPanel.initialize(flag ? 64 : 32, 4);
-        // this.rgbPanel.addEventListener(RGBColoSelectEvent.COLOR_SELECT, this, this.selectColor);
-        // this.rgbPanel.setXY(this.m_btnPX, this.m_btnPY);
-        // this.rgbPanel.close();
-        // this.m_ruisc.addContainer(this.rgbPanel, 1);
     }
     private m_btnMap: Map<string, CtrlItemObj> = new Map();
     //"number_value"(数值调节按钮),"progress"(百分比调节按钮),"status_select"(状态选择按钮)

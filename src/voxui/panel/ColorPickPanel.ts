@@ -31,8 +31,6 @@ class ColorPickPanel extends UIPanel implements IColorPickPanel {
 
 			this.m_panelW = panelW;
 			this.m_panelH = panelH;
-
-			if (this.m_bgColor == null) this.m_bgColor = CoMaterial.createColor4();
 		}
 	}
 	destroy(): void {

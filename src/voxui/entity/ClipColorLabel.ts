@@ -3,17 +3,12 @@ import ICanvasTexAtlas from "../../cospace/voxtexture/atlas/ICanvasTexAtlas";
 import { IClipColorLabel } from "./IClipColorLabel";
 import IRawMesh from "../../vox/mesh/IRawMesh";
 import IColor4 from "../../vox/material/IColor4";
+import IRenderTexture from "../../vox/render/texture/IRenderTexture";
 import { ClipLabelBase } from "./ClipLabelBase";
 
-import { ICoMesh } from "../../cospace/voxmesh/ICoMesh";
-declare var CoMesh: ICoMesh;
-import { ICoMaterial } from "../../cospace/voxmaterial/ICoMaterial";
-declare var CoMaterial: ICoMaterial;
-import { ICoMath } from "../../cospace/math/ICoMath";
-declare var CoMath: ICoMath;
-import { ICoEntity } from "../../cospace/voxentity/ICoEntity";
-import IRenderTexture from "../../vox/render/texture/IRenderTexture";
-declare var CoEntity: ICoEntity;
+import { VoxEntity } from "../../cospace/voxentity/VoxEntity";
+import { VoxMesh } from "../../cospace/voxmesh/VoxMesh";
+import { VoxMaterial } from "../../cospace/voxmaterial/VoxMaterial";
 
 class ClipColorLabel extends ClipLabelBase implements IClipColorLabel {
 
@@ -27,7 +22,7 @@ class ClipColorLabel extends ClipLabelBase implements IClipColorLabel {
 		let ivs = new Uint16Array([0, 1, 2, 0, 2, 3]);
 		let vs = new Float32Array(this.createVS(0, 0, this.m_width, this.m_height));
 
-		let mesh = CoMesh.createRawMesh();
+		let mesh = VoxMesh.createRawMesh();
 		mesh.reset();
 		mesh.setIVS(ivs);
 		mesh.addFloat32Data(vs, 3);
@@ -60,7 +55,7 @@ class ClipColorLabel extends ClipLabelBase implements IClipColorLabel {
 			}
 			let material = this.createMaterial( tex );
 			let mesh = this.createMesh(atlas, idns);
-			let et = CoEntity.createDisplayEntity();
+			let et = VoxEntity.createDisplayEntity();
 			et.setMaterial(material);
 			et.setMesh(mesh);
 			this.m_entities.push(et);
@@ -69,7 +64,7 @@ class ClipColorLabel extends ClipLabelBase implements IClipColorLabel {
 			
 			let colors = new Array(colorsTotal);
 			for (let i = 0; i < colorsTotal; ++i) {
-				colors[i] = CoMaterial.createColor4();
+				colors[i] = VoxMaterial.createColor4();
 			}
 			this.m_colors = colors;
 			this.m_total = colorsTotal;
@@ -106,14 +101,14 @@ class ClipColorLabel extends ClipLabelBase implements IClipColorLabel {
 
 				let colors: IColor4[] = new Array(n);
 				for (let i = 0; i < n; ++i) {
-					colors[i] = CoMaterial.createColor4();
+					colors[i] = VoxMaterial.createColor4();
 					colors[i].copyFrom(src[i]);
 				}
 				this.m_colors = colors;
 				this.m_width = srcLable.getWidth();
 				this.m_height = srcLable.getHeight();
 				let material = this.createMaterial( tex );
-				let et = CoEntity.createDisplayEntity();
+				let et = VoxEntity.createDisplayEntity();
 				et.setMaterial(material);
 				et.setMesh(mesh);
 				this.m_entities.push(et);
