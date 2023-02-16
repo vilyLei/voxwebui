@@ -4,7 +4,6 @@ import { Vector3D, MathConst, VoxMath } from "../../cospace/math/VoxMath";
 import { IVoxUIScene } from "../scene/IVoxUIScene";
 import { SelectionEntity } from "../component/SelectionEntity";
 import { ProgressEntity } from "../component/ProgressEntity";
-import ITransformEntity from "../../vox/entity/ITransformEntity";
 import IVector3D from "../../vox/math/IVector3D";
 import ISelectionEvent from "../../vox/event/ISelectionEvent";
 import IProgressDataEvent from "../../vox/event/IProgressDataEvent";
@@ -17,7 +16,8 @@ import { ColorLabel } from "../entity/ColorLabel";
 export default class ParamCtrlUI {
 
     private m_ruisc: IVoxUIScene = null;
-    private rgbPanel: IColorPickPanel = null;
+    private m_colorPanel: IColorPickPanel = null;
+    private m_selectedPlane: ColorLabel = null;
     constructor() { }
 
     initialize(uisc: IVoxUIScene, buildDisplay: boolean = true): void {
@@ -34,7 +34,7 @@ export default class ParamCtrlUI {
         if (this.m_menuBtn != null) {
             this.menuCtrl(false);
             this.m_menuBtn.select(false);
-            this.m_selectPlane.setVisible(false);
+            if(this.m_selectedPlane != null)this.m_selectedPlane.setVisible(false);
         }
     }
     open(): void {
@@ -48,7 +48,7 @@ export default class ParamCtrlUI {
     }
 
     private layoutPickColorPanel(tar: UIEntityBase): void {
-        let panel = this.rgbPanel;
+        let panel = this.m_colorPanel;
         if (panel != null && panel.isOpen()) {
             let bounds = tar.getGlobalBounds();
             panel.setXY(bounds.max.x - panel.getWidth(), bounds.max.y + 2);
@@ -59,10 +59,10 @@ export default class ParamCtrlUI {
     private colorSelectListener(uuid: string, tar: UIEntityBase, color: IColor4): void {
 
         console.log("color select..., tar: ", tar);
-        let panel = this.rgbPanel;
+        let panel = this.m_colorPanel;
         if (panel != null && panel.isOpen()) {
             panel.close();
-            this.rgbPanel = null;
+            this.m_colorPanel = null;
         } else {
             //IColorPickPanel
             let panel = this.m_ruisc.panel.getPanel("colorPickPanel") as IColorPickPanel;
@@ -70,7 +70,7 @@ export default class ParamCtrlUI {
                 if (panel.isOpen()) {
                     panel.close();
                 } else {
-                    this.rgbPanel = panel;
+                    this.m_colorPanel = panel;
                     panel.open();
                     panel.setColor(color);
                     this.layoutPickColorPanel(tar);
@@ -91,12 +91,11 @@ export default class ParamCtrlUI {
     }
     private initUI(): void {
         this.initCtrlBars();
-
     }
+
     private m_fontSize = 30;
     private m_btnPX = 122.0;
     private m_pos: IVector3D = null;
-    private m_selectPlane: ColorLabel = null;
 
     private m_visiBtns: (SelectionEntity | ProgressEntity)[] = [];
     private m_btns: (SelectionEntity | ProgressEntity)[] = [];
@@ -151,20 +150,20 @@ export default class ParamCtrlUI {
         this.createSelectPlane();
 
         let pv = bounds.min;
-        this.m_selectPlane.setXY(pv.x, pv.y);
-        this.m_selectPlane.setScaleXY(bounds.getWidth(), 3.0);
-        this.m_selectPlane.update();
-        this.m_selectPlane.setVisible(true);
+        this.m_selectedPlane.setXY(pv.x, pv.y);
+        this.m_selectedPlane.setScaleXY(bounds.getWidth(), 3.0);
+        this.m_selectedPlane.update();
+        this.m_selectedPlane.setVisible(true);
     }
     private createSelectPlane(): void {
-        if(this.m_selectPlane == null) {
-            this.m_selectPlane = new ColorLabel();
-            this.m_selectPlane.initialize(1.0, 1.0);
-            // this.m_selectPlane.setZ(-1.0 );
-            this.m_selectPlane.depthTest = true;
-            this.m_ruisc.addEntity(this.m_selectPlane);
-            this.m_selectPlane.setColor(VoxMaterial.createColor4(0.05,0.1,0.05));
-            // this.m_selectPlane.setVisible(false);
+        if(this.m_selectedPlane == null) {
+            this.m_selectedPlane = new ColorLabel();
+            this.m_selectedPlane.initialize(1.0, 1.0);
+            // this.m_selectedPlane.setZ(-1.0 );
+            this.m_selectedPlane.depthTest = true;
+            this.m_ruisc.addEntity(this.m_selectedPlane);
+            this.m_selectedPlane.setColor(VoxMaterial.createColor4(0.05,0.1,0.05));
+            // this.m_selectedPlane.setVisible(false);
         }
     }
     private initCtrlBars(): void {
@@ -244,25 +243,26 @@ export default class ParamCtrlUI {
         return null;
     }
     private menuCtrl(flag: boolean): void {
-
-        if (flag && !this.m_visiBtns[0].isOpen()) {
-            for (let i: number = 0; i < this.m_visiBtns.length; ++i) {
-                this.m_visiBtns[i].open();
+        if(this.m_visiBtns.length > 0) {
+            if (flag && !this.m_visiBtns[0].isOpen()) {
+                for (let i = 0; i < this.m_visiBtns.length; ++i) {
+                    this.m_visiBtns[i].open();
+                }
+                this.m_menuBtn.getPosition(this.m_pos);
+                this.m_pos.x = this.m_btnPX;
+                this.m_menuBtn.setPosition(this.m_pos);
             }
-            this.m_menuBtn.getPosition(this.m_pos);
-            this.m_pos.x = this.m_btnPX;
-            this.m_menuBtn.setPosition(this.m_pos);
-        }
-        else if (this.m_visiBtns[0].isOpen()) {
-            for (let i: number = 0; i < this.m_visiBtns.length; ++i) {
-                this.m_visiBtns[i].close();
+            else if (this.m_visiBtns[0].isOpen()) {
+                for (let i = 0; i < this.m_visiBtns.length; ++i) {
+                    this.m_visiBtns[i].close();
+                }
+                this.m_menuBtn.getPosition(this.m_pos);
+                this.m_pos.x = 0;
+                this.m_menuBtn.setPosition(this.m_pos);
+                this.m_selectedPlane.setVisible(false);
             }
-            this.m_menuBtn.getPosition(this.m_pos);
-            this.m_pos.x = 0;
-            this.m_menuBtn.setPosition(this.m_pos);
-            this.m_selectPlane.setVisible(false);
         }
-        if (this.rgbPanel != null) this.rgbPanel.close();
+        if (this.m_colorPanel != null) this.m_colorPanel.close();
     }
     updateLayout(force: boolean = false): void {
 
@@ -286,7 +286,7 @@ export default class ParamCtrlUI {
             btns[i].update();
             pos.y += btns[i].getHeight() + disY;
         }
-        // this.rgbPanel.setXY(this.m_btnPX, this.m_btnPY);
+        // this.m_colorPanel.setXY(this.m_btnPX, this.m_btnPY);
     }
 
     private selectChange(evt: ISelectionEvent): void {
@@ -299,7 +299,7 @@ export default class ParamCtrlUI {
             obj.sendFlagOut(flag);
             this.moveSelectToBtn(evt.target);
         }
-        if (this.rgbPanel != null) this.rgbPanel.close();
+        if (this.m_colorPanel != null) this.m_colorPanel.close();
     }
     private m_currUUID = "";
     private selectColor(uuid: string, color: IColor4): void {
@@ -346,26 +346,26 @@ export default class ParamCtrlUI {
 
                 obj.sendValueOut(value);
 
-                if (this.rgbPanel != null && changeFlag) this.rgbPanel.close();
+                if (this.m_colorPanel != null && changeFlag) this.m_colorPanel.close();
             } else if (evt.status == 0) {
                 console.log("only select the btn");
                 if (param.colorPick) {
-                    // if (this.rgbPanel != null && this.rgbPanel.isClosed()) {
-                    //     this.rgbPanel.open();
+                    // if (this.m_colorPanel != null && this.m_colorPanel.isClosed()) {
+                    //     this.m_colorPanel.open();
                     // }
-                    // if (obj.colorId >= 0) this.rgbPanel.selectColorById(obj.colorId);
+                    // if (obj.colorId >= 0) this.m_colorPanel.selectColorById(obj.colorId);
                     let color = VoxMaterial.createColor4();
                     color.fromArray3(obj.color);
                     this.colorSelectListener(evt.uuid, evt.target, color);
                 } else {
-                    if (this.rgbPanel != null) this.rgbPanel.close();
+                    if (this.m_colorPanel != null) this.m_colorPanel.close();
                 }
             }
             this.moveSelectToBtn(evt.target);
         }
     }
     private mouseBgDown(evt: any): void {
-        if (this.rgbPanel != null) this.rgbPanel.close();
+        if (this.m_colorPanel != null) this.m_colorPanel.close();
     }
 
     addStatusItem(name: string, uuid: string, selectNS: string, deselectNS: string, flag: boolean, callback: ItemCallback, visibleAlways: boolean = true): void {

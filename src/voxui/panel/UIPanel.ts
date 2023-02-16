@@ -176,7 +176,7 @@ class UIPanel extends UIEntityContainer implements IUIPanel {
 		let bgLabel = new ColorLabel();
 		bgLabel.depthTest = true;
 		bgLabel.initialize(pw, ph);
-		bgLabel.setZ(-0.1);
+		bgLabel.setZ(-0.2);
 		bgLabel.setColor(this.m_bgColor);
 		this.m_bgLabel = bgLabel;
 		this.initializeEvent(bgLabel.getREntities()[0]);

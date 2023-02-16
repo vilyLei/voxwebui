@@ -13,6 +13,7 @@ interface IColorPickPanel extends IUIPanel {
 	initialize(scene: IVoxUIScene, rpi: number, panelW?: number, panelH?: number, marginWidth?: number): void;
 	setSelectColorCallback(callback: (color: IColor4)=>void): void;
 	setColor(color: IColor4): void;
+	setPickXY(px: number, py: number): void;
 
 }
 export { IColorPickPanel };

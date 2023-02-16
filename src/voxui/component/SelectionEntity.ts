@@ -120,7 +120,7 @@ class SelectionEntity extends CompEntityBase {
 	getNameWidth(): number {
 		return this.m_nameWidth;
 	}
-	initialize(uisc: IVoxUIScene, barName: string = "select", select_name: string = "Yes", deselect_name: string = "No", fontSize: number = 30.0, nameWidth: number = 90, flagWidth: number = 60, height: number = 50): void {
+	initialize(uisc: IVoxUIScene, barName: string = "select", select_name: string = "Yes", deselect_name: string = "No", fontSize: number = 30.0, nameWidth: number = 70, flagWidth: number = 50, height: number = 40): void {
 
 		if (this.isIniting()) {
 			this.init();

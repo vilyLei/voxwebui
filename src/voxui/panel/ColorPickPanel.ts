@@ -1,6 +1,3 @@
-
-import { ICoMaterial } from "../../cospace/voxmaterial/ICoMaterial";
-import { ICoRScene } from "../../cospace/voxengine/ICoRScene";
 import { IVoxUIScene } from "../scene/IVoxUIScene";
 import { UIPanel } from "./UIPanel";
 import IColor4 from "../../vox/material/IColor4";
@@ -8,9 +5,10 @@ import IRenderTexture from "../../vox/render/texture/IRenderTexture";
 import { TextureLabel } from "../entity/TextureLabel";
 import { IColorPickPanel } from "./IColorPickPanel";
 import { ColorLabel } from "../entity/ColorLabel";
+import { EventBase, MouseEvent } from "../../cospace/voxengine/VoxRScene";
+import { VoxMaterial } from "../../cospace/voxmaterial/VoxMaterial";
+import IEventBase from "../../vox/event/IEventBase";
 
-declare var CoRScene: ICoRScene;
-declare var CoMaterial: ICoMaterial;
 
 class ColorPickPanel extends UIPanel implements IColorPickPanel {
 
@@ -49,6 +47,11 @@ class ColorPickPanel extends UIPanel implements IColorPickPanel {
 			this.m_colorLabel.setColor(color);
 			this.m_colorLabel.setVisible(true);
 		}
+	}
+	setPickXY(px: number, py: number): void {
+		
+		this.m_prePickX = px;
+		this.m_prePickY = py;
 	}
 	private m_callback: (color: IColor4) => void = null;
 	setSelectColorCallback(callback: (color: IColor4) => void): void {
@@ -92,7 +95,7 @@ class ColorPickPanel extends UIPanel implements IColorPickPanel {
 		if (py > 255) py = 255;
 		py = 255 - py;
 		if (this.m_color == null) {
-			this.m_color = CoMaterial.createColor4();
+			this.m_color = VoxMaterial.createColor4();
 		}
 		let ls = this.m_pixels;
 		if (this.m_pixels != null) {
@@ -121,6 +124,7 @@ class ColorPickPanel extends UIPanel implements IColorPickPanel {
 		this.m_pixels = imgData.data;
 	}
 	private createTexByUrl(url: string = ""): IRenderTexture {
+
 		let sc = this.getScene();
 
 		let tex = sc.rscene.textureBlock.createImageTex2D(64, 64, false);
@@ -133,20 +137,41 @@ class ColorPickPanel extends UIPanel implements IColorPickPanel {
 		return tex;
 	}
 	protected openThis(): void {
-
-		let ME = CoRScene.MouseEvent;
 		if (this.m_scene != null) {
-			this.m_scene.addEventListener(ME.MOUSE_DOWN, this, this.stMouseDownListener);
+			this.m_scene.addEventListener(MouseEvent.MOUSE_DOWN, this, this.stMouseDownListener);
 
 		}
 	}
 	protected closeThis(): void {
-		let ME = CoRScene.MouseEvent;
 		if (this.m_scene != null) {
-			this.m_scene.removeEventListener(ME.MOUSE_DOWN, this, this.stMouseDownListener);
+			this.m_scene.removeEventListener(MouseEvent.MOUSE_DOWN, this, this.stMouseDownListener);
 		}
 		this.m_callback = null;
 		if (this.m_colorLabel != null) this.m_colorLabel.setVisible(false);
+		this.stMouseUp(null);
+	}
+
+	private m_prePickX = -1;
+	private m_prePickY = -1;
+	private pickColorByXY(px: number, py: number): void {
+
+		if (this.m_prePickX != px || this.m_prePickY != py) {
+
+			this.m_prePickX = px;
+			this.m_prePickY = py;
+
+			if (px >= 0 || px <= this.m_panelW || py >= 0 || py <= this.m_panelH) {
+
+				let d = this.m_marginWidth;
+				px -= d;
+				py -= d;
+				let color = this.getRGBAByXY(px, py);
+				if (this.m_callback != null) {
+					this.setColor(color);
+					this.m_callback(color);
+				}
+			}
+		}
 	}
 	private stMouseDownListener(evt: any): void {
 
@@ -160,14 +185,29 @@ class ColorPickPanel extends UIPanel implements IColorPickPanel {
 		if (pv.x < 0 || pv.x > this.m_panelW || pv.y < 0 || pv.y > this.m_panelH) {
 			this.close();
 		} else {
-			let dis = this.m_marginWidth;
-			pv.x -= dis;
-			pv.y -= dis;
-			let color = this.getRGBAByXY(pv.x, pv.y);
-			if (this.m_callback != null) {
-				this.setColor(color);
-				this.m_callback(color);
+			this.pickColorByXY(pv.x, pv.y);
+			this.m_scene.addEventListener(EventBase.ENTER_FRAME, this, this.enterFrame, true, false);
+			this.m_scene.addEventListener(MouseEvent.MOUSE_UP, this, this.stMouseUp, true, false);
+		}
+	}
+	private m_autoDelay: number = 0;
+	private enterFrame(evt: IEventBase): void {
+		// console.log("enterFrame");
+		if (this.m_autoDelay > 20) {
+			if ((this.m_autoDelay % 7) == 0) {
+				let st = this.getScene().getStage();
+				let pv = this.m_v0;
+				pv.setXYZ(st.mouseX, st.mouseY, 0);
+				this.globalToLocal(pv);
+				this.pickColorByXY(pv.x, pv.y);
 			}
+		}
+		this.m_autoDelay++;
+	}
+	private stMouseUp(evt: IEventBase): void {
+		if (this.m_scene != null) {
+			this.m_scene.removeEventListener(EventBase.ENTER_FRAME, this, this.enterFrame);
+			this.m_scene.removeEventListener(MouseEvent.MOUSE_UP, this, this.stMouseUp);
 		}
 	}
 	protected layout(): void {

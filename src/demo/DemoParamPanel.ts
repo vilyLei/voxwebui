@@ -5,16 +5,16 @@ import { VoxUIScene } from "../voxui/scene/VoxUIScene";;
 import VoxRuntime from "../common/VoxRuntime";
 import { ProgressDataEvent, SelectionEvent, VoxRScene } from "../cospace/voxengine/VoxRScene";
 import { VoxUIInteraction } from "../cospace/voxengine/ui/VoxUIInteraction";
-import {CtrlInfo, ParamCtrlUI} from "../voxui/case/ParamCtrlUI";
 import { PanelSystem } from "../voxui/system/PanelSystem";
 import IRendererSceneGraph from "../vox/scene/IRendererSceneGraph";
+import { CtrlInfo, ParamCtrlPanel } from "../voxui/panel/ParamCtrlPanel";
+import { VoxMaterial } from "../cospace/voxmaterial/VoxMaterial";
 
 export class DemoParamPanel {
 
     private m_graph: IRendererSceneGraph = null;
     private m_rscene: IRendererScene = null;
 	private m_interact: IMouseInteraction = null;
-	private m_paramUI = new ParamCtrlUI();
 	constructor(){}
 
     initialize(): void {
@@ -56,17 +56,20 @@ export class DemoParamPanel {
 	}
     private initUIObjs(): void {
 
-        this.m_paramUI.initialize(this.m_uiScene, true);
+        let uisc = this.m_uiScene;
 
-		let ui = this.m_paramUI;
-
+        let panel = new ParamCtrlPanel();
+        panel.initialize(uisc, 1);
+        panel.setXY(100,100);
+        
         // let ls = this.m_entities;
         // let entity0 = ls[0];
         // let entity1 = ls[1];
         // entity0.getScaleXYZ(this.m_sv);
-
+        let ui = panel;
+        ui.setBGColor(VoxMaterial.createColor4(0.4, 0.4, 0.4));
         console.log("initUI --------------------------------------");
-		//*
+		///*
         ui.addStatusItem("显示-A", "visible-a", "Yes", "No", true, (info: CtrlInfo): void => {
             console.log("显示-A", info.flag);
             // entity0.setVisible(info.flag);
@@ -75,7 +78,8 @@ export class DemoParamPanel {
             console.log("显示-B", info.flag);
             // entity1.setVisible(info.flag);
         });
-
+        //*/
+        ///*
         ui.addProgressItem("缩放-A", "scale", 1.0, (info: CtrlInfo): void => {
 			console.log("缩放-A", info.values[0]);
             // this.m_currSV.copyFrom(this.m_sv);
@@ -96,6 +100,7 @@ export class DemoParamPanel {
             // entity1.update();
         });
 		//*/
+        ///*
         ui.addValueItem("颜色-A", "color-a", 0.8, 0.0, 10, (info: CtrlInfo): void => {
             let values = info.values;
             console.log("颜色-A, color-a values: ", values, ", colorPick: ", info.colorPick);
@@ -109,7 +114,8 @@ export class DemoParamPanel {
             // material.setRGB3f(values[0], values[1], values[2]);
         }, true);
         //*/
-        ui.updateLayout(true);
+        ui.layoutItem();
+        ui.open();
     }
     
 	private initUserInteract(): void {
@@ -119,7 +125,7 @@ export class DemoParamPanel {
 
 			this.m_interact = VoxUIInteraction.createMouseInteraction();
 			this.m_interact.initialize(this.m_rscene, 0, true);
-			this.m_interact.setSyncLookAtEnabled(true);            
+			this.m_interact.setSyncLookAtEnabled(true);
 		}
 	}
 	private initRenderer(): void {
