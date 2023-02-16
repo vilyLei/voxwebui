@@ -4,9 +4,9 @@
 	else if(typeof define === 'function' && define.amd)
 		define([], factory);
 	else if(typeof exports === 'object')
-		exports["VoxUI"] = factory();
+		exports["Lib_VoxUI"] = factory();
 	else
-		root["VoxUI"] = factory();
+		root["Lib_VoxUI"] = factory();
 })((typeof self !== 'undefined' ? self : this), function() {
 return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
@@ -108,6 +108,12 @@ Object.defineProperty(exports, "__esModule", {
 
 const ClipLabelBase_1 = __webpack_require__("c21f");
 
+const VoxEntity_1 = __webpack_require__("9b53");
+
+const VoxMesh_1 = __webpack_require__("228b");
+
+const VoxMaterial_1 = __webpack_require__("0efa");
+
 class ClipColorLabel extends ClipLabelBase_1.ClipLabelBase {
   constructor() {
     super(...arguments);
@@ -120,7 +126,7 @@ class ClipColorLabel extends ClipLabelBase_1.ClipLabelBase {
   createMesh(atlas, idns) {
     let ivs = new Uint16Array([0, 1, 2, 0, 2, 3]);
     let vs = new Float32Array(this.createVS(0, 0, this.m_width, this.m_height));
-    let mesh = CoMesh.createRawMesh();
+    let mesh = VoxMesh_1.VoxMesh.createRawMesh();
     mesh.reset();
     mesh.setIVS(ivs);
     mesh.addFloat32Data(vs, 3);
@@ -159,7 +165,7 @@ class ClipColorLabel extends ClipLabelBase_1.ClipLabelBase {
 
       let material = this.createMaterial(tex);
       let mesh = this.createMesh(atlas, idns);
-      let et = CoEntity.createDisplayEntity();
+      let et = VoxEntity_1.VoxEntity.createDisplayEntity();
       et.setMaterial(material);
       et.setMesh(mesh);
       this.m_entities.push(et);
@@ -167,7 +173,7 @@ class ClipColorLabel extends ClipLabelBase_1.ClipLabelBase {
       let colors = new Array(colorsTotal);
 
       for (let i = 0; i < colorsTotal; ++i) {
-        colors[i] = CoMaterial.createColor4();
+        colors[i] = VoxMaterial_1.VoxMaterial.createColor4();
       }
 
       this.m_colors = colors;
@@ -209,7 +215,7 @@ class ClipColorLabel extends ClipLabelBase_1.ClipLabelBase {
         let colors = new Array(n);
 
         for (let i = 0; i < n; ++i) {
-          colors[i] = CoMaterial.createColor4();
+          colors[i] = VoxMaterial_1.VoxMaterial.createColor4();
           colors[i].copyFrom(src[i]);
         }
 
@@ -217,7 +223,7 @@ class ClipColorLabel extends ClipLabelBase_1.ClipLabelBase {
         this.m_width = srcLable.getWidth();
         this.m_height = srcLable.getHeight();
         let material = this.createMaterial(tex);
-        let et = CoEntity.createDisplayEntity();
+        let et = VoxEntity_1.VoxEntity.createDisplayEntity();
         et.setMaterial(material);
         et.setMesh(mesh);
         this.m_entities.push(et);
@@ -522,6 +528,10 @@ class UIEntityBase {
     this.m_pos.y = py;
   }
 
+  setXYZ(px, py, pz) {
+    this.m_pos.setXYZ(px, py, pz);
+  }
+
   getPosition(pv) {
     pv.copyFrom(this.m_pos);
     return pv;
@@ -659,6 +669,8 @@ class T_CoMaterial {
   }
 
   initialize(callback = null, url = "") {
+    this.m_init = !this.isEnabled();
+
     if (this.m_init) {
       this.m_init = false;
 
@@ -820,6 +832,97 @@ if (typeof window !== 'undefined') {
 // Indicate to webpack that this file can be concatenated
 /* unused harmony default export */ var _unused_webpack_default_export = (null);
 
+
+/***/ }),
+
+/***/ "228b":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+const ModuleLoader_1 = __webpack_require__("75f5");
+
+class T_CoMesh {
+  constructor() {
+    this.m_init = true;
+  }
+
+  initialize(callback = null, url = "") {
+    this.m_init = !this.isEnabled();
+
+    if (this.m_init) {
+      this.m_init = false;
+
+      if (url == "" || url === undefined) {
+        url = "static/cospace/comesh/CoMesh.umd.min.js";
+      }
+
+      new ModuleLoader_1.ModuleLoader(1, () => {
+        if (callback != null && this.isEnabled()) callback([url]);
+      }).load(url);
+      return true;
+    }
+
+    return false;
+  }
+
+  isEnabled() {
+    return typeof CoMesh !== "undefined";
+  }
+  /**
+   * plane mesh builder
+   */
+
+
+  get plane() {
+    return CoMesh.plane;
+  }
+  /**
+   * line mesh builder
+   */
+
+
+  get line() {
+    return CoMesh.line;
+  }
+  /**
+   * cone mesh builder
+   */
+
+
+  get cone() {
+    return CoMesh.cone;
+  }
+  /**
+   * box mesh builder
+   */
+
+
+  get box() {
+    return CoMesh.box;
+  }
+
+  createDataMesh() {
+    return CoMesh.createDataMesh();
+  }
+
+  createRawMesh() {
+    return CoMesh.createRawMesh();
+  }
+
+  createBoundsMesh() {
+    return CoMesh.createBoundsMesh();
+  }
+
+}
+
+const VoxMesh = new T_CoMesh();
+exports.VoxMesh = VoxMesh;
 
 /***/ }),
 
@@ -2211,11 +2314,11 @@ function createPromptPanel() {
 
 exports.createPromptPanel = createPromptPanel;
 
-function createUIScene(uiConfig = null, crscene = null, atlasSize = 512, renderProcessesTotal = 3) {
+function createUIScene(graph, uiConfig = null, atlasSize = 512, renderProcessesTotal = 3) {
   let uisc = new VoxUIScene_1.VoxUIScene();
 
-  if (crscene != null) {
-    uisc.initialize(crscene, atlasSize, renderProcessesTotal);
+  if (graph != null) {
+    uisc.initialize(graph, atlasSize, renderProcessesTotal);
   }
 
   uisc.uiConfig = uiConfig;
@@ -2265,6 +2368,7 @@ const UILayout_1 = __webpack_require__("7908");
 
 class VoxUIScene {
   constructor() {
+    this.m_graph = null;
     this.texAtlas = null;
     this.transparentTexAtlas = null;
     this.layout = new UILayout_1.UILayout();
@@ -2280,24 +2384,26 @@ class VoxUIScene {
     this.resize();
   }
   /**
-   * @param crscene the default value is null
+   * @param graph the value is a IRendererSceneGraph instance
    * @param atlasSize the default value is 1024
    * @param renderProcessesTotal the default value is 3
    */
 
 
-  initialize(crscene = null, atlasSize = 1024, renderProcessesTotal = 3) {
-    if (this.m_crscene == null) {
-      this.m_crscene = crscene != null ? crscene : CoRScene.getRendererScene();
-      crscene = this.m_crscene;
-      let stage = this.m_crscene.getStage3D();
+  initialize(graph, atlasSize = 1024, renderProcessesTotal = 3) {
+    if (this.m_graph == null) {
+      this.m_graph = graph;
+      let crscene = graph.getSceneAt(0);
+      let stage = crscene.getStage3D();
       crscene.addEventListener(CoRScene.EventBase.RESIZE, this, this.resizeHandle);
-      let rparam = CoRScene.createRendererSceneParam();
+      let rparam = graph.createRendererSceneParam(); //CoRScene.createRendererSceneParam();
+
       rparam.cameraPerspectiveEnabled = false;
       rparam.setAttriAlpha(false);
       rparam.setCamProject(45.0, 0.1, 3000.0);
       rparam.setCamPosition(0.0, 0.0, 1500.0);
-      let subScene = crscene.createSubScene(rparam, renderProcessesTotal, true);
+      let subScene = graph.createSubScene(rparam, renderProcessesTotal, true); //crscene.createSubScene(rparam, renderProcessesTotal, true);
+
       subScene.enableMouseEvent(true);
       let t = this;
       t.rscene = subScene;
@@ -2506,6 +2612,7 @@ class Button extends UIEntityBase_1.UIEntityBase {
     this.m_lb = null;
     this.m_lbs = [];
     this.uuid = "btn";
+    this.syncLabelClip = true;
   }
 
   addLabel(label) {
@@ -2620,17 +2727,23 @@ class Button extends UIEntityBase_1.UIEntityBase {
     return this;
   }
 
-  mouseOverListener(evt) {
-    // console.log("Button::mouseOverListener() ...");
-    if (this.m_enabled) {
-      this.m_lb.setClipIndex(1);
+  setLabelsClipAt(index) {
+    if (this.syncLabelClip) {
       let ls = this.m_lbs;
 
       if (ls.length > 0) {
         for (let i = 0; i < ls.length; ++i) {
-          ls[i].setClipIndex(1);
+          ls[i].setClipIndex(index);
         }
       }
+    }
+  }
+
+  mouseOverListener(evt) {
+    // console.log("Button::mouseOverListener() ...");
+    if (this.m_enabled) {
+      this.m_lb.setClipIndex(1);
+      this.setLabelsClipAt(1);
     }
   }
 
@@ -2638,13 +2751,7 @@ class Button extends UIEntityBase_1.UIEntityBase {
     // console.log("Button::mouseOutListener() ...");
     if (this.m_enabled) {
       this.m_lb.setClipIndex(0);
-      let ls = this.m_lbs;
-
-      if (ls.length > 0) {
-        for (let i = 0; i < ls.length; ++i) {
-          ls[i].setClipIndex(0);
-        }
-      }
+      this.setLabelsClipAt(0);
     }
   }
 
@@ -2652,26 +2759,14 @@ class Button extends UIEntityBase_1.UIEntityBase {
     // console.log("Button::mouseDownListener() ...");
     if (this.m_enabled) {
       this.m_lb.setClipIndex(2);
-      let ls = this.m_lbs;
-
-      if (ls.length > 0) {
-        for (let i = 0; i < ls.length; ++i) {
-          ls[i].setClipIndex(2);
-        }
-      }
+      this.setLabelsClipAt(2);
     }
   }
 
   mouseUpListener(evt) {
     if (this.m_enabled) {
       this.m_lb.setClipIndex(3);
-      let ls = this.m_lbs;
-
-      if (ls.length > 0) {
-        for (let i = 0; i < ls.length; ++i) {
-          ls[i].setClipIndex(3);
-        }
-      }
+      this.setLabelsClipAt(3);
     }
   }
 
@@ -2995,6 +3090,122 @@ exports.RightBottomLayouter = RightBottomLayouter;
 
 /***/ }),
 
+/***/ "9b53":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+const ModuleLoader_1 = __webpack_require__("75f5");
+
+class T_CoEntity {
+  constructor() {
+    this.m_init = true;
+  }
+
+  initialize(callback = null, url = "") {
+    this.m_init = !this.isEnabled();
+
+    if (this.m_init) {
+      this.m_init = false;
+
+      if (url == "" || url === undefined) {
+        url = "static/cospace/coentity/CoEntity.umd.min.js";
+      }
+
+      new ModuleLoader_1.ModuleLoader(1, () => {
+        if (callback != null && this.isEnabled()) callback([url]);
+      }).load(url);
+      return true;
+    }
+
+    return false;
+  }
+
+  isEnabled() {
+    return typeof CoEntity !== "undefined" && typeof CoRScene !== "undefined";
+  }
+  /**
+   * @param model geometry model
+   * @param material IRenderMaterial instance, the default is null.
+   * @param vbWhole vtx buffer is whole data, or not, the default is false.
+   */
+
+
+  createDataMeshFromModel(model, material, vbWhole) {
+    return CoEntity.createDataMeshFromModel(model, material, vbWhole);
+  }
+  /**
+   * @param model geometry model
+   * @param pmaterial IRenderMaterial instance, the default is null.
+   * @param texEnabled texture enabled in the material, the default is true.
+   * @param vbWhole vtx buffer is whole data or not, the default is false.
+   */
+
+
+  createDisplayEntityFromModel(model, pmaterial, texEnabled, vbWhole) {
+    return CoEntity.createDisplayEntityFromModel(model, pmaterial, texEnabled, vbWhole);
+  }
+
+  createFreeAxis3DEntity(minV, maxV) {
+    return CoEntity.createFreeAxis3DEntity(minV, maxV);
+  }
+  /**
+   * @param size th default value is 100.0
+   */
+
+
+  createAxis3DEntity(size) {
+    return CoEntity.createAxis3DEntity(size);
+  }
+  /**
+   * @param model IDataMesh instance
+   * @param material IRenderMaterial instance.
+   * @param texEnabled use texture yes or no.
+   * @param vbWhole vtx buffer is whole data, or not, the default is false.
+   */
+
+
+  createDisplayEntityWithDataMesh(mesh, material, texEnabled, vbWhole) {
+    return CoEntity.createDisplayEntityWithDataMesh(mesh, material, texEnabled, vbWhole);
+  }
+
+  createDisplayEntity() {
+    return CoEntity.createDisplayEntity();
+  }
+
+  createMouseEventEntity() {
+    return CoEntity.createMouseEventEntity();
+  }
+
+  createBoundsEntity() {
+    return CoEntity.createBoundsEntity();
+  }
+  /**
+   * create a cross axis randerable entity
+   * @param size the default value is 100
+   */
+
+
+  createCrossAxis3DEntity(size) {
+    return CoEntity.createCrossAxis3DEntity(size);
+  }
+
+  createDisplayEntityContainer() {
+    return CoEntity.createDisplayEntityContainer();
+  }
+
+}
+
+const VoxEntity = new T_CoEntity();
+exports.VoxEntity = VoxEntity;
+
+/***/ }),
+
 /***/ "9ba1":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -3007,6 +3218,12 @@ Object.defineProperty(exports, "__esModule", {
 
 const UIEntityBase_1 = __webpack_require__("0b77");
 
+const VoxEntity_1 = __webpack_require__("9b53");
+
+const VoxMesh_1 = __webpack_require__("228b");
+
+const VoxMaterial_1 = __webpack_require__("0efa");
+
 class ColorLabel extends UIEntityBase_1.UIEntityBase {
   constructor() {
     super();
@@ -3017,7 +3234,7 @@ class ColorLabel extends UIEntityBase_1.UIEntityBase {
   createMesh(material) {
     let ivs = new Uint16Array([0, 1, 2, 0, 2, 3]);
     let vs = new Float32Array(this.createVS(0, 0, this.m_width, this.m_height));
-    let mesh = CoMesh.createRawMesh();
+    let mesh = VoxMesh_1.VoxMesh.createRawMesh();
     mesh.reset();
     mesh.setBufSortFormat(material.getBufSortFormat());
     mesh.setIVS(ivs);
@@ -3031,11 +3248,11 @@ class ColorLabel extends UIEntityBase_1.UIEntityBase {
       this.init();
       this.m_width = width;
       this.m_height = height;
-      let material = CoMaterial.createDefaultMaterial();
+      let material = VoxMaterial_1.VoxMaterial.createDefaultMaterial();
       material.initializeByCodeBuf(false);
-      this.m_color = CoMaterial.createColor4();
+      this.m_color = VoxMaterial_1.VoxMaterial.createColor4();
       let mesh = this.createMesh(material);
-      let et = CoEntity.createDisplayEntity();
+      let et = VoxEntity_1.VoxEntity.createDisplayEntity();
       et.setMaterial(material);
       et.setMesh(mesh);
       this.applyRST(et);
@@ -3705,6 +3922,414 @@ exports.ButtonBuilder = ButtonBuilder;
 
 /***/ }),
 
+/***/ "d1de":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+const ModuleLoader_1 = __webpack_require__("75f5");
+
+const VoxRenderer_1 = __webpack_require__("dab7");
+
+var RendererDevice = null;
+exports.RendererDevice = RendererDevice;
+var SelectionEvent = null;
+exports.SelectionEvent = SelectionEvent;
+var ProgressDataEvent = null;
+exports.ProgressDataEvent = ProgressDataEvent;
+var MouseEvent = null;
+exports.MouseEvent = MouseEvent;
+var EventBase = null;
+exports.EventBase = EventBase;
+
+class T_CoRScene {
+  constructor() {
+    this.m_init = true;
+  }
+
+  init() {
+    if (typeof CoRScene !== "undefined") {
+      exports.RendererDevice = RendererDevice = CoRScene.RendererDevice;
+      exports.SelectionEvent = SelectionEvent = CoRScene.SelectionEvent;
+      exports.ProgressDataEvent = ProgressDataEvent = CoRScene.ProgressDataEvent;
+      exports.EventBase = EventBase = CoRScene.EventBase;
+      exports.MouseEvent = MouseEvent = CoRScene.MouseEvent;
+    }
+  }
+
+  initialize(callback = null, url = "") {
+    this.init();
+    this.m_init = !this.isEnabled();
+
+    if (this.m_init) {
+      this.m_init = false;
+      let flag = false;
+      let total = 0;
+      let urlRenderer = "";
+      flag = VoxRenderer_1.VoxRenderer.initialize(urls => {
+        urlRenderer = urls[0];
+        total++;
+
+        if (total > 1) {
+          if (callback != null && this.isEnabled()) callback([urlRenderer, url]);
+        }
+      });
+
+      if (url == "" || url === undefined) {
+        url = "static/cospace/engine/rscene/CoRScene.umd.min.js";
+      }
+
+      new ModuleLoader_1.ModuleLoader(1, () => {
+        this.init();
+
+        if (flag) {
+          total++;
+
+          if (total > 1) {
+            if (callback != null && this.isEnabled()) callback([urlRenderer, url]);
+          }
+        } else {
+          if (callback != null && typeof CoRScene !== "undefined") callback([url]);
+        }
+      }).load(url);
+      return true;
+    }
+
+    return false;
+  }
+
+  get RendererDevice() {
+    return CoRScene.RendererDevice;
+  }
+
+  get RendererState() {
+    return CoRScene.RendererState;
+  }
+
+  get RenderDrawMode() {
+    return CoRScene.RenderDrawMode;
+  }
+
+  get VtxBufConst() {
+    return CoRScene.VtxBufConst;
+  }
+
+  get TextureConst() {
+    return CoRScene.TextureConst;
+  }
+
+  get Vector3D() {
+    return CoRScene.Vector3D;
+  }
+
+  get MouseEvent() {
+    return CoRScene.MouseEvent;
+  }
+
+  get EventBase() {
+    return CoRScene.EventBase;
+  }
+
+  get SelectionEvent() {
+    return CoRScene.SelectionEvent;
+  }
+
+  get ProgressDataEvent() {
+    return CoRScene.ProgressDataEvent;
+  }
+
+  get KeyboardEvent() {
+    return CoRScene.KeyboardEvent;
+  }
+
+  get Keyboard() {
+    return CoRScene.Keyboard;
+  }
+
+  get ShaderCodeUUID() {
+    return CoRScene.ShaderCodeUUID;
+  }
+
+  get MaterialContextParam() {
+    return CoRScene.MaterialContextParam;
+  }
+
+  get MaterialPipeType() {
+    return CoRScene.MaterialPipeType;
+  }
+
+  createSelectionEvent() {
+    return CoRScene.createSelectionEvent();
+  }
+
+  createProgressDataEvent() {
+    return CoRScene.createProgressDataEvent();
+  }
+  /**
+   * create a Vector3D instance
+   * @param px the default vaue is 0.0
+   * @param py the default vaue is 0.0
+   * @param pz the default vaue is 0.0
+   * @param pw the default vaue is 1.0
+   */
+
+
+  createVec3(px, py, pz, pw) {
+    return CoRScene.createVec3(px, py, pz, pw);
+  }
+  /**
+   * create a Mattrix4 instance
+     * @param pfs32 the default value is null
+     * @param index the default value is 0
+     */
+
+
+  createMat4(pfs32, index) {
+    return CoRScene.createMat4(pfs32, index);
+  }
+  /**
+   * set Color4 instance
+   * @param pr the default vaue is 1.0
+   * @param pg the default vaue is 1.0
+   * @param pb the default vaue is 1.0
+   * @param pa the default vaue is 1.0
+   */
+
+
+  createColor4(pr, pg, pb, pa) {
+    return CoRScene.createColor4(pr, pg, pb, pa);
+  }
+
+  createAABB() {
+    return CoRScene.createAABB();
+  }
+
+  applySceneBlock(rsecne) {
+    return CoRScene.applySceneBlock(rsecne);
+  }
+  /**
+   * @param div HTMLDivElement instance, the default value is null.
+   */
+
+
+  createRendererSceneParam(div) {
+    return CoRScene.createRendererSceneParam(div);
+  }
+  /**
+   * @param rparam IRendererParam instance, the default value is null.
+   * @param renderProcessesTotal the default value is 3.
+   * @param sceneBlockEnabled the default value is true.
+   */
+
+
+  createRendererScene(rparam, renderProcessesTotal, sceneBlockEnabled) {
+    return CoRScene.createRendererScene(rparam, renderProcessesTotal, sceneBlockEnabled);
+  }
+
+  setRendererScene(rs) {
+    return CoRScene.setRendererScene(rs);
+  }
+
+  getRendererScene() {
+    return CoRScene.getRendererScene();
+  }
+
+  createMouseEvt3DDispatcher() {
+    return CoRScene.createMouseEvt3DDispatcher();
+  }
+
+  createEventBaseDispatcher() {
+    return CoRScene.createEventBaseDispatcher();
+  }
+  /**
+   * build default 3d entity rendering material
+   * @param normalEnabled the default value is false
+   */
+
+
+  createDefaultMaterial(normalEnabled) {
+    return CoRScene.createDefaultMaterial();
+  }
+  /**
+   * build 3d line entity rendering material
+   * @param dynColorEnabled the default value is false
+   */
+
+
+  createLineMaterial(dynColorEnabled) {
+    return CoRScene.createLineMaterial(dynColorEnabled);
+  }
+  /**
+   * build 3d quad line entity rendering material
+   * @param dynColorEnabled the default value is false
+   */
+
+
+  createQuadLineMaterial(dynColorEnabled) {
+    return CoRScene.createQuadLineMaterial(dynColorEnabled);
+  }
+
+  createShaderMaterial(shd_uniqueName) {
+    return CoRScene.createShaderMaterial(shd_uniqueName);
+  }
+  /**
+   * @param dcr the value is a IMaterialDecorator instance
+   * @returns a Material instance
+   */
+
+
+  createMaterial(dcr) {
+    return CoRScene.createMaterial(dcr);
+  }
+
+  createDataMesh() {
+    return CoRScene.createDataMesh();
+  }
+
+  createRawMesh() {
+    return CoRScene.createRawMesh();
+  }
+
+  createBoundsMesh() {
+    return CoRScene.createBoundsMesh();
+  }
+  /**
+   * @param model geometry model
+   * @param pmaterial IRenderMaterial instance, the default is null.
+   * @param vbWhole vtx buffer is whole data, or not, the default is false.
+   */
+
+
+  createDataMeshFromModel(model, pmaterial, vbWhole) {
+    return CoRScene.createDataMeshFromModel(model, pmaterial, vbWhole);
+  }
+  /**
+   * @param model geometry model
+   * @param pmaterial IRenderMaterial instance, the default is null.
+   * @param texEnabled texture enabled in the material, the default is true.
+   * @param vbWhole vtx buffer is whole data or not, the default is false.
+   */
+
+
+  createDisplayEntityFromModel(model, pmaterial, texEnabled, vbWhole) {
+    return CoRScene.createDisplayEntityFromModel(model, pmaterial, texEnabled, vbWhole);
+  }
+  /**
+   * @param minV min position value
+   * @param maxV max position value
+   * @param transform IROTransform instance, its default is null
+   */
+
+
+  createFreeAxis3DEntity(minV, maxV, transform) {
+    return CoRScene.createFreeAxis3DEntity(minV, maxV, transform);
+  }
+  /**
+   * @param size th default value is 100.0
+   * @param transform IROTransform instance, its default is null
+   */
+
+
+  createAxis3DEntity(size, transform) {
+    return CoRScene.createAxis3DEntity(size, transform);
+  }
+  /**
+   * @param size th default value is 100.0
+   * @param transform IROTransform instance, its default is null
+   */
+
+
+  createCrossAxis3DEntity(size, transform) {
+    return CoRScene.createCrossAxis3DEntity(size, transform);
+  }
+  /**
+   * @param model IDataMesh instance
+   * @param material IRenderMaterial instance.
+   * @param texEnabled use texture yes or no.
+   * @param vbWhole vtx buffer is whole data, or not, the default is false.
+   */
+
+
+  createDisplayEntityWithDataMesh(mesh, material, texEnabled, vbWhole) {
+    return CoRScene.createDisplayEntityWithDataMesh(mesh, material, texEnabled, vbWhole);
+  }
+  /**
+   * @param transform the default value is false
+   */
+
+
+  createDisplayEntity(transform) {
+    return CoRScene.createDisplayEntity(transform);
+  }
+  /**
+   * @param transform the default value is false
+   */
+
+
+  createMouseEventEntity(transform) {
+    return CoRScene.createMouseEventEntity(transform);
+  }
+  /**
+   * @param transform the default value is false
+   */
+
+
+  createBoundsEntity(transform) {
+    return CoRScene.createBoundsEntity(transform);
+  }
+
+  createDisplayEntityContainer() {
+    return CoRScene.createDisplayEntityContainer();
+  }
+
+  creatMaterialContextParam() {
+    return CoRScene.creatMaterialContextParam();
+  }
+
+  createMaterialContext() {
+    return CoRScene.createMaterialContext();
+  }
+  /**
+   * 逆时针转到垂直
+   */
+
+
+  VerticalCCWOnXOY(v) {
+    return CoRScene.VerticalCCWOnXOY(v);
+  }
+  /**
+   * 顺时针转到垂直
+   */
+
+
+  VerticalCWOnXOY(v) {
+    return CoRScene.VerticalCWOnXOY(v);
+  }
+
+  createRendererSceneGraph() {
+    return CoRScene.createRendererSceneGraph();
+  }
+
+  createEvtNode() {
+    return CoRScene.createEvtNode();
+  }
+
+  isEnabled() {
+    return VoxRenderer_1.VoxRenderer.isEnabled() && typeof CoRScene !== "undefined";
+  }
+
+}
+
+const VoxRScene = new T_CoRScene();
+exports.VoxRScene = VoxRScene;
+
+/***/ }),
+
 /***/ "d1ef":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -3719,6 +4344,12 @@ const UIPanel_1 = __webpack_require__("d632");
 
 const TextureLabel_1 = __webpack_require__("9d95");
 
+const ColorLabel_1 = __webpack_require__("9ba1");
+
+const VoxRScene_1 = __webpack_require__("d1de");
+
+const VoxMaterial_1 = __webpack_require__("0efa");
+
 class ColorPickPanel extends UIPanel_1.UIPanel {
   constructor() {
     super();
@@ -3727,10 +4358,14 @@ class ColorPickPanel extends UIPanel_1.UIPanel {
      */
 
     this.m_marginWidth = 15;
+    this.m_colorLabel = null;
     this.m_callback = null;
     this.m_initing = true;
     this.m_pixelsW = 256;
     this.m_pixelsH = 256;
+    this.m_prePickX = -1;
+    this.m_prePickY = -1;
+    this.m_autoDelay = 0;
   }
 
   initialize(scene, rpi, panelW = 260, panelH = 260, marginWidth = 3) {
@@ -3741,12 +4376,30 @@ class ColorPickPanel extends UIPanel_1.UIPanel {
       this.m_rpi = rpi;
       this.m_panelW = panelW;
       this.m_panelH = panelH;
-      if (this.m_bgColor == null) this.m_bgColor = CoMaterial.createColor4();
     }
   }
 
   destroy() {
     super.destroy();
+  }
+
+  setColor(color) {
+    if (this.isOpen() && color != null) {
+      if (this.m_colorLabel == null) {
+        this.m_colorLabel = new ColorLabel_1.ColorLabel();
+        this.m_colorLabel.initialize(32, 32);
+        this.m_colorLabel.setXY(2, this.m_panelH);
+        this.addEntity(this.m_colorLabel);
+      }
+
+      this.m_colorLabel.setColor(color);
+      this.m_colorLabel.setVisible(true);
+    }
+  }
+
+  setPickXY(px, py) {
+    this.m_prePickX = px;
+    this.m_prePickY = py;
   }
 
   setSelectColorCallback(callback) {
@@ -3786,7 +4439,7 @@ class ColorPickPanel extends UIPanel_1.UIPanel {
     py = 255 - py;
 
     if (this.m_color == null) {
-      this.m_color = CoMaterial.createColor4();
+      this.m_color = VoxMaterial_1.VoxMaterial.createColor4();
     }
 
     let ls = this.m_pixels;
@@ -3832,21 +4485,38 @@ class ColorPickPanel extends UIPanel_1.UIPanel {
   }
 
   openThis() {
-    let ME = CoRScene.MouseEvent;
-
     if (this.m_scene != null) {
-      this.m_scene.addEventListener(ME.MOUSE_DOWN, this, this.stMouseDownListener);
+      this.m_scene.addEventListener(VoxRScene_1.MouseEvent.MOUSE_DOWN, this, this.stMouseDownListener);
     }
   }
 
   closeThis() {
-    let ME = CoRScene.MouseEvent;
-
     if (this.m_scene != null) {
-      this.m_scene.removeEventListener(ME.MOUSE_DOWN, this, this.stMouseDownListener);
+      this.m_scene.removeEventListener(VoxRScene_1.MouseEvent.MOUSE_DOWN, this, this.stMouseDownListener);
     }
 
     this.m_callback = null;
+    if (this.m_colorLabel != null) this.m_colorLabel.setVisible(false);
+    this.stMouseUp(null);
+  }
+
+  pickColorByXY(px, py) {
+    if (this.m_prePickX != px || this.m_prePickY != py) {
+      this.m_prePickX = px;
+      this.m_prePickY = py;
+
+      if (px >= 0 || px <= this.m_panelW || py >= 0 || py <= this.m_panelH) {
+        let d = this.m_marginWidth;
+        px -= d;
+        py -= d;
+        let color = this.getRGBAByXY(px, py);
+
+        if (this.m_callback != null) {
+          this.setColor(color);
+          this.m_callback(color, px, py);
+        }
+      }
+    }
   }
 
   stMouseDownListener(evt) {
@@ -3859,14 +4529,31 @@ class ColorPickPanel extends UIPanel_1.UIPanel {
     if (pv.x < 0 || pv.x > this.m_panelW || pv.y < 0 || pv.y > this.m_panelH) {
       this.close();
     } else {
-      let dis = this.m_marginWidth;
-      pv.x -= dis;
-      pv.y -= dis;
-      let color = this.getRGBAByXY(pv.x, pv.y);
+      this.pickColorByXY(pv.x, pv.y);
+      this.m_scene.addEventListener(VoxRScene_1.EventBase.ENTER_FRAME, this, this.enterFrame, true, false);
+      this.m_scene.addEventListener(VoxRScene_1.MouseEvent.MOUSE_UP, this, this.stMouseUp, true, false);
+    }
+  }
 
-      if (this.m_callback != null) {
-        this.m_callback(color);
+  enterFrame(evt) {
+    // console.log("enterFrame");
+    if (this.m_autoDelay > 20) {
+      if (this.m_autoDelay % 7 == 0) {
+        let st = this.getScene().getStage();
+        let pv = this.m_v0;
+        pv.setXYZ(st.mouseX, st.mouseY, 0);
+        this.globalToLocal(pv);
+        this.pickColorByXY(pv.x, pv.y);
       }
+    }
+
+    this.m_autoDelay++;
+  }
+
+  stMouseUp(evt) {
+    if (this.m_scene != null) {
+      this.m_scene.removeEventListener(VoxRScene_1.EventBase.ENTER_FRAME, this, this.enterFrame);
+      this.m_scene.removeEventListener(VoxRScene_1.MouseEvent.MOUSE_UP, this, this.stMouseUp);
     }
   }
 
@@ -3982,6 +4669,10 @@ class UIPanel extends UIEntityContainer_1.UIEntityContainer {
     return this.m_isOpen;
   }
 
+  isClosed() {
+    return !this.m_isOpen;
+  }
+
   close() {
     if (this.m_isOpen) {
       this.m_scene.removeEntity(this);
@@ -4056,7 +4747,7 @@ class UIPanel extends UIEntityContainer_1.UIEntityContainer {
     let bgLabel = new ColorLabel_1.ColorLabel();
     bgLabel.depthTest = true;
     bgLabel.initialize(pw, ph);
-    bgLabel.setZ(-0.1);
+    bgLabel.setZ(-0.2);
     bgLabel.setColor(this.m_bgColor);
     this.m_bgLabel = bgLabel;
     this.initializeEvent(bgLabel.getREntities()[0]);
@@ -4100,6 +4791,65 @@ class UIPanel extends UIEntityContainer_1.UIEntityContainer {
 }
 
 exports.UIPanel = UIPanel;
+
+/***/ }),
+
+/***/ "dab7":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+const ModuleLoader_1 = __webpack_require__("75f5");
+
+class T_CoRenderer {
+  constructor() {
+    this.m_init = true;
+  }
+
+  initialize(callback = null, url = "") {
+    this.m_init = !this.isEnabled();
+
+    if (this.m_init) {
+      this.m_init = false;
+
+      if (url == "" || url === undefined) {
+        url = "static/cospace/engine/renderer/CoRenderer.umd.min.js";
+      }
+
+      new ModuleLoader_1.ModuleLoader(1, () => {
+        if (callback != null && this.isEnabled()) callback([url]);
+      }).load(url);
+      return true;
+    }
+
+    return false;
+  }
+
+  get RendererDevice() {
+    return CoRenderer.RendererDevice;
+  }
+
+  get RendererState() {
+    return CoRenderer.RendererState;
+  }
+
+  createRendererInstance() {
+    return CoRenderer.createRendererInstance();
+  }
+
+  isEnabled() {
+    return typeof CoRenderer !== "undefined";
+  }
+
+}
+
+const VoxRenderer = new T_CoRenderer();
+exports.VoxRenderer = VoxRenderer;
 
 /***/ }),
 

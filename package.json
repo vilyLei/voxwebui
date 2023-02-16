@@ -10,7 +10,7 @@
 
     "build": "vue-cli-service build --target lib --name VoxApp --dest dist ./src/dev.ts",
     "build:vox": "vue-cli-service build --target lib --name VoxApp --dest dist ./src/main_vox.ts",
-    "build:voxUI": "vue-cli-service build --target lib --name VoxUI --dest ./public/static/cospace/ui ./src/voxui/Lib_VoxUI.ts",
+    "build:voxUI": "vue-cli-service build --target lib --name Lib_VoxUI --dest ./public/static/cospace/ui ./src/voxui/Lib_VoxUI.ts",
     
     "dev": "vue-cli-service serve --type=dev[./src/main.ts]",
     "dev:vox": "vue-cli-service serve --type=dev[./src/main_vox.ts]"

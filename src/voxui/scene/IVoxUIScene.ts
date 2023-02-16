@@ -24,7 +24,10 @@ interface IVoxUIScene {
 	panel: IPanelSystem;
 	uiConfig: IUIConfig;
 	keyboardInteraction: ICoKeyboardInteraction;
-	
+	/**
+	 * the defuale value is true
+	 */
+	texAtlasNearestFilter: boolean;
 	/**
 	 * @param graph the default value is a IRendererSceneGraph instance
 	 * @param atlasSize the default value is 1024
