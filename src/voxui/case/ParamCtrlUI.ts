@@ -74,7 +74,7 @@ export default class ParamCtrlUI {
                     panel.open();
                     panel.setColor(color);
                     this.layoutPickColorPanel(tar);
-                    panel.setSelectColorCallback((color: IColor4): void => {
+                    panel.setSelectColorCallback((color: IColor4, px: number, py: number): void => {
                         console.log("pick color: ", color)
                         // this.setColor(color, true);
                         this.selectColor(uuid, color);

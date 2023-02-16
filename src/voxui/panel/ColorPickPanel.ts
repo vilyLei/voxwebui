@@ -53,8 +53,8 @@ class ColorPickPanel extends UIPanel implements IColorPickPanel {
 		this.m_prePickX = px;
 		this.m_prePickY = py;
 	}
-	private m_callback: (color: IColor4) => void = null;
-	setSelectColorCallback(callback: (color: IColor4) => void): void {
+	private m_callback: (color: IColor4, pickX: number, pickY: number) => void = null;
+	setSelectColorCallback(callback: (color: IColor4, pickX: number, pickY: number) => void): void {
 		this.m_callback = callback;
 	}
 
@@ -168,7 +168,7 @@ class ColorPickPanel extends UIPanel implements IColorPickPanel {
 				let color = this.getRGBAByXY(px, py);
 				if (this.m_callback != null) {
 					this.setColor(color);
-					this.m_callback(color);
+					this.m_callback(color, px, py);
 				}
 			}
 		}

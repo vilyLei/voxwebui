@@ -148,7 +148,7 @@ class ParamCtrlPanel extends UIPanel implements IParamCtrlPanel {
 
 		console.log("color select..., tar: ", tar);
 		console.log("color select..., this.getScene(): ", this.getScene());
-		
+
 		let panel = this.m_colorPanel;
 		if (panel != null && panel.isOpen()) {
 			panel.close();
@@ -165,8 +165,8 @@ class ParamCtrlPanel extends UIPanel implements IParamCtrlPanel {
 					panel.setPickXY(-1, -1);
 					panel.setColor(color);
 					this.layoutPickColorPanel(tar);
-					panel.setSelectColorCallback((color: IColor4): void => {
-						console.log("pick color: ", color)
+					panel.setSelectColorCallback((color: IColor4, pickX: number, pickY: number): void => {
+						console.log("pick color: ", color, pickX, pickY)
 						// this.setColor(color, true);
 						this.selectColor(uuid, color);
 					});

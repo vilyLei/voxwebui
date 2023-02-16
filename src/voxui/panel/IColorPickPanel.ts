@@ -11,7 +11,7 @@ interface IColorPickPanel extends IUIPanel {
 	 * @param marginWidth the default value 3
 	 */
 	initialize(scene: IVoxUIScene, rpi: number, panelW?: number, panelH?: number, marginWidth?: number): void;
-	setSelectColorCallback(callback: (color: IColor4)=>void): void;
+	setSelectColorCallback(callback: (color: IColor4, pickX: number, pickY: number)=>void): void;
 	setColor(color: IColor4): void;
 	setPickXY(px: number, py: number): void;
 
