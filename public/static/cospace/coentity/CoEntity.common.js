@@ -186,6 +186,146 @@ function createDisplayEntityContainer() {
 
 exports.createDisplayEntityContainer = createDisplayEntityContainer;
 
+function createXOYPlane(minX, minY, width, height, material = null, texEnabled = false) {
+  if (typeof CoMesh !== "undefined") {
+    if (!material) {
+      material = CoRScene.createDefaultMaterial();
+    }
+
+    texEnabled = texEnabled || material.getTextureAt(0) != null;
+    material.initializeByCodeBuf(texEnabled);
+    let builder = CoMesh.plane;
+    builder.applyMaterial(material, texEnabled);
+    let mesh = builder.createXOY(minX, minY, width, height);
+    let entity = CoRScene.createMouseEventEntity();
+    entity.setMaterial(material);
+    entity.setMesh(mesh);
+    return entity;
+  }
+}
+
+exports.createXOYPlane = createXOYPlane;
+
+function createXOZPlane(minX, minZ, width, long, material = null, texEnabled = false) {
+  if (typeof CoMesh !== "undefined") {
+    if (!material) {
+      material = CoRScene.createDefaultMaterial();
+    }
+
+    texEnabled = texEnabled || material.getTextureAt(0) != null;
+    material.initializeByCodeBuf(texEnabled);
+    let builder = CoMesh.plane;
+    builder.applyMaterial(material, texEnabled);
+    let mesh = builder.createXOZ(minX, minZ, width, long);
+    let entity = CoRScene.createMouseEventEntity();
+    entity.setMaterial(material);
+    entity.setMesh(mesh);
+    return entity;
+  }
+}
+
+exports.createXOZPlane = createXOZPlane;
+
+function createYOZPlane(minY, minZ, height, long, material = null, texEnabled = false) {
+  if (typeof CoMesh !== "undefined") {
+    if (!material) {
+      material = CoRScene.createDefaultMaterial();
+    }
+
+    texEnabled = texEnabled || material.getTextureAt(0) != null;
+    material.initializeByCodeBuf(texEnabled);
+    let builder = CoMesh.plane;
+    builder.applyMaterial(material, texEnabled);
+    let mesh = builder.createYOZ(minY, minZ, height, long);
+    let entity = CoRScene.createMouseEventEntity();
+    entity.setMaterial(material);
+    entity.setMesh(mesh);
+    return entity;
+  }
+}
+
+exports.createYOZPlane = createYOZPlane;
+
+function createCube(size, material = null, texEnabled = false) {
+  if (typeof CoMesh !== "undefined") {
+    if (!material) {
+      material = CoRScene.createDefaultMaterial();
+    }
+
+    texEnabled = texEnabled || material.getTextureAt(0) != null;
+    material.initializeByCodeBuf(texEnabled);
+    let builder = CoMesh.box;
+    builder.applyMaterial(material, texEnabled);
+    let mesh = builder.createCube(size);
+    let entity = CoRScene.createMouseEventEntity();
+    entity.setMaterial(material);
+    entity.setMesh(mesh);
+    return entity;
+  }
+}
+
+exports.createCube = createCube;
+
+function createBox(minV, maxV, material = null, texEnabled = false) {
+  if (typeof CoMesh !== "undefined") {
+    if (!material) {
+      material = CoRScene.createDefaultMaterial();
+    }
+
+    texEnabled = texEnabled || material.getTextureAt(0) != null;
+    material.initializeByCodeBuf(texEnabled);
+    let builder = CoMesh.box;
+    builder.applyMaterial(material, texEnabled);
+    let mesh = builder.create(minV, maxV);
+    let entity = CoRScene.createMouseEventEntity();
+    entity.setMaterial(material);
+    entity.setMesh(mesh);
+    return entity;
+  }
+}
+
+exports.createBox = createBox;
+
+function createSphere(radius, longitudeNumSegments = 20, latitudeNumSegments = 20, doubleTriFaceEnabled = false, material = null, texEnabled = false) {
+  if (typeof CoMesh !== "undefined") {
+    if (!material) {
+      material = CoRScene.createDefaultMaterial();
+    }
+
+    texEnabled = texEnabled || material.getTextureAt(0) != null;
+    material.initializeByCodeBuf(texEnabled);
+    let builder = CoMesh.sphere;
+    builder.applyMaterial(material, texEnabled);
+    let mesh = builder.create(radius, longitudeNumSegments, latitudeNumSegments, doubleTriFaceEnabled);
+    let entity = CoRScene.createMouseEventEntity();
+    entity.setMaterial(material);
+    entity.setMesh(mesh);
+    return entity;
+  }
+}
+
+exports.createSphere = createSphere;
+
+function createCone(radius, height, longitudeNumSegments = 20, alignYRatio = -0.5, material = null, texEnabled = false) {
+  if (typeof CoMesh !== "undefined") {
+    if (!material) {
+      material = CoRScene.createDefaultMaterial();
+    }
+
+    texEnabled = texEnabled || material.getTextureAt(0) != null;
+    material.initializeByCodeBuf(texEnabled);
+    let builder = CoMesh.cone;
+    builder.applyMaterial(material, texEnabled);
+    let mesh = builder.create(radius, height, longitudeNumSegments, alignYRatio);
+    let entity = CoRScene.createMouseEventEntity();
+    entity.setMaterial(material);
+    entity.setMesh(mesh);
+    return entity;
+  }
+}
+
+exports.createCone = createCone;
+
 /***/ }),
 
 /***/ "8875":

@@ -1,14 +1,5 @@
-(function webpackUniversalModuleDefinition(root, factory) {
-	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory();
-	else if(typeof define === 'function' && define.amd)
-		define([], factory);
-	else if(typeof exports === 'object')
-		exports["CoRScene"] = factory();
-	else
-		root["CoRScene"] = factory();
-})((typeof self !== 'undefined' ? self : this), function() {
-return /******/ (function(modules) { // webpackBootstrap
+module.exports =
+/******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 /******/
@@ -125,25 +116,78 @@ Object.defineProperty(exports, "__esModule", {
 
 const EventBase_1 = __importDefault(__webpack_require__("a996"));
 
+const MouseEvent_1 = __importDefault(__webpack_require__("1710"));
+
 const KeyboardEvent_1 = __importDefault(__webpack_require__("7045"));
 
-const StageBase_1 = __importDefault(__webpack_require__("7b29"));
+const MouseEvt3DDispatcher_1 = __importDefault(__webpack_require__("badb"));
 
-class SubStage3D extends StageBase_1.default {
+class SubStage3D {
   constructor(rcuid, pdocument) {
-    super(rcuid);
+    this.m_rcuid = 0;
+    this.pixelRatio = 1.0;
+    this.stageWidth = 800;
+    this.stageHeight = 600; // 实际宽高, 和gpu端对齐
+
+    this.stageHalfWidth = 400;
+    this.stageHalfHeight = 300;
+    this.mouseX = 0;
+    this.mouseY = 0; // sdiv页面实际占据的像素宽高
+
+    this.viewWidth = 800;
+    this.viewHeight = 600;
+    this.mouseViewX = 0;
+    this.mouseViewY = 0;
+    this.m_viewX = 0.0;
+    this.m_viewY = 0.0;
+    this.m_viewW = 1.0;
+    this.m_viewH = 1.0; // mouse event dispatcher
+
+    this.m_mouseEvtDispatcher = new MouseEvt3DDispatcher_1.default();
+    this.m_resize_listener = [];
+    this.m_resize_ers = [];
     this.m_enterFrame_listener = [];
     this.m_enterFrame_ers = [];
+    this.m_keyDown_listener = [];
+    this.m_keyDown_ers = [];
+    this.m_keyUp_listener = [];
+    this.m_keyUp_ers = [];
+    this.m_preStageWidth = 0;
+    this.m_preStageHeight = 0;
+    this.m_mouseEvt = new MouseEvent_1.default(); // 是否舞台尺寸和view自动同步一致
+
+    this.m_autoSynViewAndStageSize = true;
+    this.uProbe = null;
     this.m_enterFrameEvt = new EventBase_1.default();
+    this.m_rcuid = rcuid;
+  }
+  /**
+   * @returns return renderer context unique id
+   */
+
+
+  getRCUid() {
+    return this.m_rcuid;
   }
 
-  enterFrame() {
-    this.m_enterFrameEvt.type = EventBase_1.default.ENTER_FRAME;
-    let len = this.m_enterFrame_listener.length;
+  getDevicePixelRatio() {
+    return window.devicePixelRatio;
+  }
 
-    for (var i = 0; i < len; ++i) {
-      this.m_enterFrame_listener[i].call(this.m_enterFrame_ers[i], this.m_enterFrameEvt);
-    }
+  getViewX() {
+    return this.m_viewX;
+  }
+
+  getViewY() {
+    return this.m_viewY;
+  }
+
+  getViewWidth() {
+    return this.m_viewW;
+  }
+
+  getViewHeight() {
+    return this.m_viewH;
   }
 
   setViewPort(px, py, pw, ph) {
@@ -178,15 +222,190 @@ class SubStage3D extends StageBase_1.default {
     }
   }
 
+  mouseDown(phase = 1) {
+    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_DOWN;
+    this.m_mouseEvt.mouseX = this.mouseX;
+    this.m_mouseEvt.mouseY = this.mouseY;
+    this.m_mouseEvt.target = this;
+    this.m_mouseEvt.phase = phase;
+    this.m_mouseEvtDispatcher.dispatchEvt(this.m_mouseEvt);
+  }
+
+  mouseUp(phase = 1) {
+    this.m_mouseEvt.phase = 1;
+    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_UP;
+    this.m_mouseEvt.mouseX = this.mouseX;
+    this.m_mouseEvt.mouseY = this.mouseY;
+    this.m_mouseEvt.target = this;
+    this.m_mouseEvt.phase = phase;
+    this.m_mouseEvtDispatcher.dispatchEvt(this.m_mouseEvt);
+  }
+
+  mouseClick() {
+    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_CLICK;
+    this.m_mouseEvt.mouseX = this.mouseX;
+    this.m_mouseEvt.mouseY = this.mouseY;
+    this.m_mouseEvt.target = this;
+    this.m_mouseEvt.phase = 1;
+    this.m_mouseEvtDispatcher.dispatchEvt(this.m_mouseEvt);
+  }
+
+  mouseDoubleClick() {
+    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_DOUBLE_CLICK;
+    this.m_mouseEvt.mouseX = this.mouseX;
+    this.m_mouseEvt.mouseY = this.mouseY;
+    this.m_mouseEvt.target = this;
+    this.m_mouseEvt.phase = 1;
+    this.m_mouseEvtDispatcher.dispatchEvt(this.m_mouseEvt);
+  }
+
+  mouseRightDown(phase = 1) {
+    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_RIGHT_DOWN;
+    this.m_mouseEvt.mouseX = this.mouseX;
+    this.m_mouseEvt.mouseY = this.mouseY;
+    this.m_mouseEvt.target = this;
+    this.m_mouseEvt.phase = 1;
+    this.m_mouseEvtDispatcher.dispatchEvt(this.m_mouseEvt);
+  }
+
+  mouseRightUp(phase = 1) {
+    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_RIGHT_UP;
+    this.m_mouseEvt.mouseX = this.mouseX;
+    this.m_mouseEvt.mouseY = this.mouseY;
+    this.m_mouseEvt.phase = 1;
+    this.m_mouseEvtDispatcher.dispatchEvt(this.m_mouseEvt);
+  }
+
+  mouseBgDown() {
+    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_BG_DOWN;
+    this.m_mouseEvt.mouseX = this.mouseX;
+    this.m_mouseEvt.mouseY = this.mouseY;
+    this.m_mouseEvt.target = this;
+    this.m_mouseEvt.phase = 1;
+    this.m_mouseEvtDispatcher.dispatchEvt(this.m_mouseEvt);
+  }
+
+  mouseBgUp() {
+    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_BG_UP;
+    this.m_mouseEvt.mouseX = this.mouseX;
+    this.m_mouseEvt.mouseY = this.mouseY;
+    this.m_mouseEvt.phase = 1;
+    this.m_mouseEvtDispatcher.dispatchEvt(this.m_mouseEvt);
+  }
+
+  mouseBgClick() {
+    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_BG_CLICK;
+    this.m_mouseEvt.mouseX = this.mouseX;
+    this.m_mouseEvt.mouseY = this.mouseY;
+    this.m_mouseEvt.phase = 1;
+    this.m_mouseEvtDispatcher.dispatchEvt(this.m_mouseEvt);
+  }
+
+  mouseRightClick() {
+    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_RIGHT_CLICK;
+    this.m_mouseEvt.mouseX = this.mouseX;
+    this.m_mouseEvt.mouseY = this.mouseY;
+    this.m_mouseEvt.target = this;
+    this.m_mouseEvt.phase = 1;
+    this.m_mouseEvtDispatcher.dispatchEvt(this.m_mouseEvt);
+  }
+
+  mouseMove() {
+    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_MOVE;
+    this.m_mouseEvt.mouseX = this.mouseX;
+    this.m_mouseEvt.mouseY = this.mouseY;
+    this.m_mouseEvt.target = this;
+    this.m_mouseEvt.phase = 1;
+    this.m_mouseEvtDispatcher.dispatchEvt(this.m_mouseEvt);
+  }
+
+  mouseWheel(evt) {
+    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_WHEEL;
+    this.m_mouseEvt.mouseX = this.mouseX;
+    this.m_mouseEvt.mouseY = this.mouseY;
+    this.m_mouseEvt.wheelDeltaY = evt.wheelDeltaY;
+    this.m_mouseEvt.target = this;
+    this.m_mouseEvt.phase = 1;
+    this.m_mouseEvtDispatcher.dispatchEvt(this.m_mouseEvt);
+  } // 等同于 touchCancle
+
+
+  mouseCancel() {
+    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_CANCEL;
+    this.m_mouseEvt.mouseX = this.mouseX;
+    this.m_mouseEvt.mouseY = this.mouseY;
+    this.m_mouseEvt.target = this;
+    this.m_mouseEvt.phase = 1;
+    this.m_mouseEvtDispatcher.dispatchEvt(this.m_mouseEvt);
+  } //param [{x,y},{x,y},...]
+
+
+  mouseMultiDown(posArray) {
+    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_MULTI_DOWN;
+    this.m_mouseEvt.mouseX = this.mouseX;
+    this.m_mouseEvt.mouseY = this.mouseY;
+    this.m_mouseEvt.target = this;
+    this.m_mouseEvt.phase = 1;
+    this.m_mouseEvt.posArray = posArray;
+    this.m_mouseEvtDispatcher.dispatchEvt(this.m_mouseEvt);
+  } //param [{x,y},{x,y},...]
+
+
+  mouseMultiUp(posArray) {
+    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_MULTI_UP;
+    this.m_mouseEvt.mouseX = this.mouseX;
+    this.m_mouseEvt.mouseY = this.mouseY;
+    this.m_mouseEvt.target = this;
+    this.m_mouseEvt.phase = 1;
+    this.m_mouseEvt.posArray = posArray;
+    this.m_mouseEvtDispatcher.dispatchEvt(this.m_mouseEvt);
+  } //param [{x,y},{x,y},...]
+
+
+  mouseMultiMove(posArray) {
+    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_MULTI_MOVE;
+    this.m_mouseEvt.mouseX = this.mouseX;
+    this.m_mouseEvt.mouseY = this.mouseY;
+    this.m_mouseEvt.target = this;
+    this.m_mouseEvt.phase = 1;
+    this.m_mouseEvt.posArray = posArray;
+    this.m_mouseEvtDispatcher.dispatchEvt(this.m_mouseEvt);
+  }
+
+  mouseWindowUp(phase = 1) {}
+
+  mouseWindowRightUp(phase = 1) {}
+
+  enterFrame() {
+    this.m_enterFrameEvt.type = EventBase_1.default.ENTER_FRAME;
+    let len = this.m_enterFrame_listener.length;
+
+    for (var i = 0; i < len; ++i) {
+      this.m_enterFrame_listener[i].call(this.m_enterFrame_ers[i], this.m_enterFrameEvt);
+    }
+  }
+
   addEventListener(type, target, func, captureEnabled = true, bubbleEnabled = true) {
     if (func != null && target != null) {
+      let i = 0;
+
       switch (type) {
         case EventBase_1.default.RESIZE:
           console.warn("addEventListener EventBase.RESIZE invalid operation.");
           break;
 
         case EventBase_1.default.ENTER_FRAME:
-          this.addTarget(this.m_enterFrame_listener, this.m_enterFrame_ers, target, func);
+          for (i = this.m_enterFrame_listener.length - 1; i >= 0; --i) {
+            if (target === this.m_enterFrame_ers[i]) {
+              break;
+            }
+          }
+
+          if (i < 0) {
+            this.m_enterFrame_ers.push(target);
+            this.m_enterFrame_listener.push(func);
+          }
+
           break;
 
         case KeyboardEvent_1.default.KEY_DOWN:
@@ -198,7 +417,7 @@ class SubStage3D extends StageBase_1.default {
           break;
 
         default:
-          this.m_dp.addEventListener(type, target, func, captureEnabled, bubbleEnabled);
+          this.m_mouseEvtDispatcher.addEventListener(type, target, func, captureEnabled, bubbleEnabled);
           break;
       }
     }
@@ -206,25 +425,55 @@ class SubStage3D extends StageBase_1.default {
 
   removeEventListener(type, target, func) {
     if (func != null && target != null) {
+      let i = 0;
+
       switch (type) {
         case EventBase_1.default.RESIZE:
-          // this.removeTarget(this.m_resize_listener, this.m_resize_ers, target);
+          for (i = this.m_resize_listener.length - 1; i >= 0; --i) {
+            if (target === this.m_resize_ers[i]) {
+              this.m_resize_ers.splice(i, 1);
+              this.m_resize_listener.splice(i, 1);
+              break;
+            }
+          }
+
           break;
 
         case EventBase_1.default.ENTER_FRAME:
-          this.removeTarget(this.m_enterFrame_listener, this.m_enterFrame_ers, target);
+          for (i = this.m_enterFrame_listener.length - 1; i >= 0; --i) {
+            if (target === this.m_enterFrame_ers[i]) {
+              this.m_enterFrame_ers.splice(i, 1);
+              this.m_enterFrame_listener.splice(i, 1);
+              break;
+            }
+          }
+
           break;
 
         case KeyboardEvent_1.default.KEY_DOWN:
-          // this.removeTarget(this.m_keyDown_listener, this.m_keyDown_ers, target);
+          for (i = this.m_keyDown_listener.length - 1; i >= 0; --i) {
+            if (target === this.m_keyDown_ers[i]) {
+              this.m_keyDown_ers.splice(i, 1);
+              this.m_keyDown_listener.splice(i, 1);
+              break;
+            }
+          }
+
           break;
 
         case KeyboardEvent_1.default.KEY_UP:
-          // this.removeTarget(this.m_keyUp_listener, this.m_keyUp_ers, target);
+          for (i = this.m_keyUp_listener.length - 1; i >= 0; --i) {
+            if (target === this.m_keyUp_ers[i]) {
+              this.m_keyUp_ers.splice(i, 1);
+              this.m_keyUp_listener.splice(i, 1);
+              break;
+            }
+          }
+
           break;
 
         default:
-          this.m_dp.removeEventListener(type, target, func);
+          this.m_mouseEvtDispatcher.removeEventListener(type, target, func);
           break;
       }
     }
@@ -1197,13 +1446,13 @@ class RAdapterContext {
 
     this.autoSyncRenderBufferAndWindowSize = true;
     this.offscreenRenderEnabled = false;
-    this.m_resizeFlag = true;
     this.m_WEBGL_lose_context = null;
     this.m_displayWidth = 0;
     this.m_displayHeight = 0;
     this.m_rcanvasWidth = 0;
     this.m_rcanvasHeight = 0;
     this.m_resizeCallback = null;
+    this.m_resizeCallbackTarget = null;
   }
 
   contextrestoredHandler(evt) {
@@ -1265,8 +1514,6 @@ class RAdapterContext {
     }
 
     if (pdocument != null) {
-      this.m_devicePixelRatio = window.devicePixelRatio;
-      RendererDevice_1.default.SetDevicePixelRatio(this.m_devicePixelRatio);
       this.m_viewEle.setDiv(div);
       this.m_viewEle.createViewEle(pdocument, this.autoSyncRenderBufferAndWindowSize);
       this.m_div = div = this.m_viewEle.getDiv();
@@ -1419,16 +1666,19 @@ class RAdapterContext {
 
       }
 
-      pwindow.onresize = evt => {
-        if (this.autoSyncRenderBufferAndWindowSize) {
-          this.m_resizeFlag = true;
-          this.updateRenderBufferSize();
+      var selfT = this;
+
+      pwindow.onresize = function (evt) {
+        if (selfT.autoSyncRenderBufferAndWindowSize) {
+          selfT.updateRenderBufferSize();
         }
       };
 
       canvas.addEventListener('webglcontextrestored', this.contextrestoredHandler, false);
-      canvas.addEventListener('webglcontextlost', this.contextlostHandler, false);
-      this.updateRenderBufferSize();
+      canvas.addEventListener('webglcontextlost', this.contextlostHandler, false); //if(this.autoSyncRenderBufferAndWindowSize)
+      //{
+
+      this.updateRenderBufferSize(); //}
     } else {
       console.log("initialize WebGL failure!");
     }
@@ -1458,7 +1708,8 @@ class RAdapterContext {
 
   getRC() {
     return this.m_gl;
-  }
+  } //getRenderState(): RODrawState { return this.m_rState; }
+
 
   setScissorEnabled(boo) {
     if (boo) {
@@ -1479,7 +1730,8 @@ class RAdapterContext {
     this.m_gl.scissor(px, py, pw, ph);
   }
 
-  setResizeCallback(resizeCallback) {
+  setResizeCallback(resizeCallbackTarget, resizeCallback) {
+    this.m_resizeCallbackTarget = resizeCallbackTarget;
     this.m_resizeCallback = resizeCallback;
   }
 
@@ -1491,12 +1743,10 @@ class RAdapterContext {
     pw = Math.floor(pw);
     ph = Math.floor(ph);
     let k = window.devicePixelRatio;
-    let dprChanged = Math.abs(k - this.m_devicePixelRatio) > 0.01 || this.m_resizeFlag;
+    let dprChanged = Math.abs(k - this.m_devicePixelRatio) > 0.02;
     this.m_devicePixelRatio = k;
     this.m_mouseEvtDisplather.dpr = k;
     RendererDevice_1.default.SetDevicePixelRatio(this.m_devicePixelRatio); // console.log("this.m_devicePixelRatio: "+this.m_devicePixelRatio);
-
-    this.m_resizeFlag = false;
 
     if (this.m_displayWidth != pw || this.m_displayHeight != ph || dprChanged) {
       this.m_displayWidth = pw;
@@ -1536,7 +1786,7 @@ class RAdapterContext {
       }
 
       if (this.m_resizeCallback != null) {
-        this.m_resizeCallback();
+        this.m_resizeCallback.call(this.m_resizeCallbackTarget);
       }
     }
   }
@@ -1611,10 +1861,6 @@ class RAdapterContext {
 
   updateRenderBufferSize() {
     let rect = this.m_div.getBoundingClientRect();
-    console.log("updateRenderBufferSize() rect.width, rect.height: ", rect.width, rect.height);
-    this.m_canvas.style.width = Math.floor(rect.width) + 'px';
-    this.m_canvas.style.height = Math.floor(rect.height) + 'px';
-    rect = this.m_div.getBoundingClientRect();
     this.resizeBufferSize(rect.width, rect.height);
   }
 
@@ -1656,15 +1902,15 @@ const MathConst_1 = __importDefault(__webpack_require__("6e01"));
 
 const Matrix4Pool_1 = __importDefault(__webpack_require__("2139"));
 
+const ROTransPool_1 = __importDefault(__webpack_require__("9156"));
+
 class ROTransform {
-  constructor(fs32 = null) {
+  constructor() {
     this.m_uid = 0;
-    this.m_fs32 = null; // It is a flag that need inverted mat yes or no
+    this.m_fs32 = new Float32Array(16); // It is a flag that need inverted mat yes or no
 
     this.m_invMatEnabled = false;
     this.m_rotFlag = false;
-    this.m_dt = 0;
-    this.version = -1;
     this.updatedStatus = ROTransform.UPDATE_POSITION;
     this.updateStatus = ROTransform.UPDATE_TRANSFORM; // local to world spcae matrix
 
@@ -1676,27 +1922,10 @@ class ROTransform {
 
     this.m_invOmat = null;
     this.m_uid = ROTransform.s_uid++;
-    this.m_dt = fs32 != null ? 1 : 0;
-    this.m_fs32 = fs32 != null ? fs32 : new Float32Array(16);
   }
 
   getUid() {
     return this.m_uid;
-  }
-
-  getFS32Data() {
-    return this.m_fs32;
-  }
-  /**
-   * 防止因为共享 fs32 数据带来的逻辑错误
-   */
-
-
-  rebuildFS32Data() {
-    if (this.m_dt > 0) {
-      this.m_dt = 0;
-      this.m_fs32 = new Float32Array(16);
-    }
   }
 
   getRotationFlag() {
@@ -1969,7 +2198,7 @@ class ROTransform {
       }
 
       if (this.m_omat != null) {
-        // ROTransPool.RemoveTransUniform(this.m_omat);
+        ROTransPool_1.default.RemoveTransUniform(this.m_omat);
         Matrix4Pool_1.default.RetrieveMatrix(this.m_omat);
       }
 
@@ -1982,14 +2211,15 @@ class ROTransform {
     if (this.m_invOmat != null) Matrix4Pool_1.default.RetrieveMatrix(this.m_invOmat);
 
     if (this.m_localMat != null) {
-      // if (this.m_omat == this.m_localMat) {
-      //     ROTransPool.RemoveTransUniform(this.m_omat);
-      // }
+      if (this.m_omat == this.m_localMat) {
+        ROTransPool_1.default.RemoveTransUniform(this.m_omat);
+      }
+
       Matrix4Pool_1.default.RetrieveMatrix(this.m_localMat);
     }
 
     if (this.m_omat != null && this.m_omat != this.m_localMat) {
-      // ROTransPool.RemoveTransUniform(this.m_omat);
+      ROTransPool_1.default.RemoveTransUniform(this.m_omat);
       Matrix4Pool_1.default.RetrieveMatrix(this.m_omat);
     }
 
@@ -1998,7 +2228,6 @@ class ROTransform {
     this.m_omat = null;
     this.m_parentMat = null;
     this.updateStatus = ROTransform.UPDATE_TRANSFORM;
-    this.m_fs32 = null;
   }
 
   copyFrom(src) {
@@ -2006,11 +2235,6 @@ class ROTransform {
     this.updatedStatus |= 1;
     this.updateStatus |= ROTransform.UPDATE_TRANSFORM;
     this.m_rotFlag = src.m_rotFlag;
-  }
-
-  forceUpdate() {
-    this.updateStatus |= ROTransform.UPDATE_TRANSFORM;
-    this.update();
   }
 
   update() {
@@ -2047,7 +2271,6 @@ class ROTransform {
       }
 
       this.updateStatus = ROTransform.UPDATE_NONE;
-      this.version++;
     }
   }
 
@@ -2067,16 +2290,15 @@ class ROTransform {
     return -1;
   }
 
-  static Create(matrix = null, fs32 = null) {
+  static Create(matrix = null) {
     let unit = null;
-    let index = fs32 != null ? -1 : ROTransform.GetFreeId();
+    let index = ROTransform.GetFreeId();
 
     if (index >= 0) {
       unit = ROTransform.m_unitList[index];
       ROTransform.m_unitFlagList[index] = ROTransform.s_FLAG_BUSY;
-      unit.rebuildFS32Data();
     } else {
-      unit = new ROTransform(fs32);
+      unit = new ROTransform();
       ROTransform.m_unitList.push(unit);
       ROTransform.m_unitFlagList.push(ROTransform.s_FLAG_BUSY);
       ROTransform.m_unitListLen++;
@@ -2089,17 +2311,7 @@ class ROTransform {
     }
 
     unit.m_localMat = unit.m_omat;
-
-    if (fs32 == null) {
-      let ida = ROTransform.s_initData;
-
-      if (unit.m_fs32 == null) {
-        unit.m_fs32 = ida.slice(0);
-      } else {
-        unit.m_fs32.set(ida, 0);
-      }
-    }
-
+    unit.m_fs32.set(ROTransform.s_initData, 0);
     return unit;
   }
 
@@ -2236,7 +2448,7 @@ class ContextMouseEvtDispatcher {
           stage.mouseUp(1);
           this.m_mouseClickTime = Date.now() - this.m_mouseClickTime;
 
-          if (Math.abs(this.m_mouseX - stage.mouseX) < 2 && Math.abs(this.m_mouseY - stage.mouseY) < 2 && this.m_mouseClickTime < 900) {
+          if (Math.abs(this.m_mouseX - stage.mouseX) < 3 && Math.abs(this.m_mouseY - stage.mouseY) < 3 && this.m_mouseClickTime < 900) {
             this.m_mouseX = stage.mouseX;
             this.m_mouseY = stage.mouseY;
             stage.mouseClick();
@@ -2357,12 +2569,10 @@ class ContextMouseEvtDispatcher {
         stage.mouseViewY = py;
         this.m_mouseX = stage.mouseX;
         this.m_mouseY = stage.mouseY;
-        this.m_mouseClickTime = Date.now(); // console.log("ContextMouseEvtDispatcher::onmousedown(),evt.button: ", evt.button);
+        this.m_mouseClickTime = Date.now();
 
         if (evt.button == 0) {
           stage.mouseDown(1);
-        } else if (evt.button == 1) {
-          stage.mouseMiddleDown();
         } else if (evt.button == 2) {
           stage.mouseRightDown(1);
         }
@@ -2373,12 +2583,10 @@ class ContextMouseEvtDispatcher {
         let px = 0 | this.dpr * (evt.clientX - rect.left);
         let py = 0 | this.dpr * (evt.clientY - rect.top);
         stage.mouseX = px;
-        stage.mouseY = stage.stageHeight - py; // console.log("ContextMouseEvtDispatcher::onmouseup(),evt.button: ", evt.button);
+        stage.mouseY = stage.stageHeight - py; // console.log("ContextMouseEvtDispatcher::onmouseup(),"+stage.mouseViewX+","+stage.mouseViewY);
 
         if (evt.button == 0) {
           stage.mouseUp(1);
-        } else if (evt.button == 1) {
-          stage.mouseMiddleUp();
         } else if (evt.button == 2) {
           stage.mouseRightUp(1);
         }
@@ -2387,7 +2595,6 @@ class ContextMouseEvtDispatcher {
       document.onmouseup = evt => {
         if (evt.button == 0) {
           stage.mouseWindowUp(1);
-        } else if (evt.button == 1) {// stage.mouseMiddleUp();
         } else if (evt.button == 2) {
           stage.mouseWindowRightUp(1);
         }
@@ -2415,7 +2622,7 @@ class ContextMouseEvtDispatcher {
         stage.mouseViewY = py;
         this.m_mouseClickTime = Date.now() - this.m_mouseClickTime;
 
-        if (Math.abs(this.m_mouseX - stage.mouseX) < 2 && Math.abs(this.m_mouseY - stage.mouseY) < 2 && this.m_mouseClickTime < 900) {
+        if (Math.abs(this.m_mouseX - stage.mouseX) < 3 && Math.abs(this.m_mouseY - stage.mouseY) < 3 && this.m_mouseClickTime < 900) {
           this.m_mouseX = stage.mouseX;
           this.m_mouseY = stage.mouseY; //console.log("ContextMouseEvtDispatcher::onclick()," + stage.mouseViewX + "," + stage.mouseViewY + ",evt.button: " + evt.button);
 
@@ -2438,7 +2645,7 @@ class ContextMouseEvtDispatcher {
 
         if (evt.button == 0) {
           stage.mouseDoubleClick();
-        } else if (evt.button == 2) {// stage.mouseRightDoubleClick();
+        } else if (evt.button == 2) {//stage.mouseRightDoubleClick();
         }
       };
     }
@@ -2750,7 +2957,6 @@ class RendererInstanceContext {
   setRenderToBackBuffer() {
     if (this.m_adapter != null) {
       this.m_adapter.setRenderToBackBuffer(FrameBufferType_1.default.FRAMEBUFFER);
-      this.m_renderProxy.rshader.resetRenderState();
       this.m_materialProxy.renderBegin();
     }
   }
@@ -2820,6 +3026,7 @@ class RendererInstanceContext {
       this.m_rcuid = this.m_renderProxy.getRCUid();
       contextParam.vtxBuilder.initialize(this.m_rcuid, this.m_renderProxy.getRC(), this.m_renderProxy.getGLVersion());
       this.m_adapter = this.m_renderProxy.getRenderAdapter();
+      this.m_adapter.bgColor.setRGBA4f(0.0, 0.0, 0.0, 1.0);
       let context = this.m_renderProxy.getContext();
       context.setViewport(0, 0, context.getRCanvasWidth(), context.getRCanvasHeight());
     }
@@ -2841,7 +3048,7 @@ class RendererInstanceContext {
   }
 
   getClearRGBAColor4f(color4) {
-    color4.fromArray4(this.m_adapter.bgColor);
+    color4.copyFrom(this.m_adapter.bgColor);
   }
 
   updateRenderBufferSize() {
@@ -2867,7 +3074,7 @@ class RendererInstanceContext {
       this.m_adapter.update();
       this.m_adapter.setClearMaskClearAll();
       this.m_adapter.renderBegin();
-      this.m_renderProxy.status.reset();
+      RendererState_1.default.ResetInfo();
       RendererState_1.default.Reset(this.m_renderProxy.getRenderContext());
 
       if (cameraDataUpdate) {
@@ -2932,6 +3139,7 @@ const ShaderCodeBuffer_1 = __importDefault(__webpack_require__("faa5"));
 
 class MaterialBase {
   constructor() {
+    //private static s_codeBuffer: ShaderCodeBuffer = null;
     this.m_shduns = "";
     this.m_shdData = null;
     this.m_polygonOffset = null;
@@ -2989,22 +3197,33 @@ class MaterialBase {
 
   getShdUniqueName() {
     return this.m_shduns;
-  } // get a shader code buf instance, for sub class override
+  } // initializeByUniqueName(shdCode_uniqueName: string) {
+  //     if (this.getShaderData() == null) {
+  //         let shdData: ShaderData = MaterialResource.FindData(shdCode_uniqueName);
+  //         if (shdData != null) this.m_shdData = shdData;
+  //     }
+  //     return this.getShaderData() != null;
+  // }
+  // get a shader code buf instance, for sub class override
 
 
   getCodeBuf() {
+    // if (MaterialBase.s_codeBuffer != null) {
+    //     return MaterialBase.s_codeBuffer;
+    // }
+    // MaterialBase.s_codeBuffer = new ShaderCodeBuffer();
+    // return MaterialBase.s_codeBuffer;
     throw Error("Illgel operation !!!");
     return null;
   }
 
   hasShaderData() {
     if (this.m_shdData != null) {
-      return this.m_shdData.haveTexture() ? this.texDataEnabled() : true; // if (this.m_shdData.haveTexture()) {
-      //     return this.texDataEnabled();
-      // }
-      // else {
-      //     return true;
-      // }
+      if (this.m_shdData.haveTexture()) {
+        return this.texDataEnabled();
+      } else {
+        return true;
+      }
     }
 
     return false;
@@ -3035,6 +3254,10 @@ class MaterialBase {
         }
 
         if (shdData == null) {
+          // if (MaterialBase.s_codeBuffer == null) {
+          //     MaterialBase.s_codeBuffer = new ShaderCodeBuffer();
+          // }
+          // ShaderCodeBuffer.UseShaderBuffer(buf);
           texEnabled = texEnabled || this.getTextureTotal() > 0;
           buf.initialize(texEnabled);
           shdCode_uniqueName = buf.getUniqueShaderName() + buf.keysString + buf.getShaderCodeBuilder().getUniqueNSKeyString();
@@ -3045,17 +3268,12 @@ class MaterialBase {
           shdData = MaterialResource_1.default.FindData(shdCode_uniqueName);
           this.m_uniqueShaderName = this.m_shduns;
         } else {
+          // ShaderCodeBuffer.UseShaderBuffer(buf);
           texEnabled = texEnabled || this.getTextureTotal() > 0;
           buf.initialize(texEnabled);
         }
 
         if (shdData == null) {
-          if (buf.pipeline == null) {
-            if (buf.getShaderCodeObject() != null) {
-              buf.getShaderCodeBuilder().addShaderObject(buf.getShaderCodeObject());
-            }
-          }
-
           buf.buildShader();
           buf.buildDefine();
 
@@ -3069,14 +3287,15 @@ class MaterialBase {
             buf.pipeline.build(buf.getShaderCodeBuilder());
           }
 
-          let fshd = buf.getFragShaderCode();
-          let vshd = buf.getVertShaderCode();
-          shdData = MaterialResource_1.default.CreateShdData(shdCode_uniqueName, vshd, fshd, buf.adaptationShaderVersion, ShaderCodeBuffer_1.default.GetPreCompileInfo());
+          let fshdCode = buf.getFragShaderCode();
+          let vshdCode = buf.getVertShaderCode();
+          shdData = MaterialResource_1.default.CreateShdData(shdCode_uniqueName, vshdCode, fshdCode, buf.adaptationShaderVersion, ShaderCodeBuffer_1.default.GetPreCompileInfo());
         }
 
         if (this.m_pipeLine != null) {
           this.m_sharedUniforms = this.m_pipeLine.getSharedUniforms();
-        }
+        } // ShaderCodeBuffer.UseShaderBuffer(null);
+
 
         this.m_shdData = shdData;
       }
@@ -3167,8 +3386,7 @@ class MaterialBase {
   }
 
   getTextureAt(index) {
-    if (this.m_texList != null && this.m_texList.length > index) return this.m_texList[index];
-    return null;
+    return this.m_texList[index];
   }
 
   getTextureTotal() {
@@ -3230,6 +3448,7 @@ class MaterialBase {
   }
 
   getBufSortFormat() {
+    //trace("null != m_shdData: "+(null != m_shdData));
     return this.m_shdData != null ? this.m_shdData.getLayoutBit() : 0x0;
   }
 
@@ -3242,11 +3461,11 @@ class MaterialBase {
   }
 
   __$attachThis() {
-    ++this.m_attachCount; // console.log("MaterialBase::__$attachThis() this.m_attachCount: "+this.m_attachCount);
+    ++this.m_attachCount; //console.log("MaterialBase::__$attachThis() this.m_attachCount: "+this.m_attachCount);
   }
 
   __$detachThis() {
-    --this.m_attachCount; // console.log("MaterialBase::__$detachThis() this.m_attachCount: "+this.m_attachCount);
+    --this.m_attachCount; //console.log("MaterialBase::__$detachThis() this.m_attachCount: "+this.m_attachCount);
 
     if (this.m_attachCount < 1) {
       this.m_attachCount = 0;
@@ -3393,8 +3612,6 @@ class RSEntityFlag {
   }
 
   static TestSpaceEnabled2(flag) {
-    // console.log("   TestSpaceEnabled2(), 0xFFFFF & flag: ", (0xFFFFF & flag));
-    // console.log("                       (0x80000000 & flag) != 0x80000000: ", ((0x80000000 & flag) != 0x80000000));
     return (0xFFFFF & flag) < 1 && (0x80000000 & flag) != 0x80000000;
   }
 
@@ -3474,6 +3691,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+const Color4_1 = __importDefault(__webpack_require__("3930"));
+
 const FrameBufferType_1 = __importDefault(__webpack_require__("baae"));
 
 const RenderFilter_1 = __importDefault(__webpack_require__("722e"));
@@ -3532,7 +3751,7 @@ class RenderAdapter {
     this.m_scissorEnabled = false;
     this.m_rState = null;
     this.m_webglVer = 2;
-    this.bgColor = new Float32Array([0, 0, 0, 1]);
+    this.bgColor = new Color4_1.default();
     this.uViewProbe = null;
     this.m_devPRatio = 1.0;
     this.m_viewportUnlock = true;
@@ -3727,8 +3946,6 @@ class RenderAdapter {
 
 
   clearDepth(depth = 1.0) {
-    let mode = this.m_rState.getDepthTestMode();
-    this.m_rState.setDepthTestMode(RenderConst_1.DepthTestMode.OPAQUE);
     this.m_clearDepth = depth;
 
     if (this.m_preDepth !== this.m_clearDepth) {
@@ -3737,7 +3954,6 @@ class RenderAdapter {
     }
 
     this.m_gl.clear(this.m_gl.DEPTH_BUFFER_BIT);
-    this.m_rState.setDepthTestMode(mode);
   }
   /**
    * only clear up color buffer
@@ -3752,8 +3968,6 @@ class RenderAdapter {
 
   clear() {
     // console.log("clear back buffer.");
-    // let mode = this.m_rState.getDepthTestMode();
-    // this.m_rState.setDepthTestMode(DepthTestMode.OPAQUE);
     if (this.m_preDepth !== this.m_clearDepth) {
       this.m_preDepth = this.m_clearDepth;
       this.m_gl.clearDepth(this.m_clearDepth);
@@ -3763,10 +3977,8 @@ class RenderAdapter {
       this.m_gl.clearStencil(this.m_clearStencil);
     }
 
-    let cvs = this.bgColor;
-    this.m_gl.clearColor(cvs[0], cvs[1], cvs[2], cvs[3]);
-    this.m_gl.clear(this.m_clearMask); // this.m_rState.setDepthTestMode(mode);
-    //	if (this.m_rcontext.isStencilTestEnabled()) {
+    this.m_gl.clearColor(this.bgColor.r, this.bgColor.g, this.bgColor.b, this.bgColor.a);
+    this.m_gl.clear(this.m_clearMask); //	if (this.m_rcontext.isStencilTestEnabled()) {
     //		this.m_gl.stencilMask(0x0);
     //	}
   }
@@ -3774,7 +3986,7 @@ class RenderAdapter {
   reset() {
     this.m_rState.setCullFaceMode(RenderConst_1.CullFaceMode.BACK);
     this.m_rState.setDepthTestMode(RenderConst_1.DepthTestMode.OPAQUE);
-    RendererState_1.default.Reset(this.m_rcontext);
+    RendererState_1.default.Reset(this.m_gl);
   }
 
   getRenderContext() {
@@ -4204,6 +4416,205 @@ exports.default = RenderAdapter;
 
 /***/ }),
 
+/***/ "125c":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+const ImageTextureAtlas_1 = __importDefault(__webpack_require__("e9f0"));
+
+class CanvasTextureObject {
+  constructor() {
+    this.uvs = null;
+    this.texture = null;
+    this.rect = null;
+    this.clampUVRect = null;
+    this.uniqueName = "";
+  }
+
+  getWidth() {
+    if (this.rect != null) return this.rect.width;
+    return 0;
+  }
+
+  getHeight() {
+    if (this.rect != null) return this.rect.height;
+    return 0;
+  }
+
+  destroy() {
+    this.uvs = null;
+    this.texture = null;
+    this.rect = null;
+  }
+
+}
+
+exports.CanvasTextureObject = CanvasTextureObject;
+
+class CanvasTextureTool {
+  constructor() {
+    this.m_sc = null;
+    this.m_whiteTex = null;
+
+    if (CanvasTextureTool.s_ins != null) {
+      throw Error("class CanvasTextureTool is a singleton class.");
+    }
+
+    CanvasTextureTool.s_ins = this;
+  }
+
+  static GetInstance() {
+    if (CanvasTextureTool.s_ins != null) {
+      return CanvasTextureTool.s_ins;
+    }
+
+    return new CanvasTextureTool();
+  }
+
+  initialize(sc) {
+    if (this.m_sc == null) {
+      this.m_sc = sc;
+    }
+  }
+
+  initializeAtlas(canvasWidth, canvasHeight, fillColor, transparent = false) {
+    let atlas = null;
+
+    if (CanvasTextureTool.s_atlasList[0] == null) {
+      atlas = new ImageTextureAtlas_1.default(this.m_sc, canvasWidth, canvasHeight, fillColor, transparent); //  atlas.getTexture().minFilter = TextureConst.NEAREST;
+      //  atlas.getTexture().magFilter = TextureConst.NEAREST;
+      //  atlas.getTexture().mipmapEnabled = false;
+
+      CanvasTextureTool.s_atlasList[0] = atlas;
+      /*
+      // for test
+      let canvas0 = atlas.getCanvas();
+      canvas0.width = 3000;
+      canvas0.height = 4000;
+      canvas0.style.width = 256 + 'px';
+      canvas0.style.height = 256 + 'px';
+      canvas0.style.left = 0 + 'px';
+      canvas0.style.top = 0 + 'px';
+      let debugEnabled: boolean = true;
+      if (debugEnabled) {
+          document.body.appendChild(canvas0);
+      }
+      //*/
+    }
+  }
+
+  getAtlasAt(i) {
+    return CanvasTextureTool.s_atlasList[i];
+  }
+
+  addcharsToAtlas(chars, size, fontStyle = "rgba(255,255,255,1.0)", bgStyle = "rgba(255,255,255,0.3)") {
+    if (chars != "") {
+      let atlas = CanvasTextureTool.s_atlasList[0];
+      let image = ImageTextureAtlas_1.default.CreateCharsTexture(chars, size, fontStyle, bgStyle);
+      return this.addImageToAtlas(chars, image);
+    }
+
+    return null;
+  }
+
+  getTextureObject(uniqueName) {
+    let atlas = CanvasTextureTool.s_atlasList[0];
+    let texArea = atlas.getAreaByName(uniqueName);
+
+    if (texArea != null) {
+      let texNode = new CanvasTextureObject();
+      texNode.texture = atlas.getTexture();
+      texNode.uvs = texArea.uvs.slice(0);
+      texNode.rect = texArea.texRect.clone();
+      texNode.clampUVRect = texArea.texRect.clone();
+      texNode.clampUVRect.x /= atlas.getWidth();
+      texNode.clampUVRect.y /= atlas.getHeight();
+      texNode.clampUVRect.width /= atlas.getWidth();
+      texNode.clampUVRect.height /= atlas.getHeight();
+      texNode.uniqueName = texArea.uniqueNS;
+      return texNode;
+    }
+
+    return null;
+  }
+
+  addImageToAtlas(uniqueName, img) {
+    let atlas = CanvasTextureTool.s_atlasList[0];
+    let texArea = atlas.addSubImage(uniqueName, img);
+
+    if (texArea != null) {
+      let texNode = new CanvasTextureObject();
+      texNode.texture = atlas.getTexture();
+      texNode.uvs = texArea.uvs;
+      texNode.rect = texArea.texRect;
+      texNode.clampUVRect = texArea.texRect.clone();
+      texNode.clampUVRect.x /= atlas.getWidth();
+      texNode.clampUVRect.y /= atlas.getHeight();
+      texNode.clampUVRect.width /= atlas.getWidth();
+      texNode.clampUVRect.height /= atlas.getHeight();
+      texNode.uniqueName = texArea.uniqueNS;
+      return texNode;
+    } else {
+      console.error("addImageToAtlas error!");
+    }
+
+    return null;
+  }
+
+  getTextureObjectFromAtlas(uniqueName) {
+    return null;
+  }
+
+  createCharsImage(chars, size, frontStyle = "rgba(255,255,255,1.0)", bgStyle = "rgba(255,255,255,0.3)") {
+    if (chars == null || chars == "" || size < 8) {
+      return null;
+    }
+
+    return ImageTextureAtlas_1.default.CreateCharsTexture(chars, size, frontStyle, bgStyle);
+  }
+
+  createWhiteTex() {
+    if (this.m_whiteTex != null) {
+      return this.m_whiteTex;
+    }
+
+    let size = 16;
+    let canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+    let ctx2D = canvas.getContext("2d");
+    ctx2D.fillStyle = "white";
+    ctx2D.fillRect(0, 0, size, size);
+    let tex = this.m_sc.textureBlock.createImageTex2D(32, 32, false);
+    tex.setDataFromImage(canvas, 0, 0, 0, false);
+    this.m_whiteTex = tex;
+    tex.premultiplyAlpha = true;
+    return tex;
+  }
+
+}
+
+CanvasTextureTool.s_ins = null;
+CanvasTextureTool.s_imgMap = new Map();
+CanvasTextureTool.s_texMap = new Map();
+CanvasTextureTool.s_atlasList = [null, null, null, null];
+exports.CanvasTextureTool = CanvasTextureTool;
+exports.default = CanvasTextureTool;
+
+/***/ }),
+
 /***/ "1264":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -4488,23 +4899,22 @@ exports.default = DispEntity3DManager;
 
 /***/ }),
 
-/***/ "12e2":
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-/***/ }),
-
 /***/ "131b":
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
+/***************************************************************************/
+
+/*                                                                         */
+
+/*  Copyright 2018-2022 by                                                 */
+
+/*  Vily(vily313@126.com)                                                  */
+
+/*                                                                         */
+
+/***************************************************************************/
 
 var __importDefault = this && this.__importDefault || function (mod) {
   return mod && mod.__esModule ? mod : {
@@ -4528,23 +4938,9 @@ class RawCodeShaderBuffer extends ShaderCodeBuffer_1.default {
     this.m_uniqueName = "";
     this.m_fragCode = "";
     this.m_vtxCode = "";
-    this.m_flag = true;
-    this.shaderBuilder = null;
   }
 
-  initialize(texEnabled) {
-    super.initialize(texEnabled);
-    this.adaptationShaderVersion = false;
-  }
-
-  buildShader() {
-    this.m_flag = this.shaderBuilder != null;
-
-    if (this.m_flag) {
-      this.shaderBuilder(this);
-      this.shaderBuilder = null;
-    }
-  }
+  initialize(texEnabled) {}
 
   setUniqueName(uniqueName) {
     this.m_uniqueName = uniqueName;
@@ -4555,7 +4951,6 @@ class RawCodeShaderBuffer extends ShaderCodeBuffer_1.default {
   }
 
   getFragShaderCode() {
-    if (this.m_flag) return this.m_coder.buildFragCode();
     return this.m_fragCode;
   }
 
@@ -4564,7 +4959,6 @@ class RawCodeShaderBuffer extends ShaderCodeBuffer_1.default {
   }
 
   getVertShaderCode() {
-    if (this.m_flag) return this.m_coder.buildVertCode();
     return this.m_vtxCode;
   }
 
@@ -4584,48 +4978,20 @@ class ShaderMaterial extends MaterialBase_1.default {
     super();
     this.m_buffer = new RawCodeShaderBuffer();
     this.m_uniformData = null;
-    this.m_shaderBuilder = null;
-    this.vertColorEnabled = false;
-    this.premultiplyAlpha = false;
-    this.shadowReceiveEnabled = false;
-    this.lightEnabled = false;
-    this.fogEnabled = false;
-    this.envAmbientLightEnabled = false;
-    this.brightnessOverlayEnabeld = false;
-    this.glossinessEnabeld = true;
     this.m_buffer.setUniqueName(shd_uniqueName);
   }
 
-  buildBuf() {
-    let buf = this.m_buffer;
-    buf.shaderBuilder = this.m_shaderBuilder;
-    buf.vertColorEnabled = this.vertColorEnabled;
-    buf.premultiplyAlpha = this.premultiplyAlpha;
-    buf.shadowReceiveEnabled = this.shadowReceiveEnabled;
-    buf.lightEnabled = this.lightEnabled;
-    buf.fogEnabled = this.fogEnabled;
-    buf.envAmbientLightEnabled = this.envAmbientLightEnabled;
-    buf.brightnessOverlayEnabeld = this.brightnessOverlayEnabeld;
-    buf.glossinessEnabeld = this.glossinessEnabeld;
-  }
-
-  setShaderBuilder(shaderBuilder) {
-    this.m_shaderBuilder = shaderBuilder;
-  }
-
   setFragShaderCode(codeStr) {
-    this.m_buffer.shaderBuilder = null;
     this.m_buffer.setFragShaderCode(codeStr);
   }
 
   setVtxShaderCode(codeStr) {
-    this.m_buffer.shaderBuilder = null;
     this.m_buffer.setVtxShaderCode(codeStr);
   }
   /**
    * @param           uniform_name        the name of a uniform in the shader.
    * @param           data                Float32Array type data stream,for example: vec4(Float32Array(4)),mat4(Float32Array(16))
-   */
+  */
 
 
   addUniformDataAt(uniform_name, data) {
@@ -4647,10 +5013,6 @@ class ShaderMaterial extends MaterialBase_1.default {
 
   createSelfUniformData() {
     return this.m_uniformData;
-  }
-
-  destroy() {
-    this.m_shaderBuilder = null;
   }
 
 }
@@ -4693,7 +5055,13 @@ const EventBase_1 = __importDefault(__webpack_require__("a996"));
 
 class MouseEvent extends EventBase_1.default {
   constructor() {
-    super(); // 物体空间坐标
+    super(); // // phase is event flow phase: 0(none phase),1(capture phase),2(bubble phase)
+    // phase: number = 0;
+    // // 事件类型
+    // type: number = 0;//MouseEvent.MOUSE_DOWN;
+    // // 事件发送者
+    // target: any = null;
+    // 物体空间坐标
 
     this.lpos = new Vector3D_1.default(); // 世界坐标
 
@@ -4725,7 +5093,7 @@ class MouseEvent extends EventBase_1.default {
   }
 
   static GetMouseEvtTypeValuesTotal() {
-    return 24;
+    return 18;
   }
 
   getClassType() {
@@ -4760,102 +5128,7 @@ MouseEvent.MOUSE_BG_UP = 5017; //  mouse up do not hit any 3d object, only in st
 
 MouseEvent.MOUSE_BG_CLICK = 5018; //  mouse up do not hit any 3d object, only in stage
 
-MouseEvent.MOUSE_MIDDLE_DOWN = 5019;
-MouseEvent.MOUSE_MIDDLE_UP = 5020;
-MouseEvent.MOUSE_BG_RIGHT_DOWN = 5021; //  mouse down do not hit any 3d object, only in stage
-
-MouseEvent.MOUSE_BG_RIGHT_UP = 5022; //  mouse up do not hit any 3d object, only in stage
-
-MouseEvent.MOUSE_BG_MIDDLE_DOWN = 5023; //  mouse down do not hit any 3d object, only in stage
-
-MouseEvent.MOUSE_BG_MIDDLE_UP = 5024; //  mouse up do not hit any 3d object, only in stage
-
 exports.default = MouseEvent;
-
-/***/ }),
-
-/***/ "174f":
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/***************************************************************************/
-
-/*                                                                         */
-
-/*  Copyright 2018-2022 by                                                 */
-
-/*  Vily(vily313@126.com)                                                  */
-
-/*                                                                         */
-
-/***************************************************************************/
-// 只是为了做包围体测试或者被空间管理culling test的entity对象的逻辑实体,
-// 内部的transform机制是完整的，但是不会构建实际的display对象，不会进入渲染运行时
-
-var __importDefault = this && this.__importDefault || function (mod) {
-  return mod && mod.__esModule ? mod : {
-    "default": mod
-  };
-};
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-const DisplayEntity_1 = __importDefault(__webpack_require__("402a"));
-
-const BoundsMesh_1 = __importDefault(__webpack_require__("5f58"));
-
-class BoundsEntity extends DisplayEntity_1.default {
-  constructor(transform = null) {
-    super(transform);
-    this.m_bm = null;
-  }
-
-  setMaterial(m) {}
-
-  createDisplay() {}
-
-  initialize(minV, maxV) {
-    this.mouseEnabled = true;
-
-    if (this.getMesh() == null) {
-      this.m_bm = new BoundsMesh_1.default();
-      this.m_bm.setBounds(minV, maxV);
-      this.setMesh(this.m_bm);
-    } else if (this.m_bm != null) {
-      this.m_bm.setBounds(minV, maxV);
-    }
-  }
-
-  setBounds(minV, maxV) {
-    if (this.m_bm == null) {
-      this.initialize(minV, maxV);
-    }
-
-    let b = this.m_bm.bounds;
-    b.min.copyFrom(minV);
-    b.max.copyFrom(maxV);
-    b.updateFast();
-  }
-
-  setRayTester(rayTester) {
-    this.m_bm.setRayTester(rayTester);
-  }
-
-  isPolyhedral() {
-    return false;
-  }
-
-  destroy() {
-    super.destroy();
-    this.m_bm = null;
-  }
-
-}
-
-exports.default = BoundsEntity;
 
 /***/ }),
 
@@ -4897,9 +5170,6 @@ const OrientationType_1 = __importDefault(__webpack_require__("abdb"));
 class Matrix4 {
   constructor(pfs32 = null, index = 0) {
     this.m_uid = -1;
-    this._mvx = new Vector3D_1.default();
-    this._mvy = new Vector3D_1.default();
-    this._mvz = new Vector3D_1.default();
     this.m_index = 0;
     this.m_fs32 = null;
     this.m_localFS32 = null;
@@ -4957,9 +5227,9 @@ class Matrix4 {
   }
 
   multiplyMatrices(a, b) {
-    const ae = a.getLocalFS32();
-    const be = b.getLocalFS32();
-    const fs = this.getLocalFS32();
+    const ae = a.m_localFS32;
+    const be = b.m_localFS32;
+    const te = this.m_localFS32;
     const a11 = ae[0],
           a12 = ae[4],
           a13 = ae[8],
@@ -4992,22 +5262,22 @@ class Matrix4 {
           b42 = be[7],
           b43 = be[11],
           b44 = be[15];
-    fs[0] = a11 * b11 + a12 * b21 + a13 * b31 + a14 * b41;
-    fs[4] = a11 * b12 + a12 * b22 + a13 * b32 + a14 * b42;
-    fs[8] = a11 * b13 + a12 * b23 + a13 * b33 + a14 * b43;
-    fs[12] = a11 * b14 + a12 * b24 + a13 * b34 + a14 * b44;
-    fs[1] = a21 * b11 + a22 * b21 + a23 * b31 + a24 * b41;
-    fs[5] = a21 * b12 + a22 * b22 + a23 * b32 + a24 * b42;
-    fs[9] = a21 * b13 + a22 * b23 + a23 * b33 + a24 * b43;
-    fs[13] = a21 * b14 + a22 * b24 + a23 * b34 + a24 * b44;
-    fs[2] = a31 * b11 + a32 * b21 + a33 * b31 + a34 * b41;
-    fs[6] = a31 * b12 + a32 * b22 + a33 * b32 + a34 * b42;
-    fs[10] = a31 * b13 + a32 * b23 + a33 * b33 + a34 * b43;
-    fs[14] = a31 * b14 + a32 * b24 + a33 * b34 + a34 * b44;
-    fs[3] = a41 * b11 + a42 * b21 + a43 * b31 + a44 * b41;
-    fs[7] = a41 * b12 + a42 * b22 + a43 * b32 + a44 * b42;
-    fs[11] = a41 * b13 + a42 * b23 + a43 * b33 + a44 * b43;
-    fs[15] = a41 * b14 + a42 * b24 + a43 * b34 + a44 * b44;
+    te[0] = a11 * b11 + a12 * b21 + a13 * b31 + a14 * b41;
+    te[4] = a11 * b12 + a12 * b22 + a13 * b32 + a14 * b42;
+    te[8] = a11 * b13 + a12 * b23 + a13 * b33 + a14 * b43;
+    te[12] = a11 * b14 + a12 * b24 + a13 * b34 + a14 * b44;
+    te[1] = a21 * b11 + a22 * b21 + a23 * b31 + a24 * b41;
+    te[5] = a21 * b12 + a22 * b22 + a23 * b32 + a24 * b42;
+    te[9] = a21 * b13 + a22 * b23 + a23 * b33 + a24 * b43;
+    te[13] = a21 * b14 + a22 * b24 + a23 * b34 + a24 * b44;
+    te[2] = a31 * b11 + a32 * b21 + a33 * b31 + a34 * b41;
+    te[6] = a31 * b12 + a32 * b22 + a33 * b32 + a34 * b42;
+    te[10] = a31 * b13 + a32 * b23 + a33 * b33 + a34 * b43;
+    te[14] = a31 * b14 + a32 * b24 + a33 * b34 + a34 * b44;
+    te[3] = a41 * b11 + a42 * b21 + a43 * b31 + a44 * b41;
+    te[7] = a41 * b12 + a42 * b22 + a43 * b32 + a44 * b42;
+    te[11] = a41 * b13 + a42 * b23 + a43 * b33 + a44 * b43;
+    te[15] = a41 * b14 + a42 * b24 + a43 * b34 + a44 * b44;
     return this;
   }
 
@@ -5031,23 +5301,23 @@ class Matrix4 {
 
   append(lhs) {
     let lfs32 = lhs.getLocalFS32();
-    let fs = this.m_localFS32;
-    let m111 = fs[0];
-    let m121 = fs[4];
-    let m131 = fs[8];
-    let m141 = fs[12];
-    let m112 = fs[1];
-    let m122 = fs[5];
-    let m132 = fs[9];
-    let m142 = fs[13];
-    let m113 = fs[2];
-    let m123 = fs[6];
-    let m133 = fs[10];
-    let m143 = fs[14];
-    let m114 = fs[3];
-    let m124 = fs[7];
-    let m134 = fs[11];
-    let m144 = fs[15];
+    let sfs32 = this.m_localFS32;
+    let m111 = sfs32[0];
+    let m121 = sfs32[4];
+    let m131 = sfs32[8];
+    let m141 = sfs32[12];
+    let m112 = sfs32[1];
+    let m122 = sfs32[5];
+    let m132 = sfs32[9];
+    let m142 = sfs32[13];
+    let m113 = sfs32[2];
+    let m123 = sfs32[6];
+    let m133 = sfs32[10];
+    let m143 = sfs32[14];
+    let m114 = sfs32[3];
+    let m124 = sfs32[7];
+    let m134 = sfs32[11];
+    let m144 = sfs32[15];
     let m211 = lfs32[0];
     let m221 = lfs32[4];
     let m231 = lfs32[8];
@@ -5064,36 +5334,36 @@ class Matrix4 {
     let m224 = lfs32[7];
     let m234 = lfs32[11];
     let m244 = lfs32[15];
-    fs[0] = m111 * m211 + m112 * m221 + m113 * m231 + m114 * m241;
-    fs[1] = m111 * m212 + m112 * m222 + m113 * m232 + m114 * m242;
-    fs[2] = m111 * m213 + m112 * m223 + m113 * m233 + m114 * m243;
-    fs[3] = m111 * m214 + m112 * m224 + m113 * m234 + m114 * m244;
-    fs[4] = m121 * m211 + m122 * m221 + m123 * m231 + m124 * m241;
-    fs[5] = m121 * m212 + m122 * m222 + m123 * m232 + m124 * m242;
-    fs[6] = m121 * m213 + m122 * m223 + m123 * m233 + m124 * m243;
-    fs[7] = m121 * m214 + m122 * m224 + m123 * m234 + m124 * m244;
-    fs[8] = m131 * m211 + m132 * m221 + m133 * m231 + m134 * m241;
-    fs[9] = m131 * m212 + m132 * m222 + m133 * m232 + m134 * m242;
-    fs[10] = m131 * m213 + m132 * m223 + m133 * m233 + m134 * m243;
-    fs[11] = m131 * m214 + m132 * m224 + m133 * m234 + m134 * m244;
-    fs[12] = m141 * m211 + m142 * m221 + m143 * m231 + m144 * m241;
-    fs[13] = m141 * m212 + m142 * m222 + m143 * m232 + m144 * m242;
-    fs[14] = m141 * m213 + m142 * m223 + m143 * m233 + m144 * m243;
-    fs[15] = m141 * m214 + m142 * m224 + m143 * m234 + m144 * m244;
+    sfs32[0] = m111 * m211 + m112 * m221 + m113 * m231 + m114 * m241;
+    sfs32[1] = m111 * m212 + m112 * m222 + m113 * m232 + m114 * m242;
+    sfs32[2] = m111 * m213 + m112 * m223 + m113 * m233 + m114 * m243;
+    sfs32[3] = m111 * m214 + m112 * m224 + m113 * m234 + m114 * m244;
+    sfs32[4] = m121 * m211 + m122 * m221 + m123 * m231 + m124 * m241;
+    sfs32[5] = m121 * m212 + m122 * m222 + m123 * m232 + m124 * m242;
+    sfs32[6] = m121 * m213 + m122 * m223 + m123 * m233 + m124 * m243;
+    sfs32[7] = m121 * m214 + m122 * m224 + m123 * m234 + m124 * m244;
+    sfs32[8] = m131 * m211 + m132 * m221 + m133 * m231 + m134 * m241;
+    sfs32[9] = m131 * m212 + m132 * m222 + m133 * m232 + m134 * m242;
+    sfs32[10] = m131 * m213 + m132 * m223 + m133 * m233 + m134 * m243;
+    sfs32[11] = m131 * m214 + m132 * m224 + m133 * m234 + m134 * m244;
+    sfs32[12] = m141 * m211 + m142 * m221 + m143 * m231 + m144 * m241;
+    sfs32[13] = m141 * m212 + m142 * m222 + m143 * m232 + m144 * m242;
+    sfs32[14] = m141 * m213 + m142 * m223 + m143 * m233 + m144 * m243;
+    sfs32[15] = m141 * m214 + m142 * m224 + m143 * m234 + m144 * m244;
   }
 
   append3x3(lhs) {
     let lfs32 = lhs.getLocalFS32();
-    let fs = this.m_localFS32;
-    let m111 = fs[0];
-    let m121 = fs[4];
-    let m131 = fs[8];
-    let m112 = fs[1];
-    let m122 = fs[5];
-    let m132 = fs[9];
-    let m113 = fs[2];
-    let m123 = fs[6];
-    let m133 = fs[10];
+    let sfs32 = this.m_localFS32;
+    let m111 = sfs32[0];
+    let m121 = sfs32[4];
+    let m131 = sfs32[8];
+    let m112 = sfs32[1];
+    let m122 = sfs32[5];
+    let m132 = sfs32[9];
+    let m113 = sfs32[2];
+    let m123 = sfs32[6];
+    let m133 = sfs32[10];
     let m211 = lfs32[0];
     let m221 = lfs32[4];
     let m231 = lfs32[8];
@@ -5103,15 +5373,15 @@ class Matrix4 {
     let m213 = lfs32[2];
     let m223 = lfs32[6];
     let m233 = lfs32[10];
-    fs[0] = m111 * m211 + m112 * m221 + m113 * m231;
-    fs[1] = m111 * m212 + m112 * m222 + m113 * m232;
-    fs[2] = m111 * m213 + m112 * m223 + m113 * m233;
-    fs[4] = m121 * m211 + m122 * m221 + m123 * m231;
-    fs[5] = m121 * m212 + m122 * m222 + m123 * m232;
-    fs[6] = m121 * m213 + m122 * m223 + m123 * m233;
-    fs[8] = m131 * m211 + m132 * m221 + m133 * m231;
-    fs[9] = m131 * m212 + m132 * m222 + m133 * m232;
-    fs[10] = m131 * m213 + m132 * m223 + m133 * m233;
+    sfs32[0] = m111 * m211 + m112 * m221 + m113 * m231;
+    sfs32[1] = m111 * m212 + m112 * m222 + m113 * m232;
+    sfs32[2] = m111 * m213 + m112 * m223 + m113 * m233;
+    sfs32[4] = m121 * m211 + m122 * m221 + m123 * m231;
+    sfs32[5] = m121 * m212 + m122 * m222 + m123 * m232;
+    sfs32[6] = m121 * m213 + m122 * m223 + m123 * m233;
+    sfs32[8] = m131 * m211 + m132 * m221 + m133 * m231;
+    sfs32[9] = m131 * m212 + m132 * m222 + m133 * m232;
+    sfs32[10] = m131 * m213 + m132 * m223 + m133 * m233;
   }
 
   appendRotationPivot(radian, axis, pivotPoint = null) {
@@ -5157,31 +5427,31 @@ class Matrix4 {
   }
 
   setScale(v3) {
-    let fs = this.m_localFS32;
-    fs[0] = v3.x;
-    fs[5] = v3.y;
-    fs[10] = v3.z;
+    let sfs32 = this.m_localFS32;
+    sfs32[0] = v3.x;
+    sfs32[5] = v3.y;
+    sfs32[10] = v3.z;
     return this;
   }
 
   setScaleXYZ(xScale, yScale, zScale) {
-    let fs = this.m_localFS32;
-    fs[0] = xScale;
-    fs[5] = yScale;
-    fs[10] = zScale;
+    let sfs32 = this.m_localFS32;
+    sfs32[0] = xScale;
+    sfs32[5] = yScale;
+    sfs32[10] = zScale;
   }
 
   getScale(outV3) {
-    let fs = this.m_localFS32;
-    outV3.x = fs[0];
-    outV3.y = fs[5];
-    outV3.z = fs[10];
+    let sfs32 = this.m_localFS32;
+    outV3.x = sfs32[0];
+    outV3.y = sfs32[5];
+    outV3.z = sfs32[10];
   }
 
   setRotationEulerAngle(radianX, radianY, radianZ) {
-    let fs = this.m_localFS32; //let sx:number = fs[0];
-    //let sy:number = fs[5];
-    //let sz:number = fs[10];
+    let sfs32 = this.m_localFS32; //let sx:number = sfs32[0];
+    //let sy:number = sfs32[5];
+    //let sz:number = sfs32[10];
 
     let cosX = Math.cos(radianX);
     let sinX = Math.sin(radianX);
@@ -5191,26 +5461,26 @@ class Matrix4 {
     let sinZ = Math.sin(radianZ);
     let cosZsinY = cosZ * sinY;
     let sinZsinY = sinZ * sinY;
-    let cosYscaleX = cosY * fs[0];
-    let sinXscaleY = sinX * fs[5];
-    let cosXscaleY = cosX * fs[5];
-    let cosXscaleZ = cosX * fs[10];
-    let sinXscaleZ = sinX * fs[10];
-    fs[1] = sinZ * cosYscaleX;
-    fs[2] = -sinY * fs[0];
-    fs[0] = cosZ * cosYscaleX;
-    fs[4] = cosZsinY * sinXscaleY - sinZ * cosXscaleY;
-    fs[8] = cosZsinY * cosXscaleZ + sinZ * sinXscaleZ;
-    fs[5] = sinZsinY * sinXscaleY + cosZ * cosXscaleY;
-    fs[9] = sinZsinY * cosXscaleZ - cosZ * sinXscaleZ;
-    fs[6] = cosY * sinXscaleY;
-    fs[10] = cosY * cosXscaleZ;
+    let cosYscaleX = cosY * sfs32[0];
+    let sinXscaleY = sinX * sfs32[5];
+    let cosXscaleY = cosX * sfs32[5];
+    let cosXscaleZ = cosX * sfs32[10];
+    let sinXscaleZ = sinX * sfs32[10];
+    sfs32[1] = sinZ * cosYscaleX;
+    sfs32[2] = -sinY * sfs32[0];
+    sfs32[0] = cosZ * cosYscaleX;
+    sfs32[4] = cosZsinY * sinXscaleY - sinZ * cosXscaleY;
+    sfs32[8] = cosZsinY * cosXscaleZ + sinZ * sinXscaleZ;
+    sfs32[5] = sinZsinY * sinXscaleY + cosZ * cosXscaleY;
+    sfs32[9] = sinZsinY * cosXscaleZ - cosZ * sinXscaleZ;
+    sfs32[6] = cosY * sinXscaleY;
+    sfs32[10] = cosY * cosXscaleZ;
   }
 
   setRotationEulerAngle2(cosX, sinX, cosY, sinY, cosZ, sinZ) {
-    let fs = this.m_localFS32; //let sx:number = fs[0];
-    //let sy:number = fs[5];
-    //let sz:number = fs[10];
+    let sfs32 = this.m_localFS32; //let sx:number = sfs32[0];
+    //let sy:number = sfs32[5];
+    //let sz:number = sfs32[10];
     //	let cosX: number = Math.cos(radianX);
     //	let sinX:number = Math.sin(radianX);
     //	let cosY:number = Math.cos(radianY);
@@ -5220,24 +5490,24 @@ class Matrix4 {
 
     let cosZsinY = cosZ * sinY;
     let sinZsinY = sinZ * sinY;
-    let cosYscaleX = cosY * fs[0];
-    let sinXscaleY = sinX * fs[5];
-    let cosXscaleY = cosX * fs[5];
-    let cosXscaleZ = cosX * fs[10];
-    let sinXscaleZ = sinX * fs[10];
-    fs[1] = sinZ * cosYscaleX;
-    fs[2] = -sinY * fs[0];
-    fs[0] = cosZ * cosYscaleX;
-    fs[4] = cosZsinY * sinXscaleY - sinZ * cosXscaleY;
-    fs[8] = cosZsinY * cosXscaleZ + sinZ * sinXscaleZ;
-    fs[5] = sinZsinY * sinXscaleY + cosZ * cosXscaleY;
-    fs[9] = sinZsinY * cosXscaleZ - cosZ * sinXscaleZ;
-    fs[6] = cosY * sinXscaleY;
-    fs[10] = cosY * cosXscaleZ;
+    let cosYscaleX = cosY * sfs32[0];
+    let sinXscaleY = sinX * sfs32[5];
+    let cosXscaleY = cosX * sfs32[5];
+    let cosXscaleZ = cosX * sfs32[10];
+    let sinXscaleZ = sinX * sfs32[10];
+    sfs32[1] = sinZ * cosYscaleX;
+    sfs32[2] = -sinY * sfs32[0];
+    sfs32[0] = cosZ * cosYscaleX;
+    sfs32[4] = cosZsinY * sinXscaleY - sinZ * cosXscaleY;
+    sfs32[8] = cosZsinY * cosXscaleZ + sinZ * sinXscaleZ;
+    sfs32[5] = sinZsinY * sinXscaleY + cosZ * cosXscaleY;
+    sfs32[9] = sinZsinY * cosXscaleZ - cosZ * sinXscaleZ;
+    sfs32[6] = cosY * sinXscaleY;
+    sfs32[10] = cosY * cosXscaleZ;
   }
 
   compose(position, quaternion, scale) {
-    const fs = this.m_localFS32;
+    const te = this.m_localFS32;
     const x = quaternion.x,
           y = quaternion.y,
           z = quaternion.z,
@@ -5257,22 +5527,22 @@ class Matrix4 {
     const sx = scale.x,
           sy = scale.y,
           sz = scale.z;
-    fs[0] = (1 - (yy + zz)) * sx;
-    fs[1] = (xy + wz) * sx;
-    fs[2] = (xz - wy) * sx;
-    fs[3] = 0;
-    fs[4] = (xy - wz) * sy;
-    fs[5] = (1 - (xx + zz)) * sy;
-    fs[6] = (yz + wx) * sy;
-    fs[7] = 0;
-    fs[8] = (xz + wy) * sz;
-    fs[9] = (yz - wx) * sz;
-    fs[10] = (1 - (xx + yy)) * sz;
-    fs[11] = 0;
-    fs[12] = position.x;
-    fs[13] = position.y;
-    fs[14] = position.z;
-    fs[15] = 1;
+    te[0] = (1 - (yy + zz)) * sx;
+    te[1] = (xy + wz) * sx;
+    te[2] = (xz - wy) * sx;
+    te[3] = 0;
+    te[4] = (xy - wz) * sy;
+    te[5] = (1 - (xx + zz)) * sy;
+    te[6] = (yz + wx) * sy;
+    te[7] = 0;
+    te[8] = (xz + wy) * sz;
+    te[9] = (yz - wx) * sz;
+    te[10] = (1 - (xx + yy)) * sz;
+    te[11] = 0;
+    te[12] = position.x;
+    te[13] = position.y;
+    te[14] = position.z;
+    te[15] = 1;
     return this;
   }
 
@@ -5285,7 +5555,7 @@ class Matrix4 {
       console.error('Matrix4::makeRotationFromEuler() now expects a Euler rotation rather than a Vector3D and order.');
     }
 
-    const fs = this.m_localFS32;
+    const te = this.m_localFS32;
     const x = euler.x,
           y = euler.y,
           z = euler.z;
@@ -5301,102 +5571,102 @@ class Matrix4 {
             af = a * f,
             be = b * e,
             bf = b * f;
-      fs[0] = c * e;
-      fs[4] = -c * f;
-      fs[8] = d;
-      fs[1] = af + be * d;
-      fs[5] = ae - bf * d;
-      fs[9] = -b * c;
-      fs[2] = bf - ae * d;
-      fs[6] = be + af * d;
-      fs[10] = a * c;
+      te[0] = c * e;
+      te[4] = -c * f;
+      te[8] = d;
+      te[1] = af + be * d;
+      te[5] = ae - bf * d;
+      te[9] = -b * c;
+      te[2] = bf - ae * d;
+      te[6] = be + af * d;
+      te[10] = a * c;
     } else if (euler.order === EulerOrder_1.EulerOrder.YXZ) {
       const ce = c * e,
             cf = c * f,
             de = d * e,
             df = d * f;
-      fs[0] = ce + df * b;
-      fs[4] = de * b - cf;
-      fs[8] = a * d;
-      fs[1] = a * f;
-      fs[5] = a * e;
-      fs[9] = -b;
-      fs[2] = cf * b - de;
-      fs[6] = df + ce * b;
-      fs[10] = a * c;
+      te[0] = ce + df * b;
+      te[4] = de * b - cf;
+      te[8] = a * d;
+      te[1] = a * f;
+      te[5] = a * e;
+      te[9] = -b;
+      te[2] = cf * b - de;
+      te[6] = df + ce * b;
+      te[10] = a * c;
     } else if (euler.order === EulerOrder_1.EulerOrder.ZXY) {
       const ce = c * e,
             cf = c * f,
             de = d * e,
             df = d * f;
-      fs[0] = ce - df * b;
-      fs[4] = -a * f;
-      fs[8] = de + cf * b;
-      fs[1] = cf + de * b;
-      fs[5] = a * e;
-      fs[9] = df - ce * b;
-      fs[2] = -a * d;
-      fs[6] = b;
-      fs[10] = a * c;
+      te[0] = ce - df * b;
+      te[4] = -a * f;
+      te[8] = de + cf * b;
+      te[1] = cf + de * b;
+      te[5] = a * e;
+      te[9] = df - ce * b;
+      te[2] = -a * d;
+      te[6] = b;
+      te[10] = a * c;
     } else if (euler.order === EulerOrder_1.EulerOrder.ZYX) {
       const ae = a * e,
             af = a * f,
             be = b * e,
             bf = b * f;
-      fs[0] = c * e;
-      fs[4] = be * d - af;
-      fs[8] = ae * d + bf;
-      fs[1] = c * f;
-      fs[5] = bf * d + ae;
-      fs[9] = af * d - be;
-      fs[2] = -d;
-      fs[6] = b * c;
-      fs[10] = a * c;
+      te[0] = c * e;
+      te[4] = be * d - af;
+      te[8] = ae * d + bf;
+      te[1] = c * f;
+      te[5] = bf * d + ae;
+      te[9] = af * d - be;
+      te[2] = -d;
+      te[6] = b * c;
+      te[10] = a * c;
     } else if (euler.order === EulerOrder_1.EulerOrder.YZX) {
       const ac = a * c,
             ad = a * d,
             bc = b * c,
             bd = b * d;
-      fs[0] = c * e;
-      fs[4] = bd - ac * f;
-      fs[8] = bc * f + ad;
-      fs[1] = f;
-      fs[5] = a * e;
-      fs[9] = -b * e;
-      fs[2] = -d * e;
-      fs[6] = ad * f + bc;
-      fs[10] = ac - bd * f;
+      te[0] = c * e;
+      te[4] = bd - ac * f;
+      te[8] = bc * f + ad;
+      te[1] = f;
+      te[5] = a * e;
+      te[9] = -b * e;
+      te[2] = -d * e;
+      te[6] = ad * f + bc;
+      te[10] = ac - bd * f;
     } else if (euler.order === EulerOrder_1.EulerOrder.XZY) {
       const ac = a * c,
             ad = a * d,
             bc = b * c,
             bd = b * d;
-      fs[0] = c * e;
-      fs[4] = -f;
-      fs[8] = d * e;
-      fs[1] = ac * f + bd;
-      fs[5] = a * e;
-      fs[9] = ad * f - bc;
-      fs[2] = bc * f - ad;
-      fs[6] = b * e;
-      fs[10] = bd * f + ac;
+      te[0] = c * e;
+      te[4] = -f;
+      te[8] = d * e;
+      te[1] = ac * f + bd;
+      te[5] = a * e;
+      te[9] = ad * f - bc;
+      te[2] = bc * f - ad;
+      te[6] = b * e;
+      te[10] = bd * f + ac;
     } // reset bottom row
 
 
-    fs[3] = 0;
-    fs[7] = 0;
-    fs[11] = 0; // reset last column
+    te[3] = 0;
+    te[7] = 0;
+    te[11] = 0; // reset last column
 
-    fs[12] = 0;
-    fs[13] = 0;
-    fs[14] = 0;
-    fs[15] = 1;
+    te[12] = 0;
+    te[13] = 0;
+    te[14] = 0;
+    te[15] = 1;
     return this;
   }
 
   extractRotation(m) {
     // this method does not support reflection matrices
-    const fs = this.m_localFS32;
+    const te = this.m_localFS32;
     const me = m.getLocalFS32();
     const v3 = Matrix4.m_v3;
     m.copyColumnTo(0, v3);
@@ -5405,31 +5675,31 @@ class Matrix4 {
     const scaleY = 1.0 / v3.getLength();
     m.copyColumnTo(2, v3);
     const scaleZ = 1.0 / v3.getLength();
-    fs[0] = me[0] * scaleX;
-    fs[1] = me[1] * scaleX;
-    fs[2] = me[2] * scaleX;
-    fs[3] = 0;
-    fs[4] = me[4] * scaleY;
-    fs[5] = me[5] * scaleY;
-    fs[6] = me[6] * scaleY;
-    fs[7] = 0;
-    fs[8] = me[8] * scaleZ;
-    fs[9] = me[9] * scaleZ;
-    fs[10] = me[10] * scaleZ;
-    fs[11] = 0;
-    fs[12] = 0;
-    fs[13] = 0;
-    fs[14] = 0;
-    fs[15] = 1;
+    te[0] = me[0] * scaleX;
+    te[1] = me[1] * scaleX;
+    te[2] = me[2] * scaleX;
+    te[3] = 0;
+    te[4] = me[4] * scaleY;
+    te[5] = me[5] * scaleY;
+    te[6] = me[6] * scaleY;
+    te[7] = 0;
+    te[8] = me[8] * scaleZ;
+    te[9] = me[9] * scaleZ;
+    te[10] = me[10] * scaleZ;
+    te[11] = 0;
+    te[12] = 0;
+    te[13] = 0;
+    te[14] = 0;
+    te[15] = 1;
     return this;
   }
 
   copyTranslation(m) {
-    const fs = this.m_localFS32,
+    const te = this.m_localFS32,
           me = m.getLocalFS32();
-    fs[12] = me[12];
-    fs[13] = me[13];
-    fs[14] = me[14];
+    te[12] = me[12];
+    te[13] = me[13];
+    te[14] = me[14];
     return this;
   }
 
@@ -5446,31 +5716,30 @@ class Matrix4 {
   }
 
   appendScaleXYZ(xScale, yScale, zScale) {
-    const fs = this.m_localFS32;
-    fs[0] *= xScale;
-    fs[1] *= xScale;
-    fs[2] *= xScale;
-    fs[3] *= xScale;
-    fs[4] *= yScale;
-    fs[5] *= yScale;
-    fs[6] *= yScale;
-    fs[7] *= yScale;
-    fs[8] *= zScale;
-    fs[9] *= zScale;
-    fs[10] *= zScale;
-    fs[11] *= zScale;
+    let sfs32 = this.m_localFS32;
+    sfs32[0] *= xScale;
+    sfs32[1] *= xScale;
+    sfs32[2] *= xScale;
+    sfs32[3] *= xScale;
+    sfs32[4] *= yScale;
+    sfs32[5] *= yScale;
+    sfs32[6] *= yScale;
+    sfs32[7] *= yScale;
+    sfs32[8] *= zScale;
+    sfs32[9] *= zScale;
+    sfs32[10] *= zScale;
+    sfs32[11] *= zScale;
   }
 
   appendScaleXY(xScale, yScale) {
-    const fs = this.m_localFS32;
-    fs[0] *= xScale;
-    fs[1] *= xScale;
-    fs[2] *= xScale;
-    fs[3] *= xScale;
-    fs[4] *= yScale;
-    fs[5] *= yScale;
-    fs[6] *= yScale;
-    fs[7] *= yScale;
+    this.m_localFS32[0] *= xScale;
+    this.m_localFS32[1] *= xScale;
+    this.m_localFS32[2] *= xScale;
+    this.m_localFS32[3] *= xScale;
+    this.m_localFS32[4] *= yScale;
+    this.m_localFS32[5] *= yScale;
+    this.m_localFS32[6] *= yScale;
+    this.m_localFS32[7] *= yScale;
   }
 
   appendTranslationXYZ(px, py, pz) {
@@ -5486,42 +5755,40 @@ class Matrix4 {
   }
 
   copyColumnFrom(column_index, v3) {
-    const fs = this.m_localFS32;
-
     switch (column_index) {
       case 0:
         {
-          fs[0] = v3.x;
-          fs[1] = v3.y;
-          fs[2] = v3.z;
-          fs[3] = v3.w;
+          this.m_localFS32[0] = v3.x;
+          this.m_localFS32[1] = v3.y;
+          this.m_localFS32[2] = v3.z;
+          this.m_localFS32[3] = v3.w;
         }
         break;
 
       case 1:
         {
-          fs[4] = v3.x;
-          fs[5] = v3.y;
-          fs[6] = v3.z;
-          fs[7] = v3.w;
+          this.m_localFS32[4] = v3.x;
+          this.m_localFS32[5] = v3.y;
+          this.m_localFS32[6] = v3.z;
+          this.m_localFS32[7] = v3.w;
         }
         break;
 
       case 2:
         {
-          fs[8] = v3.x;
-          fs[9] = v3.y;
-          fs[10] = v3.z;
-          fs[11] = v3.w;
+          this.m_localFS32[8] = v3.x;
+          this.m_localFS32[9] = v3.y;
+          this.m_localFS32[10] = v3.z;
+          this.m_localFS32[11] = v3.w;
         }
         break;
 
       case 3:
         {
-          fs[12] = v3.x;
-          fs[13] = v3.y;
-          fs[14] = v3.z;
-          fs[15] = v3.w;
+          this.m_localFS32[12] = v3.x;
+          this.m_localFS32[13] = v3.y;
+          this.m_localFS32[14] = v3.z;
+          this.m_localFS32[15] = v3.w;
         }
         break;
 
@@ -5531,12 +5798,11 @@ class Matrix4 {
   }
 
   copyColumnTo(column_index, outV3) {
-    const fs = this.m_localFS32;
     column_index <<= 2;
-    outV3.x = fs[column_index];
-    outV3.y = fs[1 + column_index];
-    outV3.z = fs[2 + column_index];
-    outV3.w = fs[3 + column_index];
+    outV3.x = this.m_localFS32[column_index];
+    outV3.y = this.m_localFS32[1 + column_index];
+    outV3.z = this.m_localFS32[2 + column_index];
+    outV3.w = this.m_localFS32[3 + column_index];
   }
 
   setF32ArrAndIndex(fs32Arr, index = 0) {
@@ -5576,17 +5842,17 @@ class Matrix4 {
   }
 
   copy(smat) {
-    this.m_localFS32.set(smat.getLocalFS32(), 0);
+    this.m_localFS32.set(smat.m_localFS32, 0);
     return this;
   }
 
   copyFrom(smat) {
-    this.m_localFS32.set(smat.getLocalFS32(), 0);
+    this.m_localFS32.set(smat.m_localFS32, 0);
   }
 
   copyTo(dmat) {
     //dmat.copyFrom(this);
-    dmat.getLocalFS32().set(this.getLocalFS32(), 0);
+    dmat.m_localFS32.set(this.m_localFS32, 0);
   }
 
   copyRawDataFrom(float_rawDataArr, rawDataLength = 16, index = 0, bool_tp = false) {
@@ -5615,42 +5881,40 @@ class Matrix4 {
   }
 
   copyRowFrom(row_index, v3) {
-    const fs = this.m_localFS32;
-
     switch (row_index) {
       case 0:
         {
-          fs[0] = v3.x;
-          fs[4] = v3.y;
-          fs[8] = v3.z;
-          fs[12] = v3.w;
+          this.m_localFS32[0] = v3.x;
+          this.m_localFS32[4] = v3.y;
+          this.m_localFS32[8] = v3.z;
+          this.m_localFS32[12] = v3.w;
         }
         break;
 
       case 1:
         {
-          fs[1] = v3.x;
-          fs[5] = v3.y;
-          fs[9] = v3.z;
-          fs[13] = v3.w;
+          this.m_localFS32[1] = v3.x;
+          this.m_localFS32[5] = v3.y;
+          this.m_localFS32[9] = v3.z;
+          this.m_localFS32[13] = v3.w;
         }
         break;
 
       case 2:
         {
-          fs[2] = v3.x;
-          fs[6] = v3.y;
-          fs[10] = v3.z;
-          fs[14] = v3.w;
+          this.m_localFS32[2] = v3.x;
+          this.m_localFS32[6] = v3.y;
+          this.m_localFS32[10] = v3.z;
+          this.m_localFS32[14] = v3.w;
         }
         break;
 
       case 3:
         {
-          fs[3] = v3.x;
-          fs[7] = v3.y;
-          fs[11] = v3.z;
-          fs[15] = v3.w;
+          this.m_localFS32[3] = v3.x;
+          this.m_localFS32[7] = v3.y;
+          this.m_localFS32[11] = v3.z;
+          this.m_localFS32[15] = v3.w;
         }
         break;
 
@@ -5660,96 +5924,90 @@ class Matrix4 {
   }
 
   copyRowTo(row_index, v3) {
-    const fs = this.m_localFS32;
-    v3.x = fs[row_index];
-    v3.y = fs[4 + row_index];
-    v3.z = fs[8 + row_index];
-    v3.w = fs[12 + row_index];
+    v3.x = this.m_localFS32[row_index];
+    v3.y = this.m_localFS32[4 + row_index];
+    v3.z = this.m_localFS32[8 + row_index];
+    v3.w = this.m_localFS32[12 + row_index];
   }
-  /**
-   * @param orientationStyle the value example: OrientationType.EULER_ANGLES
-   * @returns [position, rotation, scale]
-   */
-
 
   decompose(orientationStyle) {
     // TODO: optimize after 4 lines
     let vec = [];
     let mr = Matrix4.s_tMat4;
-    let rfs = mr.getLocalFS32(); //let mrfsI = mr.getFSIndex();
+    let mrfs32 = mr.getFS32(); //let mrfsI = mr.getFSIndex();
     //std::memcpy(&mr, m_rawData, m_rawDataSize);
 
     mr.copyFrom(this); ///*
 
-    let pos = new Vector3D_1.default(rfs[12], rfs[13], rfs[14]);
+    let pos = new Vector3D_1.default(mrfs32[12], mrfs32[13], mrfs32[14]);
     let scale = new Vector3D_1.default();
-    scale.x = Math.sqrt(rfs[0] * rfs[0] + rfs[1] * rfs[1] + rfs[2] * rfs[2]);
-    scale.y = Math.sqrt(rfs[4] * rfs[4] + rfs[5] * rfs[5] + rfs[6] * rfs[6]);
-    scale.z = Math.sqrt(rfs[8] * rfs[8] + rfs[9] * rfs[9] + rfs[10] * rfs[10]);
-    if (rfs[0] * (rfs[5] * rfs[10] - rfs[6] * rfs[9]) - rfs[1] * (rfs[4] * rfs[10] - rfs[6] * rfs[8]) + rfs[2] * (rfs[4] * rfs[9] - rfs[5] * rfs[8]) < 0) scale.z = -scale.z;
-    rfs[0] /= scale.x;
-    rfs[1] /= scale.x;
-    rfs[2] /= scale.x;
-    rfs[4] /= scale.y;
-    rfs[5] /= scale.y;
-    rfs[6] /= scale.y;
-    rfs[8] /= scale.z;
-    rfs[9] /= scale.z;
-    rfs[10] /= scale.z;
+    scale.x = Math.sqrt(mrfs32[0] * mrfs32[0] + mrfs32[1] * mrfs32[1] + mrfs32[2] * mrfs32[2]);
+    scale.y = Math.sqrt(mrfs32[4] * mrfs32[4] + mrfs32[5] * mrfs32[5] + mrfs32[6] * mrfs32[6]);
+    scale.z = Math.sqrt(mrfs32[8] * mrfs32[8] + mrfs32[9] * mrfs32[9] + mrfs32[10] * mrfs32[10]);
+    if (mrfs32[0] * (mrfs32[5] * mrfs32[10] - mrfs32[6] * mrfs32[9]) - mrfs32[1] * (mrfs32[4] * mrfs32[10] - mrfs32[6] * mrfs32[8]) + mrfs32[2] * (mrfs32[4] * mrfs32[9] - mrfs32[5] * mrfs32[8]) < 0) scale.z = -scale.z;
+    mrfs32[0] /= scale.x;
+    mrfs32[1] /= scale.x;
+    mrfs32[2] /= scale.x;
+    mrfs32[4] /= scale.y;
+    mrfs32[5] /= scale.y;
+    mrfs32[6] /= scale.y;
+    mrfs32[8] /= scale.z;
+    mrfs32[9] /= scale.z;
+    mrfs32[10] /= scale.z;
     let rot = new Vector3D_1.default();
 
     switch (orientationStyle) {
       case OrientationType_1.default.AXIS_ANGLE:
         {
-          rot.w = MathConst_1.default.SafeACos((rfs[0] + rfs[5] + rfs[10] - 1) / 2);
-          let len = Math.sqrt((rfs[6] - rfs[9]) * (rfs[6] - rfs[9]) + (rfs[8] - rfs[2]) * (rfs[8] - rfs[2]) + (rfs[1] - rfs[4]) * (rfs[1] - rfs[4]));
+          rot.w = MathConst_1.default.SafeACos((mrfs32[0] + mrfs32[5] + mrfs32[10] - 1) / 2);
+          let len = Math.sqrt((mrfs32[6] - mrfs32[9]) * (mrfs32[6] - mrfs32[9]) + (mrfs32[8] - mrfs32[2]) * (mrfs32[8] - mrfs32[2]) + (mrfs32[1] - mrfs32[4]) * (mrfs32[1] - mrfs32[4]));
 
           if (len > MathConst_1.default.MATH_MIN_POSITIVE) {
-            rot.x = (rfs[6] - rfs[9]) / len;
-            rot.y = (rfs[8] - rfs[2]) / len;
-            rot.z = (rfs[1] - rfs[4]) / len;
+            rot.x = (mrfs32[6] - mrfs32[9]) / len;
+            rot.y = (mrfs32[8] - mrfs32[2]) / len;
+            rot.z = (mrfs32[1] - mrfs32[4]) / len;
           } else rot.x = rot.y = rot.z = 0;
         }
         break;
 
       case OrientationType_1.default.QUATERNION:
         {
-          let tr = rfs[0] + rfs[5] + rfs[10];
+          let tr = mrfs32[0] + mrfs32[5] + mrfs32[10];
 
           if (tr > 0) {
             rot.w = Math.sqrt(1 + tr) / 2;
-            rot.x = (rfs[6] - rfs[9]) / (4 * rot.w);
-            rot.y = (rfs[8] - rfs[2]) / (4 * rot.w);
-            rot.z = (rfs[1] - rfs[4]) / (4 * rot.w);
-          } else if (rfs[0] > rfs[5] && rfs[0] > rfs[10]) {
-            rot.x = Math.sqrt(1 + rfs[0] - rfs[5] - rfs[10]) / 2;
-            rot.w = (rfs[6] - rfs[9]) / (4 * rot.x);
-            rot.y = (rfs[1] + rfs[4]) / (4 * rot.x);
-            rot.z = (rfs[8] + rfs[2]) / (4 * rot.x);
-          } else if (rfs[5] > rfs[10]) {
-            rot.y = Math.sqrt(1 + rfs[5] - rfs[0] - rfs[10]) / 2;
-            rot.x = (rfs[1] + rfs[4]) / (4 * rot.y);
-            rot.w = (rfs[8] - rfs[2]) / (4 * rot.y);
-            rot.z = (rfs[6] + rfs[9]) / (4 * rot.y);
+            rot.x = (mrfs32[6] - mrfs32[9]) / (4 * rot.w);
+            rot.y = (mrfs32[8] - mrfs32[2]) / (4 * rot.w);
+            rot.z = (mrfs32[1] - mrfs32[4]) / (4 * rot.w);
+          } else if (mrfs32[0] > mrfs32[5] && mrfs32[0] > mrfs32[10]) {
+            rot.x = Math.sqrt(1 + mrfs32[0] - mrfs32[5] - mrfs32[10]) / 2;
+            rot.w = (mrfs32[6] - mrfs32[9]) / (4 * rot.x);
+            rot.y = (mrfs32[1] + mrfs32[4]) / (4 * rot.x);
+            rot.z = (mrfs32[8] + mrfs32[2]) / (4 * rot.x);
+          } else if (mrfs32[5] > mrfs32[10]) {
+            rot.y = Math.sqrt(1 + mrfs32[5] - mrfs32[0] - mrfs32[10]) / 2;
+            rot.x = (mrfs32[1] + mrfs32[4]) / (4 * rot.y);
+            rot.w = (mrfs32[8] - mrfs32[2]) / (4 * rot.y);
+            rot.z = (mrfs32[6] + mrfs32[9]) / (4 * rot.y);
           } else {
-            rot.z = Math.sqrt(1 + rfs[10] - rfs[0] - rfs[5]) / 2;
-            rot.x = (rfs[8] + rfs[2]) / (4 * rot.z);
-            rot.y = (rfs[6] + rfs[9]) / (4 * rot.z);
-            rot.w = (rfs[1] - rfs[4]) / (4 * rot.z);
+            rot.z = Math.sqrt(1 + mrfs32[10] - mrfs32[0] - mrfs32[5]) / 2;
+            rot.x = (mrfs32[8] + mrfs32[2]) / (4 * rot.z);
+            rot.y = (mrfs32[6] + mrfs32[9]) / (4 * rot.z);
+            rot.w = (mrfs32[1] - mrfs32[4]) / (4 * rot.z);
           }
         }
         break;
 
       case OrientationType_1.default.EULER_ANGLES:
         {
-          rot.y = Math.asin(-rfs[2]);
+          rot.y = Math.asin(-mrfs32[2]);
 
-          if (rfs[2] != 1 && rfs[2] != -1) {
-            rot.x = Math.atan2(rfs[6], rfs[10]);
-            rot.z = Math.atan2(rfs[1], rfs[0]);
+          if (mrfs32[2] != 1 && mrfs32[2] != -1) {
+            rot.x = Math.atan2(mrfs32[6], mrfs32[10]);
+            rot.z = Math.atan2(mrfs32[1], mrfs32[0]);
           } else {
             rot.z = 0;
-            rot.x = Math.atan2(rfs[4], rfs[5]);
+            rot.x = Math.atan2(mrfs32[4], mrfs32[5]);
           }
         }
         break;
@@ -5771,40 +6029,40 @@ class Matrix4 {
     let invertable = Math.abs(d) > MathConst_1.default.MATH_MIN_POSITIVE;
 
     if (invertable) {
-      let fs = this.m_localFS32;
+      let sfs32 = this.m_localFS32;
       d = 1.0 / d;
-      let m11 = fs[0];
-      let m21 = fs[4];
-      let m31 = fs[8];
-      let m41 = fs[12];
-      let m12 = fs[1];
-      let m22 = fs[5];
-      let m32 = fs[9];
-      let m42 = fs[13];
-      let m13 = fs[2];
-      let m23 = fs[6];
-      let m33 = fs[10];
-      let m43 = fs[14];
-      let m14 = fs[3];
-      let m24 = fs[7];
-      let m34 = fs[11];
-      let m44 = fs[15];
-      fs[0] = d * (m22 * (m33 * m44 - m43 * m34) - m32 * (m23 * m44 - m43 * m24) + m42 * (m23 * m34 - m33 * m24));
-      fs[1] = -d * (m12 * (m33 * m44 - m43 * m34) - m32 * (m13 * m44 - m43 * m14) + m42 * (m13 * m34 - m33 * m14));
-      fs[2] = d * (m12 * (m23 * m44 - m43 * m24) - m22 * (m13 * m44 - m43 * m14) + m42 * (m13 * m24 - m23 * m14));
-      fs[3] = -d * (m12 * (m23 * m34 - m33 * m24) - m22 * (m13 * m34 - m33 * m14) + m32 * (m13 * m24 - m23 * m14));
-      fs[4] = -d * (m21 * (m33 * m44 - m43 * m34) - m31 * (m23 * m44 - m43 * m24) + m41 * (m23 * m34 - m33 * m24));
-      fs[5] = d * (m11 * (m33 * m44 - m43 * m34) - m31 * (m13 * m44 - m43 * m14) + m41 * (m13 * m34 - m33 * m14));
-      fs[6] = -d * (m11 * (m23 * m44 - m43 * m24) - m21 * (m13 * m44 - m43 * m14) + m41 * (m13 * m24 - m23 * m14));
-      fs[7] = d * (m11 * (m23 * m34 - m33 * m24) - m21 * (m13 * m34 - m33 * m14) + m31 * (m13 * m24 - m23 * m14));
-      fs[8] = d * (m21 * (m32 * m44 - m42 * m34) - m31 * (m22 * m44 - m42 * m24) + m41 * (m22 * m34 - m32 * m24));
-      fs[9] = -d * (m11 * (m32 * m44 - m42 * m34) - m31 * (m12 * m44 - m42 * m14) + m41 * (m12 * m34 - m32 * m14));
-      fs[10] = d * (m11 * (m22 * m44 - m42 * m24) - m21 * (m12 * m44 - m42 * m14) + m41 * (m12 * m24 - m22 * m14));
-      fs[11] = -d * (m11 * (m22 * m34 - m32 * m24) - m21 * (m12 * m34 - m32 * m14) + m31 * (m12 * m24 - m22 * m14));
-      fs[12] = -d * (m21 * (m32 * m43 - m42 * m33) - m31 * (m22 * m43 - m42 * m23) + m41 * (m22 * m33 - m32 * m23));
-      fs[13] = d * (m11 * (m32 * m43 - m42 * m33) - m31 * (m12 * m43 - m42 * m13) + m41 * (m12 * m33 - m32 * m13));
-      fs[14] = -d * (m11 * (m22 * m43 - m42 * m23) - m21 * (m12 * m43 - m42 * m13) + m41 * (m12 * m23 - m22 * m13));
-      fs[15] = d * (m11 * (m22 * m33 - m32 * m23) - m21 * (m12 * m33 - m32 * m13) + m31 * (m12 * m23 - m22 * m13));
+      let m11 = sfs32[0];
+      let m21 = sfs32[4];
+      let m31 = sfs32[8];
+      let m41 = sfs32[12];
+      let m12 = sfs32[1];
+      let m22 = sfs32[5];
+      let m32 = sfs32[9];
+      let m42 = sfs32[13];
+      let m13 = sfs32[2];
+      let m23 = sfs32[6];
+      let m33 = sfs32[10];
+      let m43 = sfs32[14];
+      let m14 = sfs32[3];
+      let m24 = sfs32[7];
+      let m34 = sfs32[11];
+      let m44 = sfs32[15];
+      sfs32[0] = d * (m22 * (m33 * m44 - m43 * m34) - m32 * (m23 * m44 - m43 * m24) + m42 * (m23 * m34 - m33 * m24));
+      sfs32[1] = -d * (m12 * (m33 * m44 - m43 * m34) - m32 * (m13 * m44 - m43 * m14) + m42 * (m13 * m34 - m33 * m14));
+      sfs32[2] = d * (m12 * (m23 * m44 - m43 * m24) - m22 * (m13 * m44 - m43 * m14) + m42 * (m13 * m24 - m23 * m14));
+      sfs32[3] = -d * (m12 * (m23 * m34 - m33 * m24) - m22 * (m13 * m34 - m33 * m14) + m32 * (m13 * m24 - m23 * m14));
+      sfs32[4] = -d * (m21 * (m33 * m44 - m43 * m34) - m31 * (m23 * m44 - m43 * m24) + m41 * (m23 * m34 - m33 * m24));
+      sfs32[5] = d * (m11 * (m33 * m44 - m43 * m34) - m31 * (m13 * m44 - m43 * m14) + m41 * (m13 * m34 - m33 * m14));
+      sfs32[6] = -d * (m11 * (m23 * m44 - m43 * m24) - m21 * (m13 * m44 - m43 * m14) + m41 * (m13 * m24 - m23 * m14));
+      sfs32[7] = d * (m11 * (m23 * m34 - m33 * m24) - m21 * (m13 * m34 - m33 * m14) + m31 * (m13 * m24 - m23 * m14));
+      sfs32[8] = d * (m21 * (m32 * m44 - m42 * m34) - m31 * (m22 * m44 - m42 * m24) + m41 * (m22 * m34 - m32 * m24));
+      sfs32[9] = -d * (m11 * (m32 * m44 - m42 * m34) - m31 * (m12 * m44 - m42 * m14) + m41 * (m12 * m34 - m32 * m14));
+      sfs32[10] = d * (m11 * (m22 * m44 - m42 * m24) - m21 * (m12 * m44 - m42 * m14) + m41 * (m12 * m24 - m22 * m14));
+      sfs32[11] = -d * (m11 * (m22 * m34 - m32 * m24) - m21 * (m12 * m34 - m32 * m14) + m31 * (m12 * m24 - m22 * m14));
+      sfs32[12] = -d * (m21 * (m32 * m43 - m42 * m33) - m31 * (m22 * m43 - m42 * m23) + m41 * (m22 * m33 - m32 * m23));
+      sfs32[13] = d * (m11 * (m32 * m43 - m42 * m33) - m31 * (m12 * m43 - m42 * m13) + m41 * (m12 * m33 - m32 * m13));
+      sfs32[14] = -d * (m11 * (m22 * m43 - m42 * m23) - m21 * (m12 * m43 - m42 * m13) + m41 * (m12 * m23 - m22 * m13));
+      sfs32[15] = d * (m11 * (m22 * m33 - m32 * m23) - m21 * (m12 * m33 - m32 * m13) + m31 * (m12 * m23 - m22 * m13));
     }
 
     ;
@@ -5818,40 +6076,45 @@ class Matrix4 {
 
   pointAt(pos, at, up) {
     //TODO: need optimize
-    if (at == null) at = new Vector3D_1.default(0.0, 0.0, -1.0);
-    if (up == null) up = new Vector3D_1.default(0.0, -1.0, 0.0);
+    if (at == null || at == undefined) at = new Vector3D_1.default(0.0, 0.0, -1.0);
+    if (up == null || up == undefined) up = new Vector3D_1.default(0.0, -1.0, 0.0);
     let dir = at.subtract(pos);
-    let vup = up.clone(); //Vector3D right;
+    let vup = new Vector3D_1.default(up.x, up.y, up.z); //up->clone();
+    //Vector3D right;
 
     dir.normalize();
     vup.normalize();
-    let dir2 = dir.clone().scaleBy(vup.dot(dir));
+    let dir2 = new Vector3D_1.default(dir.x, dir.y, dir.z);
+    dir2.scaleBy(vup.dot(dir)); //
+
     vup.subtractBy(dir2);
-    if (vup.getLength() > MathConst_1.default.MATH_MIN_POSITIVE) vup.normalize();else if (dir.x != 0) vup.setTo(-dir.y, dir.x, 0);else vup.setTo(1, 0, 0);
+    if (vup.getLength() > MathConst_1.default.MATH_MIN_POSITIVE) vup.normalize();else if (dir.x != 0) vup.setTo(-dir.y, dir.x, 0); // vup = Vector3D(-dir.y, dir.x, 0);
+    else vup.setTo(1, 0, 0); // vup = Vector3D(1, 0, 0);
+
     let right = vup.crossProduct(dir);
     right.normalize();
-    let fs = this.m_localFS32;
-    fs[0] = right.x;
-    fs[4] = right.y;
-    fs[8] = right.z;
-    fs[12] = 0.0;
-    fs[1] = vup.x;
-    fs[5] = vup.y;
-    fs[9] = vup.z;
-    fs[13] = 0.0;
-    fs[2] = dir.x;
-    fs[6] = dir.y;
-    fs[10] = dir.z;
-    fs[14] = 0.0;
-    fs[3] = pos.x;
-    fs[7] = pos.y;
-    fs[11] = pos.z;
-    fs[15] = 1.0;
+    let sfs32 = this.m_localFS32;
+    sfs32[0] = right.x;
+    sfs32[4] = right.y;
+    sfs32[8] = right.z;
+    sfs32[12] = 0.0;
+    sfs32[1] = vup.x;
+    sfs32[5] = vup.y;
+    sfs32[9] = vup.z;
+    sfs32[13] = 0.0;
+    sfs32[2] = dir.x;
+    sfs32[6] = dir.y;
+    sfs32[10] = dir.z;
+    sfs32[14] = 0.0;
+    sfs32[3] = pos.x;
+    sfs32[7] = pos.y;
+    sfs32[11] = pos.z;
+    sfs32[15] = 1.0;
   }
 
   prepend(rhs) {
     let rfs32 = rhs.getLocalFS32();
-    let fs = this.m_localFS32;
+    let sfs32 = this.m_localFS32;
     let m111 = rfs32[0];
     let m121 = rfs32[4];
     let m131 = rfs32[8];
@@ -5868,43 +6131,43 @@ class Matrix4 {
     let m124 = rfs32[7];
     let m134 = rfs32[11];
     let m144 = rfs32[15];
-    let m211 = fs[0];
-    let m221 = fs[4];
-    let m231 = fs[8];
-    let m241 = fs[12];
-    let m212 = fs[1];
-    let m222 = fs[5];
-    let m232 = fs[9];
-    let m242 = fs[13];
-    let m213 = fs[2];
-    let m223 = fs[6];
-    let m233 = fs[10];
-    let m243 = fs[14];
-    let m214 = fs[3];
-    let m224 = fs[7];
-    let m234 = fs[11];
-    let m244 = fs[15];
-    fs[0] = m111 * m211 + m112 * m221 + m113 * m231 + m114 * m241;
-    fs[1] = m111 * m212 + m112 * m222 + m113 * m232 + m114 * m242;
-    fs[2] = m111 * m213 + m112 * m223 + m113 * m233 + m114 * m243;
-    fs[3] = m111 * m214 + m112 * m224 + m113 * m234 + m114 * m244;
-    fs[4] = m121 * m211 + m122 * m221 + m123 * m231 + m124 * m241;
-    fs[5] = m121 * m212 + m122 * m222 + m123 * m232 + m124 * m242;
-    fs[6] = m121 * m213 + m122 * m223 + m123 * m233 + m124 * m243;
-    fs[7] = m121 * m214 + m122 * m224 + m123 * m234 + m124 * m244;
-    fs[8] = m131 * m211 + m132 * m221 + m133 * m231 + m134 * m241;
-    fs[9] = m131 * m212 + m132 * m222 + m133 * m232 + m134 * m242;
-    fs[10] = m131 * m213 + m132 * m223 + m133 * m233 + m134 * m243;
-    fs[11] = m131 * m214 + m132 * m224 + m133 * m234 + m134 * m244;
-    fs[12] = m141 * m211 + m142 * m221 + m143 * m231 + m144 * m241;
-    fs[13] = m141 * m212 + m142 * m222 + m143 * m232 + m144 * m242;
-    fs[14] = m141 * m213 + m142 * m223 + m143 * m233 + m144 * m243;
-    fs[15] = m141 * m214 + m142 * m224 + m143 * m234 + m144 * m244;
+    let m211 = sfs32[0];
+    let m221 = sfs32[4];
+    let m231 = sfs32[8];
+    let m241 = sfs32[12];
+    let m212 = sfs32[1];
+    let m222 = sfs32[5];
+    let m232 = sfs32[9];
+    let m242 = sfs32[13];
+    let m213 = sfs32[2];
+    let m223 = sfs32[6];
+    let m233 = sfs32[10];
+    let m243 = sfs32[14];
+    let m214 = sfs32[3];
+    let m224 = sfs32[7];
+    let m234 = sfs32[11];
+    let m244 = sfs32[15];
+    sfs32[0] = m111 * m211 + m112 * m221 + m113 * m231 + m114 * m241;
+    sfs32[1] = m111 * m212 + m112 * m222 + m113 * m232 + m114 * m242;
+    sfs32[2] = m111 * m213 + m112 * m223 + m113 * m233 + m114 * m243;
+    sfs32[3] = m111 * m214 + m112 * m224 + m113 * m234 + m114 * m244;
+    sfs32[4] = m121 * m211 + m122 * m221 + m123 * m231 + m124 * m241;
+    sfs32[5] = m121 * m212 + m122 * m222 + m123 * m232 + m124 * m242;
+    sfs32[6] = m121 * m213 + m122 * m223 + m123 * m233 + m124 * m243;
+    sfs32[7] = m121 * m214 + m122 * m224 + m123 * m234 + m124 * m244;
+    sfs32[8] = m131 * m211 + m132 * m221 + m133 * m231 + m134 * m241;
+    sfs32[9] = m131 * m212 + m132 * m222 + m133 * m232 + m134 * m242;
+    sfs32[10] = m131 * m213 + m132 * m223 + m133 * m233 + m134 * m243;
+    sfs32[11] = m131 * m214 + m132 * m224 + m133 * m234 + m134 * m244;
+    sfs32[12] = m141 * m211 + m142 * m221 + m143 * m231 + m144 * m241;
+    sfs32[13] = m141 * m212 + m142 * m222 + m143 * m232 + m144 * m242;
+    sfs32[14] = m141 * m213 + m142 * m223 + m143 * m233 + m144 * m243;
+    sfs32[15] = m141 * m214 + m142 * m224 + m143 * m234 + m144 * m244;
   }
 
   prepend3x3(rhs) {
     let rfs32 = rhs.getLocalFS32();
-    let fs = this.m_localFS32;
+    let sfs32 = this.m_localFS32;
     let m111 = rfs32[0];
     let m121 = rfs32[4];
     let m131 = rfs32[8];
@@ -5914,24 +6177,24 @@ class Matrix4 {
     let m113 = rfs32[2];
     let m123 = rfs32[6];
     let m133 = rfs32[10];
-    let m211 = fs[0];
-    let m221 = fs[4];
-    let m231 = fs[8];
-    let m212 = fs[1];
-    let m222 = fs[5];
-    let m232 = fs[9];
-    let m213 = fs[2];
-    let m223 = fs[6];
-    let m233 = fs[10];
-    fs[0] = m111 * m211 + m112 * m221 + m113 * m231;
-    fs[1] = m111 * m212 + m112 * m222 + m113 * m232;
-    fs[2] = m111 * m213 + m112 * m223 + m113 * m233;
-    fs[4] = m121 * m211 + m122 * m221 + m123 * m231;
-    fs[5] = m121 * m212 + m122 * m222 + m123 * m232;
-    fs[6] = m121 * m213 + m122 * m223 + m123 * m233;
-    fs[8] = m131 * m211 + m132 * m221 + m133 * m231;
-    fs[9] = m131 * m212 + m132 * m222 + m133 * m232;
-    fs[10] = m131 * m213 + m132 * m223 + m133 * m233;
+    let m211 = sfs32[0];
+    let m221 = sfs32[4];
+    let m231 = sfs32[8];
+    let m212 = sfs32[1];
+    let m222 = sfs32[5];
+    let m232 = sfs32[9];
+    let m213 = sfs32[2];
+    let m223 = sfs32[6];
+    let m233 = sfs32[10];
+    sfs32[0] = m111 * m211 + m112 * m221 + m113 * m231;
+    sfs32[1] = m111 * m212 + m112 * m222 + m113 * m232;
+    sfs32[2] = m111 * m213 + m112 * m223 + m113 * m233;
+    sfs32[4] = m121 * m211 + m122 * m221 + m123 * m231;
+    sfs32[5] = m121 * m212 + m122 * m222 + m123 * m232;
+    sfs32[6] = m121 * m213 + m122 * m223 + m123 * m233;
+    sfs32[8] = m131 * m211 + m132 * m221 + m133 * m231;
+    sfs32[9] = m131 * m212 + m132 * m222 + m133 * m232;
+    sfs32[10] = m131 * m213 + m132 * m223 + m133 * m233;
   }
 
   prependRotationPivot(radian, axis, pivotPoint) {
@@ -5979,31 +6242,30 @@ class Matrix4 {
   }
 
   prependScale(xScale, yScale, zScale) {
-    const fs = this.m_localFS32;
-    fs[0] *= xScale;
-    fs[1] *= yScale;
-    fs[2] *= zScale;
-    fs[4] *= xScale;
-    fs[5] *= yScale;
-    fs[6] *= zScale;
-    fs[8] *= xScale;
-    fs[9] *= yScale;
-    fs[10] *= zScale;
-    fs[12] *= xScale;
-    fs[13] *= yScale;
-    fs[14] *= zScale;
+    let sfs32 = this.m_localFS32;
+    sfs32[0] *= xScale;
+    sfs32[1] *= yScale;
+    sfs32[2] *= zScale;
+    sfs32[4] *= xScale;
+    sfs32[5] *= yScale;
+    sfs32[6] *= zScale;
+    sfs32[8] *= xScale;
+    sfs32[9] *= yScale;
+    sfs32[10] *= zScale;
+    sfs32[12] *= xScale;
+    sfs32[13] *= yScale;
+    sfs32[14] *= zScale;
   }
 
   prependScaleXY(xScale, yScale) {
-    const fs = this.m_localFS32;
-    fs[0] *= xScale;
-    fs[1] *= yScale;
-    fs[4] *= xScale;
-    fs[5] *= yScale;
-    fs[8] *= xScale;
-    fs[9] *= yScale;
-    fs[12] *= xScale;
-    fs[13] *= yScale;
+    this.m_localFS32[0] *= xScale;
+    this.m_localFS32[1] *= yScale;
+    this.m_localFS32[4] *= xScale;
+    this.m_localFS32[5] *= yScale;
+    this.m_localFS32[8] *= xScale;
+    this.m_localFS32[9] *= yScale;
+    this.m_localFS32[12] *= xScale;
+    this.m_localFS32[13] *= yScale;
   }
 
   prependTranslationXYZ(px, py, pz) {
@@ -6025,7 +6287,7 @@ class Matrix4 {
     scale[0] = scale[1] = scale[2] = components[2].x;
     scale[4] = scale[5] = scale[6] = components[2].y;
     scale[8] = scale[9] = scale[10] = components[2].z;
-    let fs = this.m_localFS32;
+    let sfs32 = this.m_localFS32;
 
     switch (orientationStyle) {
       case OrientationType_1.default.EULER_ANGLES:
@@ -6036,22 +6298,22 @@ class Matrix4 {
           let sx = Math.sin(components[1].x);
           let sy = Math.sin(components[1].y);
           let sz = Math.sin(components[1].z);
-          fs[0] = cy * cz * scale[0];
-          fs[1] = cy * sz * scale[1];
-          fs[2] = -sy * scale[2];
-          fs[3] = 0;
-          fs[4] = (sx * sy * cz - cx * sz) * scale[4];
-          fs[5] = (sx * sy * sz + cx * cz) * scale[5];
-          fs[6] = sx * cy * scale[6];
-          fs[7] = 0;
-          fs[8] = (cx * sy * cz + sx * sz) * scale[8];
-          fs[9] = (cx * sy * sz - sx * cz) * scale[9];
-          fs[10] = cx * cy * scale[10];
-          fs[11] = 0;
-          fs[12] = components[0].x;
-          fs[13] = components[0].y;
-          fs[14] = components[0].z;
-          fs[15] = 1;
+          sfs32[0] = cy * cz * scale[0];
+          sfs32[1] = cy * sz * scale[1];
+          sfs32[2] = -sy * scale[2];
+          sfs32[3] = 0;
+          sfs32[4] = (sx * sy * cz - cx * sz) * scale[4];
+          sfs32[5] = (sx * sy * sz + cx * cz) * scale[5];
+          sfs32[6] = sx * cy * scale[6];
+          sfs32[7] = 0;
+          sfs32[8] = (cx * sy * cz + sx * sz) * scale[8];
+          sfs32[9] = (cx * sy * sz - sx * cz) * scale[9];
+          sfs32[10] = cx * cy * scale[10];
+          sfs32[11] = 0;
+          sfs32[12] = components[0].x;
+          sfs32[13] = components[0].y;
+          sfs32[14] = components[0].z;
+          sfs32[15] = 1;
         }
         break;
 
@@ -6071,22 +6333,22 @@ class Matrix4 {
           }
 
           ;
-          fs[0] = (1 - 2 * y * y - 2 * z * z) * scale[0];
-          fs[1] = (2 * x * y + 2 * w * z) * scale[1];
-          fs[2] = (2 * x * z - 2 * w * y) * scale[2];
-          fs[3] = 0;
-          fs[4] = (2 * x * y - 2 * w * z) * scale[4];
-          fs[5] = (1 - 2 * x * x - 2 * z * z) * scale[5];
-          fs[6] = (2 * y * z + 2 * w * x) * scale[6];
-          fs[7] = 0;
-          fs[8] = (2 * x * z + 2 * w * y) * scale[8];
-          fs[9] = (2 * y * z - 2 * w * x) * scale[9];
-          fs[10] = (1 - 2 * x * x - 2 * y * y) * scale[10];
-          fs[11] = 0;
-          fs[12] = components[0].x;
-          fs[13] = components[0].y;
-          fs[14] = components[0].z;
-          fs[15] = 1;
+          sfs32[0] = (1 - 2 * y * y - 2 * z * z) * scale[0];
+          sfs32[1] = (2 * x * y + 2 * w * z) * scale[1];
+          sfs32[2] = (2 * x * z - 2 * w * y) * scale[2];
+          sfs32[3] = 0;
+          sfs32[4] = (2 * x * y - 2 * w * z) * scale[4];
+          sfs32[5] = (1 - 2 * x * x - 2 * z * z) * scale[5];
+          sfs32[6] = (2 * y * z + 2 * w * x) * scale[6];
+          sfs32[7] = 0;
+          sfs32[8] = (2 * x * z + 2 * w * y) * scale[8];
+          sfs32[9] = (2 * y * z - 2 * w * x) * scale[9];
+          sfs32[10] = (1 - 2 * x * x - 2 * y * y) * scale[10];
+          sfs32[11] = 0;
+          sfs32[12] = components[0].x;
+          sfs32[13] = components[0].y;
+          sfs32[14] = components[0].z;
+          sfs32[15] = 1;
         }
         break;
     }
@@ -6124,61 +6386,61 @@ class Matrix4 {
   }
 
   deltaTransformVectorSelf(v3) {
-    let fs = this.m_localFS32;
+    let sfs32 = this.m_localFS32;
     let x = v3.x;
     let y = v3.y;
     let z = v3.z;
-    v3.x = x * fs[0] + y * fs[4] + z * fs[8];
-    v3.y = x * fs[1] + y * fs[5] + z * fs[9];
-    v3.z = x * fs[2] + y * fs[6] + z * fs[10];
+    v3.x = x * sfs32[0] + y * sfs32[4] + z * sfs32[8];
+    v3.y = x * sfs32[1] + y * sfs32[5] + z * sfs32[9];
+    v3.z = x * sfs32[2] + y * sfs32[6] + z * sfs32[10];
   }
 
   deltaTransformOutVector(v3, out_v3) {
-    let fs = this.m_localFS32;
-    out_v3.x = v3.x * fs[0] + v3.y * fs[4] + v3.z * fs[8];
-    out_v3.y = v3.x * fs[1] + v3.y * fs[5] + v3.z * fs[9];
-    out_v3.z = v3.x * fs[2] + v3.y * fs[6] + v3.z * fs[10];
+    let sfs32 = this.m_localFS32;
+    out_v3.x = v3.x * sfs32[0] + v3.y * sfs32[4] + v3.z * sfs32[8];
+    out_v3.y = v3.x * sfs32[1] + v3.y * sfs32[5] + v3.z * sfs32[9];
+    out_v3.z = v3.x * sfs32[2] + v3.y * sfs32[6] + v3.z * sfs32[10];
   }
 
   transformVector(v3) {
-    let fs = this.m_localFS32;
+    let sfs32 = this.m_localFS32;
     let x = v3.x;
     let y = v3.y;
     let z = v3.z;
-    return new Vector3D_1.default(x * fs[0] + y * fs[4] + z * fs[8] + fs[12], x * fs[1] + y * fs[5] + z * fs[9] + fs[13], x * fs[2] + y * fs[6] + z * fs[10] + fs[14], x * fs[3] + y * fs[7] + z * fs[11] + fs[15]);
+    return new Vector3D_1.default(x * sfs32[0] + y * sfs32[4] + z * sfs32[8] + sfs32[12], x * sfs32[1] + y * sfs32[5] + z * sfs32[9] + sfs32[13], x * sfs32[2] + y * sfs32[6] + z * sfs32[10] + sfs32[14], x * sfs32[3] + y * sfs32[7] + z * sfs32[11] + sfs32[15]);
   }
 
   transformOutVector(v3, out_v3) {
     let x = v3.x;
     let y = v3.y;
     let z = v3.z;
-    let fs = this.m_localFS32;
-    out_v3.setTo(x * fs[0] + y * fs[4] + z * fs[8] + fs[12], x * fs[1] + y * fs[5] + z * fs[9] + fs[13], x * fs[2] + y * fs[6] + z * fs[10] + fs[14], x * fs[3] + y * fs[7] + z * fs[11] + fs[15]);
+    let sfs32 = this.m_localFS32;
+    out_v3.setTo(x * sfs32[0] + y * sfs32[4] + z * sfs32[8] + sfs32[12], x * sfs32[1] + y * sfs32[5] + z * sfs32[9] + sfs32[13], x * sfs32[2] + y * sfs32[6] + z * sfs32[10] + sfs32[14], x * sfs32[3] + y * sfs32[7] + z * sfs32[11] + sfs32[15]);
   }
 
   transformOutVector3(v3, out_v3) {
-    let fs = this.m_localFS32;
-    out_v3.x = v3.x * fs[0] + v3.y * fs[4] + v3.z * fs[8] + fs[12];
-    out_v3.y = v3.x * fs[1] + v3.y * fs[5] + v3.z * fs[9] + fs[13];
-    out_v3.z = v3.x * fs[2] + v3.y * fs[6] + v3.z * fs[10] + fs[14];
+    let sfs32 = this.m_localFS32;
+    out_v3.x = v3.x * sfs32[0] + v3.y * sfs32[4] + v3.z * sfs32[8] + sfs32[12];
+    out_v3.y = v3.x * sfs32[1] + v3.y * sfs32[5] + v3.z * sfs32[9] + sfs32[13];
+    out_v3.z = v3.x * sfs32[2] + v3.y * sfs32[6] + v3.z * sfs32[10] + sfs32[14];
   }
 
   transformVector3Self(v3) {
     let x = v3.x;
     let y = v3.y;
     let z = v3.z;
-    let fs = this.m_localFS32;
-    v3.x = x * fs[0] + y * fs[4] + z * fs[8] + fs[12];
-    v3.y = x * fs[1] + y * fs[5] + z * fs[9] + fs[13];
-    v3.z = x * fs[2] + y * fs[6] + z * fs[10] + fs[14];
+    let sfs32 = this.m_localFS32;
+    v3.x = x * sfs32[0] + y * sfs32[4] + z * sfs32[8] + sfs32[12];
+    v3.y = x * sfs32[1] + y * sfs32[5] + z * sfs32[9] + sfs32[13];
+    v3.z = x * sfs32[2] + y * sfs32[6] + z * sfs32[10] + sfs32[14];
   }
 
   transformVectorSelf(v3) {
     let x = v3.x;
     let y = v3.y;
     let z = v3.z;
-    let fs = this.m_localFS32;
-    v3.setTo(x * fs[0] + y * fs[4] + z * fs[8] + fs[12], x * fs[1] + y * fs[5] + z * fs[9] + fs[13], x * fs[2] + y * fs[6] + z * fs[10] + fs[14], x * fs[3] + y * fs[7] + z * fs[11] + fs[15]);
+    let sfs32 = this.m_localFS32;
+    v3.setTo(x * sfs32[0] + y * sfs32[4] + z * sfs32[8] + sfs32[12], x * sfs32[1] + y * sfs32[5] + z * sfs32[9] + sfs32[13], x * sfs32[2] + y * sfs32[6] + z * sfs32[10] + sfs32[14], x * sfs32[3] + y * sfs32[7] + z * sfs32[11] + sfs32[15]);
   }
 
   transformVectors(float_vinArr, vinLength, float_voutArr) {
@@ -6235,19 +6497,19 @@ class Matrix4 {
   transpose() {
     Matrix4.s_tMat4.copyFrom(this);
     let fs32 = Matrix4.s_tMat4.getFS32();
-    let fs = this.m_localFS32;
-    fs[1] = fs32[4];
-    fs[2] = fs32[8];
-    fs[3] = fs32[12];
-    fs[4] = fs32[1];
-    fs[6] = fs32[9];
-    fs[7] = fs32[13];
-    fs[8] = fs32[2];
-    fs[9] = fs32[6];
-    fs[11] = fs32[14];
-    fs[12] = fs32[3];
-    fs[13] = fs32[7];
-    fs[14] = fs32[11];
+    let sfs32 = this.m_localFS32;
+    sfs32[1] = fs32[4];
+    sfs32[2] = fs32[8];
+    sfs32[3] = fs32[12];
+    sfs32[4] = fs32[1];
+    sfs32[6] = fs32[9];
+    sfs32[7] = fs32[13];
+    sfs32[8] = fs32[2];
+    sfs32[9] = fs32[6];
+    sfs32[11] = fs32[14];
+    sfs32[12] = fs32[3];
+    sfs32[13] = fs32[7];
+    sfs32[14] = fs32[11];
   }
 
   interpolateTo(toMat, float_percent) {
@@ -6265,25 +6527,25 @@ class Matrix4 {
 
   getAxisRotation(x, y, z, radian) {
     radian = -radian;
-    let fs = this.m_localFS32;
+    let sfs32 = this.m_localFS32;
     let s = Math.sin(radian),
         c = Math.cos(radian);
     let t = 1.0 - c;
-    fs[0] = c + x * x * t;
-    fs[5] = c + y * y * t;
-    fs[10] = c + z * z * t;
+    sfs32[0] = c + x * x * t;
+    sfs32[5] = c + y * y * t;
+    sfs32[10] = c + z * z * t;
     let tmp1 = x * y * t;
     let tmp2 = z * s;
-    fs[4] = tmp1 + tmp2;
-    fs[1] = tmp1 - tmp2;
+    sfs32[4] = tmp1 + tmp2;
+    sfs32[1] = tmp1 - tmp2;
     tmp1 = x * z * t;
     tmp2 = y * s;
-    fs[8] = tmp1 - tmp2;
-    fs[2] = tmp1 + tmp2;
+    sfs32[8] = tmp1 - tmp2;
+    sfs32[2] = tmp1 + tmp2;
     tmp1 = y * z * t;
     tmp2 = x * s;
-    fs[9] = tmp1 + tmp2;
-    fs[6] = tmp1 - tmp2;
+    sfs32[9] = tmp1 + tmp2;
+    sfs32[6] = tmp1 - tmp2;
   }
 
   rotationX(radian) {
@@ -6338,14 +6600,13 @@ class Matrix4 {
   }
 
   transformPerspV4Self(v4) {
-    const fs = this.m_localFS32;
     v4.w = v4.z;
-    v4.x *= fs[0];
-    v4.y *= fs[5];
-    v4.z *= fs[10];
-    v4.z += fs[14];
-    v4.w *= fs[11];
-    v4.w += fs[15];
+    v4.x *= this.m_localFS32[0];
+    v4.y *= this.m_localFS32[5];
+    v4.z *= this.m_localFS32[10];
+    v4.z += this.m_localFS32[14];
+    v4.w *= this.m_localFS32[11];
+    v4.w += this.m_localFS32[15];
   }
 
   clone() {
@@ -6359,14 +6620,13 @@ class Matrix4 {
 
   perspectiveRH(fovy, aspect, zNear, zFar) {
     //assert(abs(aspect - std::numeric_limits<float>::epsilon()) > minFloatValue)
-    const fs = this.m_localFS32;
     let tanHalfFovy = Math.tan(fovy * 0.5);
     this.identity();
-    fs[0] = 1.0 / (aspect * tanHalfFovy);
-    fs[5] = 1.0 / tanHalfFovy;
-    fs[10] = -(zFar + zNear) / (zFar - zNear);
-    fs[11] = -1.0;
-    fs[14] = -(2.0 * zFar * zNear) / (zFar - zNear);
+    this.m_localFS32[0] = 1.0 / (aspect * tanHalfFovy);
+    this.m_localFS32[5] = 1.0 / tanHalfFovy;
+    this.m_localFS32[10] = -(zFar + zNear) / (zFar - zNear);
+    this.m_localFS32[11] = -1.0;
+    this.m_localFS32[14] = -(2.0 * zFar * zNear) / (zFar - zNear);
   }
 
   perspectiveRH2(fovy, pw, ph, zNear, zFar) {
@@ -6376,78 +6636,74 @@ class Matrix4 {
     let m10 = -zFar / (zFar - zNear);
     let m14 = -zNear * m10;
     this.identity();
-    const fs = this.m_localFS32;
-    fs[0] = m0;
-    fs[5] = m5;
-    fs[10] = m10;
-    fs[11] = -1.0;
-    fs[14] = m14;
+    this.m_localFS32[0] = m0;
+    this.m_localFS32[5] = m5;
+    this.m_localFS32[10] = m10;
+    this.m_localFS32[11] = -1.0;
+    this.m_localFS32[14] = m14;
   }
 
   orthoRH(b, t, l, r, zNear, zFar) {
     this.identity();
-    const fs = this.m_localFS32;
-    fs[0] = 2.0 / (r - l);
-    fs[5] = 2.0 / (t - b);
-    fs[10] = -2.0 / (zFar - zNear);
-    fs[12] = -(r + l) / (r - l);
-    fs[13] = -(t + b) / (t - b);
-    fs[14] = -(zFar + zNear) / (zFar - zNear);
-    fs[15] = 1.0;
+    this.m_localFS32[0] = 2.0 / (r - l);
+    this.m_localFS32[5] = 2.0 / (t - b);
+    this.m_localFS32[10] = -2.0 / (zFar - zNear);
+    this.m_localFS32[12] = -(r + l) / (r - l);
+    this.m_localFS32[13] = -(t + b) / (t - b);
+    this.m_localFS32[14] = -(zFar + zNear) / (zFar - zNear);
+    this.m_localFS32[15] = 1.0;
   }
 
   perspectiveLH(fovy, aspect, zNear, zFar) {
     //assert(abs(aspect - std::numeric_limits<float>::epsilon()) > minFloatValue)
     let tanHalfFovy = Math.tan(fovy * 0.5);
     this.identity();
-    const fs = this.m_localFS32;
-    fs[0] = 1.0 / (aspect * tanHalfFovy);
-    fs[5] = 1.0 / tanHalfFovy;
-    fs[10] = (zFar + zNear) / (zFar - zNear);
-    fs[11] = 1.0;
-    fs[14] = 2.0 * zFar * zNear / (zFar - zNear);
+    this.m_localFS32[0] = 1.0 / (aspect * tanHalfFovy);
+    this.m_localFS32[5] = 1.0 / tanHalfFovy;
+    this.m_localFS32[10] = (zFar + zNear) / (zFar - zNear);
+    this.m_localFS32[11] = 1.0;
+    this.m_localFS32[14] = 2.0 * zFar * zNear / (zFar - zNear);
   }
 
   orthoLH(b, t, l, r, zNear, zFar) {
     this.identity();
-    const fs = this.m_localFS32;
-    fs[0] = 2.0 / (r - l); // / (aspect * tanHalfFovy);
+    this.m_localFS32[0] = 2.0 / (r - l); // / (aspect * tanHalfFovy);
 
-    fs[5] = 2.0 / (t - b); // / tanHalfFovy;
+    this.m_localFS32[5] = 2.0 / (t - b); // / tanHalfFovy;
 
-    fs[10] = 2.0 / (zFar - zNear);
-    fs[12] = -(r + l) / (r - l);
-    fs[13] = -(t + b) / (t - b);
-    fs[14] = -(zFar + zNear) / (zFar - zNear);
-    fs[15] = 1.0;
+    this.m_localFS32[10] = 2.0 / (zFar - zNear);
+    this.m_localFS32[12] = -(r + l) / (r - l);
+    this.m_localFS32[13] = -(t + b) / (t - b);
+    this.m_localFS32[14] = -(zFar + zNear) / (zFar - zNear);
+    this.m_localFS32[15] = 1.0;
   }
 
-  lookAtRH(eyePos, atPos, up) {
+  lookAtRH(eye, center, up) {
     this.identity();
-    let f = atPos.subtract(eyePos);
+    let f = center.subtract(eye);
     f.normalize();
     let s = f.crossProduct(up);
     s.normalize();
     let u = s.crossProduct(f);
-    s.w = -s.dot(eyePos);
-    u.w = -u.dot(eyePos);
-    f.w = f.dot(eyePos);
+    s.w = -s.dot(eye);
+    u.w = -u.dot(eye);
+    f.w = f.dot(eye);
     f.negate();
     this.copyRowFrom(0, s);
     this.copyRowFrom(1, u);
     this.copyRowFrom(2, f);
   }
 
-  lookAtLH(eyePos, atPos, up) {
+  lookAtLH(eye, center, up) {
     this.identity();
-    let f = atPos.subtract(eyePos);
+    let f = center.subtract(eye);
     f.normalize();
     let s = f.crossProduct(up);
     s.normalize();
     let u = s.crossProduct(f);
-    s.w = -s.dot(eyePos);
-    u.w = -u.dot(eyePos);
-    f.w = -f.dot(eyePos);
+    s.w = -s.dot(eye);
+    u.w = -u.dot(eye);
+    f.w = -f.dot(eye);
     this.copyRowFrom(0, s);
     this.copyRowFrom(1, u);
     this.copyRowFrom(2, f);
@@ -6527,195 +6783,6 @@ class RenderableMaterialBlock {
 }
 
 exports.RenderableMaterialBlock = RenderableMaterialBlock;
-
-/***/ }),
-
-/***/ "1d40":
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/***************************************************************************/
-
-/*                                                                         */
-
-/*  Copyright 2018-2022 by                                                 */
-
-/*  Vily(vily313@126.com)                                                  */
-
-/*                                                                         */
-
-/***************************************************************************/
-
-var __importDefault = this && this.__importDefault || function (mod) {
-  return mod && mod.__esModule ? mod : {
-    "default": mod
-  };
-};
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-const ROVertexBuffer_1 = __importDefault(__webpack_require__("e7d2"));
-
-const VtxBufConst_1 = __importDefault(__webpack_require__("8a0a"));
-
-const MeshBase_1 = __importDefault(__webpack_require__("cb29"));
-
-const AABB_1 = __importDefault(__webpack_require__("fecb"));
-/**
- * rawMesh
- */
-
-
-class RawMesh extends MeshBase_1.default {
-  constructor(bufDataUsage = VtxBufConst_1.default.VTX_STATIC_DRAW) {
-    super(bufDataUsage);
-    this.m_dataList = [];
-    this.m_rayTester = null;
-    this.autoBuilding = true;
-    this.ivsEnabled = true;
-    this.aabbEnabled = true;
-  }
-
-  setRayTester(rayTester) {
-    this.m_rayTester = rayTester;
-  }
-
-  reset() {
-    this.m_dataList = [];
-    ROVertexBuffer_1.default.Reset();
-  }
-
-  addFloat32Data(fs32, step, status = VtxBufConst_1.default.VTX_STATIC_DRAW) {
-    this.m_dataList.push(fs32);
-    ROVertexBuffer_1.default.AddFloat32Data(fs32, step, status);
-  }
-
-  setIVS(ivs) {
-    this.m_ivs = ivs;
-  }
-
-  getVS() {
-    return this.m_dataList[0];
-  }
-
-  getUVS() {
-    return this.m_dataList.length > 1 ? this.m_dataList[1] : null;
-  }
-
-  getNVS() {
-    return this.m_dataList.length > 2 ? this.m_dataList[2] : null;
-  }
-
-  initialize() {
-    if (this.getBufSortFormat() < 1) {
-      console.warn("bufSortFormat is zero!");
-    }
-
-    const vs = this.m_dataList[0];
-    this.m_ivs = this.m_ivs;
-    let rvb = ROVertexBuffer_1.default;
-    rvb.vbWholeDataEnabled = this.vbWholeDataEnabled;
-
-    if (this.aabbEnabled && this.autoBuilding && this.m_dataList.length > 0) {
-      if (this.bounds == null) {
-        this.bounds = new AABB_1.default();
-      }
-
-      if (this.m_transMatrix != null) {
-        this.m_transMatrix.transformVectorsSelf(vs, vs.length);
-      }
-
-      this.bounds.addFloat32Arr(vs);
-      this.bounds.updateFast();
-    }
-
-    if (this.ivsEnabled) {
-      this.vtCount = this.m_ivs.length;
-
-      if (this.autoBuilding) {
-        this.updateWireframeIvs();
-        this.vtCount = this.m_ivs.length;
-      }
-    } else {
-      this.vtCount = 0;
-    }
-
-    ROVertexBuffer_1.default.vbWholeDataEnabled = this.vbWholeDataEnabled;
-
-    if (this.m_vbuf != null) {
-      rvb.UpdateBufData(this.m_vbuf);
-    } else {
-      let u = this.getBufDataUsage();
-      let f = this.getBufSortFormat();
-
-      if (this.vbWholeDataEnabled) {
-        this.m_vbuf = rvb.CreateBySaveData(u, f);
-      } else {
-        this.m_vbuf = rvb.CreateBySaveDataSeparate(u);
-      }
-    }
-
-    if (this.ivsEnabled) {
-      this.m_vbuf.setUintIVSData(this.m_ivs);
-    }
-
-    this.buildEnd();
-  }
-
-  setBufData4fAt(vertexI, attribI, px, py, pz, pw) {
-    if (this.m_vbuf != null) {
-      this.m_vbuf.setData4fAt(vertexI, attribI, px, py, pz, pw);
-    }
-  }
-
-  setBufData3fAt(vertexI, attribI, px, py, pz) {
-    if (this.m_vbuf != null) {
-      this.m_vbuf.setData3fAt(vertexI, attribI, px, py, pz);
-    }
-  }
-
-  setBufData2fAt(vertexI, attribI, px, py) {
-    if (this.m_vbuf != null) {
-      this.m_vbuf.setData2fAt(vertexI, attribI, px, py);
-    }
-  }
-  /**
-   * 射线和自身的相交检测(多面体或几何函数(例如球体))
-   * @rlpv            表示物体坐标空间的射线起点
-   * @rltv            表示物体坐标空间的射线朝向
-   * @outV            如果检测相交存放物体坐标空间的交点
-   * @boundsHit       表示是否包围盒体已经和射线相交了
-   * @return          返回值 -1 表示不会进行检测,1表示相交,0表示不相交
-   */
-
-
-  testRay(rlpv, rltv, outV, boundsHit) {
-    if (this.m_rayTester != null) {
-      return this.m_rayTester.testRay(rlpv, rltv, outV, boundsHit);
-    }
-
-    return -1;
-  }
-
-  __$destroy() {
-    if (this.m_dataList != null) {
-      this.m_dataList = [];
-    }
-
-    if (this.m_rayTester != null) {
-      this.m_rayTester.destroy();
-      this.m_rayTester = null;
-    }
-
-    super.__$destroy();
-  }
-
-}
-
-exports.default = RawMesh;
 
 /***/ }),
 
@@ -6965,22 +7032,11 @@ if (typeof window !== 'undefined') {
 
 /***/ }),
 
-/***/ "1f26":
+/***/ "1f1a":
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-/***************************************************************************/
-
-/*                                                                         */
-
-/*  Copyright 2018-2022 by                                                 */
-
-/*  Vily(vily313@126.com)                                                  */
-
-/*                                                                         */
-
-/***************************************************************************/
 
 var __importDefault = this && this.__importDefault || function (mod) {
   return mod && mod.__esModule ? mod : {
@@ -6992,48 +7048,257 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-const DisplayEntity_1 = __importDefault(__webpack_require__("402a"));
+const RendererDevice_1 = __importDefault(__webpack_require__("3b73"));
 
-const MouseEvt3DDispatcher_1 = __importDefault(__webpack_require__("badb"));
+const RendererParam_1 = __importDefault(__webpack_require__("c497"));
 
-class MouseEventEntity extends DisplayEntity_1.default {
-  constructor(transform = null) {
-    super(transform);
-    this.m_dispatcher = null;
-    this.uuid = "";
-    this.initializeEvent();
-  }
+const ImageTextureLoader_1 = __importDefault(__webpack_require__("f63b"));
 
-  addEventListener(type, listener, func, captureEnabled = true, bubbleEnabled = false) {
-    this.m_dispatcher.addEventListener(type, listener, func, captureEnabled, bubbleEnabled);
-  }
+const RendererScene_1 = __importDefault(__webpack_require__("b161"));
 
-  removeEventListener(type, listener, func) {
-    this.m_dispatcher.removeEventListener(type, listener, func);
-  }
+const OrthoUIScene_1 = __webpack_require__("2fe8");
 
-  setEvtDsipatchData(data) {
-    this.m_dispatcher.data = data;
-  }
+const UserInteraction_1 = __webpack_require__("da82");
 
-  initializeEvent() {
-    this.mouseEnabled = true;
+const RenderableMaterialBlock_1 = __webpack_require__("1b95");
 
-    if (this.m_dispatcher == null) {
-      this.m_dispatcher = new MouseEvt3DDispatcher_1.default();
-      this.m_dispatcher.uuid = this.uuid;
-      this.setEvtDispatcher(this.m_dispatcher);
+const RenderableEntityBlock_1 = __webpack_require__("251a");
+
+class RendererSceneNode {
+  constructor(rscene) {
+    this.m_rscene = null;
+    this.priority = 0;
+    this.processIdList = null;
+    this.contextResetEnabled = false;
+
+    if (rscene == null) {
+      throw Error("rscene is null !!!");
     }
+
+    this.m_rscene = rscene;
   }
 
-  destroy() {
-    super.destroy();
-    this.m_dispatcher = null;
+  enableMouseEvent(gpuTestEnabled = true) {
+    this.m_rscene.enableMouseEvent(gpuTestEnabled);
+  }
+
+  getRScene() {
+    return this.m_rscene;
   }
 
 }
 
-exports.default = MouseEventEntity;
+exports.RendererSceneNode = RendererSceneNode;
+
+class EngineBase {
+  constructor() {
+    this.m_sceneList = [];
+    this.texLoader = null;
+    this.stage3D = null;
+    this.rscene = null;
+    this.uiScene = null;
+    this.interaction = new UserInteraction_1.UserInteraction();
+  }
+
+  getRenderProxy() {
+    return this.rscene.getRenderProxy();
+  }
+
+  initialize(param = null, renderProcessesTotal = 3) {
+    if (this.rscene == null) {
+      if (param == null) {
+        param = new RendererParam_1.default();
+        param.setAttriAntialias(!RendererDevice_1.default.IsMobileWeb());
+        param.setCamPosition(1800.0, 1800.0, 1800.0);
+        param.setCamProject(45, 20.0, 7000.0);
+      }
+
+      let rscene;
+      rscene = new RendererScene_1.default();
+      rscene.initialize(param, renderProcessesTotal);
+      rscene.updateCamera();
+      let materialBlock = new RenderableMaterialBlock_1.RenderableMaterialBlock();
+      materialBlock.initialize();
+      rscene.materialBlock = materialBlock;
+      let entityBlock = new RenderableEntityBlock_1.RenderableEntityBlock();
+      entityBlock.initialize();
+      rscene.entityBlock = entityBlock;
+      let selfT = this;
+      selfT.stage3D = rscene.getStage3D();
+      selfT.rscene = rscene;
+      selfT.texLoader = new ImageTextureLoader_1.default(this.rscene.textureBlock);
+      selfT.uiScene = new OrthoUIScene_1.OrthoUIScene();
+      this.uiScene.initialize(this.rscene);
+      this.interaction.initialize(rscene);
+      let sceneNode = new RendererSceneNode(this.rscene);
+      sceneNode.priority = 0;
+      sceneNode.contextResetEnabled = true;
+      this.m_sceneList.push(sceneNode);
+      sceneNode = new RendererSceneNode(this.uiScene);
+      sceneNode.priority = 1;
+      sceneNode.contextResetEnabled = true;
+      this.m_sceneList.push(sceneNode);
+    }
+  }
+
+  setAccessorAt(i, accessor) {
+    if (i >= 0 && i < this.m_sceneList.length) {
+      let node = this.m_sceneList[i];
+
+      if (i != 0) {
+        let subScene = node.getRScene();
+        subScene.setAccessor(accessor);
+      } else {
+        let rscene = node.getRScene();
+        rscene.setAccessor(accessor);
+      }
+    }
+  }
+
+  appendRendererScene(param, renderProcessesTotal = 3, createNewCamera = true, priority = -1) {
+    if (param == null) {
+      param = new RendererParam_1.default();
+      param.setAttriAntialias(!RendererDevice_1.default.IsMobileWeb());
+      param.setCamPosition(1800.0, 1800.0, 1800.0);
+      param.setCamProject(45, 20.0, 7000.0);
+    }
+
+    let subScene = this.rscene.createSubScene();
+    subScene.initialize(param, renderProcessesTotal, createNewCamera);
+    let sceneNode = new RendererSceneNode(subScene);
+    sceneNode.priority = priority < 0 ? this.m_sceneList.length : priority;
+    this.m_sceneList.push(sceneNode);
+    return sceneNode;
+  }
+
+  getRendererSceneAt(i) {
+    if (i >= 0 && i < this.m_sceneList.length) {
+      return this.m_sceneList[i];
+    }
+
+    return null;
+  }
+
+  getRendererScenesTotal() {
+    return this.m_sceneList.length;
+  }
+
+  setProcessIdListAt(i, processIdList) {
+    if (i >= 0 && i < this.m_sceneList.length) {
+      this.m_sceneList[i].processIdList = processIdList;
+    }
+  }
+
+  setPriorityAt(i, priority) {
+    if (priority < 1) {
+      throw Error("priority < 1 !!!");
+    }
+
+    if (i > 0 && i < this.m_sceneList.length) {
+      this.m_sceneList[i].priority = priority;
+    }
+  }
+
+  swapScenePriorityAt(i, j) {
+    if (i != 0 && j != 0) {
+      if (i != j && i >= 0 && i < this.m_sceneList.length && j >= 0 && j < this.m_sceneList.length) {
+        let priority = this.m_sceneList[i].priority;
+        this.m_sceneList[i].priority = this.m_sceneList[j].priority;
+        this.m_sceneList[j].priority = priority;
+      }
+    }
+  }
+
+  swapSceneAt(i, j) {
+    if (i != 0 && j != 0) {
+      if (i != j && i >= 0 && i < this.m_sceneList.length && j >= 0 && j < this.m_sceneList.length) {
+        let priority = this.m_sceneList[i].priority;
+        this.m_sceneList[i].priority = this.m_sceneList[j].priority;
+        this.m_sceneList[j].priority = priority;
+        let node = this.m_sceneList[i];
+        this.m_sceneList[i] = this.m_sceneList[j];
+        this.m_sceneList[j] = node;
+      }
+    }
+  }
+
+  sortScenes() {
+    this.m_sceneList[0].priority = 0;
+    this.m_sceneList.sort((a, b) => {
+      return a.priority - b.priority;
+    });
+  }
+
+  showInfo() {
+    console.log("showInfo() this.m_sceneList: ", this.m_sceneList);
+  }
+  /**
+   * 获取渲染器可渲染对象管理器状态(版本号)
+   */
+
+
+  getRendererStatus() {
+    return this.rscene.getRendererStatus();
+  } // private m_flag: boolean = true;
+  // private mouseDown(evt: any): void {
+  //     this.m_flag = true;
+  // }
+  // private mouseUp(evt: any): void {
+  //     this.m_flag = true;
+  // }
+
+
+  run() {
+    // if (this.m_flag) {
+    //     //this.m_flag = false;
+    // } else {
+    //     return;
+    // }
+    this.interaction.run(); ///*
+
+    let pickFlag = true;
+    let list = this.m_sceneList;
+    let total = list.length;
+    let i = total - 1;
+    let scene = list[i].getRScene();
+    scene.runBegin(true, true);
+    scene.update(false, true);
+    pickFlag = scene.isRayPickSelected();
+    i -= 1;
+
+    for (; i >= 0; --i) {
+      scene = list[i].getRScene();
+      scene.runBegin(false, true);
+      scene.update(false, !pickFlag);
+      pickFlag = pickFlag || scene.isRayPickSelected();
+    } /////////////////////////////////////////////////////// ---- mouseTest end.
+    /////////////////////////////////////////////////////// ---- rendering begin.
+
+
+    let node;
+
+    for (i = 0; i < total; ++i) {
+      node = list[i];
+      scene = list[i].getRScene();
+      scene.renderBegin(node.contextResetEnabled);
+      const idList = node.processIdList;
+
+      if (idList == null) {
+        scene.run(false);
+      } else {
+        for (let j = 0; j < idList.length; ++j) {
+          scene.runAt(idList[j]);
+        }
+      }
+
+      scene.runEnd();
+    }
+  }
+
+}
+
+exports.EngineBase = EngineBase;
+exports.default = EngineBase;
 
 /***/ }),
 
@@ -7180,7 +7445,6 @@ class ShdProgram {
     this.m_texTotal = 0; // recorde uniform GLUniformLocation id
 
     this.m_aLocations = null;
-    this.m_aLocationIVS = new Array(12);
     this.m_aLocationTypes = null;
     this.m_aLocationSizes = null;
     this.m_uLocations = null;
@@ -7199,7 +7463,6 @@ class ShdProgram {
     this.m_uLc = null;
     this.m_uIndex = 0;
     this.m_uid = uid;
-    this.m_aLocationIVS.fill(0);
   }
 
   setShdData(shdData) {
@@ -7238,7 +7501,6 @@ class ShdProgram {
         this.m_aLocations = [];
         this.m_aLocationTypes = [];
         this.m_aLocationSizes = [];
-        const ls = this.m_aLocationTypes;
         len = attriNSList.length;
         let type = 0;
         let altI = 0;
@@ -7247,16 +7509,12 @@ class ShdProgram {
           altI = this.m_gl.getAttribLocation(this.m_program, attriNSList[i]);
           this.m_aLocations.push(altI);
           type = VtxBufConst_1.default.GetVBufAttributeTypeByNS(attriNSList[i]);
-          ls.push(type);
+          this.m_aLocationTypes.push(type);
           this.m_aLocationSizes.push(attriSizeList[i]);
           this.m_attribLIndexList[type] = altI;
           this.m_attribTypeSizeList[type] = attriSizeList[i];
           this.dataUniformEnabled = true;
           ++i;
-        }
-
-        for (i = 0; i < ls.length; ++i) {
-          this.m_aLocationIVS[ls[i]] = i;
         }
 
         this.m_attriSizeList = [];
@@ -7351,14 +7609,6 @@ class ShdProgram {
 
   getLocationSizeByIndex(index) {
     return this.m_aLocationSizes[index];
-  }
-
-  getLocationTypes() {
-    return this.m_aLocationTypes;
-  }
-
-  getLocationIVS() {
-    return this.m_aLocationIVS;
   }
 
   testVertexAttribPointerOffset(offsetList) {
@@ -7812,181 +8062,55 @@ Object.defineProperty(exports, "__esModule", {
 
 const DisplayEntity_1 = __importDefault(__webpack_require__("402a"));
 
+const Vector3D_1 = __importDefault(__webpack_require__("8e17"));
+
+const Box3DMesh_1 = __importDefault(__webpack_require__("3bfb"));
+
+const RectPlaneMesh_1 = __importDefault(__webpack_require__("76b0"));
+
 const VtxBufRenderData_1 = __webpack_require__("d08b");
 
 const DataMesh_1 = __importDefault(__webpack_require__("519e"));
-
-const AABB_1 = __importDefault(__webpack_require__("fecb"));
-
-const Vector3D_1 = __importDefault(__webpack_require__("8e17"));
-
-const Matrix4_1 = __importDefault(__webpack_require__("18c7"));
 
 class RenderableEntityBlock {
   constructor() {
     this.m_initFlag = true;
     this.screenPlane = new DisplayEntity_1.default();
-    /**
-     * center align in the XOY Plane, its size is 1
-     */
-
     this.unitXOYPlane = new DisplayEntity_1.default();
-    /**
-     * center align in the XOZ Plane, its size is 1
-     */
-
     this.unitXOZPlane = new DisplayEntity_1.default();
-    /**
-     * center align in the YOZ Plane, its size is 1
-     */
-
-    this.unitYOZPlane = new DisplayEntity_1.default();
-    /**
-     * center align, its size is 1
-     */
-
     this.unitBox = new DisplayEntity_1.default();
-    /**
-     * axis origin align in the XOY Plane, its size is 1
-     */
-
-    this.unitOXOYPlane = new DisplayEntity_1.default();
-    /**
-     * axis origin align in the XOZ Plane, its size is 1
-     */
-
-    this.unitOXOZPlane = new DisplayEntity_1.default();
-    /**
-     * axis origin align in the YOZ Plane, its size is 1
-     */
-
-    this.unitOYOZPlane = new DisplayEntity_1.default();
-    /**
-     * axis origin align, its size is 1
-     */
-
-    this.unitOBox = new DisplayEntity_1.default();
   }
 
   initialize() {
     if (this.m_initFlag) {
       this.m_initFlag = false;
       let vtxData = new VtxBufRenderData_1.VtxBufRenderData();
-      let vs = new Float32Array([1, -1, 1, 1, -1, -1, -1, -1, -1, -1, -1, 1, 1, 1, 1, 1, 1, -1, -1, 1, -1, -1, 1, 1, 1, 1, 1, 1, 1, -1, 1, -1, -1, 1, -1, 1, 1, 1, -1, -1, 1, -1, -1, -1, -1, 1, -1, -1, -1, 1, 1, -1, 1, -1, -1, -1, -1, -1, -1, 1, 1, 1, 1, -1, 1, 1, -1, -1, 1, 1, -1, 1]);
-
-      for (let i = 0; i < vs.length; ++i) {
-        vs[i] *= 0.5;
-      }
-
-      let uvs = new Float32Array([0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 0, 1]);
-      let nvs = new Float32Array([0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1]);
-      let ivs = new Uint16Array([3, 2, 1, 3, 1, 0, 6, 7, 4, 6, 4, 5, 11, 10, 9, 11, 9, 8, 15, 14, 13, 15, 13, 12, 18, 19, 16, 18, 16, 17, 22, 23, 20, 22, 20, 21]);
-      let dm = new DataMesh_1.default();
-      dm.setVS(vs).setUVS(uvs).setNVS(nvs).setIVS(ivs).setVtxBufRenderData(vtxData);
-      dm.vbWholeDataEnabled = true;
-      dm.initialize();
-      this.unitBox.setMesh(dm);
-      vs = new Float32Array(vs);
-
-      for (let i = 0; i < vs.length; ++i) {
-        vs[i] += 0.5;
-      } // console.log("obox vs: ",vs);
-
-
-      dm = new DataMesh_1.default();
-      dm.setVS(vs).setUVS(uvs).setNVS(nvs).setIVS(ivs).setVtxBufRenderData(vtxData);
-      dm.vbWholeDataEnabled = true;
-      dm.initialize();
-      this.unitOBox.setMesh(dm);
-      vs = new Float32Array([-1, -1, 0, 1, -1, 0, 1, 1, 0, -1, 1, 0]);
-      uvs = new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]);
-      nvs = new Float32Array([0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1]);
-      ivs = new Uint16Array([0, 1, 2, 0, 2, 3]);
-      dm = new DataMesh_1.default();
-      dm.setVS(vs).setUVS(uvs).setNVS(nvs).setIVS(ivs).setVtxBufRenderData(vtxData);
-      dm.vbWholeDataEnabled = true;
-      dm.initialize();
-      this.screenPlane.setMesh(dm);
-
-      for (let i = 0; i < vs.length; ++i) {
-        vs[i] *= 0.5;
-      }
-
-      dm = new DataMesh_1.default();
-      dm.setVS(vs).setUVS(uvs).setNVS(nvs).setIVS(ivs).setVtxBufRenderData(vtxData);
-      dm.vbWholeDataEnabled = true;
-      dm.initialize();
-      this.unitXOYPlane.setMesh(dm);
-      vs = new Float32Array(vs);
-
-      for (let i = 0; i < vs.length;) {
-        vs[i++] += 0.5;
-        vs[i++] += 0.5;
-        i++;
-      }
-
-      dm = new DataMesh_1.default();
-      dm.setVS(vs).setUVS(uvs).setNVS(nvs).setIVS(ivs).setVtxBufRenderData(vtxData);
-      dm.vbWholeDataEnabled = true;
-      dm.initialize();
-      this.unitOXOYPlane.setMesh(dm);
-      vs = new Float32Array([0.5, 0, -0.5, -0.5, 0, -0.5, -0.5, 0, 0.5, 0.5, 0, 0.5]);
-      nvs = new Float32Array([0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0]);
-      dm = new DataMesh_1.default();
-      dm.setVS(vs).setUVS(uvs).setNVS(nvs).setIVS(ivs).setVtxBufRenderData(vtxData);
-      dm.vbWholeDataEnabled = true;
-      dm.initialize();
-      this.unitXOZPlane.setMesh(dm);
-      vs = new Float32Array(vs);
-
-      for (let i = 0; i < vs.length;) {
-        vs[i++] += 0.5;
-        i++;
-        vs[i++] += 0.5;
-      }
-
-      dm = new DataMesh_1.default();
-      dm.setVS(vs).setUVS(uvs).setNVS(nvs).setIVS(ivs).setVtxBufRenderData(vtxData);
-      dm.vbWholeDataEnabled = true;
-      dm.initialize();
-      this.unitOXOZPlane.setMesh(dm);
-      vs = new Float32Array([0, -0.5, -0.5, 0, 0.5, -0.5, 0, 0.5, 0.5, 0, -0.5, 0.5]);
-      nvs = new Float32Array([1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0]);
-      dm = new DataMesh_1.default();
-      dm.setVS(vs).setUVS(uvs).setNVS(nvs).setIVS(ivs).setVtxBufRenderData(vtxData);
-      dm.vbWholeDataEnabled = true;
-      dm.initialize();
-      this.unitYOZPlane.setMesh(dm);
-
-      for (let i = 0; i < vs.length;) {
-        i++;
-        vs[i++] += 0.5;
-        vs[i++] += 0.5;
-      }
-
-      dm = new DataMesh_1.default();
-      dm.setVS(vs).setUVS(uvs).setNVS(nvs).setIVS(ivs).setVtxBufRenderData(vtxData);
-      dm.vbWholeDataEnabled = true;
-      dm.initialize();
-      this.unitOYOZPlane.setMesh(dm);
+      let planeMesh = new RectPlaneMesh_1.default();
+      planeMesh.axisFlag = 0;
+      planeMesh.setVtxBufRenderData(vtxData);
+      planeMesh.initialize(-1.0, -1.0, 2.0, 2.0);
+      this.screenPlane.setMesh(planeMesh);
+      planeMesh = new RectPlaneMesh_1.default();
+      planeMesh.axisFlag = 0;
+      planeMesh.setVtxBufRenderData(vtxData);
+      planeMesh.initialize(-0.5, -0.5, 1.0, 1.0);
+      this.unitXOYPlane.setMesh(planeMesh);
+      planeMesh = new RectPlaneMesh_1.default();
+      planeMesh.axisFlag = 1;
+      planeMesh.setVtxBufRenderData(vtxData);
+      planeMesh.initialize(-0.5, -0.5, 1.0, 1.0);
+      this.unitXOZPlane.setMesh(planeMesh);
+      let boxMesh = new Box3DMesh_1.default();
+      boxMesh.setVtxBufRenderData(vtxData);
+      boxMesh.initialize(new Vector3D_1.default(-0.5, -0.5, -0.5), new Vector3D_1.default(0.5, 0.5, 0.5));
+      this.unitBox.setMesh(boxMesh);
     }
-  }
-
-  createVector3(x = 0.0, y = 0.0, z = 0.0, w = 1.0) {
-    return new Vector3D_1.default(x, y, z, w);
-  }
-
-  createMatrix4() {
-    return new Matrix4_1.default();
-  }
-
-  createAABB() {
-    return new AABB_1.default();
   }
 
   createEntity() {
     return new DisplayEntity_1.default();
-  }
+  } //createMesh(bufDataUsage: number = VtxBufConst.VTX_STATIC_DRAW): IDataMesh {
+
 
   createMesh() {
     return new DataMesh_1.default();
@@ -8410,32 +8534,67 @@ exports.default = RPONode;
 
 /***/ }),
 
-/***/ "28a9":
+/***/ "278e":
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
+/***************************************************************************/
+
+/*                                                                         */
+
+/*  Copyright 2018-2022 by                                                 */
+
+/*  Vily(vily313@126.com)                                                  */
+
+/*                                                                         */
+
+/***************************************************************************/
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-const ShaderCodeUUID_1 = __webpack_require__("f3a2");
-
-const ShaderCodeType_1 = __webpack_require__("69ed");
-
-class ShaderCodeConfigure {
+class CameraDragSlide {
   constructor() {
-    this.types = [ShaderCodeType_1.ShaderCodeType.VertHead, ShaderCodeType_1.ShaderCodeType.VertBody, ShaderCodeType_1.ShaderCodeType.FragHead, ShaderCodeType_1.ShaderCodeType.FragBody];
-    this.urls = null;
-    this.uuid = ShaderCodeUUID_1.ShaderCodeUUID.Default;
-    this.binary = false;
-    this.buildBinaryFile = false;
+    this.m_stage3D = null;
+    this.m_camera = null;
+    this.slideSpeed = 2.0;
+    this.m_mouseX = 0.0;
+    this.m_mouseY = 0.0;
+    this.m_enabled = false;
+  }
+
+  initialize(stage3D, camera) {
+    if (this.m_stage3D == null) {
+      this.m_stage3D = stage3D;
+      this.m_camera = camera;
+    }
+  }
+
+  attach() {
+    this.m_mouseX = this.m_stage3D.mouseX;
+    this.m_mouseY = this.m_stage3D.mouseY;
+    this.m_enabled = true;
+  }
+
+  detach() {
+    this.m_enabled = false;
+  }
+
+  run() {
+    if (this.m_enabled) {
+      let dx = (this.m_mouseX - this.m_stage3D.mouseX) * this.slideSpeed;
+      let dy = (this.m_mouseY - this.m_stage3D.mouseY) * this.slideSpeed;
+      this.m_camera.slideViewOffsetXY(dx, dy);
+      this.m_mouseX = this.m_stage3D.mouseX;
+      this.m_mouseY = this.m_stage3D.mouseY;
+    }
   }
 
 }
 
-exports.ShaderCodeConfigure = ShaderCodeConfigure;
+exports.CameraDragSlide = CameraDragSlide;
 
 /***/ }),
 
@@ -8449,67 +8608,178 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+const RenderColorMask_1 = __webpack_require__("070b");
+
+const RenderStateObject_1 = __webpack_require__("a5ba");
+
+const RenderConst_1 = __webpack_require__("e08e");
+
 class RendererState {
+  static Initialize(rstate, vro) {
+    if (RendererState.s_initBoo) {
+      RendererState.s_initBoo = false;
+      let state = RendererState;
+      state.Rstate = rstate;
+      state.VRO = vro;
+      RenderColorMask_1.RenderColorMask.Rstate = rstate;
+      RenderStateObject_1.RenderStateObject.Rstate = rstate;
+      state.COLOR_MASK_ALL_TRUE = RenderColorMask_1.RenderColorMask.Create("all_true", true, true, true, true);
+      state.COLOR_MASK_ALL_FALSE = RenderColorMask_1.RenderColorMask.Create("all_false", false, false, false, false);
+      state.COLOR_MASK_RED_TRUE = RenderColorMask_1.RenderColorMask.Create("red_true", true, false, false, false);
+      state.COLOR_MASK_GREEN_TRUE = RenderColorMask_1.RenderColorMask.Create("green_true", false, true, false, false);
+      state.COLOR_MASK_BLUE_TRUE = RenderColorMask_1.RenderColorMask.Create("blue_true", false, false, true, false);
+      state.COLOR_MASK_ALPHA_TRUE = RenderColorMask_1.RenderColorMask.Create("alpha_true", false, false, false, true);
+      state.COLOR_MASK_RED_FALSE = RenderColorMask_1.RenderColorMask.Create("red_false", false, true, true, true);
+      state.COLOR_MASK_GREEN_FALSE = RenderColorMask_1.RenderColorMask.Create("green_false", true, false, true, true);
+      state.COLOR_MASK_BLUE_FALSE = RenderColorMask_1.RenderColorMask.Create("blue_false", true, true, false, true);
+      state.COLOR_MASK_ALPHA_FALSE = RenderColorMask_1.RenderColorMask.Create("alpha_false", true, true, true, false);
+      let rso = RenderStateObject_1.RenderStateObject;
+      let rBlendMode = RenderConst_1.RenderBlendMode;
+      rBlendMode.NORMAL = rso.CreateBlendMode("NORMAL", RenderConst_1.GLBlendMode.ONE, RenderConst_1.GLBlendMode.ZERO, RenderConst_1.GLBlendEquation.FUNC_ADD);
+      rBlendMode.OPAQUE = rso.CreateBlendMode("OPAQUE", RenderConst_1.GLBlendMode.ONE, RenderConst_1.GLBlendMode.ZERO, RenderConst_1.GLBlendEquation.FUNC_ADD);
+      rBlendMode.TRANSPARENT = rso.CreateBlendMode("TRANSPARENT", RenderConst_1.GLBlendMode.SRC_ALPHA, RenderConst_1.GLBlendMode.ONE_MINUS_SRC_ALPHA, RenderConst_1.GLBlendEquation.FUNC_ADD);
+      rBlendMode.ALPHA_ADD = rso.CreateBlendMode("ALPHA_ADD", RenderConst_1.GLBlendMode.ONE, RenderConst_1.GLBlendMode.ONE_MINUS_SRC_ALPHA, RenderConst_1.GLBlendEquation.FUNC_ADD);
+      rBlendMode.ADD = rso.CreateBlendMode("ADD", RenderConst_1.GLBlendMode.SRC_ALPHA, RenderConst_1.GLBlendMode.ONE, RenderConst_1.GLBlendEquation.FUNC_ADD);
+      rBlendMode.ADD_LINEAR = rso.CreateBlendMode("ADD_LINEAR", RenderConst_1.GLBlendMode.ONE, RenderConst_1.GLBlendMode.ONE, RenderConst_1.GLBlendEquation.FUNC_ADD);
+      rBlendMode.INVERSE_ALPHA = rso.CreateBlendMode("INVERSE_ALPHA", RenderConst_1.GLBlendMode.ONE, RenderConst_1.GLBlendMode.SRC_ALPHA, RenderConst_1.GLBlendEquation.FUNC_ADD);
+      rBlendMode.BLAZE = rso.CreateBlendMode("BLAZE", RenderConst_1.GLBlendMode.SRC_COLOR, RenderConst_1.GLBlendMode.ONE, RenderConst_1.GLBlendEquation.FUNC_ADD);
+      rBlendMode.OVERLAY = rso.CreateBlendMode("OVERLAY", RenderConst_1.GLBlendMode.DST_COLOR, RenderConst_1.GLBlendMode.DST_ALPHA, RenderConst_1.GLBlendEquation.FUNC_ADD);
+      rBlendMode.OVERLAY2 = rso.CreateBlendMode("OVERLAY2", RenderConst_1.GLBlendMode.DST_COLOR, RenderConst_1.GLBlendMode.SRC_ALPHA, RenderConst_1.GLBlendEquation.FUNC_ADD);
+      state.NORMAL_STATE = rso.Create("normal", RenderConst_1.CullFaceMode.BACK, RenderConst_1.RenderBlendMode.NORMAL, RenderConst_1.DepthTestMode.OPAQUE);
+      state.BACK_CULLFACE_NORMAL_STATE = state.NORMAL_STATE;
+      state.FRONT_CULLFACE_NORMAL_STATE = rso.Create("front_normal", RenderConst_1.CullFaceMode.FRONT, RenderConst_1.RenderBlendMode.NORMAL, RenderConst_1.DepthTestMode.OPAQUE);
+      state.NONE_CULLFACE_NORMAL_STATE = rso.Create("none_normal", RenderConst_1.CullFaceMode.NONE, RenderConst_1.RenderBlendMode.NORMAL, RenderConst_1.DepthTestMode.OPAQUE);
+      state.ALL_CULLFACE_NORMAL_STATE = rso.Create("all_cull_normal", RenderConst_1.CullFaceMode.FRONT_AND_BACK, RenderConst_1.RenderBlendMode.NORMAL, RenderConst_1.DepthTestMode.OPAQUE);
+      state.BACK_NORMAL_ALWAYS_STATE = rso.Create("back_normal_always", RenderConst_1.CullFaceMode.BACK, RenderConst_1.RenderBlendMode.NORMAL, RenderConst_1.DepthTestMode.ALWAYS);
+      state.BACK_TRANSPARENT_STATE = rso.Create("back_transparent", RenderConst_1.CullFaceMode.BACK, RenderConst_1.RenderBlendMode.TRANSPARENT, RenderConst_1.DepthTestMode.TRANSPARENT_SORT);
+      state.BACK_TRANSPARENT_ALWAYS_STATE = rso.Create("back_transparent_always", RenderConst_1.CullFaceMode.BACK, RenderConst_1.RenderBlendMode.TRANSPARENT, RenderConst_1.DepthTestMode.ALWAYS);
+      state.NONE_TRANSPARENT_STATE = rso.Create("none_transparent", RenderConst_1.CullFaceMode.NONE, RenderConst_1.RenderBlendMode.TRANSPARENT, RenderConst_1.DepthTestMode.TRANSPARENT_SORT);
+      state.NONE_TRANSPARENT_ALWAYS_STATE = rso.Create("none_transparent_always", RenderConst_1.CullFaceMode.NONE, RenderConst_1.RenderBlendMode.TRANSPARENT, RenderConst_1.DepthTestMode.ALWAYS);
+      state.FRONT_CULLFACE_GREATER_STATE = rso.Create("front_greater", RenderConst_1.CullFaceMode.FRONT, RenderConst_1.RenderBlendMode.NORMAL, RenderConst_1.DepthTestMode.TRUE_GREATER);
+      state.BACK_ADD_BLENDSORT_STATE = rso.Create("back_add_blendSort", RenderConst_1.CullFaceMode.BACK, RenderConst_1.RenderBlendMode.ADD, RenderConst_1.DepthTestMode.TRANSPARENT_SORT);
+      state.BACK_ADD_ALWAYS_STATE = rso.Create("back_add_always", RenderConst_1.CullFaceMode.BACK, RenderConst_1.RenderBlendMode.ADD, RenderConst_1.DepthTestMode.ALWAYS);
+      state.BACK_ALPHA_ADD_ALWAYS_STATE = rso.Create("back_alpha_add_always", RenderConst_1.CullFaceMode.BACK, RenderConst_1.RenderBlendMode.ALPHA_ADD, RenderConst_1.DepthTestMode.ALWAYS);
+      state.NONE_ADD_ALWAYS_STATE = rso.Create("none_add_always", RenderConst_1.CullFaceMode.NONE, RenderConst_1.RenderBlendMode.ADD, RenderConst_1.DepthTestMode.ALWAYS);
+      state.NONE_ADD_BLENDSORT_STATE = rso.Create("none_add_blendSort", RenderConst_1.CullFaceMode.NONE, RenderConst_1.RenderBlendMode.ADD, RenderConst_1.DepthTestMode.TRANSPARENT_SORT);
+      state.NONE_ALPHA_ADD_ALWAYS_STATE = rso.Create("none_alpha_add_always", RenderConst_1.CullFaceMode.NONE, RenderConst_1.RenderBlendMode.ALPHA_ADD, RenderConst_1.DepthTestMode.ALWAYS);
+      state.FRONT_ADD_ALWAYS_STATE = rso.Create("front_add_always", RenderConst_1.CullFaceMode.FRONT, RenderConst_1.RenderBlendMode.ADD, RenderConst_1.DepthTestMode.ALWAYS);
+      state.FRONT_TRANSPARENT_STATE = rso.Create("front_transparent", RenderConst_1.CullFaceMode.FRONT, RenderConst_1.RenderBlendMode.TRANSPARENT, RenderConst_1.DepthTestMode.TRANSPARENT_SORT);
+      state.FRONT_TRANSPARENT_ALWAYS_STATE = rso.Create("front_transparent_always", RenderConst_1.CullFaceMode.FRONT, RenderConst_1.RenderBlendMode.TRANSPARENT, RenderConst_1.DepthTestMode.ALWAYS);
+      state.NONE_CULLFACE_NORMAL_ALWAYS_STATE = rso.Create("none_normal_always", RenderConst_1.CullFaceMode.NONE, RenderConst_1.RenderBlendMode.NORMAL, RenderConst_1.DepthTestMode.ALWAYS);
+      state.BACK_ALPHA_ADD_BLENDSORT_STATE = rso.Create("back_alpha_add_blendSort", RenderConst_1.CullFaceMode.BACK, RenderConst_1.RenderBlendMode.ALPHA_ADD, RenderConst_1.DepthTestMode.TRANSPARENT_SORT);
+    }
+  }
+
   static CreateBlendMode(name, srcColor, dstColor, blendEquation = 0) {
-    return RendererState.rstb.createBlendMode(name, srcColor, dstColor, blendEquation);
+    return RenderStateObject_1.RenderStateObject.CreateBlendMode(name, srcColor, dstColor, blendEquation);
   }
 
   static CreateBlendModeSeparate(name, srcColor, dstColor, srcAlpha = 0, dstAlpha = 0, blendEquation = 0) {
-    return RendererState.rstb.createBlendModeSeparate(name, srcColor, dstColor, srcAlpha, dstAlpha, blendEquation);
+    return RenderStateObject_1.RenderStateObject.CreateBlendModeSeparate(name, srcColor, dstColor, srcAlpha, dstAlpha, blendEquation);
   }
 
   static CreateRenderState(objName, cullFaceMode, blendMode, depthTestMode) {
-    return RendererState.rstb.createRenderState(objName, cullFaceMode, blendMode, depthTestMode);
+    return RenderStateObject_1.RenderStateObject.Create(objName, cullFaceMode, blendMode, depthTestMode);
   }
 
   static CreateRenderColorMask(objName, rBoo, gBoo, bBoo, aBoo) {
-    return RendererState.rstb.createRenderColorMask(objName, rBoo, gBoo, bBoo, aBoo);
+    return RenderColorMask_1.RenderColorMask.Create(objName, rBoo, gBoo, bBoo, aBoo);
   }
 
   static GetRenderStateByName(objName) {
-    return RendererState.rstb.getRenderStateByName(objName);
+    return RenderStateObject_1.RenderStateObject.GetRenderStateByName(objName);
   }
 
   static GetRenderColorMaskByName(objName) {
-    return RendererState.rstb.getRenderColorMaskByName(objName);
+    return RenderColorMask_1.RenderColorMask.GetColorMaskByName(objName);
   }
 
   static UnlockBlendMode() {
-    RendererState.rstb.unlockBlendMode();
+    RenderStateObject_1.RenderStateObject.UnlockBlendMode();
   }
 
   static LockBlendMode(cullFaceMode) {
-    RendererState.rstb.lockBlendMode(cullFaceMode);
+    RenderStateObject_1.RenderStateObject.LockBlendMode(cullFaceMode);
   }
 
   static UnlockDepthTestMode() {
-    RendererState.rstb.unlockDepthTestMode();
+    RenderStateObject_1.RenderStateObject.UnlockDepthTestMode();
   }
 
   static LockDepthTestMode(depthTestMode) {
-    RendererState.rstb.lockDepthTestMode(depthTestMode);
+    RenderStateObject_1.RenderStateObject.LockDepthTestMode(depthTestMode);
   }
 
   static ResetState() {
-    RendererState.rstb.resetState();
+    RenderColorMask_1.RenderColorMask.Reset();
+    RenderStateObject_1.RenderStateObject.Reset();
+    RendererState.Rstate.reset();
+
+    RendererState.VRO.__$resetVRO(); // VROBase.Reset();
+
   }
 
   static Reset(context) {
-    RendererState.rstb.reset(context);
+    RenderColorMask_1.RenderColorMask.Reset();
+    RenderStateObject_1.RenderStateObject.Reset();
+    RendererState.Rstate.setRenderContext(context);
+    RendererState.Rstate.reset();
   }
 
-  static ResetInfo() {}
+  static ResetInfo() {
+    RendererState.DrawCallTimes = 0;
+    RendererState.DrawTrisNumber = 0;
+    RendererState.POVNumber = 0;
+  }
 
   static SetDepthTestEnable(enable) {
-    RendererState.rstb.setDepthTestEnable(enable);
+    RendererState.Rstate.setDepthTestEnable(enable);
   }
 
   static SetBlendEnable(enable) {
-    RendererState.rstb.setBlendEnable(enable);
+    RendererState.Rstate.setBlendEnable(enable);
   }
 
 }
 
+RendererState.s_initBoo = true;
+RendererState.VRO = null;
+RendererState.Rstate = null;
+RendererState.DrawCallTimes = 0;
+RendererState.DrawTrisNumber = 0;
+RendererState.POVNumber = 0;
+RendererState.COLOR_MASK_ALL_TRUE = 0;
+RendererState.COLOR_MASK_ALL_FALSE = 1;
+RendererState.COLOR_MASK_RED_TRUE = 2;
+RendererState.COLOR_MASK_GREEN_TRUE = 3;
+RendererState.COLOR_MASK_BLUE_TRUE = 4;
+RendererState.COLOR_MASK_ALPHA_TRUE = 5;
+RendererState.COLOR_MASK_RED_FALSE = 6;
+RendererState.COLOR_MASK_GREEN_FALSE = 7;
+RendererState.COLOR_MASK_BLUE_FALSE = 8;
+RendererState.COLOR_MASK_ALPHA_FALSE = 9;
+RendererState.NORMAL_STATE = 0;
+RendererState.BACK_CULLFACE_NORMAL_STATE = 0;
+RendererState.FRONT_CULLFACE_NORMAL_STATE = 1;
+RendererState.NONE_CULLFACE_NORMAL_STATE = 2;
+RendererState.ALL_CULLFACE_NORMAL_STATE = 3;
+RendererState.BACK_NORMAL_ALWAYS_STATE = 4;
+RendererState.BACK_TRANSPARENT_STATE = 5;
+RendererState.BACK_TRANSPARENT_ALWAYS_STATE = 6;
+RendererState.NONE_TRANSPARENT_STATE = 7;
+RendererState.NONE_TRANSPARENT_ALWAYS_STATE = 8;
+RendererState.FRONT_CULLFACE_GREATER_STATE = 9;
+RendererState.BACK_ADD_BLENDSORT_STATE = 10;
+RendererState.BACK_ADD_ALWAYS_STATE = 11;
+RendererState.BACK_ALPHA_ADD_ALWAYS_STATE = 12;
+RendererState.NONE_ADD_ALWAYS_STATE = 13;
+RendererState.NONE_ADD_BLENDSORT_STATE = 14;
+RendererState.NONE_ALPHA_ADD_ALWAYS_STATE = 15;
+RendererState.FRONT_ADD_ALWAYS_STATE = 16;
+RendererState.FRONT_TRANSPARENT_STATE = 17;
+RendererState.FRONT_TRANSPARENT_ALWAYS_STATE = 18;
+RendererState.NONE_CULLFACE_NORMAL_ALWAYS_STATE = 19;
+RendererState.BACK_ALPHA_ADD_BLENDSORT_STATE = 20;
 exports.default = RendererState;
 
 /***/ }),
@@ -8680,6 +8950,281 @@ class AttributeLine {
 }
 
 exports.default = AttributeLine;
+
+/***/ }),
+
+/***/ "2fe8":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/***************************************************************************/
+
+/*                                                                         */
+
+/*  Copyright 2018-2022 by                                                 */
+
+/*  Vily(vily313@126.com)                                                  */
+
+/*                                                                         */
+
+/***************************************************************************/
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+const EventBase_1 = __importDefault(__webpack_require__("a996"));
+
+const RendererParam_1 = __importDefault(__webpack_require__("c497"));
+
+const CanvasTextureTool_1 = __importDefault(__webpack_require__("125c"));
+
+const Color4_1 = __importDefault(__webpack_require__("3930"));
+
+class OrthoUIScene {
+  constructor() {
+    this.m_rscene = null;
+    this.m_ruisc = null;
+    this.entityBlock = null;
+    this.materialBlock = null;
+  }
+
+  initialize(rscene) {
+    if (rscene != null) {
+      this.m_rscene = rscene;
+      this.m_rscene.addEventListener(EventBase_1.default.RESIZE, this, this.resize);
+      this.initUIScene();
+    }
+  }
+
+  enable() {
+    this.m_ruisc.enable();
+  }
+
+  disable() {
+    this.m_ruisc.disable();
+  }
+
+  isEnabled() {
+    return this.m_ruisc.isEnabled();
+  }
+
+  initUIScene() {
+    let rparam = new RendererParam_1.default();
+    rparam.cameraPerspectiveEnabled = false;
+    rparam.setCamProject(45.0, 0.1, 3000.0);
+    rparam.setCamPosition(0.0, 0.0, 1500.0);
+    let subScene = null;
+    subScene = this.m_rscene.createSubScene();
+    subScene.initialize(rparam);
+    subScene.enableMouseEvent(true);
+    this.m_ruisc = subScene;
+    let stage = this.m_rscene.getStage3D();
+    this.m_ruisc.getCamera().translationXYZ(stage.stageHalfWidth, stage.stageHalfHeight, 1500.0);
+    this.m_ruisc.getCamera().update();
+    CanvasTextureTool_1.default.GetInstance().initialize(this.m_rscene);
+    CanvasTextureTool_1.default.GetInstance().initializeAtlas(1024, 1024, new Color4_1.default(1.0, 1.0, 1.0, 0.0), true);
+  }
+
+  getRendererScene() {
+    return this.m_ruisc;
+  }
+  /**
+   * 获取渲染器可渲染对象管理器状态(版本号)
+   */
+
+
+  getRendererStatus() {
+    return this.m_ruisc.getRendererStatus();
+  }
+
+  getUid() {
+    return this.m_ruisc.getUid();
+  }
+  /**
+   * 是否启用鼠标或者touch交互功能
+   * @param gpuTestEnabled the default value is true.
+   */
+
+
+  enableMouseEvent(gpuTestEnabled = true) {
+    this.m_ruisc.enableMouseEvent(gpuTestEnabled);
+  }
+
+  getMouseXYWorldRay(rl_position, rl_tv) {
+    this.m_ruisc.getMouseXYWorldRay(rl_position, rl_tv);
+  }
+
+  renderBegin(contextBeginEnabled = false) {
+    this.m_ruisc.renderBegin();
+  }
+
+  runBegin(autoCycle = true, contextBeginEnabled = false) {
+    this.m_ruisc.runBegin(autoCycle, contextBeginEnabled);
+  }
+
+  setRayTestEanbled(enabled) {
+    this.m_ruisc.setRayTestEanbled(enabled);
+  }
+
+  update(autoCycle = true, mouseEventEnabled = true) {
+    this.m_ruisc.update(autoCycle, mouseEventEnabled);
+  }
+
+  run(autoCycle = false) {
+    this.m_ruisc.run(autoCycle);
+  }
+
+  runEnd() {
+    this.m_ruisc.runEnd();
+  }
+
+  runAt(index) {
+    this.m_ruisc.runAt(index);
+  }
+  /**
+   * add an entity to the renderer process of the renderer instance
+   * @param entity IRenderEntity instance(for example: DisplayEntity class instance)
+   * @param processid this destination renderer process id
+   * @param deferred if the value is true,the entity will not to be immediately add to the renderer process by its id
+   */
+
+
+  addEntity(entity, processIndex = 0, deferred = true) {
+    this.m_ruisc.addEntity(entity, processIndex, deferred);
+  }
+
+  removeEntity(entity) {
+    this.m_ruisc.removeEntity(entity);
+  }
+
+  addContainer(child, processIndex = 0) {
+    this.m_ruisc.addContainer(child, processIndex);
+  }
+
+  removeContainer(child) {
+    this.m_ruisc.removeContainer(child);
+  }
+  /**
+   * 单独绘制可渲染对象, 可能是使用了 global material也可能没有。这种方式比较耗性能,只能用在特殊的地方。
+   * @param entity 需要指定绘制的 IRenderEntity 实例
+   * @param useGlobalUniform 是否使用当前 global material 所携带的 uniform, default value: false
+   * @param forceUpdateUniform 是否强制更新当前 global material 所对应的 shader program 的 uniform, default value: true
+   */
+
+
+  drawEntity(entity, useGlobalUniform = false, forceUpdateUniform = true) {
+    this.m_ruisc.drawEntity(entity, useGlobalUniform, forceUpdateUniform);
+  }
+
+  isRayPickSelected() {
+    return this.m_ruisc.isRayPickSelected();
+  }
+  /**
+   * @param type event type
+   * @param target event listerner
+   * @param func event listerner callback function
+   * @param captureEnabled true
+   * @param bubbleEnabled false
+   */
+
+
+  addEventListener(type, target, func, captureEnabled, bubbleEnabled = false) {
+    this.m_ruisc.addEventListener(type, target, func, captureEnabled, bubbleEnabled);
+  }
+  /**
+   * @param type event type
+   * @param target event listerner
+   * @param func event listerner callback function
+   */
+
+
+  removeEventListener(type, target, func) {
+    this.m_ruisc.removeEventListener(type, target, func);
+  }
+
+  resize(evt) {
+    if (this.m_ruisc != null) {
+      let stage = this.m_ruisc.getStage3D();
+      this.m_ruisc.getCamera().translationXYZ(stage.stageHalfWidth, stage.stageHalfHeight, 1500.0);
+    }
+  }
+
+  setClearUint24Color(colorUint24, alpha = 1.0) {
+    this.m_rscene.setClearUint24Color(colorUint24, alpha);
+  }
+
+  setClearRGBColor3f(pr, pg, pb) {
+    this.m_rscene.setClearRGBColor3f(pr, pg, pb);
+  }
+
+  setClearRGBAColor4f(pr, pg, pb, pa) {
+    this.m_rscene.setClearRGBAColor4f(pr, pg, pb, pa);
+  }
+
+  setClearColor(color) {
+    this.m_rscene.setClearRGBAColor4f(color.r, color.g, color.b, color.a);
+  }
+
+  setRenderToBackBuffer() {
+    this.m_rscene.setRenderToBackBuffer();
+  }
+
+  updateCamera() {
+    this.m_rscene.updateCamera();
+  }
+
+  createCamera() {
+    return null;
+  }
+
+  getCamera() {
+    return this.m_rscene.getCamera();
+  }
+
+  getStage3D() {
+    return this.m_ruisc.getStage3D();
+  }
+
+  getViewWidth() {
+    return this.m_ruisc.getViewWidth();
+  }
+
+  getViewHeight() {
+    return this.m_ruisc.getViewHeight();
+  }
+
+  getRenderProxy() {
+    return this.m_ruisc.getRenderProxy();
+  }
+  /**
+   * get the renderer process by process index
+   * @param processIndex IRenderProcess instance index in renderer scene instance
+   */
+
+
+  getRenderProcessAt(processIndex) {
+    return this.m_ruisc.getRenderProcessAt(processIndex);
+  }
+
+  createFBOInstance() {
+    return null;
+  }
+
+  createMatrix4() {
+    return this.m_rscene.createMatrix4();
+  }
+
+}
+
+exports.OrthoUIScene = OrthoUIScene;
 
 /***/ }),
 
@@ -9292,10 +9837,10 @@ class Line3DShaderBuffer extends ShaderCodeBuffer_1.default {
 
   buildShader() {
     this.m_coder.addVertLayout("vec3", "a_vs");
-    this.m_coder.addFragUniform("vec4", "u_color");
 
     if (this.dynColorEnabled) {
       this.m_coder.addDefine("DYNAMIC_COLOR");
+      this.m_coder.addFragUniform("vec4", "u_color");
     } else {
       this.m_coder.addVertLayout("vec3", "a_cvs");
       this.m_coder.addVarying("vec3", "v_color");
@@ -9304,7 +9849,7 @@ class Line3DShaderBuffer extends ShaderCodeBuffer_1.default {
     this.m_coder.addFragOutputHighp("vec4", "FragColor0");
     this.m_coder.addFragMainCode(`
     #ifndef DYNAMIC_COLOR
-        FragColor0 = vec4(v_color, 1.0) * u_color;
+        FragColor0 = vec4(v_color, 1.0);
     #else
         FragColor0 = u_color;
     #endif
@@ -9312,6 +9857,8 @@ class Line3DShaderBuffer extends ShaderCodeBuffer_1.default {
     this.m_coder.addVertMainCode(`
     viewPosition = u_viewMat * u_objMat * vec4(a_vs,1.0);
     vec4 pv = u_projMat * viewPosition;
+    // pixels move offset, and no perspective error.
+    //  pv.xy = (pv.xy/pv.w - vec2(0.5)) * pv.w;
     #ifndef DYNAMIC_COLOR
         v_color = a_cvs;
     #endif
@@ -9320,18 +9867,21 @@ class Line3DShaderBuffer extends ShaderCodeBuffer_1.default {
   }
 
   getUniqueShaderName() {
+    //console.log("H ########################### this.m_uniqueName: "+this.m_uniqueName);
     return this.m_uniqueName;
   }
 
-  static GetInstance() {
-    let lsb = Line3DShaderBuffer;
+  toString() {
+    return "[Line3DShaderBuffer()]";
+  }
 
-    if (lsb.s_instance != null) {
-      return lsb.s_instance;
+  static GetInstance() {
+    if (Line3DShaderBuffer.s_instance != null) {
+      return Line3DShaderBuffer.s_instance;
     }
 
-    lsb.s_instance = new Line3DShaderBuffer();
-    return lsb.s_instance;
+    Line3DShaderBuffer.s_instance = new Line3DShaderBuffer();
+    return Line3DShaderBuffer.s_instance;
   }
 
 }
@@ -9339,120 +9889,40 @@ class Line3DShaderBuffer extends ShaderCodeBuffer_1.default {
 Line3DShaderBuffer.s_instance = null;
 
 class Line3DMaterial extends MaterialBase_1.default {
-  /**
-   * @param dynColorEnabled the default value is false
-   */
   constructor(dynColorEnabled = false) {
     super();
     this.m_dynColorEnabled = false;
-    this.m_data = null;
-    this.premultiplyAlpha = false;
-    this.normalEnabled = false;
-    this.shadowReceiveEnabled = false;
+    this.m_colorArray = null;
     this.m_dynColorEnabled = dynColorEnabled;
-    this.m_data = new Float32Array([1.0, 1.0, 1.0, 1.0]);
-    let oum = new ShaderUniformData_1.default();
-    oum.uniformNameList = ["u_color"];
-    oum.dataList = [this.m_data];
-    this.m_shaderUniformData = oum;
-  }
 
-  buildBuf() {
-    Line3DShaderBuffer.GetInstance().dynColorEnabled = this.m_dynColorEnabled;
+    if (dynColorEnabled) {
+      this.m_colorArray = new Float32Array([1.0, 1.0, 1.0, 1.0]);
+
+      if (this.m_dynColorEnabled) {
+        let oum = new ShaderUniformData_1.default();
+        oum.uniformNameList = ["u_color"];
+        oum.dataList = [this.m_colorArray];
+        this.m_shaderUniformData = oum;
+      }
+    }
   }
 
   getCodeBuf() {
+    Line3DShaderBuffer.GetInstance().dynColorEnabled = this.m_dynColorEnabled;
     return Line3DShaderBuffer.GetInstance();
   }
 
   setRGB3f(pr, pg, pb) {
-    this.m_data[0] = pr;
-    this.m_data[1] = pg;
-    this.m_data[2] = pb;
-  }
-
-  getRGB3f(color) {
-    let ds = this.m_data;
-    color.setRGB3f(ds[0], ds[1], ds[2]);
-  }
-
-  setRGBA4f(pr, pg, pb, pa) {
-    this.m_data[0] = pr;
-    this.m_data[1] = pg;
-    this.m_data[2] = pb;
-    this.m_data[3] = pa;
-  }
-
-  getRGBA4f(color) {
-    color.fromArray4(this.m_data);
-  }
-
-  setAlpha(pa) {
-    this.m_data[3] = pa;
-  }
-
-  getAlpha() {
-    return this.m_data[3];
-  }
-
-  setColor(color) {
-    color.toArray4(this.m_data);
-  }
-
-  getColor(color) {
-    color.fromArray4(this.m_data);
+    if (this.m_colorArray != null) {
+      this.m_colorArray[0] = pr;
+      this.m_colorArray[1] = pg;
+      this.m_colorArray[2] = pb;
+    }
   }
 
 }
 
 exports.default = Line3DMaterial;
-
-/***/ }),
-
-/***/ "35c5":
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/***************************************************************************/
-
-/*                                                                         */
-
-/*  Copyright 2018-2022 by                                                 */
-
-/*  Vily(vily313@126.com)                                                  */
-
-/*                                                                         */
-
-/***************************************************************************/
-
-var __importDefault = this && this.__importDefault || function (mod) {
-  return mod && mod.__esModule ? mod : {
-    "default": mod
-  };
-};
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-const EventBase_1 = __importDefault(__webpack_require__("a996"));
-
-class ProgressDataEvent extends EventBase_1.default {
-  constructor() {
-    super();
-    this.status = 0;
-    this.progress = 0.0;
-    this.minValue = 0.0;
-    this.maxValue = 1.0;
-    this.value = 0.0;
-    this.type = ProgressDataEvent.PROGRESS;
-  }
-
-}
-
-ProgressDataEvent.PROGRESS = 3101;
-exports.default = ProgressDataEvent;
 
 /***/ }),
 
@@ -9948,16 +10418,16 @@ class RODataBuilder {
         if (hasTrans) {
           if (disp.getTransform() != null) {
             //console.log("disp.getTransform().getUid(): "+disp.getTransform().getUid());
-            runit.transUniform = ROTransPool_1.default.GetTransUniform(disp.getTransform(), shdp); //console.log("RODataBuilder::updateDispMaterial(), get runit.transUniform: ",runit.transUniform);
+            runit.transUniform = ROTransPool_1.default.GetTransUniform(disp.getTransform()); //console.log("RODataBuilder::updateDispMaterial(), get runit.transUniform: ",runit.transUniform);
           }
         } // console.log("RODataBuilder::updateDispMaterial(), runit: ",runit);
         // console.log("RODataBuilder::updateDispMaterial(), runit.uid: ",runit.getUid());
-        // console.log("RODataBuilder::updateDispMaterial(), runit.transUniform == null: ",runit.transUniform == null);
+        //  console.log("RODataBuilder::updateDispMaterial(), runit.transUniform == null: ",runit.transUniform == null);
 
 
         if (runit.transUniform == null) {
           runit.transUniform = this.m_shdUniformTool.buildLocalFromTransformV(hasTrans ? disp.getMatrixFS32() : null, shdp);
-          ROTransPool_1.default.SetTransUniform(disp.getTransform(), runit.transUniform, shdp);
+          ROTransPool_1.default.SetTransUniform(disp.getTransform(), runit.transUniform);
         } else {
           runit.transUniform = this.m_shdUniformTool.updateLocalFromTransformV(runit.transUniform, hasTrans ? disp.getMatrixFS32() : null, shdp);
         }
@@ -10018,21 +10488,15 @@ class RODataBuilder {
       runit.drawMode = disp.drawMode;
       runit.renderState = disp.renderState;
       runit.rcolorMask = disp.rcolorMask;
-      runit.trisNumber = disp.trisNumber; // build vertex gpu resoure
-      // let resUid = disp.vbuf.getUid();
+      runit.trisNumber = disp.trisNumber; // build vertex gpu resoure 
 
-      let resUid = disp.getVtxResUid();
+      let resUid = disp.vbuf.getUid();
       let vtx;
       let needBuild = true;
-      let dispVtxVer = disp.getVtxResVer(); // console.log("RODataBuilder::buildVtxRes(), disp.ivsCount: ", disp.ivsCount);
-      // console.log("RODataBuilder::buildVtxRes(), resUid: ", resUid, ", dispVtxVer: ", dispVtxVer);
-      // console.log("RODataBuilder::buildVtxRes(), disp.vbuf: ", disp.vbuf);
 
       if (vtxRes.hasResUid(resUid)) {
-        vtx = vtxRes.getVertexRes(resUid); // needBuild = vtx.version != disp.vbuf.version;
-
-        needBuild = vtx.version != dispVtxVer; // console.log("RODataBuilder::buildVtxRes(), XXXXXXXXXX AAA 0 ver: ", vtx.version, dispVtxVer);
-        // console.log("RODataBuilder::buildVtxRes(), GpuVtxObject instance repeat to be used,needBuild: ",needBuild,vtx.getAttachCount());
+        vtx = vtxRes.getVertexRes(resUid);
+        needBuild = vtx.version != disp.vbuf.version; //console.log("GpuVtxObject instance repeat to be used,needBuild: "+needBuild,vtx.getAttachCount());
 
         if (needBuild) {
           vtxRes.destroyRes(resUid);
@@ -10043,33 +10507,24 @@ class RODataBuilder {
         vtx = new GpuVtxObject_1.GpuVtxObject();
         vtx.rcuid = vtxRes.getRCUid();
         vtx.resUid = resUid;
-        vtxRes.addVertexRes(vtx); // console.log("GpuVtxObject instance create new, resUid: ",resUid, ", vtx.indices.getUid(): ",vtx.indices.getUid());
+        vtxRes.addVertexRes(vtx); //console.log("GpuVtxObject instance create new: ",vtx.resUid);
       }
 
       if (needBuild) {
-        // vtx.indices.ibufStep = disp.vbuf.getIBufStep();
-        // vtx.createVertexByVtxUid(disp.vbuf.getUid());
-        let ivbuf = disp.ivbuf == null ? disp.vbuf : disp.ivbuf; // console.log("RODataBuilder::buildVtxRes(), XXX OOO XXX ivbuf: ", ivbuf);
-
-        vtx.indices.ibufStep = ivbuf.getIBufStep(); //disp.vbuf.getIBufStep();
-
-        vtx.indices.initialize(this.m_roVtxBuild, ivbuf);
-        vtx.createVertex(this.m_roVtxBuild, shdp, disp.vbuf); // vtx.vertex.initialize(this.m_roVtxBuild, shdp, disp.vbuf);
-        // vtx.version = disp.vbuf.version;
-
-        vtx.version = dispVtxVer; // console.log("RODataBuilder::buildVtxRes(), XXXXXXXXXX AAA 1 ver: ", vtx.version, dispVtxVer);
+        vtx.indices.ibufStep = disp.vbuf.getIBufStep();
+        vtx.indices.initialize(this.m_roVtxBuild, disp.vbuf);
+        vtx.vertex.initialize(this.m_roVtxBuild, shdp, disp.vbuf);
+        vtx.version = disp.vbuf.version;
       }
 
       vtxRes.__$attachRes(resUid);
 
-      runit.vro = vtx.createVRO(this.m_roVtxBuild, shdp, true); // console.log("RODataBuilder::buildVtxRes(), runit.vro: ", runit.vro);
-
+      runit.vro = vtx.createVRO(this.m_roVtxBuild, shdp, true);
       runit.indicesRes = runit.vro.indicesRes;
 
-      runit.vro.__$attachThis(); // runit.vtxUid = disp.vbuf.getUid();
+      runit.vro.__$attachThis();
 
-
-      runit.vtxUid = resUid;
+      runit.vtxUid = disp.vbuf.getUid();
       runit.ibufStep = runit.vro.ibufStep;
       runit.ibufType = runit.ibufStep != 4 ? this.m_rc.UNSIGNED_SHORT : this.m_rc.UNSIGNED_INT;
     }
@@ -10269,15 +10724,37 @@ Object.defineProperty(exports, "__esModule", {
 
 const EventBase_1 = __importDefault(__webpack_require__("a996"));
 
+const MouseEvent_1 = __importDefault(__webpack_require__("1710"));
+
 const KeyboardEvent_1 = __importDefault(__webpack_require__("7045"));
 
 const Keyboard_1 = __importDefault(__webpack_require__("9260"));
 
-const StageBase_1 = __importDefault(__webpack_require__("7b29"));
+const MouseEvt3DDispatcher_1 = __importDefault(__webpack_require__("badb"));
 
-class Stage3D extends StageBase_1.default {
+class Stage3D {
   constructor(rcuid, pdocument) {
-    super(rcuid);
+    this.m_rcuid = 0;
+    this.uProbe = null;
+    this.pixelRatio = 1.0;
+    this.stageWidth = 800;
+    this.stageHeight = 600; // 实际宽高, 和gpu端对齐
+
+    this.stageHalfWidth = 400;
+    this.stageHalfHeight = 300;
+    this.mouseX = 0;
+    this.mouseY = 0; // sdiv页面实际占据的像素宽高
+
+    this.viewWidth = 800;
+    this.viewHeight = 600;
+    this.mouseViewX = 0;
+    this.mouseViewY = 0;
+    this.m_viewX = 0.0;
+    this.m_viewY = 0.0;
+    this.m_viewW = 1.0;
+    this.m_viewH = 1.0; // mouse event dispatcher
+
+    this.m_mouseEvtDispatcher = new MouseEvt3DDispatcher_1.default();
     this.m_resize_listener = [];
     this.m_resize_ers = [];
     this.m_enterFrame_listener = [];
@@ -10287,7 +10764,14 @@ class Stage3D extends StageBase_1.default {
     this.m_keyDown_ers = [];
     this.m_keyUp_listener = [];
     this.m_keyUp_ers = [];
+    this.m_preStageWidth = 0;
+    this.m_preStageHeight = 0;
+    this.m_mouseEvt = new MouseEvent_1.default();
+    this.m_baseEvt = new EventBase_1.default(); // 是否舞台尺寸和view自动同步一致
+
+    this.m_autoSynViewAndStageSize = true;
     this.m_enterFrameEvt = new EventBase_1.default();
+    this.m_rcuid = rcuid;
 
     if (Stage3D.s_document == null) {
       Stage3D.s_document = pdocument;
@@ -10304,15 +10788,33 @@ class Stage3D extends StageBase_1.default {
     Keyboard_1.default.AddEventListener(KeyboardEvent_1.default.KEY_DOWN, this, this.keyDown);
     Keyboard_1.default.AddEventListener(KeyboardEvent_1.default.KEY_UP, this, this.keyUp);
   }
+  /**
+   * @returns return renderer context unique id
+   */
 
-  enterFrame() {
-    this.m_enterFrameEvt.type = EventBase_1.default.ENTER_FRAME;
-    const ls = this.m_enterFrame_listener;
-    let len = ls.length;
 
-    for (var i = 0; i < len; ++i) {
-      ls[i].call(this.m_enterFrame_ers[i], this.m_enterFrameEvt);
-    }
+  getRCUid() {
+    return this.m_rcuid;
+  }
+
+  getDevicePixelRatio() {
+    return window.devicePixelRatio;
+  }
+
+  getViewX() {
+    return this.m_viewX;
+  }
+
+  getViewY() {
+    return this.m_viewY;
+  }
+
+  getViewWidth() {
+    return this.m_viewW;
+  }
+
+  getViewHeight() {
+    return this.m_viewH;
   }
 
   setViewPort(px, py, pw, ph) {
@@ -10342,19 +10844,12 @@ class Stage3D extends StageBase_1.default {
         this.updateViewUData();
       }
 
-      this.m_stW = this.stageWidth;
-      this.m_stH = this.stageHeight;
-      this.stageHalfWidth = 0.5 * this.m_stW;
-      this.stageHalfHeight = 0.5 * this.m_stH;
+      this.stageHalfWidth = 0.5 * this.stageWidth;
+      this.stageHalfHeight = 0.5 * this.stageHeight;
       this.m_baseEvt.target = this;
       this.m_baseEvt.type = EventBase_1.default.RESIZE;
       this.m_baseEvt.phase = 1;
       this.sendResizeEvt(this.m_baseEvt);
-    } else {
-      this.stageWidth = this.m_stW;
-      this.stageHeight = this.m_stH;
-      this.stageHalfWidth = 0.5 * this.m_stW;
-      this.stageHalfHeight = 0.5 * this.m_stH;
     }
   }
 
@@ -10401,27 +10896,232 @@ class Stage3D extends StageBase_1.default {
     }
   }
 
+  mouseDown(phase = 1) {
+    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_DOWN;
+    this.m_mouseEvt.mouseX = this.mouseX;
+    this.m_mouseEvt.mouseY = this.mouseY;
+    this.m_mouseEvt.target = this;
+    this.m_mouseEvt.phase = phase;
+    this.m_mouseEvtDispatcher.dispatchEvt(this.m_mouseEvt);
+  }
+
+  mouseUp(phase = 1) {
+    this.m_mouseEvt.phase = 1;
+    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_UP;
+    this.m_mouseEvt.mouseX = this.mouseX;
+    this.m_mouseEvt.mouseY = this.mouseY;
+    this.m_mouseEvt.target = this;
+    this.m_mouseEvt.phase = phase;
+    this.m_mouseEvtDispatcher.dispatchEvt(this.m_mouseEvt);
+  }
+
+  mouseClick() {
+    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_CLICK;
+    this.m_mouseEvt.mouseX = this.mouseX;
+    this.m_mouseEvt.mouseY = this.mouseY;
+    this.m_mouseEvt.target = this;
+    this.m_mouseEvt.phase = 1;
+    this.m_mouseEvtDispatcher.dispatchEvt(this.m_mouseEvt);
+  }
+
+  mouseDoubleClick() {
+    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_DOUBLE_CLICK;
+    this.m_mouseEvt.mouseX = this.mouseX;
+    this.m_mouseEvt.mouseY = this.mouseY;
+    this.m_mouseEvt.target = this;
+    this.m_mouseEvt.phase = 1;
+    this.m_mouseEvtDispatcher.dispatchEvt(this.m_mouseEvt);
+  }
+
+  mouseRightDown(phase = 1) {
+    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_RIGHT_DOWN;
+    this.m_mouseEvt.mouseX = this.mouseX;
+    this.m_mouseEvt.mouseY = this.mouseY;
+    this.m_mouseEvt.target = this;
+    this.m_mouseEvt.phase = 1;
+    this.m_mouseEvtDispatcher.dispatchEvt(this.m_mouseEvt);
+  }
+
+  mouseRightUp(phase = 1) {
+    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_RIGHT_UP;
+    this.m_mouseEvt.mouseX = this.mouseX;
+    this.m_mouseEvt.mouseY = this.mouseY;
+    this.m_mouseEvt.phase = 1;
+    this.m_mouseEvtDispatcher.dispatchEvt(this.m_mouseEvt);
+  }
+
+  mouseBgDown() {
+    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_BG_DOWN;
+    this.m_mouseEvt.mouseX = this.mouseX;
+    this.m_mouseEvt.mouseY = this.mouseY;
+    this.m_mouseEvt.target = this;
+    this.m_mouseEvt.phase = 1;
+    this.m_mouseEvtDispatcher.dispatchEvt(this.m_mouseEvt);
+  }
+
+  mouseBgUp() {
+    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_BG_UP;
+    this.m_mouseEvt.mouseX = this.mouseX;
+    this.m_mouseEvt.mouseY = this.mouseY;
+    this.m_mouseEvt.phase = 1;
+    this.m_mouseEvtDispatcher.dispatchEvt(this.m_mouseEvt);
+  }
+
+  mouseBgClick() {
+    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_BG_CLICK;
+    this.m_mouseEvt.mouseX = this.mouseX;
+    this.m_mouseEvt.mouseY = this.mouseY;
+    this.m_mouseEvt.phase = 1;
+    this.m_mouseEvtDispatcher.dispatchEvt(this.m_mouseEvt);
+  }
+
+  mouseRightClick() {
+    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_RIGHT_CLICK;
+    this.m_mouseEvt.mouseX = this.mouseX;
+    this.m_mouseEvt.mouseY = this.mouseY;
+    this.m_mouseEvt.target = this;
+    this.m_mouseEvt.phase = 1;
+    this.m_mouseEvtDispatcher.dispatchEvt(this.m_mouseEvt);
+  }
+
+  mouseMove() {
+    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_MOVE;
+    this.m_mouseEvt.mouseX = this.mouseX;
+    this.m_mouseEvt.mouseY = this.mouseY;
+    this.m_mouseEvt.target = this;
+    this.m_mouseEvt.phase = 1;
+    this.m_mouseEvtDispatcher.dispatchEvt(this.m_mouseEvt);
+  }
+
+  mouseWheel(evt) {
+    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_WHEEL;
+    this.m_mouseEvt.mouseX = this.mouseX;
+    this.m_mouseEvt.mouseY = this.mouseY;
+    this.m_mouseEvt.wheelDeltaY = evt.wheelDeltaY;
+    this.m_mouseEvt.target = this;
+    this.m_mouseEvt.phase = 1;
+    this.m_mouseEvtDispatcher.dispatchEvt(this.m_mouseEvt);
+  } // 等同于 touchCancle
+
+
+  mouseCancel() {
+    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_CANCEL;
+    this.m_mouseEvt.mouseX = this.mouseX;
+    this.m_mouseEvt.mouseY = this.mouseY;
+    this.m_mouseEvt.target = this;
+    this.m_mouseEvt.phase = 1;
+    this.m_mouseEvtDispatcher.dispatchEvt(this.m_mouseEvt);
+  } //param [{x,y},{x,y},...]
+
+
+  mouseMultiDown(posArray) {
+    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_MULTI_DOWN;
+    this.m_mouseEvt.mouseX = this.mouseX;
+    this.m_mouseEvt.mouseY = this.mouseY;
+    this.m_mouseEvt.target = this;
+    this.m_mouseEvt.phase = 1;
+    this.m_mouseEvt.posArray = posArray;
+    this.m_mouseEvtDispatcher.dispatchEvt(this.m_mouseEvt);
+  } //param [{x,y},{x,y},...]
+
+
+  mouseMultiUp(posArray) {
+    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_MULTI_UP;
+    this.m_mouseEvt.mouseX = this.mouseX;
+    this.m_mouseEvt.mouseY = this.mouseY;
+    this.m_mouseEvt.target = this;
+    this.m_mouseEvt.phase = 1;
+    this.m_mouseEvt.posArray = posArray;
+    this.m_mouseEvtDispatcher.dispatchEvt(this.m_mouseEvt);
+  } //param [{x,y},{x,y},...]
+
+
+  mouseMultiMove(posArray) {
+    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_MULTI_MOVE;
+    this.m_mouseEvt.mouseX = this.mouseX;
+    this.m_mouseEvt.mouseY = this.mouseY;
+    this.m_mouseEvt.target = this;
+    this.m_mouseEvt.phase = 1;
+    this.m_mouseEvt.posArray = posArray;
+    this.m_mouseEvtDispatcher.dispatchEvt(this.m_mouseEvt);
+  }
+
+  mouseWindowUp(phase = 1) {}
+
+  mouseWindowRightUp(phase = 1) {}
+
+  enterFrame() {
+    this.m_enterFrameEvt.type = EventBase_1.default.ENTER_FRAME;
+    let len = this.m_enterFrame_listener.length;
+
+    for (var i = 0; i < len; ++i) {
+      this.m_enterFrame_listener[i].call(this.m_enterFrame_ers[i], this.m_enterFrameEvt);
+    }
+  }
+
   addEventListener(type, target, func, captureEnabled = true, bubbleEnabled = true) {
     if (func != null && target != null) {
+      let i = 0;
+
       switch (type) {
         case EventBase_1.default.RESIZE:
-          this.addTarget(this.m_resize_listener, this.m_resize_ers, target, func);
+          for (i = this.m_resize_listener.length - 1; i >= 0; --i) {
+            if (target === this.m_resize_ers[i]) {
+              break;
+            }
+          }
+
+          if (i < 0) {
+            this.m_resize_ers.push(target);
+            this.m_resize_listener.push(func);
+          }
+
           break;
 
         case EventBase_1.default.ENTER_FRAME:
-          this.addTarget(this.m_enterFrame_listener, this.m_enterFrame_ers, target, func);
+          for (i = this.m_enterFrame_listener.length - 1; i >= 0; --i) {
+            if (target === this.m_enterFrame_ers[i]) {
+              break;
+            }
+          }
+
+          if (i < 0) {
+            this.m_enterFrame_ers.push(target);
+            this.m_enterFrame_listener.push(func);
+          }
+
           break;
 
         case KeyboardEvent_1.default.KEY_DOWN:
-          this.addTarget(this.m_keyDown_listener, this.m_keyDown_ers, target, func);
+          for (i = this.m_keyDown_listener.length - 1; i >= 0; --i) {
+            if (target === this.m_keyDown_ers[i]) {
+              break;
+            }
+          }
+
+          if (i < 0) {
+            this.m_keyDown_ers.push(target);
+            this.m_keyDown_listener.push(func);
+          }
+
           break;
 
         case KeyboardEvent_1.default.KEY_UP:
-          this.addTarget(this.m_keyUp_listener, this.m_keyUp_ers, target, func);
+          for (i = this.m_keyUp_listener.length - 1; i >= 0; --i) {
+            if (target === this.m_keyUp_ers[i]) {
+              break;
+            }
+          }
+
+          if (i < 0) {
+            this.m_keyUp_ers.push(target);
+            this.m_keyUp_listener.push(func);
+          }
+
           break;
 
         default:
-          this.m_dp.addEventListener(type, target, func, captureEnabled, bubbleEnabled);
+          this.m_mouseEvtDispatcher.addEventListener(type, target, func, captureEnabled, bubbleEnabled);
           break;
       }
     }
@@ -10429,25 +11129,55 @@ class Stage3D extends StageBase_1.default {
 
   removeEventListener(type, target, func) {
     if (func != null && target != null) {
+      let i = 0;
+
       switch (type) {
         case EventBase_1.default.RESIZE:
-          this.removeTarget(this.m_resize_listener, this.m_resize_ers, target);
+          for (i = this.m_resize_listener.length - 1; i >= 0; --i) {
+            if (target === this.m_resize_ers[i]) {
+              this.m_resize_ers.splice(i, 1);
+              this.m_resize_listener.splice(i, 1);
+              break;
+            }
+          }
+
           break;
 
         case EventBase_1.default.ENTER_FRAME:
-          this.removeTarget(this.m_enterFrame_listener, this.m_enterFrame_ers, target);
+          for (i = this.m_enterFrame_listener.length - 1; i >= 0; --i) {
+            if (target === this.m_enterFrame_ers[i]) {
+              this.m_enterFrame_ers.splice(i, 1);
+              this.m_enterFrame_listener.splice(i, 1);
+              break;
+            }
+          }
+
           break;
 
         case KeyboardEvent_1.default.KEY_DOWN:
-          this.removeTarget(this.m_keyDown_listener, this.m_keyDown_ers, target);
+          for (i = this.m_keyDown_listener.length - 1; i >= 0; --i) {
+            if (target === this.m_keyDown_ers[i]) {
+              this.m_keyDown_ers.splice(i, 1);
+              this.m_keyDown_listener.splice(i, 1);
+              break;
+            }
+          }
+
           break;
 
         case KeyboardEvent_1.default.KEY_UP:
-          this.removeTarget(this.m_keyUp_listener, this.m_keyUp_ers, target);
+          for (i = this.m_keyUp_listener.length - 1; i >= 0; --i) {
+            if (target === this.m_keyUp_ers[i]) {
+              this.m_keyUp_ers.splice(i, 1);
+              this.m_keyUp_listener.splice(i, 1);
+              break;
+            }
+          }
+
           break;
 
         default:
-          this.m_dp.removeEventListener(type, target, func);
+          this.m_mouseEvtDispatcher.removeEventListener(type, target, func);
           break;
       }
     }
@@ -10460,7 +11190,7 @@ exports.default = Stage3D;
 
 /***/ }),
 
-/***/ "3930":
+/***/ "38de":
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10477,95 +11207,277 @@ exports.default = Stage3D;
 
 /***************************************************************************/
 
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-const __$mcv = 1e-5;
+
+const MathConst_1 = __importDefault(__webpack_require__("6e01"));
+
+const Vector3D_1 = __importDefault(__webpack_require__("8e17"));
+
+const AbsGeomBase_1 = __importDefault(__webpack_require__("f48d")); //import PlaneCalc = PlaneCalcT.vox.geom.PlaneCalc;
+
+
+class RadialLine extends AbsGeomBase_1.default {
+  constructor() {
+    super(...arguments);
+    this.tv = new Vector3D_1.default(1.0, 0.0, 0.0);
+  }
+
+  update() {
+    this.tv.normalize();
+  }
+
+  updateFast() {
+    this.tv.normalize();
+  } // 射线和三个点表示的三角形是否相交
+
+
+  static IntersectionTri(rlpv, rltv, triva, trivb, trivc, outV) {
+    return 0;
+  } // 射线和两个点表示的线段是否相交
+
+
+  static IntersectionLS(rlpv, rltv, lspva, lspvb, outV, radius = 1.0) {
+    let pv = RadialLine.__tAv;
+    pv.copyFrom(lspvb);
+    pv.subtractBy(lspva);
+    pv.normalize();
+    Vector3D_1.default.Cross(rltv, pv, outV);
+    outV.normalize();
+    pv.w = outV.dot(rlpv) - outV.dot(lspvb);
+
+    if (Math.abs(pv.w) <= radius) {
+      // 两条直线已经相交
+      // outV 和 rlpv rltv 计算构成了一个平面
+      outV.crossBy(rltv);
+      outV.normalize();
+      outV.w = outV.dot(rlpv); // 计算 lspva 所在的直线与平面的交点
+      //let tv2:Vector3D = AbsGeomBase.__tV1;
+
+      pv.w = (outV.w - outV.dot(lspva)) / pv.dot(outV);
+      outV.copyFrom(pv);
+      outV.scaleBy(pv.w);
+      outV.addBy(lspva);
+      pv.copyFrom(outV);
+      pv.subtractBy(lspva);
+      let pv1 = AbsGeomBase_1.default.__tV1;
+      pv1.copyFrom(outV);
+      pv1.subtractBy(lspvb);
+
+      if (pv.dot(pv1) <= 0.0) {
+        return 1;
+      }
+    }
+
+    return 0;
+  }
+  /**
+   * @param rlpv 射线起点
+   * @param rltv  射线朝向
+   * @param cv 球心坐标
+   * @param radius 球体半径
+   * @param outV 如果相交，记录下交点
+   * @returns 检测得到距离射线起点最近的点, 1表示相交, 0表示不相交
+   */
+
+
+  static IntersectioNearSphere2(rlpv, rltv, cv, radius, outV) {
+    let pv = RadialLine.__tAv;
+    pv.x = cv.x - rlpv.x;
+    pv.y = cv.y - rlpv.y;
+    pv.z = cv.z - rlpv.z;
+    pv.w = pv.dot(rltv);
+    radius *= radius;
+
+    if (pv.w > MathConst_1.default.MATH_MIN_POSITIVE) {
+      outV.copyFrom(rltv);
+      outV.scaleBy(pv.w);
+      outV.subtractBy(pv);
+      pv.x = outV.getLengthSquared();
+
+      if (pv.x <= radius) {
+        // 远距离
+        //outV.w = pv.w + Math.sqrt(radius * radius - outV.getLengthSquared());
+        // 取近距离
+        pv.w -= Math.sqrt(radius - pv.x);
+        outV.copyFrom(rltv);
+        outV.scaleBy(pv.w);
+        outV.addBy(rlpv);
+        outV.w = 1.0;
+        return 1;
+      }
+    } else if (pv.getLengthSquared() <= radius) {
+      outV.copyFrom(rltv);
+      outV.scaleBy(pv.w);
+      outV.subtractBy(pv);
+      pv.x = outV.getLengthSquared();
+
+      if (pv.x <= radius) {
+        // 取远距离
+        pv.w += Math.sqrt(radius - pv.x);
+        outV.copyFrom(rltv);
+        outV.scaleBy(pv.w);
+        outV.addBy(rlpv);
+        outV.w = 1.0;
+        return 1;
+      }
+    }
+
+    return 0;
+  } // @return 检测得到距离射线起点最近的点, 1表示相交,0表示不相交
+
+
+  static IntersectioNearSphere(rlpv, rltv, cv, radius, outV) {
+    let pv = RadialLine.__tAv;
+    pv.x = cv.x - rlpv.x;
+    pv.y = cv.y - rlpv.y;
+    pv.z = cv.z - rlpv.z;
+    pv.w = pv.dot(rltv);
+
+    if (pv.w > MathConst_1.default.MATH_MIN_POSITIVE) {
+      outV.x = pv.x - pv.w * rltv.x;
+      outV.y = pv.y - pv.w * rltv.y;
+      outV.z = pv.z - pv.w * rltv.z;
+      outV.x = outV.getLengthSquared();
+      outV.w = radius * radius;
+
+      if (outV.x <= outV.w) {
+        // rlpv到远交点记作XP, rlpv到球心记作CP, CP到远交点记作RP
+        // 通过余弦定律得到一元二次方程得并且解这个方程得到 XP 的距离
+        // 获得CP距离的平方值
+        outV.x = pv.getLengthSquared(); // RP距离的平方值 减去 CP距离的平方值
+
+        outV.z = outV.w - outV.x; //	// 获得CP距离值
+        //	outV.w = Math.sqrt(outV.x);
+        // 准备计算 CP和XP 之间夹角a的余弦值, cos(a)值
+
+        pv.normalize(); // cos(a) 值 和 CP距离值相乘
+        //pv.y = pv.dot(rltv) * outV.w;
+
+        outV.y = pv.dot(rltv) * Math.sqrt(outV.x); // 求解方程的根,得到近些的距离
+
+        pv.w = (-outV.y + Math.sqrt(outV.y * outV.y + 4.0 * outV.z)) * 0.5;
+        outV.copyFrom(rltv);
+        outV.scaleBy(pv.w);
+        outV.addBy(rlpv);
+        outV.w = 1.0;
+        return 1;
+      }
+    } else {
+      outV.x = pv.getLengthSquared();
+      outV.w = radius * radius;
+
+      if (outV.x <= outV.w) {
+        outV.z = outV.w - outV.x;
+        pv.normalize();
+        outV.y = pv.dot(rltv) * Math.sqrt(outV.x); // 求解方程的根,得到远些的距离
+
+        pv.w = (-outV.y + Math.sqrt(outV.y * outV.y + 4.0 * outV.z)) * 0.5;
+        outV.copyFrom(rltv);
+        outV.scaleBy(pv.w);
+        outV.addBy(rlpv);
+        outV.w = 1.0;
+        return 1;
+      }
+    }
+
+    return 0;
+  }
+
+  static IntersectSphere(rlpv, rltv, cv, radius) {
+    let pv = RadialLine.__tAv;
+    pv.x = cv.x - rlpv.x;
+    pv.y = cv.y - rlpv.y;
+    pv.z = cv.z - rlpv.z;
+    pv.w = pv.dot(rltv);
+
+    if (pv.w < MathConst_1.default.MATH_MIN_POSITIVE) {
+      return pv.getLengthSquared() <= radius * radius;
+    }
+
+    pv.x -= pv.w * rltv.x;
+    pv.y -= pv.w * rltv.y;
+    pv.z -= pv.w * rltv.z;
+    return pv.getLengthSquared() <= radius * radius;
+  }
+
+}
+
+RadialLine.__tAv = new Vector3D_1.default();
+exports.default = RadialLine;
+
+/***/ }),
+
+/***/ "3930":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+/***************************************************************************/
+
+/*                                                                         */
+
+/*  Copyright 2018-2022 by                                                 */
+
+/*  Vily(vily313@126.com)                                                  */
+
+/*                                                                         */
+
+/***************************************************************************/
+
+const MathConst_1 = __importDefault(__webpack_require__("6e01"));
 
 class Color4 {
   constructor(pr = 1.0, pg = 1.0, pb = 1.0, pa = 1.0) {
+    this.r = 1.0;
+    this.g = 1.0;
+    this.b = 1.0;
+    this.a = 1.0;
     this.r = pr;
     this.g = pg;
     this.b = pb;
     this.a = pa;
   }
 
-  clone() {
-    return new Color4(this.r, this.g, this.b, this.a);
-  }
-
-  fromArray4(arr, offset = 0) {
-    this.r = arr[offset];
-    this.g = arr[offset + 1];
-    this.b = arr[offset + 2];
-    this.a = arr[offset + 3];
-    return this;
-  }
-
-  toArray4(arr, offset = 0) {
-    arr[offset] = this.r;
-    arr[offset + 1] = this.g;
-    arr[offset + 2] = this.b;
-    arr[offset + 3] = this.a;
-    return this;
-  }
-
-  fromArray3(arr, offset = 0) {
-    this.r = arr[offset];
-    this.g = arr[offset + 1];
-    this.b = arr[offset + 2];
-    return this;
-  }
-
-  toArray3(arr, offset = 0) {
-    arr[offset] = this.r;
-    arr[offset + 1] = this.g;
-    arr[offset + 2] = this.b;
-    return this;
-  }
-
-  fromBytesArray3(arr, offset = 0) {
-    this.setRGB3Bytes(arr[offset], arr[offset + 1], arr[offset + 2]);
-    return this;
-  }
-
-  toBytesArray3(arr, offset = 0) {
-    arr[offset] = Math.round(this.r * 255);
-    arr[offset + 1] = Math.round(this.g * 255);
-    arr[offset + 2] = Math.round(this.b * 255);
-    return this;
+  setRGB3Bytes(r, g, b) {
+    this.r = r / 255.0;
+    this.g = g / 255.0;
+    this.b = b / 255.0;
   }
 
   setRGB3f(r, g, b) {
     this.r = r;
     this.g = g;
     this.b = b;
-    return this;
   }
-
-  setRGB3Bytes(uint8R, uint8G, uint8B) {
-    const k = 1.0 / 255.0;
-    this.r = uint8R * k;
-    this.g = uint8G * k;
-    this.b = uint8B * k;
-    return this; // return this.setRGB3Bytes(r,g,b);
-  } // setRGB3Bytes(uint8R: number, uint8G: number, uint8B: number): Color4 {
-  //     let k = 1.0 / 255.0;
-  //     this.r = uint8R * k;
-  //     this.g = uint8G * k;
-  //     this.b = uint8B * k;
-  //     return this;
-  // }
-
 
   setRGBUint24(rgbUint24) {
     this.r = (rgbUint24 >> 16 & 0x0000ff) / 255.0;
     this.g = (rgbUint24 >> 8 & 0x0000ff) / 255.0;
     this.b = (rgbUint24 & 0x0000ff) / 255.0;
-    return this;
   }
 
   getRGBUint24() {
+    // this.r = ((rgbUint24 >> 16) & 0x0000ff) / 255.0;
+    // this.g = ((rgbUint24 >> 8) & 0x0000ff) / 255.0;
+    // this.b = (rgbUint24 & 0x0000ff) / 255.0;
     return (Math.round(this.r * 255) << 16) + (Math.round(this.g * 255) << 8) + Math.round(this.b * 255);
   }
 
@@ -10574,7 +11486,6 @@ class Color4 {
     this.g = g;
     this.b = b;
     this.a = a;
-    return this;
   }
 
   copyFrom(c) {
@@ -10582,28 +11493,24 @@ class Color4 {
     this.g = c.g;
     this.b = c.b;
     this.a = c.a;
-    return this;
   }
 
   copyFromRGB(c) {
     this.r = c.r;
     this.g = c.g;
     this.b = c.b;
-    return this;
   }
 
   scaleBy(s) {
     this.r *= s;
     this.g *= s;
     this.b *= s;
-    return this;
   }
 
   inverseRGB() {
     this.r = 1.0 - this.r;
     this.g = 1.0 - this.g;
     this.b = 1.0 - this.b;
-    return this;
   }
 
   randomRGB(density = 1.0, bias = 0.0) {
@@ -10613,7 +11520,6 @@ class Color4 {
     this.r += bias;
     this.g += bias;
     this.b += bias;
-    return this;
   }
 
   normalizeRandom(density = 1.0, bias = 0.0) {
@@ -10622,7 +11528,7 @@ class Color4 {
     this.b = Math.random();
     let d = Math.sqrt(this.r * this.r + this.g * this.g + this.b * this.b);
 
-    if (d > __$mcv) {
+    if (d > MathConst_1.default.MATH_MIN_POSITIVE) {
       this.r = density * this.r / d;
       this.g = density * this.g / d;
       this.b = density * this.b / d;
@@ -10631,20 +11537,17 @@ class Color4 {
     this.r += bias;
     this.g += bias;
     this.b += bias;
-    return this;
   }
 
   normalize(density) {
     if (density == undefined) density = 1.0;
     let d = Math.sqrt(this.r * this.r + this.g * this.g + this.b * this.b);
 
-    if (d > __$mcv) {
+    if (d > MathConst_1.default.MATH_MIN_POSITIVE) {
       this.r = density * this.r / d;
       this.g = density * this.g / d;
       this.b = density * this.b / d;
     }
-
-    return this;
   }
   /**
    * @returns for example: rgba(255,255,255,1.0)
@@ -10655,7 +11558,11 @@ class Color4 {
     let pr = Math.floor(this.r * 255.0);
     let pg = Math.floor(this.g * 255.0);
     let pb = Math.floor(this.b * 255.0);
-    let pa = this.a;
+    let pa = this.a; // pr = MathConst.Clamp(pr, 0, 255);
+    // pg = MathConst.Clamp(pg, 0, 255);
+    // pb = MathConst.Clamp(pb, 0, 255);
+    // let pa = MathConst.Clamp(this.a, 0.0, 1.0);
+
     return "rgba(" + pr + "," + pg + "," + pb + "," + pa + ")";
   }
   /**
@@ -10949,16 +11856,29 @@ RendererDevice.VERT_SHADER_PRECISION_GLOBAL_HIGHP_ENABLED = true; // true: force
 
 RendererDevice.FRAG_SHADER_PRECISION_GLOBAL_HIGHP_ENABLED = true; // worker multi threads enabled yes or no
 
-RendererDevice.s_threadEnabled = true;
+RendererDevice.s_threadEnabled = true; //import RendererDevice from
+//import RendererDevice from
+
 exports.default = RendererDevice;
 
 /***/ }),
 
-/***/ "3bea":
+/***/ "3bfb":
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
+/***************************************************************************/
+
+/*                                                                         */
+
+/*  Copyright 2018-2022 by                                                 */
+
+/*  Vily(vily313@126.com)                                                  */
+
+/*                                                                         */
+
+/***************************************************************************/
 
 var __importDefault = this && this.__importDefault || function (mod) {
   return mod && mod.__esModule ? mod : {
@@ -10970,444 +11890,611 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-const Vector3D_1 = __importDefault(__webpack_require__("8e17"));
+const MathConst_1 = __importDefault(__webpack_require__("6e01"));
 
-exports.Vector3D = Vector3D_1.default;
-
-const Matrix4_1 = __importDefault(__webpack_require__("18c7"));
-
-exports.Matrix4 = Matrix4_1.default;
-
-const Color4_1 = __importDefault(__webpack_require__("3930"));
-
-exports.Color4 = Color4_1.default;
-
-const AABB_1 = __importDefault(__webpack_require__("fecb"));
-
-const RendererDevice_1 = __importDefault(__webpack_require__("3b73"));
-
-exports.RendererDevice = RendererDevice_1.default;
-
-const RendererState_1 = __importDefault(__webpack_require__("29ef"));
-
-exports.RendererState = RendererState_1.default;
-
-const RendererParam_1 = __importDefault(__webpack_require__("c497"));
-
-exports.RendererParam = RendererParam_1.default;
-
-const EventBase_1 = __importDefault(__webpack_require__("a996"));
-
-exports.EventBase = EventBase_1.default;
-
-const EventBaseDispatcher_1 = __importDefault(__webpack_require__("8dd9"));
-
-const SelectionEvent_1 = __importDefault(__webpack_require__("4adb"));
-
-exports.SelectionEvent = SelectionEvent_1.default;
-
-const ProgressDataEvent_1 = __importDefault(__webpack_require__("35c5"));
-
-exports.ProgressDataEvent = ProgressDataEvent_1.default;
-
-const MouseEvent_1 = __importDefault(__webpack_require__("1710"));
-
-exports.MouseEvent = MouseEvent_1.default;
-
-const KeyboardEvent_1 = __importDefault(__webpack_require__("7045"));
-
-exports.KeyboardEvent = KeyboardEvent_1.default;
-
-const EvtNode_1 = __importDefault(__webpack_require__("ee5a"));
-
-const CoRendererScene_1 = __importDefault(__webpack_require__("52d0"));
-
-exports.CoRendererScene = CoRendererScene_1.default;
-
-const DataMesh_1 = __importDefault(__webpack_require__("519e"));
-
-const RawMesh_1 = __importDefault(__webpack_require__("1d40"));
-
-const BoundsMesh_1 = __importDefault(__webpack_require__("5f58"));
-
-const MouseEvt3DDispatcher_1 = __importDefault(__webpack_require__("badb"));
-
-const DisplayEntity_1 = __importDefault(__webpack_require__("402a"));
-
-const MouseEventEntity_1 = __importDefault(__webpack_require__("1f26"));
-
-const BoundsEntity_1 = __importDefault(__webpack_require__("174f"));
-
-const DisplayEntityContainer_1 = __importDefault(__webpack_require__("ae33"));
-
-const Default3DMaterial_1 = __importDefault(__webpack_require__("f63e"));
-
-const Material_1 = __webpack_require__("6c6b");
-
-const ShaderMaterial_1 = __importDefault(__webpack_require__("131b"));
-
-const RenderableMaterialBlock_1 = __webpack_require__("1b95");
-
-const RenderableEntityBlock_1 = __webpack_require__("251a");
-
-const MaterialContextParam_1 = __webpack_require__("4301");
-
-exports.MaterialContextParam = MaterialContextParam_1.MaterialContextParam;
-
-const MaterialContext_1 = __webpack_require__("b4ea");
-
-const ShaderCodeUUID_1 = __webpack_require__("f3a2");
-
-exports.ShaderCodeUUID = ShaderCodeUUID_1.ShaderCodeUUID;
-
-const MaterialPipeType_1 = __webpack_require__("5216");
-
-exports.MaterialPipeType = MaterialPipeType_1.MaterialPipeType;
-
-const RenderConst_1 = __webpack_require__("e08e");
-
-exports.RenderDrawMode = RenderConst_1.RenderDrawMode;
+const SurfaceNormalCalc_1 = __importDefault(__webpack_require__("35fa"));
 
 const VtxBufConst_1 = __importDefault(__webpack_require__("8a0a"));
 
-exports.VtxBufConst = VtxBufConst_1.default;
+const ROVertexBuffer_1 = __importDefault(__webpack_require__("e7d2"));
 
-const TextureConst_1 = __importDefault(__webpack_require__("8d98"));
+const VtxBufConst_2 = __webpack_require__("8a0a");
 
-exports.TextureConst = TextureConst_1.default;
+const AABB_1 = __importDefault(__webpack_require__("fecb"));
 
-const Line3DMaterial_1 = __importDefault(__webpack_require__("32cc"));
+const MeshBase_1 = __importDefault(__webpack_require__("cb29"));
 
-const BrokenQuadLine3DMaterial_1 = __importDefault(__webpack_require__("625d"));
+const AABBCalc_1 = __webpack_require__("e160");
 
-const RendererSceneGraph_1 = __importDefault(__webpack_require__("d35c"));
-
-const Keyboard_1 = __importDefault(__webpack_require__("9260"));
-
-exports.Keyboard = Keyboard_1.default;
-
-function createVec3(px = 0.0, py = 0.0, pz = 0.0, pw = 1.0) {
-  return new Vector3D_1.default(px, py, pz, pw);
-}
-
-exports.createVec3 = createVec3;
-
-function createMat4(pfs32 = null, index = 0) {
-  return new Matrix4_1.default(pfs32, index);
-}
-
-exports.createMat4 = createMat4;
-
-function createColor4(pr = 1.0, pg = 1.0, pb = 1.0, pa = 1.0) {
-  return new Color4_1.default(pr, pg, pb, pa);
-}
-
-exports.createColor4 = createColor4;
-
-function createAABB() {
-  return new AABB_1.default();
-}
-
-exports.createAABB = createAABB;
-
-function applySceneBlock(rsecne) {
-  let rscene = rsecne;
-
-  if (rscene.materialBlock == null) {
-    let materialBlock = new RenderableMaterialBlock_1.RenderableMaterialBlock();
-    materialBlock.initialize();
-    rscene.materialBlock = materialBlock;
+class Box3DMesh extends MeshBase_1.default {
+  constructor(bufDataUsage = VtxBufConst_1.default.VTX_STATIC_DRAW) {
+    super(bufDataUsage);
+    this.m_posList = [null, null, null, null, null, null, null, null];
+    this.normalType = VtxBufConst_2.VtxNormalType.FLAT;
+    this.m_vs = null;
+    this.m_uvs = null;
+    this.m_nvs = null;
+    this.m_cvs = null;
+    this.vtxColor = null;
+    this.flipVerticalUV = false;
+    this.uvPartsNumber = 0;
+    this.uScale = 1.0;
+    this.vScale = 1.0;
   }
 
-  if (rscene.entityBlock == null) {
-    let entityBlock = new RenderableEntityBlock_1.RenderableEntityBlock();
-    entityBlock.initialize();
-    rscene.entityBlock = entityBlock;
+  getVS() {
+    return this.m_vs;
   }
-}
 
-exports.applySceneBlock = applySceneBlock;
+  getUVS() {
+    return this.m_uvs;
+  }
 
-function createRendererSceneParam(div = null) {
-  return new RendererParam_1.default(div);
-}
+  getNVS() {
+    return this.m_nvs;
+  }
 
-exports.createRendererSceneParam = createRendererSceneParam;
-let __$$$RenderScene = null;
+  getCVS() {
+    return this.m_cvs;
+  }
 
-function createRendererScene(rparam = null, renderProcessesTotal = 3, sceneBlockEnabled = true) {
-  let rs = new CoRendererScene_1.default();
-
-  if (rparam != null) {
-    rs.initialize(rparam, 3);
-
-    if (sceneBlockEnabled) {
-      applySceneBlock(rs);
+  setPositionAt(i, position) {
+    if (i >= 0 && i < 8) {
+      if (this.m_vs != null) {
+        let arr = this.m_posList[i];
+        arr[0] = position.x;
+        arr[1] = position.y;
+        arr[2] = position.z;
+      }
     }
   }
 
-  __$$$RenderScene = rs;
-  return rs;
-}
-
-exports.createRendererScene = createRendererScene;
-
-function setRendererScene(rs) {
-  __$$$RenderScene = rs;
-}
-
-exports.setRendererScene = setRendererScene;
-
-function getRendererScene() {
-  return __$$$RenderScene;
-}
-
-exports.getRendererScene = getRendererScene;
-
-function createMouseEvt3DDispatcher() {
-  return new MouseEvt3DDispatcher_1.default();
-}
-
-exports.createMouseEvt3DDispatcher = createMouseEvt3DDispatcher;
-
-function createEventBaseDispatcher() {
-  return new EventBaseDispatcher_1.default();
-}
-
-exports.createEventBaseDispatcher = createEventBaseDispatcher;
-
-function createDataMesh() {
-  return new DataMesh_1.default();
-}
-
-exports.createDataMesh = createDataMesh;
-
-function createRawMesh() {
-  return new RawMesh_1.default();
-}
-
-exports.createRawMesh = createRawMesh;
-
-function createBoundsMesh() {
-  return new BoundsMesh_1.default();
-}
-
-exports.createBoundsMesh = createBoundsMesh;
-
-function createDataMeshFromModel(model, material = null, vbWhole = false) {
-  const dataMesh = new DataMesh_1.default();
-  dataMesh.vbWholeDataEnabled = vbWhole;
-  dataMesh.setVS(model.vertices);
-  dataMesh.setUVS(model.uvsList[0]);
-  dataMesh.setNVS(model.normals);
-  dataMesh.setIVS(model.indices);
-
-  if (material != null) {
-    dataMesh.setVtxBufRenderData(material);
-    dataMesh.initialize();
+  getPositionAt(i, position) {
+    if (i >= 0 && i < 8) {
+      if (this.m_vs != null) {
+        let arr = this.m_posList[i];
+        position.x = arr[0];
+        position.y = arr[1];
+        position.z = arr[2];
+      }
+    }
   }
 
-  return dataMesh;
-}
-
-exports.createDataMeshFromModel = createDataMeshFromModel;
-
-function createDefaultMaterial(normalEnabled = false) {
-  let m = new Default3DMaterial_1.default();
-  m.normalEnabled = normalEnabled;
-  return m;
-}
-
-exports.createDefaultMaterial = createDefaultMaterial;
-
-function createLineMaterial(dynColorEnabled = false) {
-  return new Line3DMaterial_1.default(dynColorEnabled);
-}
-
-exports.createLineMaterial = createLineMaterial;
-/**
- * build 3d quad line entity rendering material
- * @param dynColorEnabled the default value is false
- */
-
-function createQuadLineMaterial(dynColorEnabled) {
-  return new BrokenQuadLine3DMaterial_1.default(dynColorEnabled);
-}
-
-exports.createQuadLineMaterial = createQuadLineMaterial;
-
-function createShaderMaterial(shd_uniqueName) {
-  return new ShaderMaterial_1.default(shd_uniqueName);
-}
-
-exports.createShaderMaterial = createShaderMaterial;
-
-function createMaterial(dcr) {
-  let m = new Material_1.Material();
-  m.setDecorator(dcr);
-  return m;
-}
-
-exports.createMaterial = createMaterial;
-
-function createDisplayEntityFromModel(model, material = null, texEnabled = true, vbWhole = false) {
-  if (!material) {
-    material = new Default3DMaterial_1.default();
-    material.initializeByCodeBuf(texEnabled);
-  } else {
-    material.initializeByCodeBuf(texEnabled || material.getTextureAt(0) != null);
+  setEdgeAt(i, lsPA, lsPB) {
+    if (i >= 0 && i < 8) {
+      if (this.m_vs != null) {
+        let arr0 = this.m_posList[i];
+        i++;
+        if (i == 3) i = 0;else if (i == 7) i = 4;
+        let arr1 = this.m_posList[i];
+        arr0[0] = lsPA.x;
+        arr0[1] = lsPA.y;
+        arr0[2] = lsPA.z;
+        arr1[0] = lsPB.x;
+        arr1[1] = lsPB.y;
+        arr1[2] = lsPB.z;
+      }
+    }
   }
 
-  if (material.getCodeBuf() == null || material.getBufSortFormat() < 0x1) {
-    throw Error("the material does not call the initializeByCodeBuf() function. !!!");
+  getEdgeAt(i, lsPA, lsPB) {
+    if (i >= 0 && i < 8) {
+      if (this.m_vs != null) {
+        let arr0 = this.m_posList[i];
+        i++;
+        if (i == 3) i = 0;else if (i == 7) i = 4;
+        let arr1 = this.m_posList[i];
+        lsPA.x = arr0[0];
+        lsPA.y = arr0[1];
+        lsPA.z = arr0[2];
+        lsPB.x = arr1[0];
+        lsPB.y = arr1[1];
+        lsPB.z = arr1[2];
+      }
+    }
   }
 
-  let ivs = model.indices;
-  let vs = model.vertices;
-  let uvs;
+  setFaceAt(i, lsPA, lsPB, lsPC, lsPD) {
+    if (i >= 0 && i < 8) {
+      if (this.m_vs != null) {
+        i *= 4;
+        let posList = [lsPA, lsPB, lsPC, lsPD];
+        let idList = Box3DMesh.s_facePosIds;
+        let list = this.m_posList;
+        let arr;
+        let pos;
 
-  if (model.uvsList) {
-    uvs = model.uvsList[0];
-  } else {
-    uvs = new Float32Array(2 * vs.length / 3);
+        for (let iMax = i + 4, j = 0; i < iMax; ++i) {
+          arr = list[idList[i]];
+          pos = posList[j++];
+          arr[0] = pos.x;
+          arr[1] = pos.y;
+          arr[2] = pos.z;
+        }
+      }
+    }
   }
 
-  let nvs = model.normals;
+  getFaceAt(i, lsPA, lsPB, lsPC, lsPD) {
+    if (i >= 0 && i < 8) {
+      if (this.m_vs != null) {
+        i *= 4;
+        let posList = [lsPA, lsPB, lsPC, lsPD];
+        let idList = Box3DMesh.s_facePosIds;
+        let list = this.m_posList;
+        let arr;
+        let pos;
 
-  if (nvs && typeof CoAGeom !== "undefined") {
-    CoAGeom.SurfaceNormal.ClacTrisNormal(vs, vs.length, ivs.length / 3, ivs, nvs);
+        for (let iMax = i + 4, j = 0; i < iMax; ++i) {
+          arr = list[idList[i]];
+          pos = posList[j++];
+          pos.x = arr[0];
+          pos.y = arr[1];
+          pos.z = arr[2];
+        }
+      }
+    }
   }
 
-  const dataMesh = new DataMesh_1.default();
-  dataMesh.vbWholeDataEnabled = vbWhole;
-  dataMesh.setVS(vs);
-  dataMesh.setUVS(uvs);
-  dataMesh.setNVS(nvs);
-  dataMesh.setIVS(ivs);
-  dataMesh.setVtxBufRenderData(material);
-  dataMesh.initialize();
-  const entity = new DisplayEntity_1.default();
-  entity.setMesh(dataMesh);
-  entity.setMaterial(material);
-  return entity;
-}
+  getFaceCenterAt(i, outV) {
+    if (i >= 0 && i < 8) {
+      if (this.m_vs != null) {
+        i *= 4;
+        let idList = Box3DMesh.s_facePosIds;
+        let list = this.m_posList;
+        let arr;
+        outV.setXYZ(0.0, 0.0, 0.0);
 
-exports.createDisplayEntityFromModel = createDisplayEntityFromModel;
+        for (let iMax = i + 4; i < iMax; ++i) {
+          arr = list[idList[i]];
+          outV.x += arr[0];
+          outV.y += arr[1];
+          outV.z += arr[2];
+        }
 
-function createDisplayEntityWithDataMesh(mesh, pmaterial, texEnabled = true, vbWhole = false) {
-  if (pmaterial != null) {
-    pmaterial.initializeByCodeBuf(texEnabled);
-    mesh.setBufSortFormat(pmaterial.getBufSortFormat());
-    mesh.vbWholeDataEnabled = vbWhole;
-    mesh.initialize();
+        outV.scaleBy(0.33333);
+      }
+    }
   }
 
-  let entity = new DisplayEntity_1.default();
-  entity.setMaterial(pmaterial);
-  entity.setMesh(mesh);
-  return entity;
-}
+  transformFaceAt(i, mat4) {
+    if (i >= 0 && i < 8) {
+      if (this.m_vs != null) {
+        i *= 4;
+        let idList = Box3DMesh.s_facePosIds;
+        let list = this.m_posList;
 
-exports.createDisplayEntityWithDataMesh = createDisplayEntityWithDataMesh;
+        for (let iMax = i + 4; i < iMax; ++i) {
+          mat4.transformVectorsSelf(list[idList[i]], 3);
+        }
+      }
+    }
+  }
 
-function createDisplayEntity(transform = null) {
-  return new DisplayEntity_1.default(transform);
-}
+  initializeWithYFace(bottomFaceMinV, bottomFaceMaxV, topFaceMinV, topFaceMaxV) {
+    let minV = bottomFaceMinV;
+    let maxV = bottomFaceMaxV;
+    let minY = (minV.y + maxV.y) * 0.5;
+    this.m_posList[0] = [maxV.x, minY, maxV.z];
+    this.m_posList[1] = [maxV.x, minY, minV.z];
+    this.m_posList[2] = [minV.x, minY, minV.z];
+    this.m_posList[3] = [minV.x, minY, maxV.z];
+    minV = topFaceMinV;
+    maxV = topFaceMaxV;
+    let maxY = (minV.y + maxV.y) * 0.5;
+    this.m_posList[4] = [maxV.x, maxY, maxV.z];
+    this.m_posList[5] = [maxV.x, maxY, minV.z];
+    this.m_posList[6] = [minV.x, maxY, minV.z];
+    this.m_posList[7] = [minV.x, maxY, maxV.z];
+    this.initData();
+  }
 
-exports.createDisplayEntity = createDisplayEntity;
+  initialize(minV, maxV) {
+    this.m_posList[0] = [maxV.x, minV.y, maxV.z];
+    this.m_posList[1] = [maxV.x, minV.y, minV.z];
+    this.m_posList[2] = [minV.x, minV.y, minV.z];
+    this.m_posList[3] = [minV.x, minV.y, maxV.z];
+    this.m_posList[4] = [maxV.x, maxV.y, maxV.z];
+    this.m_posList[5] = [maxV.x, maxV.y, minV.z];
+    this.m_posList[6] = [minV.x, maxV.y, minV.z];
+    this.m_posList[7] = [minV.x, maxV.y, maxV.z];
+    this.initData();
+  }
 
-function createMouseEventEntity(transform = null) {
-  return new MouseEventEntity_1.default(transform);
-}
+  scaleUVFaceAt(faceI, u, v, du, dv) {
+    if (this.m_uvs != null && faceI >= 0 && faceI < 6) {
+      let i = faceI * 8;
+      let t = i + 8;
+      let uvs = this.m_uvs;
 
-exports.createMouseEventEntity = createMouseEventEntity;
+      for (; i < t; i += 2) {
+        uvs[i] = u + uvs[i] * du;
+        uvs[i + 1] = v + uvs[i + 1] * dv;
+      }
+    }
+  }
 
-function createBoundsEntity(transform = null) {
-  return new BoundsEntity_1.default(transform);
-}
+  reinitialize() {
+    this.initData();
+  }
 
-exports.createBoundsEntity = createBoundsEntity;
+  initData() {
+    this.vtxTotal = 24;
+    let i = 0;
+    let k = 0;
+    let baseI = 0;
+    let newBuild = this.m_ivs == null;
 
-function createDisplayEntityContainer() {
-  return new DisplayEntityContainer_1.default();
-}
+    if (newBuild) {
+      this.m_vs = new Float32Array(72);
+      this.m_ivs = new Uint16Array(36);
+      let flags = [3, 2, 3, 3, 2, 2];
 
-exports.createDisplayEntityContainer = createDisplayEntityContainer;
+      for (i = 0; i < 6; ++i) {
+        if (flags[i] == 3) {
+          this.m_ivs[baseI] = k + 3;
+          this.m_ivs[baseI + 1] = k + 2;
+          this.m_ivs[baseI + 2] = k + 1;
+          this.m_ivs[baseI + 3] = k + 3;
+          this.m_ivs[baseI + 4] = k + 1;
+          this.m_ivs[baseI + 5] = k;
+        } else {
+          this.m_ivs[baseI] = k + 2;
+          this.m_ivs[baseI + 1] = k + 3;
+          this.m_ivs[baseI + 2] = k;
+          this.m_ivs[baseI + 3] = k + 2;
+          this.m_ivs[baseI + 4] = k;
+          this.m_ivs[baseI + 5] = k + 1;
+        }
 
-function createFreeAxis3DEntity(minV, maxV, transform = null) {
-  let material = new Line3DMaterial_1.default(false);
-  material.initializeByCodeBuf(false);
-  let vs = new Float32Array([minV.x, 0, 0, maxV.x, 0, 0, 0, minV.y, 0, 0, maxV.y, 0, 0, 0, minV.z, 0, 0, maxV.z]);
-  let colors = new Float32Array([1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1]);
-  let mesh = new RawMesh_1.default();
-  mesh.ivsEnabled = false;
-  mesh.aabbEnabled = true;
-  mesh.reset();
-  mesh.setBufSortFormat(material.getBufSortFormat());
-  mesh.addFloat32Data(vs, 3);
-  mesh.addFloat32Data(colors, 3);
-  mesh.initialize();
-  mesh.toArraysLines();
-  mesh.vtCount = Math.floor(vs.length / 3); // mesh.setPolyhedral( false );
+        baseI += 6;
+        k += 4;
+      }
+    }
 
-  let axis = new DisplayEntity_1.default(transform);
-  axis.setMaterial(material);
-  axis.setMesh(mesh);
-  return axis;
-}
+    let idList = Box3DMesh.s_facePosIds;
+    let list = this.m_posList;
+    let arr;
+    let pvs = this.m_vs;
+    k = 0;
 
-exports.createFreeAxis3DEntity = createFreeAxis3DEntity;
+    for (i = 0; i < this.vtxTotal; ++i) {
+      arr = list[idList[i]];
+      pvs.set(arr, k);
+      k += 3;
+    }
 
-function createAxis3DEntity(size = 100.0, transform = null) {
-  if (size < 0.0001) size = 0.0001;
-  return createFreeAxis3DEntity(new Vector3D_1.default(), new Vector3D_1.default(size, size, size), transform);
-}
+    if (this.bounds == null) {
+      this.bounds = new AABB_1.default();
+    } else {
+      this.bounds.reset();
+    }
 
-exports.createAxis3DEntity = createAxis3DEntity;
+    if (this.m_transMatrix != null) {
+      this.m_transMatrix.transformVectorsSelf(this.m_vs, this.m_vs.length);
+      this.bounds.addXYZFloat32Arr(this.m_vs);
+    } else {
+      this.bounds.addXYZFloat32Arr(this.m_vs);
+    }
 
-function createCrossAxis3DEntity(size = 100.0, transform = null) {
-  if (size < 0.0001) size = 0.0001;
-  size *= 0.5;
-  return createFreeAxis3DEntity(new Vector3D_1.default(-size, -size, -size), new Vector3D_1.default(size, size, size), transform);
-}
+    this.bounds.updateFast();
+    ROVertexBuffer_1.default.Reset();
+    ROVertexBuffer_1.default.AddFloat32Data(this.m_vs, 3);
+    let faceTotal = 6;
 
-exports.createCrossAxis3DEntity = createCrossAxis3DEntity;
+    if (this.isVBufEnabledAt(VtxBufConst_1.default.VBUF_UVS_INDEX)) {
+      if (this.m_uvs == null) {
+        // uv
+        this.m_uvs = new Float32Array(48);
+        this.initUVData(this.vtxTotal * 2);
 
-function creatMaterialContextParam() {
-  return new MaterialContextParam_1.MaterialContextParam();
-}
+        if (this.uvPartsNumber == 4) {
+          this.scaleUVFaceAt(0, 0.5, 0.5, 0.5, 0.5);
+          this.scaleUVFaceAt(1, 0.0, 0.0, 0.5, 0.5);
+          this.scaleUVFaceAt(2, 0.5, 0.0, 0.5, 0.5);
+          this.scaleUVFaceAt(3, 0.0, 0.5, 0.5, 0.5);
+          this.scaleUVFaceAt(4, 0.5, 0.0, 0.5, 0.5);
+          this.scaleUVFaceAt(5, 0.0, 0.5, 0.5, 0.5);
+        } else if (this.uvPartsNumber == 6) {
+          this.scaleUVFaceAt(0, 0.0, 0.0, 0.25, 0.5);
+          this.scaleUVFaceAt(1, 0.25, 0.0, 0.25, 0.5);
+          this.scaleUVFaceAt(2, 0.5, 0.0, 0.25, 0.5);
+          this.scaleUVFaceAt(3, 0.75, 0.0, 0.25, 0.5);
+          this.scaleUVFaceAt(4, 0.0, 0.5, 0.25, 0.5);
+          this.scaleUVFaceAt(5, 0.25, 0.5, 0.25, 0.5);
+        }
 
-exports.creatMaterialContextParam = creatMaterialContextParam;
+        if (this.isVBufEnabledAt(VtxBufConst_1.default.VBUF_TVS_INDEX)) {
+          baseI = 0;
 
-function createMaterialContext() {
-  return new MaterialContext_1.MaterialContext();
-}
+          while (baseI < 6) {
+            switch (baseI) {
+              case 0:
+                // -z
+                i = 0;
+                this.m_uvs[i] = 0.0;
+                this.m_uvs[i + 1] = 1.0;
+                this.m_uvs[i + 2] = 1.0;
+                this.m_uvs[i + 3] = 1.0;
+                this.m_uvs[i + 4] = 1.0;
+                this.m_uvs[i + 5] = 0.0;
+                this.m_uvs[i + 6] = 0.0;
+                this.m_uvs[i + 7] = 0.0;
+                break;
 
-exports.createMaterialContext = createMaterialContext;
+              case 3:
+                // +x
+                i = 24;
+                this.m_uvs[i] = 0.0;
+                this.m_uvs[i + 1] = 1.0;
+                this.m_uvs[i + 2] = 1.0;
+                this.m_uvs[i + 3] = 1.0;
+                this.m_uvs[i + 4] = 1.0;
+                this.m_uvs[i + 5] = 0.0;
+                this.m_uvs[i + 6] = 0.0;
+                this.m_uvs[i + 7] = 0.0;
+                break;
 
-function createRendererSceneGraph() {
-  return new RendererSceneGraph_1.default();
-}
+              case 5:
+                // -y;
+                i = 32;
+                this.m_uvs[i] = 0.0;
+                this.m_uvs[i + 1] = 1.0;
+                this.m_uvs[i + 2] = 1.0;
+                this.m_uvs[i + 3] = 1.0;
+                this.m_uvs[i + 4] = 1.0;
+                this.m_uvs[i + 5] = 0.0;
+                this.m_uvs[i + 6] = 0.0;
+                this.m_uvs[i + 7] = 0.0;
+                break;
 
-exports.createRendererSceneGraph = createRendererSceneGraph;
+              default:
+                break;
+            }
 
-function createEvtNode() {
-  return new EvtNode_1.default();
-}
+            ++baseI;
+          }
+        }
+      }
 
-exports.createEvtNode = createEvtNode;
+      ROVertexBuffer_1.default.AddFloat32Data(this.m_uvs, 2);
+    }
 
-function createSelectionEvent() {
-  return new SelectionEvent_1.default();
-}
+    if (this.isVBufEnabledAt(VtxBufConst_1.default.VBUF_NVS_INDEX)) {
+      this.m_nvs = new Float32Array(72);
+      baseI = 0;
+      let nx = 0.0;
+      let ny = 0.0;
+      let nz = 0.0;
 
-exports.createSelectionEvent = createSelectionEvent;
+      if (this.normalType == VtxBufConst_2.VtxNormalType.FLAT) {
+        while (baseI < faceTotal) {
+          nx = 0.0;
+          ny = 0.0;
+          nz = 0.0;
 
-function createProgressDataEvent() {
-  return new ProgressDataEvent_1.default();
-}
+          switch (baseI) {
+            case 0:
+              ny = -1.0;
+              break;
 
-exports.createProgressDataEvent = createProgressDataEvent;
+            case 1:
+              ny = 1.0;
+              break;
+
+            case 2:
+              nx = 1.0;
+              break;
+
+            case 3:
+              nz = -1.0;
+              break;
+
+            case 4:
+              nx = -1.0;
+              break;
+
+            case 5:
+              nz = 1.0;
+              break;
+
+            default:
+              break;
+          }
+
+          i = baseI * 12;
+          nx *= this.normalScale;
+          ny *= this.normalScale;
+          nz *= this.normalScale;
+          this.m_nvs[i] = nx;
+          this.m_nvs[i + 1] = ny;
+          this.m_nvs[i + 2] = nz;
+          this.m_nvs[i + 3] = nx;
+          this.m_nvs[i + 4] = ny;
+          this.m_nvs[i + 5] = nz;
+          this.m_nvs[i + 6] = nx;
+          this.m_nvs[i + 7] = ny;
+          this.m_nvs[i + 8] = nz;
+          this.m_nvs[i + 9] = nx;
+          this.m_nvs[i + 10] = ny;
+          this.m_nvs[i + 11] = nz;
+          ++baseI;
+        }
+      } else {
+        let centV = this.bounds.center;
+        let d = 0.0;
+
+        while (baseI < this.vtxTotal) {
+          i = baseI * 3;
+          nx = this.m_vs[i] - centV.x;
+          ny = this.m_vs[i + 1] - centV.y;
+          nz = this.m_vs[i + 2] - centV.z;
+          d = Math.sqrt(nx * nx + ny * ny + nz * nz);
+
+          if (d > MathConst_1.default.MATH_MIN_POSITIVE) {
+            this.m_nvs[i] = nx / d;
+            this.m_nvs[i + 1] = ny / d;
+            this.m_nvs[i + 2] = nz / d;
+          }
+
+          ++baseI;
+        }
+      }
+
+      ROVertexBuffer_1.default.AddFloat32Data(this.m_nvs, 3);
+    }
+
+    if (this.isVBufEnabledAt(VtxBufConst_1.default.VBUF_CVS_INDEX)) {
+      this.m_cvs = new Float32Array(72);
+      baseI = 0;
+      let pr = 1.0;
+      let pg = 1.0;
+      let pb = 1.0;
+
+      if (this.vtxColor != null) {
+        pr = this.vtxColor.r;
+        pg = this.vtxColor.g;
+        pb = this.vtxColor.b;
+      }
+
+      while (baseI < faceTotal) {
+        i = baseI * 12;
+        this.m_cvs[i] = pr;
+        this.m_cvs[i + 1] = pg;
+        this.m_cvs[i + 2] = pb;
+        this.m_cvs[i + 3] = pr;
+        this.m_cvs[i + 4] = pg;
+        this.m_cvs[i + 5] = pb;
+        this.m_cvs[i + 6] = pr;
+        this.m_cvs[i + 7] = pg;
+        this.m_cvs[i + 8] = pb;
+        this.m_cvs[i + 9] = pr;
+        this.m_cvs[i + 10] = pg;
+        this.m_cvs[i + 11] = pb;
+        ++baseI;
+      }
+
+      ROVertexBuffer_1.default.AddFloat32Data(this.m_cvs, 3);
+    }
+
+    if (this.isVBufEnabledAt(VtxBufConst_1.default.VBUF_TVS_INDEX)) {
+      let numTriangles = 12;
+      let tvs = new Float32Array(this.m_nvs.length);
+      let btvs = new Float32Array(this.m_nvs.length);
+      SurfaceNormalCalc_1.default.ClacTrisTangent(this.m_vs, this.m_vs.length, this.m_uvs, this.m_nvs, numTriangles, this.m_ivs, tvs, btvs);
+      ROVertexBuffer_1.default.AddFloat32Data(tvs, 3);
+      ROVertexBuffer_1.default.AddFloat32Data(btvs, 3);
+    }
+
+    ROVertexBuffer_1.default.vbWholeDataEnabled = this.vbWholeDataEnabled;
+    this.updateWireframeIvs();
+
+    if (this.m_vbuf == null) {
+      if (this.vbWholeDataEnabled) {
+        this.m_vbuf = ROVertexBuffer_1.default.CreateBySaveData(this.getBufDataUsage());
+      } else {
+        this.m_vbuf = ROVertexBuffer_1.default.CreateBySaveDataSeparate(this.getBufDataUsage());
+      }
+
+      this.m_vbuf.setUintIVSData(this.m_ivs);
+      this.vtCount = this.m_ivs.length;
+      this.trisNumber = 12;
+      this.buildEnd();
+    } else {
+      if (this.forceUpdateIVS) {
+        this.m_vbuf.setUintIVSData(this.m_ivs);
+      }
+
+      ROVertexBuffer_1.default.UpdateBufData(this.m_vbuf);
+    }
+  }
+
+  setFaceUVSAt(i, uvsLen8, offset = 0) {
+    if (this.m_uvs != null) {
+      if (offset < 1) {
+        this.m_uvs.set(uvsLen8, i * 8);
+      } else {
+        i *= 8;
+        if (offset < 0) offset = 0;
+
+        for (let k = 0; k < 4; ++k) {
+          this.m_uvs[i++] = uvsLen8[offset * 2];
+          this.m_uvs[i++] = uvsLen8[offset * 2 + 1];
+          offset++;
+          offset = offset % 4;
+        }
+      }
+    }
+  }
+
+  initUVData(baseI) {
+    let uScale = this.uScale;
+    let vScale = this.vScale;
+    let i = 0;
+
+    if (this.flipVerticalUV) {
+      while (i < baseI) {
+        this.m_uvs[i] = 1.0 * uScale;
+        this.m_uvs[i + 1] = 1.0 * vScale;
+        this.m_uvs[i + 2] = 0.0 * uScale;
+        this.m_uvs[i + 3] = 1.0 * vScale;
+        this.m_uvs[i + 4] = 0.0 * uScale;
+        this.m_uvs[i + 5] = 0.0 * vScale;
+        this.m_uvs[i + 6] = 1.0 * uScale;
+        this.m_uvs[i + 7] = 0.0 * vScale;
+        i += 8;
+      }
+    } else {
+      while (i < baseI) {
+        this.m_uvs[i] = 0.0 * uScale;
+        this.m_uvs[i + 1] = 0.0 * vScale;
+        this.m_uvs[i + 2] = 1.0 * uScale;
+        this.m_uvs[i + 3] = 0.0 * vScale;
+        this.m_uvs[i + 4] = 1.0 * uScale;
+        this.m_uvs[i + 5] = 1.0 * vScale;
+        this.m_uvs[i + 6] = 0.0 * uScale;
+        this.m_uvs[i + 7] = 1.0 * vScale;
+        i += 8;
+      }
+    }
+  }
+  /**
+   * 射线和自身的相交检测(多面体或几何函数(例如球体))
+   * @rlpv            表示物体坐标空间的射线起点
+   * @rltv            表示物体坐标空间的射线朝向
+   * @outV            如果检测相交存放物体坐标空间的交点
+   * @boundsHit       表示是否包围盒体已经和射线相交了
+   * @return          返回值 -1 表示不会进行检测,1表示相交,0表示不相交
+   */
+
+
+  testRay(rlpv, rltv, outV, boundsHit) {
+    let boo = AABBCalc_1.AABBCalc.IntersectionRL2(rltv, rlpv, this.bounds, outV);
+    return boo ? 1 : -1;
+  }
+
+  toString() {
+    return "Box3DMesh()";
+  }
+
+  __$destroy() {
+    if (this.isResFree()) {
+      this.bounds = null;
+      this.m_vs = null;
+      this.m_uvs = null;
+      this.m_nvs = null;
+      this.m_cvs = null;
+      this.vtxColor = null;
+
+      super.__$destroy();
+    }
+  }
+
+} // face order: -y,+y,+x,-z,-x,+z
+
+
+Box3DMesh.s_facePosIds = [0, 1, 2, 3, 4, 5, 6, 7, 4, 5, 1, 0, 5, 6, 2, 1, 7, 6, 2, 3, 4, 7, 3, 0];
+exports.default = Box3DMesh;
 
 /***/ }),
 
@@ -11512,14 +12599,14 @@ const SpaceCullingMask_1 = __webpack_require__("cc48");
 const RODisplay_1 = __importDefault(__webpack_require__("dc2b"));
 
 class DisplayEntity {
-  constructor(transform = null, sharedData = false) {
+  constructor(transform = null) {
     this.m_uid = 0;
-    this.m_trs = null;
+    this.m_transfrom = null;
     this.m_eventDispatcher = null;
     this.m_visible = true;
     this.m_drawEnabled = true;
-    this.m_rcolorMask = 0;
-    this.m_renderState = 0;
+    this.m_rcolorMask = RendererState_1.default.COLOR_MASK_ALL_TRUE;
+    this.m_renderState = RendererState_1.default.BACK_CULLFACE_NORMAL_STATE;
     this.m_display = null;
     this.m_mesh = null; // 如果一个entity如果包含了多个mesh,则这个bounds就是多个mesh aabb 合并的aabb
 
@@ -11572,13 +12659,9 @@ class DisplayEntity {
     this.m_uid = DisplayEntity.s_uid++;
 
     if (transform == null) {
-      this.m_trs = ROTransform_1.default.Create();
+      this.m_transfrom = ROTransform_1.default.Create();
     } else {
-      if (sharedData) {
-        this.m_trs = ROTransform_1.default.Create(null, transform.getFS32Data());
-      } else {
-        this.m_trs = transform;
-      }
+      this.m_transfrom = transform;
     }
 
     this.createBounds();
@@ -11674,13 +12757,12 @@ class DisplayEntity {
   __$setDrawEnabled(boo) {
     if (this.m_drawEnabled != boo) {
       this.m_drawEnabled = boo;
-      const d = this.m_display;
 
-      if (d != null) {
-        d.visible = this.m_visible && boo;
+      if (this.m_display != null) {
+        this.m_display.visible = this.m_visible && boo;
 
-        if (d.__$$runit != null) {
-          d.__$$runit.setVisible(d.visible);
+        if (this.m_display.__$$runit != null) {
+          this.m_display.__$$runit.setVisible(this.m_display.visible);
         }
       }
     }
@@ -11704,8 +12786,7 @@ class DisplayEntity {
         this.m_meshChanged = false;
         this.m_renderProxy.VtxBufUpdater.updateDispVbuf(this.m_display, deferred);
       } else {
-        // this.m_renderProxy.VtxBufUpdater.updateVtxDataToGpuByUid(this.m_display.vbuf.getUid(), deferred);
-        this.m_renderProxy.VtxBufUpdater.updateVtxDataToGpuByUid(this.m_display.getVtxResUid(), deferred);
+        this.m_renderProxy.VtxBufUpdater.updateVtxDataToGpuByUid(this.m_display.vbuf.getUid(), deferred);
       }
     }
   }
@@ -11783,21 +12864,13 @@ class DisplayEntity {
     return this.m_visible;
   }
 
-  isVisible() {
-    return this.m_visible;
-  }
-
-  getREType() {
-    return 1;
-  }
-
   getTransform() {
-    return this.m_trs;
+    return this.m_transfrom;
   }
 
   copyPositionFrom(entity) {
     if (entity != null) {
-      this.m_trs.copyPositionFrom(entity.getTransform());
+      this.m_transfrom.copyPositionFrom(entity.getTransform());
     }
   }
 
@@ -11817,22 +12890,17 @@ class DisplayEntity {
     let pe = entity;
 
     if (pe != null) {
-      this.m_trs.copyFrom(pe.m_trs);
+      this.m_transfrom.copyFrom(pe.m_transfrom);
     }
   }
 
   initDisplay(m) {
-    let vbuf = m.__$attachVBuf();
-
-    vbuf.setBufSortFormat(m.getBufSortFormat());
-    const d = this.m_display;
-    d.vbuf = vbuf;
-    d.ivbuf = m.__$attachIVBuf();
-    d.ivsIndex = 0;
-    d.ivsCount = m.vtCount;
-    d.drawMode = m.drawMode;
-    d.trisNumber = m.trisNumber;
-    d.visible = this.m_visible && this.m_drawEnabled;
+    this.m_display.vbuf = m.__$attachVBuf();
+    this.m_display.ivsIndex = 0;
+    this.m_display.ivsCount = m.vtCount;
+    this.m_display.drawMode = m.drawMode;
+    this.m_display.trisNumber = m.trisNumber;
+    this.m_display.visible = this.m_visible && this.m_drawEnabled;
   }
   /**
    * 设置几何相关的数据,必须是构建完备的mesh才能被设置进来
@@ -11841,6 +12909,7 @@ class DisplayEntity {
 
 
   setMesh(m) {
+    // let m = pm as MeshBase;
     if (this.m_mesh == null) {
       if (m != null) {
         if (!m.isEnabled()) {
@@ -11857,7 +12926,7 @@ class DisplayEntity {
           }
 
           if (this.m_display != null) {
-            this.m_display.setTransform(this.m_trs.getMatrix());
+            this.m_display.setTransform(this.m_transfrom.getMatrix());
             this.initDisplay(m);
           } //console.log("DisplayEntity::setMesh(), "+this.m_display.toString()+",m.drawMode: "+m.drawMode);
 
@@ -11873,11 +12942,9 @@ class DisplayEntity {
       }
     } else if (this.m_display != null && this.m_display.__$ruid > -1) {
       if (this.m_mesh != m && m != null) {
-        this.m_trs.updatedStatus |= 2;
+        this.m_transfrom.updatedStatus |= 2;
 
         this.m_mesh.__$detachVBuf(this.m_display.vbuf);
-
-        this.m_mesh.__$detachIVBuf(this.m_display.ivbuf);
 
         this.m_mesh.__$detachThis();
 
@@ -11907,10 +12974,11 @@ class DisplayEntity {
       this.m_display.ivsCount = ivsCount;
 
       if (this.m_display.__$ruid > -1) {
-        let ut = this.m_display.__$$runit;
-        ut.trisNumber = Math.floor((ivsCount - ivsIndex) / 3);
-        ut.setIvsParam(ivsIndex, ivsCount);
-        ut.drawMode = this.m_mesh.drawMode;
+        this.m_display.__$$runit.trisNumber = Math.floor((ivsCount - ivsIndex) / 3);
+
+        this.m_display.__$$runit.setIvsParam(ivsIndex, ivsCount);
+
+        this.m_display.__$$runit.drawMode = this.m_mesh.drawMode;
 
         if (updateBounds && this.isPolyhedral()) {
           if (this.m_localBounds == this.m_mesh.bounds) {
@@ -11921,7 +12989,7 @@ class DisplayEntity {
           this.m_transStatus = ROTransform_1.default.UPDATE_TRANSFORM;
           this.m_localBounds.reset();
           let ivs = this.m_mesh.getIVS();
-          this.m_localBounds.addFloat32AndIndicesArr(this.m_mesh.getVS(), ivs.subarray(ivsIndex, ivsIndex + ivsCount));
+          this.m_localBounds.addXYZFloat32AndIndicesArr(this.m_mesh.getVS(), ivs.subarray(ivsIndex, ivsIndex + ivsCount));
           this.m_localBounds.update();
         }
       }
@@ -11941,7 +13009,7 @@ class DisplayEntity {
 
 
   isPolyhedral() {
-    return this.m_mesh === null || this.m_mesh.isPolyhedral();
+    return this.m_mesh == null || this.m_mesh.isPolyhedral();
   }
   /**
    * @boundsHit       表示是否包围盒体已经和射线相交了
@@ -11964,17 +13032,21 @@ class DisplayEntity {
     if (m != null) {
       if (this.m_display == null) {
         this.m_display = RODisplay_1.default.Create();
-        this.m_display.setTransform(this.m_trs.getMatrix());
+        this.m_display.setTransform(this.m_transfrom.getMatrix());
         this.m_display.visible = this.m_visible && this.m_drawEnabled;
-      }
+      } //if(this.m_display.getMaterial() != m && this.__$wuid == RSEntityFlag.RENDERER_UID_FLAG && this.m_display.__$ruid < 0)
 
-      const flag = RSEntityFlag_1.default.RENDERER_UID_FLAG;
-      const disp = this.m_display;
 
-      if (disp.getMaterial() != m && (flag & this.__$rseFlag) == flag && disp.__$ruid < 0) {
-        disp.renderState = this.m_renderState;
-        disp.rcolorMask = this.m_rcolorMask;
-        disp.setMaterial(m);
+      if (this.m_display.getMaterial() != m && (RSEntityFlag_1.default.RENDERER_UID_FLAG & this.__$rseFlag) == RSEntityFlag_1.default.RENDERER_UID_FLAG && this.m_display.__$ruid < 0) {
+        // if(m.getMaterialPipeline() == null && this.getMaterialPipeline() != null) {
+        //     m.setMaterialPipeline( this.getMaterialPipeline() );
+        // }
+        // if(m.pipeTypes == null) {
+        //     m.pipeTypes = this.pipeTypes;
+        // }
+        this.m_display.renderState = this.m_renderState;
+        this.m_display.rcolorMask = this.m_rcolorMask;
+        this.m_display.setMaterial(m);
       }
     }
   }
@@ -11992,7 +13064,7 @@ class DisplayEntity {
   }
 
   getInvMatrix() {
-    return this.m_trs.getInvMatrix();
+    return this.m_transfrom.getInvMatrix();
   }
   /**
    * 获取当前 entity 的 local space to world space matrix
@@ -12002,11 +13074,11 @@ class DisplayEntity {
 
 
   getMatrix(flag = true) {
-    return this.m_trs.getMatrix(flag);
+    return this.m_transfrom.getMatrix(flag);
   }
 
   getToParentMatrix() {
-    return this.m_trs.getToParentMatrix();
+    return this.m_transfrom.getToParentMatrix();
   }
 
   setRenderColorMask(rt) {
@@ -12043,10 +13115,6 @@ class DisplayEntity {
         this.m_display.__$$runit.setDrawFlag(this.m_renderState, this.m_rcolorMask);
       }
     }
-  }
-
-  getRenderState() {
-    return this.m_renderState;
   }
 
   setRenderStateByName(renderState_name) {
@@ -12107,69 +13175,55 @@ class DisplayEntity {
   }
 
   setXYZ(px, py, pz) {
-    this.m_trs.setXYZ(px, py, pz);
+    this.m_transfrom.setXYZ(px, py, pz);
   }
 
   offsetPosition(pv) {
-    this.m_trs.offsetPosition(pv);
+    this.m_transfrom.offsetPosition(pv);
   }
 
   setPosition(pv) {
-    this.m_trs.setPosition(pv);
+    this.m_transfrom.setPosition(pv);
   }
 
-  getPosition(pv = null) {
-    if (!pv) pv = new Vector3D_1.default();
-    this.m_trs.getPosition(pv);
-    return pv;
+  getPosition(pv) {
+    this.m_transfrom.getPosition(pv);
   }
 
   setRotation3(rotV) {
-    this.m_trs.setRotationXYZ(rotV.x, rotV.y, rotV.z);
+    this.m_transfrom.setRotationXYZ(rotV.x, rotV.y, rotV.z);
   }
 
   setRotationXYZ(rx, ry, rz) {
-    this.m_trs.setRotationXYZ(rx, ry, rz);
+    this.m_transfrom.setRotationXYZ(rx, ry, rz);
   }
 
-  setScale3(sv) {
-    this.m_trs.setScaleXYZ(sv.x, sv.y, sv.z);
+  setScale3(scaleV) {
+    this.m_transfrom.setScaleXYZ(scaleV.x, scaleV.y, scaleV.z);
   }
 
   setScaleXYZ(sx, sy, sz) {
-    this.m_trs.setScaleXYZ(sx, sy, sz);
+    this.m_transfrom.setScaleXYZ(sx, sy, sz);
   }
 
   getRotationXYZ(pv) {
-    if (!pv) pv = new Vector3D_1.default();
-    this.m_trs.getRotationXYZ(pv);
-    return pv;
+    this.m_transfrom.getRotationXYZ(pv);
   }
 
   getScaleXYZ(pv) {
-    if (!pv) pv = new Vector3D_1.default();
-    this.m_trs.getScaleXYZ(pv);
-    return pv;
+    this.m_transfrom.getScaleXYZ(pv);
   }
 
   localToGlobal(pv) {
-    if (this.m_trs != null) {
-      this.m_trs.localToGlobal(pv);
+    if (this.m_transfrom != null) {
+      this.m_transfrom.localToGlobal(pv);
     }
   }
 
   globalToLocal(pv) {
-    if (this.m_trs != null) {
-      this.m_trs.globalToLocal(pv);
+    if (this.m_transfrom != null) {
+      this.m_transfrom.globalToLocal(pv);
     }
-  }
-  /**
-   * 表示没有加入任何渲染场景或者渲染器
-   */
-
-
-  isRFree() {
-    return this.__$rseFlag == RSEntityFlag_1.default.DEFAULT;
   }
   /**
    * @returns 是否已经加入渲染器中(但是可能还没有进入真正的渲染运行时)
@@ -12197,13 +13251,13 @@ class DisplayEntity {
   }
 
   updateBounds() {
-    if (this.m_trs != null) {
+    if (this.m_transfrom != null) {
       this.m_transStatus = ROTransform_1.default.UPDATE_TRANSFORM;
 
       if (this.m_mesh != null && this.m_localBounds != this.m_mesh.bounds) {
         this.m_localBounds.reset();
         let ivs = this.m_mesh.getIVS();
-        this.m_localBounds.addFloat32AndIndicesArr(this.m_mesh.getVS(), ivs.subarray(this.m_display.ivsIndex, this.m_display.ivsIndex + this.m_display.ivsCount));
+        this.m_localBounds.addXYZFloat32AndIndicesArr(this.m_mesh.getVS(), ivs.subarray(this.m_display.ivsIndex, this.m_display.ivsIndex + this.m_display.ivsCount));
         this.m_localBounds.update();
       }
 
@@ -12212,38 +13266,38 @@ class DisplayEntity {
   }
 
   updateLocalBoundsVS(bounds) {
-    let min = bounds.min;
-    let max = bounds.max;
+    let pminV = bounds.min;
+    let pmaxV = bounds.max;
 
     if (this.m_lBoundsVS == null) {
       this.m_lBoundsVS = new Float32Array(24);
     }
 
     let pvs = this.m_lBoundsVS;
-    pvs[0] = min.x;
-    pvs[1] = min.y;
-    pvs[2] = min.z;
-    pvs[3] = max.x;
-    pvs[4] = min.y;
-    pvs[5] = min.z;
-    pvs[6] = min.x;
-    pvs[7] = min.y;
-    pvs[8] = max.z;
-    pvs[9] = max.x;
-    pvs[10] = min.y;
-    pvs[11] = max.z;
-    pvs[12] = min.x;
-    pvs[13] = max.y;
-    pvs[14] = min.z;
-    pvs[15] = max.x;
-    pvs[16] = max.y;
-    pvs[17] = min.z;
-    pvs[18] = min.x;
-    pvs[19] = max.y;
-    pvs[20] = max.z;
-    pvs[21] = max.x;
-    pvs[22] = max.y;
-    pvs[23] = max.z;
+    pvs[0] = pminV.x;
+    pvs[1] = pminV.y;
+    pvs[2] = pminV.z;
+    pvs[3] = pmaxV.x;
+    pvs[4] = pminV.y;
+    pvs[5] = pminV.z;
+    pvs[6] = pminV.x;
+    pvs[7] = pminV.y;
+    pvs[8] = pmaxV.z;
+    pvs[9] = pmaxV.x;
+    pvs[10] = pminV.y;
+    pvs[11] = pmaxV.z;
+    pvs[12] = pminV.x;
+    pvs[13] = pmaxV.y;
+    pvs[14] = pminV.z;
+    pvs[15] = pmaxV.x;
+    pvs[16] = pmaxV.y;
+    pvs[17] = pminV.z;
+    pvs[18] = pminV.x;
+    pvs[19] = pmaxV.y;
+    pvs[20] = pmaxV.z;
+    pvs[21] = pmaxV.x;
+    pvs[22] = pmaxV.y;
+    pvs[23] = pmaxV.z;
   }
 
   updateGlobalBounds() {
@@ -12252,26 +13306,26 @@ class DisplayEntity {
     let bounds = this.m_localBounds;
 
     if (this.m_transStatus > ROTransform_1.default.UPDATE_POSITION || this.m_localBuondsVer != bounds.version) {
-      let st = this.m_trs.updateStatus;
-      this.m_trs.update();
+      let st = this.m_transfrom.updateStatus;
+      this.m_transfrom.update();
 
-      if (this.m_localBuondsVer != bounds.version || st != this.m_trs.updateStatus) {
+      if (this.m_localBuondsVer != bounds.version || st != this.m_transfrom.updateStatus) {
         this.m_localBuondsVer = bounds.version;
         this.updateLocalBoundsVS(bounds);
         let in_vs = this.m_lBoundsVS;
         let out_vs = DE.s_boundsOutVS;
-        this.m_trs.getMatrix().transformVectors(in_vs, 24, out_vs);
+        this.m_transfrom.getMatrix().transformVectors(in_vs, 24, out_vs);
         this.m_globalBounds.reset();
-        this.m_globalBounds.addFloat32Arr(out_vs);
+        this.m_globalBounds.addXYZFloat32Arr(out_vs);
         this.m_globalBounds.update();
       }
     } else {
       DE.s_prePos.setXYZ(0, 0, 0);
       DE.s_pos.setXYZ(0, 0, 0);
-      let matrix = this.m_trs.getMatrix(false);
+      let matrix = this.m_transfrom.getMatrix(false);
       matrix.transformVector3Self(DE.s_prePos);
-      this.m_trs.update();
-      matrix = this.m_trs.getMatrix(false);
+      this.m_transfrom.update();
+      matrix = this.m_transfrom.getMatrix(false);
       matrix.transformVector3Self(DE.s_pos);
       DE.s_pos.subtractBy(DE.s_prePos);
       let gbounds = this.m_globalBounds;
@@ -12283,17 +13337,17 @@ class DisplayEntity {
   }
 
   update() {
-    if (this.m_trs.updatedStatus > this.m_transStatus) this.m_transStatus = this.m_trs.updatedStatus;
+    if (this.m_transfrom.updatedStatus > this.m_transStatus) this.m_transStatus = this.m_transfrom.updatedStatus;
 
     if (this.m_transStatus != ROTransform_1.default.UPDATE_NONE) {
       if (this.m_mesh != null && this.m_globalBounds != null) {
         this.updateGlobalBounds();
       } else {
-        this.m_trs.update();
+        this.m_transfrom.update();
       }
 
       this.m_transStatus = ROTransform_1.default.UPDATE_NONE;
-      this.m_trs.updatedStatus = this.m_transStatus;
+      this.m_transfrom.updatedStatus = this.m_transStatus;
     }
   }
 
@@ -12305,7 +13359,7 @@ class DisplayEntity {
       this.m_eventDispatcher = null;
     }
 
-    if (this.m_trs != null && this.isFree()) {
+    if (this.m_transfrom != null && this.isFree()) {
       // 这里要保证其在所有的process中都被移除
       if (this.m_display != null) {
         this.m_mesh.__$detachVBuf(this.m_display.vbuf);
@@ -12314,8 +13368,8 @@ class DisplayEntity {
         this.m_display = null;
       }
 
-      ROTransform_1.default.Restore(this.m_trs);
-      this.m_trs = null;
+      ROTransform_1.default.Restore(this.m_transfrom);
+      this.m_transfrom = null;
 
       if (this.m_mesh != null) {
         this.m_mesh.__$detachThis();
@@ -12348,42 +13402,6 @@ DisplayEntity.s_boundsOutVS = new Float32Array(24);
 DisplayEntity.s_pos = new Vector3D_1.default();
 DisplayEntity.s_prePos = new Vector3D_1.default();
 exports.default = DisplayEntity;
-
-/***/ }),
-
-/***/ "4301":
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-class MaterialContextParam {
-  constructor() {
-    this.pointLightsTotal = 1;
-    this.directionLightsTotal = 1;
-    this.spotLightsTotal = 0;
-    this.vsmFboIndex = 0;
-    this.vsmEnabled = true;
-    this.loadAllShaderCode = false;
-    this.shaderCodeBinary = false;
-    this.shaderLibVersion = "";
-    this.shaderFileNickname = false;
-    this.lambertMaterialEnabled = true;
-    this.pbrMaterialEnabled = true;
-    /**
-     * 生产 二进制 glsl代码文件
-     */
-
-    this.buildBinaryFile = false;
-  }
-
-}
-
-exports.MaterialContextParam = MaterialContextParam;
 
 /***/ }),
 
@@ -12427,10 +13445,6 @@ class RPONodeBuilder extends PoolNodeBuilder_1.default {
     return new RPONode_1.default();
   }
 
-  createRPONode() {
-    return new RPONode_1.default();
-  }
-
 }
 
 exports.default = RPONodeBuilder;
@@ -12471,57 +13485,17 @@ const VaoVertexRenderObj_1 = __importDefault(__webpack_require__("fa60"));
 class ROVertexRes {
   constructor() {
     this.m_vtx = null;
-    this.m_typeList = null;
-    this.m_offsetList = null;
-    this.m_sizeList = null;
     this.m_vtxUid = -1;
     this.m_gpuBufs = [];
     this.m_gpuBufsTotal = 0;
     this.m_type = 0;
     this.m_attribsTotal = 0;
     this.m_wholeStride = 0;
-    this.m_bufIVS = null;
+    this.m_typeList = null;
+    this.m_offsetList = null;
+    this.m_sizeList = null;
     this.m_vroList = [];
     this.m_vroListLen = 0;
-    this.m_attachCount = 0;
-  }
-
-  static create(rc, shdp, vtx) {
-    let vtxUid = vtx.getUid();
-    let map = ROVertexRes.s_map;
-    let vt; // console.log("GpuVtxObject::createVertex(), vtxUid: ", vtxUid, ", uid: ", this.m_uid);
-
-    if (map.has(vtxUid)) {
-      vt = map.get(vtxUid);
-    } else {
-      // console.log("ROVertexRes::create() new instance, vtxUid: ", vtxUid);
-      vt = new ROVertexRes();
-      map.set(vtxUid, vt);
-      vt.initialize(rc, shdp, vtx);
-    }
-
-    return vt;
-  }
-
-  __$attachThis() {
-    ++this.m_attachCount; // console.log("ROVertexRes::__$attachThis() this.m_attachCount: "+this.m_attachCount);
-  }
-
-  __$detachThis() {
-    if (this.m_attachCount == 1) {
-      --this.m_attachCount; // console.log("ROVertexRes::__$detachThis() this.m_attachCount: "+this.m_attachCount);
-      // this.__$dispose();
-    } else {
-      --this.m_attachCount; // console.log("ROVertexRes::__$detachThis() this.m_attachCount: "+this.m_attachCount);
-    }
-
-    if (this.m_attachCount < 1) {
-      this.m_attachCount = 0;
-    }
-  }
-
-  getAttachCount() {
-    return this.m_attachCount;
   }
 
   updateToGpu(rc) {
@@ -12567,7 +13541,6 @@ class ROVertexRes {
     this.m_sizeList = [fvs.length];
 
     if (this.m_typeList == null) {
-      this.m_bufIVS = shdp.getLocationIVS();
       this.m_wholeStride = 0;
       this.m_typeList = new Array(this.m_attribsTotal);
       this.m_offsetList = new Array(this.m_attribsTotal);
@@ -12596,8 +13569,7 @@ class ROVertexRes {
     let buf = null;
     let dataUsage = vtx.getBufDataUsage();
     this.m_gpuBufsTotal = this.m_vtx.getBuffersTotal();
-    this.m_sizeList = new Array(this.m_attribsTotal);
-    this.m_bufIVS = shdp.getLocationIVS(); // console.log("uploadSeparated, this.m_gpuBufs: "+this.m_gpuBufs);
+    this.m_sizeList = new Array(this.m_attribsTotal); // console.log("uploadSeparated, this.m_gpuBufs: "+this.m_gpuBufs);
 
     if (vtx.bufData == null) {
       for (; i < this.m_attribsTotal; ++i) {
@@ -12661,22 +13633,17 @@ class ROVertexRes {
   }
 
   initialize(rc, shdp, vtx) {
-    /**
-     * 这里的初始化可能会出现错误, 因为 shd 中使用的buffers数量可能少于实际 vtx 中的 attributes 数量
-     * 为了防止错误, 构建这个 RoVertexRes 实例的shdp中的attributes必须是和vtx buffers匹配的
-     */
     if (this.m_gpuBufs.length < 1 && vtx != null) {
       this.version = vtx.vertexVer;
       this.m_vtx = vtx;
       this.m_vtxUid = vtx.getUid();
       this.m_type = vtx.getType();
-      let typeList = vtx.getBufTypeList();
+      let typeList = vtx.getBufTypeList(); //let sizeList: number[] = vtx.getBufSizeList();
+
       this.m_attribsTotal = typeList != null ? typeList.length : shdp.getLocationsTotal();
 
       if (shdp.getLocationsTotal() != vtx.getAttribsTotal()) {
-        let info = "shdp.getLocationsTotal() is " + shdp.getLocationsTotal() + " != vtx.getAttribsTotal(), shdp has " + shdp.getLocationsTotal() + ", vtx has " + vtx.getAttribsTotal();
-        info += "\n这可能会导致渲染过程无法正常使用所有的 vtx buffers";
-        console.warn(info);
+        console.warn("shdp.getLocationsTotal() is " + shdp.getLocationsTotal() + " != vtx.getAttribsTotal() is " + vtx.getAttribsTotal() + "/" + (typeList != null ? typeList.length : 0));
       }
 
       if (this.m_type < 1) {
@@ -12685,24 +13652,6 @@ class ROVertexRes {
       } else {
         // separated buf
         this.uploadSeparated(rc, shdp);
-      }
-
-      let layoutBit = vtx.getBufSortFormat();
-
-      if (layoutBit > 0) {
-        // console.log("XXXXX ROVtx XXX layoutBit: ", layoutBit);
-        let ivs = new Array(12);
-        let index = 0;
-
-        for (let i = 0; i < 10; ++i) {
-          const bit = 1 << i;
-
-          if ((bit & layoutBit) > 0) {
-            ivs[i + 1] = index++;
-          }
-        }
-
-        this.m_bufIVS = ivs;
       }
     }
   }
@@ -12720,27 +13669,22 @@ class ROVertexRes {
   } // 创建被 RPOUnit 使用的 vro 实例
 
 
-  createVRO(rc, shdp, vaoEnabled, ibufRes) {
+  createVRO(rc, shdp, vaoEnabled, ibufRes, ibufId) {
     let attribsTotal = shdp.getLocationsTotal();
 
     if (this.m_attribsTotal * attribsTotal > 0 && attribsTotal <= this.m_attribsTotal) {
-      // console.log("ROVertexRes::createVRO(), this.m_type: ",this.m_type, ", ibufRes.getUid(): ",ibufRes.getUid(),", vtxUid: ", this.m_vtxUid);
-      let mid = this.getVROMid(rc, shdp, vaoEnabled, ibufRes.getUid());
+      let mid = this.getVROMid(rc, shdp, vaoEnabled, ibufId);
       let i = 0;
       let pvro = VaoVertexRenderObj_1.default.GetByMid(mid);
 
       if (pvro != null) {
         return pvro;
-      } // TODO(vilyLei): 暂时注释掉下面这行代码
+      } // console.log("VtxCombinedBuf::createVROBegin(), this.m_type: ",this.m_type, "mid: ",mid);
+      // TODO(vilyLei): 暂时注释掉下面这行代码
       // let flag: boolean = shdp.testVertexAttribPointerOffset(this.m_offsetList);
       // console.log("createVRO testVertexAttribPointerOffset flag: ",flag, this.m_typeList);
       // DivLog.ShowLog("createVRO testVertexAttribPointerOffset flag: "+flag);
-      // 如果这个ivs的数据和 vtx buffers 数据项不匹配, 则会出现渲染错误的情况
-      // 因为数据项匹配的ROVertexRes实例可能不会构建或者比较迟才构建
-      // 这会导致ivs 是不正确的, 甚至vtx buffers
 
-
-      const ivs = this.m_bufIVS;
 
       if (vaoEnabled) {
         // vao 的生成要记录标记,防止重复生成, 因为同一组数据在不同的shader使用中可能组合方式不同，导致了vao可能是多样的
@@ -12753,47 +13697,15 @@ class ROVertexRes {
 
         if (this.m_type < 1) {
           // combined buf vro
-          rc.bindArrBuf(this.m_gpuBufs[0]); // if (this.m_typeList.length == attribsTotal) {
-          //     for (i = 0; i < attribsTotal; ++i) {
-          //         shdp.vertexAttribPointerTypeFloat(this.m_typeList[i], this.m_wholeStride, this.m_offsetList[i]);
-          //     }
-          // } else {
-          //     const types = shdp.getLocationTypes();
-          //     for (i = 0; i < types.length; ++i) {
-          //         const k = types[i] - 1;
-          //         shdp.vertexAttribPointerTypeFloat(this.m_typeList[k], this.m_wholeStride, this.m_offsetList[k]);
-          //     }
-          // }
+          rc.bindArrBuf(this.m_gpuBufs[0]);
 
-          const types = shdp.getLocationTypes();
-
-          for (i = 0; i < types.length; ++i) {
-            const k = ivs[types[i]];
-            shdp.vertexAttribPointerTypeFloat(this.m_typeList[k], this.m_wholeStride, this.m_offsetList[k]);
+          for (i = 0; i < attribsTotal; ++i) {
+            shdp.vertexAttribPointerTypeFloat(this.m_typeList[i], this.m_wholeStride, this.m_offsetList[i]);
           }
         } else {
-          // console.log("A attribsTotal: ", attribsTotal, this.m_typeList);
-          // console.log("B shdp.getLocationTypes(): ", shdp.getLocationTypes());
-          // if (this.m_typeList.length == attribsTotal) {
-          //     for (i = 0; i < attribsTotal; ++i) {
-          //         rc.bindArrBuf(this.m_gpuBufs[i]);
-          //         shdp.vertexAttribPointerTypeFloat(this.m_typeList[i], 0, 0);
-          //     }
-          // } else {
-          //     const types = shdp.getLocationTypes();
-          //     for (i = 0; i < types.length; ++i) {
-          //         const k = types[i] - 1;
-          //         rc.bindArrBuf(this.m_gpuBufs[k]);
-          //         shdp.vertexAttribPointerTypeFloat(this.m_typeList[k], 0, 0);
-          //     }
-          // }
-          // const ivs = shdp.getLocationIVS();
-          const types = shdp.getLocationTypes();
-
-          for (i = 0; i < types.length; ++i) {
-            const k = ivs[types[i]];
-            rc.bindArrBuf(this.m_gpuBufs[k]);
-            shdp.vertexAttribPointerTypeFloat(this.m_typeList[k], 0, 0);
+          for (i = 0; i < attribsTotal; ++i) {
+            rc.bindArrBuf(this.m_gpuBufs[i]);
+            shdp.vertexAttribPointerTypeFloat(this.m_typeList[i], 0, 0);
           }
         }
 
@@ -12831,48 +13743,38 @@ class ROVertexRes {
       this.m_vroList.push(pvro);
       ++this.m_vroListLen;
       return pvro;
-    } else {
-      console.error("shader 中需要的 attribute 数量 比当前 vertex buffer 多... shader.attribsTotal: ", attribsTotal, ", this.attribsTotal: ", this.m_attribsTotal);
-      return null;
     }
+
+    return null;
   }
 
   destroy(rc) {
-    // console.log("ROVertexRes::destroy(), this.m_attachCount: ", this.m_attachCount);
-    if (this.m_attachCount < 1) {
-      if (this.m_gpuBufs.length > 0) {
-        console.log("ROVertexRes::destroy(), type: ", this.m_type, ", vtxUid: ", this.m_vtxUid);
-        this.m_bufIVS = null;
-        this.m_type = -1;
-        let i = 0;
-        let vro = null;
+    if (this.m_gpuBufs.length > 0) {
+      console.log("ROVertexRes::destroy(), type: " + this.m_type);
+      this.m_type = -1;
+      let i = 0;
+      let vro = null;
 
-        for (; i < this.m_vroListLen; ++i) {
-          this.m_vroList[i].restoreThis();
-        }
-
-        this.m_vroList = [];
-        this.m_vroListLen = 0;
-
-        for (i = 0; i < this.m_attribsTotal; ++i) {
-          rc.deleteBuf(this.m_gpuBufs[i]);
-          this.m_gpuBufs[i] = null;
-        }
-
-        this.m_attribsTotal = 0;
-        this.m_gpuBufs = [];
+      for (; i < this.m_vroListLen; ++i) {
+        vro = this.m_vroList.pop();
+        vro.restoreThis();
+        this.m_vroList[i] = null;
       }
 
-      if (this.m_vtxUid >= 0) {
-        ROVertexRes.s_map.delete(this.m_vtxUid);
-        this.m_vtxUid = -1;
+      this.m_vroListLen = 0;
+
+      for (i = 0; i < this.m_attribsTotal; ++i) {
+        rc.deleteBuf(this.m_gpuBufs[i]);
+        this.m_gpuBufs[i] = null;
       }
+
+      this.m_attribsTotal = 0;
+      this.m_gpuBufs = [];
     }
   }
 
 }
 
-ROVertexRes.s_map = new Map();
 exports.ROVertexRes = ROVertexRes;
 
 /***/ }),
@@ -12962,7 +13864,6 @@ class ShaderCodeBuilder {
     this.fragMainCodeUnlock = true;
     this.vertHeadCodeUnlock = true;
     this.vertMainCodeUnlock = true;
-    this.gamma = true;
     this.autoBuildHeadCodeEnabled = true;
     this.mathDefineEanbled = true;
     this.normalEnabled = false;
@@ -12999,7 +13900,6 @@ class ShaderCodeBuilder {
     this.fragMainCodeUnlock = true;
     this.vertHeadCodeUnlock = true;
     this.vertMainCodeUnlock = true;
-    this.gamma = true;
     this.autoBuildHeadCodeEnabled = true;
     this.m_use2DMap = false;
     this.m_vertHeadCode = "";
@@ -13694,49 +14594,6 @@ exports.default = ShaderCodeBuilder;
 
 /***/ }),
 
-/***/ "4adb":
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/***************************************************************************/
-
-/*                                                                         */
-
-/*  Copyright 2018-2022 by                                                 */
-
-/*  Vily(vily313@126.com)                                                  */
-
-/*                                                                         */
-
-/***************************************************************************/
-
-var __importDefault = this && this.__importDefault || function (mod) {
-  return mod && mod.__esModule ? mod : {
-    "default": mod
-  };
-};
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-const EventBase_1 = __importDefault(__webpack_require__("a996"));
-
-class SelectionEvent extends EventBase_1.default {
-  constructor() {
-    super();
-    this.flag = true;
-    this.type = SelectionEvent.SELECT;
-  }
-
-}
-
-SelectionEvent.SELECT = 3201;
-exports.default = SelectionEvent;
-
-/***/ }),
-
 /***/ "4cf7":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -14412,17 +15269,11 @@ class DataMesh extends MeshBase_1.default {
     this.m_cvs = null;
     this.m_tvs = null;
     this.m_btvs = null;
-    this.m_rayTester = null;
     this.m_boundsVersion = -2;
-    this.autoBuilding = true;
     this.vsStride = 3;
     this.uvsStride = 2;
     this.nvsStride = 3;
     this.cvsStride = 3;
-  }
-
-  setRayTester(rayTester) {
-    this.m_rayTester = rayTester;
   }
   /**
    * set vertex position data
@@ -14433,7 +15284,6 @@ class DataMesh extends MeshBase_1.default {
   setVS(vs) {
     this.m_vs = vs;
     this.m_boundsChanged = true;
-    return this;
   }
   /**
    * @returns vertex position buffer Float32Array
@@ -14451,7 +15301,6 @@ class DataMesh extends MeshBase_1.default {
 
   setUVS(uvs) {
     this.m_uvs = uvs;
-    return this;
   }
   /**
    * @returns vertex uv buffer Float32Array
@@ -14469,7 +15318,6 @@ class DataMesh extends MeshBase_1.default {
 
   setNVS(nvs) {
     this.m_nvs = nvs;
-    return this;
   }
   /**
    * @returns vertex normal buffer Float32Array
@@ -14487,7 +15335,6 @@ class DataMesh extends MeshBase_1.default {
 
   setTVS(tvs) {
     this.m_tvs = tvs;
-    return this;
   }
   /**
    * @returns vertex tangent buffer Float32Array
@@ -14505,7 +15352,6 @@ class DataMesh extends MeshBase_1.default {
 
   setBTVS(btvs) {
     this.m_btvs = btvs;
-    return this;
   }
   /**
    * set vertex color(r,g,b) data
@@ -14515,7 +15361,6 @@ class DataMesh extends MeshBase_1.default {
 
   setCVS(cvs) {
     this.m_cvs = cvs;
-    return this;
   }
   /**
    * @returns vertex bitangent buffer Float32Array
@@ -14530,7 +15375,6 @@ class DataMesh extends MeshBase_1.default {
     this.m_initIVS = ivs;
     this.m_ivs = ivs;
     this.m_boundsChanged = true;
-    return this;
   }
 
   initializeFromGeometry(geom) {
@@ -14548,20 +15392,19 @@ class DataMesh extends MeshBase_1.default {
 
   initialize() {
     if (this.m_vs != null) {
-      if (this.autoBuilding) {
-        if (this.bounds == null) {
-          this.bounds = new AABB_1.default();
-          this.bounds.addFloat32Arr(this.m_vs);
-          this.bounds.update();
-        } else if (this.m_boundsChanged || this.m_boundsVersion == this.bounds.version) {
-          this.bounds.reset(); // 如果重新init, 但是版本号却没有改变，说明bounds需要重新计算
+      if (this.bounds == null) {
+        this.bounds = new AABB_1.default();
+        this.bounds.addXYZFloat32Arr(this.m_vs);
+        this.bounds.update();
+        this.m_boundsVersion = this.bounds.version;
+      } else if (this.m_boundsChanged || this.m_boundsVersion == this.bounds.version) {
+        this.bounds.reset(); // 如果重新init, 但是版本号却没有改变，说明bounds需要重新计算
 
-          this.bounds.addFloat32Arr(this.m_vs);
-          this.bounds.update();
-        }
+        this.bounds.addXYZFloat32Arr(this.m_vs);
+        this.bounds.update();
+        this.m_boundsVersion = this.bounds.version;
       }
 
-      this.m_boundsVersion = this.bounds.version;
       this.m_boundsChanged = false;
       this.m_ivs = this.m_initIVS;
       ROVertexBuffer_1.default.Reset();
@@ -14575,9 +15418,10 @@ class DataMesh extends MeshBase_1.default {
 
       if (this.isVBufEnabledAt(VtxBufConst_1.default.VBUF_NVS_INDEX)) {
         if (this.m_nvs == null) {
-          let trisNumber = this.m_ivs.length / 3;
+          this.vtCount = this.m_ivs.length;
+          this.trisNumber = this.vtCount / 3;
           this.m_nvs = new Float32Array(this.m_vs.length);
-          SurfaceNormalCalc_1.default.ClacTrisNormal(this.m_vs, this.m_vs.length, trisNumber, this.m_ivs, this.m_nvs);
+          SurfaceNormalCalc_1.default.ClacTrisNormal(this.m_vs, this.m_vs.length, this.trisNumber, this.m_ivs, this.m_nvs);
         }
 
         ROVertexBuffer_1.default.AddFloat32Data(this.m_nvs, this.nvsStride);
@@ -14597,60 +15441,48 @@ class DataMesh extends MeshBase_1.default {
       }
 
       ROVertexBuffer_1.default.vbWholeDataEnabled = this.vbWholeDataEnabled;
+      this.vtxTotal = this.m_vs.length / 3;
+      this.updateWireframeIvs();
       this.vtCount = this.m_ivs.length;
-
-      if (this.autoBuilding) {
-        this.vtxTotal = this.m_vs.length / this.vsStride;
-        this.updateWireframeIvs();
-        this.vtCount = this.m_ivs.length;
-        this.trisNumber = this.vtCount / 3;
-      }
 
       if (this.m_vbuf != null) {
         ROVertexBuffer_1.default.UpdateBufData(this.m_vbuf);
       } else {
-        let u = this.getBufDataUsage();
-        let f = this.getBufSortFormat();
-        this.m_vbuf = ROVertexBuffer_1.default.CreateBySaveData(u, f);
+        this.m_vbuf = ROVertexBuffer_1.default.CreateBySaveData(this.getBufDataUsage(), this.getBufSortFormat());
 
         if (this.vbWholeDataEnabled) {
-          this.m_vbuf = ROVertexBuffer_1.default.CreateBySaveData(u, f);
+          this.m_vbuf = ROVertexBuffer_1.default.CreateBySaveData(this.getBufDataUsage(), this.getBufSortFormat());
         } else {
-          this.m_vbuf = ROVertexBuffer_1.default.CreateBySaveDataSeparate(u);
+          this.m_vbuf = ROVertexBuffer_1.default.CreateBySaveDataSeparate(this.getBufDataUsage());
         }
       }
 
       this.m_vbuf.setUintIVSData(this.m_ivs);
+      this.trisNumber = this.vtCount / 3;
       this.buildEnd();
     }
   }
   /**
    * 射线和自身的相交检测(多面体或几何函数(例如球体))
+   * @boundsHit       表示是否包围盒体已经和射线相交了
    * @rlpv            表示物体坐标空间的射线起点
    * @rltv            表示物体坐标空间的射线朝向
    * @outV            如果检测相交存放物体坐标空间的交点
-   * @boundsHit       表示是否包围盒体已经和射线相交了
    * @return          返回值 -1 表示不会进行检测,1表示相交,0表示不相交
    */
 
 
   testRay(rlpv, rltv, outV, boundsHit) {
-    if (this.m_rayTester != null) {
-      return this.m_rayTester.testRay(rlpv, rltv, outV, boundsHit);
-    }
-
     return -1;
+  }
+
+  toString() {
+    return "[DataMesh()]";
   }
 
   __$destroy() {
     if (this.isResFree()) {
       this.bounds = null;
-
-      if (this.m_rayTester != null) {
-        this.m_rayTester.destroy();
-        this.m_rayTester = null;
-      }
-
       this.m_vs = null;
       this.m_uvs = null;
       this.m_nvs = null;
@@ -14674,6 +15506,17 @@ exports.default = DataMesh;
 
 "use strict";
 
+/***************************************************************************/
+
+/*                                                                         */
+
+/*  Copyright 2018-2022 by                                                 */
+
+/*  Vily(vily313@126.com)                                                  */
+
+/*                                                                         */
+
+/***************************************************************************/
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -14690,113 +15533,6 @@ var MaterialPipeType;
 })(MaterialPipeType || (MaterialPipeType = {}));
 
 exports.MaterialPipeType = MaterialPipeType;
-
-/***/ }),
-
-/***/ "52d0":
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/***************************************************************************/
-
-/*                                                                         */
-
-/*  Copyright 2018-2022 by                                                 */
-
-/*  Vily(vily313@126.com)                                                  */
-
-/*                                                                         */
-
-/***************************************************************************/
-// 整个渲染场景的入口类
-
-var __importDefault = this && this.__importDefault || function (mod) {
-  return mod && mod.__esModule ? mod : {
-    "default": mod
-  };
-};
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-const RendererState_1 = __importDefault(__webpack_require__("29ef"));
-
-const RendererSceneBase_1 = __importDefault(__webpack_require__("aa80"));
-
-const CoRendererSubScene_1 = __importDefault(__webpack_require__("ee3b"));
-
-const RenderableMaterialBlock_1 = __webpack_require__("1b95");
-
-const RenderableEntityBlock_1 = __webpack_require__("251a"); // declare var CoRScene: ICoRScene;
-
-
-class CoRendererScene extends RendererSceneBase_1.default {
-  constructor() {
-    super();
-    this.m_tickId = -1;
-  }
-
-  createRendererIns() {
-    this.m_currStage3D = this.stage3D;
-    this.m_stage3D = this.stage3D;
-    return CoRenderer.createRendererInstance();
-  }
-
-  rendererInsInited() {
-    this.m_camera = this.m_renderProxy.getCamera();
-    let srcSt = CoRenderer.RendererState;
-    srcSt.rstb.buildToRST(RendererState_1.default);
-  }
-
-  initThis() {
-    let selfT = this;
-    selfT.materialBlock = new RenderableMaterialBlock_1.RenderableMaterialBlock();
-    selfT.entityBlock = new RenderableEntityBlock_1.RenderableEntityBlock();
-    this.materialBlock.initialize();
-    this.entityBlock.initialize();
-    this.tickUpdate();
-  }
-
-  contextRunEnd() {
-    this.m_rcontext.runEnd();
-  }
-
-  tickUpdate() {
-    if (this.m_tickId > -1) {
-      clearTimeout(this.m_tickId);
-    }
-
-    this.m_tickId = setTimeout(this.tickUpdate.bind(this), this.m_rparam.getTickUpdateTime());
-    this.textureBlock.run();
-  }
-
-  createSubScene(rparam = null, renderProcessesTotal = 3, createNewCamera = true) {
-    if (this.m_renderer != null && this.materialBlock != null) {
-      this.m_localRunning = true;
-      let subsc = new CoRendererSubScene_1.default(this, this.m_renderer, this.m_evtFlowEnabled); // this.m_subscList.push(subsc);
-
-      this.m_subscListLen++;
-      let sc = subsc;
-      sc.textureBlock = this.textureBlock;
-      sc.materialBlock = this.materialBlock;
-      sc.entityBlock = this.entityBlock;
-
-      if (rparam != null) {
-        sc.initialize(rparam, renderProcessesTotal, createNewCamera);
-      }
-
-      return subsc;
-    }
-
-    throw Error("Illegal operation!!!");
-    return null;
-  }
-
-}
-
-exports.default = CoRendererScene;
 
 /***/ }),
 
@@ -15037,40 +15773,151 @@ exports.UniformDataSlot = UniformDataSlot;
 
 /***************************************************************************/
 
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+const RendererState_1 = __importDefault(__webpack_require__("29ef"));
+
 class RenderingState {
-  constructor(st) {
-    let t = this;
-    t.NORMAL_STATE = st.NORMAL_STATE;
-    t.BACK_CULLFACE_NORMAL_STATE = st.BACK_CULLFACE_NORMAL_STATE;
-    t.FRONT_CULLFACE_NORMAL_STATE = st.FRONT_CULLFACE_NORMAL_STATE;
-    t.NONE_CULLFACE_NORMAL_STATE = st.NONE_CULLFACE_NORMAL_STATE;
-    t.ALL_CULLFACE_NORMAL_STATE = st.ALL_CULLFACE_NORMAL_STATE;
-    t.BACK_NORMAL_ALWAYS_STATE = st.BACK_NORMAL_ALWAYS_STATE;
-    t.BACK_TRANSPARENT_STATE = st.BACK_TRANSPARENT_STATE;
-    t.BACK_TRANSPARENT_ALWAYS_STATE = st.BACK_TRANSPARENT_ALWAYS_STATE;
-    t.NONE_TRANSPARENT_STATE = st.NONE_TRANSPARENT_STATE;
-    t.NONE_TRANSPARENT_ALWAYS_STATE = st.NONE_TRANSPARENT_ALWAYS_STATE;
-    t.FRONT_CULLFACE_GREATER_STATE = st.FRONT_CULLFACE_GREATER_STATE;
-    t.BACK_ADD_BLENDSORT_STATE = st.BACK_ADD_BLENDSORT_STATE;
-    t.BACK_ADD_ALWAYS_STATE = st.BACK_ADD_ALWAYS_STATE;
-    t.BACK_ALPHA_ADD_ALWAYS_STATE = st.BACK_ALPHA_ADD_ALWAYS_STATE;
-    t.NONE_ADD_ALWAYS_STATE = st.NONE_ADD_ALWAYS_STATE;
-    t.NONE_ADD_BLENDSORT_STATE = st.NONE_ADD_BLENDSORT_STATE;
-    t.NONE_ALPHA_ADD_ALWAYS_STATE = st.NONE_ALPHA_ADD_ALWAYS_STATE;
-    t.FRONT_ADD_ALWAYS_STATE = st.FRONT_ADD_ALWAYS_STATE;
-    t.FRONT_TRANSPARENT_STATE = st.FRONT_TRANSPARENT_STATE;
-    t.FRONT_TRANSPARENT_ALWAYS_STATE = st.FRONT_TRANSPARENT_ALWAYS_STATE;
-    t.NONE_CULLFACE_NORMAL_ALWAYS_STATE = st.NONE_CULLFACE_NORMAL_ALWAYS_STATE;
-    t.BACK_ALPHA_ADD_BLENDSORT_STATE = st.BACK_ALPHA_ADD_BLENDSORT_STATE;
+  constructor() {
+    this.NORMAL_STATE = 0;
+    this.BACK_CULLFACE_NORMAL_STATE = 0;
+    this.FRONT_CULLFACE_NORMAL_STATE = 1;
+    this.NONE_CULLFACE_NORMAL_STATE = 2;
+    this.ALL_CULLFACE_NORMAL_STATE = 3;
+    this.BACK_NORMAL_ALWAYS_STATE = 4;
+    this.BACK_TRANSPARENT_STATE = 5;
+    this.BACK_TRANSPARENT_ALWAYS_STATE = 6;
+    this.NONE_TRANSPARENT_STATE = 7;
+    this.NONE_TRANSPARENT_ALWAYS_STATE = 8;
+    this.FRONT_CULLFACE_GREATER_STATE = 9;
+    this.BACK_ADD_BLENDSORT_STATE = 10;
+    this.BACK_ADD_ALWAYS_STATE = 11;
+    this.BACK_ALPHA_ADD_ALWAYS_STATE = 12;
+    this.NONE_ADD_ALWAYS_STATE = 13;
+    this.NONE_ADD_BLENDSORT_STATE = 14;
+    this.NONE_ALPHA_ADD_ALWAYS_STATE = 15;
+    this.FRONT_ADD_ALWAYS_STATE = 16;
+    this.FRONT_TRANSPARENT_STATE = 17;
+    this.FRONT_TRANSPARENT_ALWAYS_STATE = 18;
+    this.NONE_CULLFACE_NORMAL_ALWAYS_STATE = 19;
+    this.BACK_ALPHA_ADD_BLENDSORT_STATE = 20;
+    let state = RendererState_1.default;
+    let selfT = this;
+    selfT.NORMAL_STATE = state.NORMAL_STATE;
+    selfT.BACK_CULLFACE_NORMAL_STATE = state.BACK_CULLFACE_NORMAL_STATE;
+    selfT.FRONT_CULLFACE_NORMAL_STATE = state.FRONT_CULLFACE_NORMAL_STATE;
+    selfT.NONE_CULLFACE_NORMAL_STATE = state.NONE_CULLFACE_NORMAL_STATE;
+    selfT.ALL_CULLFACE_NORMAL_STATE = state.ALL_CULLFACE_NORMAL_STATE;
+    selfT.BACK_NORMAL_ALWAYS_STATE = state.BACK_NORMAL_ALWAYS_STATE;
+    selfT.BACK_TRANSPARENT_STATE = state.BACK_TRANSPARENT_STATE;
+    selfT.BACK_TRANSPARENT_ALWAYS_STATE = state.BACK_TRANSPARENT_ALWAYS_STATE;
+    selfT.NONE_TRANSPARENT_STATE = state.NONE_TRANSPARENT_STATE;
+    selfT.NONE_TRANSPARENT_ALWAYS_STATE = state.NONE_TRANSPARENT_ALWAYS_STATE;
+    selfT.FRONT_CULLFACE_GREATER_STATE = state.FRONT_CULLFACE_GREATER_STATE;
+    selfT.BACK_ADD_BLENDSORT_STATE = state.BACK_ADD_BLENDSORT_STATE;
+    selfT.BACK_ADD_ALWAYS_STATE = state.BACK_ADD_ALWAYS_STATE;
+    selfT.BACK_ALPHA_ADD_ALWAYS_STATE = state.BACK_ALPHA_ADD_ALWAYS_STATE;
+    selfT.NONE_ADD_ALWAYS_STATE = state.NONE_ADD_ALWAYS_STATE;
+    selfT.NONE_ADD_BLENDSORT_STATE = state.NONE_ADD_BLENDSORT_STATE;
+    selfT.NONE_ALPHA_ADD_ALWAYS_STATE = state.NONE_ALPHA_ADD_ALWAYS_STATE;
+    selfT.FRONT_ADD_ALWAYS_STATE = state.FRONT_ADD_ALWAYS_STATE;
+    selfT.FRONT_TRANSPARENT_STATE = state.FRONT_TRANSPARENT_STATE;
+    selfT.FRONT_TRANSPARENT_ALWAYS_STATE = state.FRONT_TRANSPARENT_ALWAYS_STATE;
+    selfT.NONE_CULLFACE_NORMAL_ALWAYS_STATE = state.NONE_CULLFACE_NORMAL_ALWAYS_STATE;
+    selfT.BACK_ALPHA_ADD_BLENDSORT_STATE = state.BACK_ALPHA_ADD_BLENDSORT_STATE;
   }
 
 }
 
 exports.RenderingState = RenderingState;
+
+/***/ }),
+
+/***/ "53ea":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/***************************************************************************/
+
+/*                                                                         */
+
+/*  Copyright 2018-2022 by                                                 */
+
+/*  Vily(vily313@126.com)                                                  */
+
+/*                                                                         */
+
+/***************************************************************************/
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+const Vector3D_1 = __importDefault(__webpack_require__("8e17"));
+
+const Plane_1 = __importDefault(__webpack_require__("e214"));
+
+class CameraViewRay {
+  constructor() {
+    this.m_camera = null;
+    this.m_stage = null;
+    this.m_rlpv = new Vector3D_1.default();
+    this.m_rltv = new Vector3D_1.default();
+    this.m_pnv = new Vector3D_1.default(0.0, 1.0, 0.0);
+    this.m_pdis = 0.0;
+    /**
+     * the intersection point in world space
+     */
+
+    this.position = new Vector3D_1.default();
+  }
+
+  bindCameraAndStage(camera, stage) {
+    this.m_camera = camera;
+    this.m_stage = stage;
+  }
+
+  setPlaneParam(plane_nv, plane_dis) {
+    this.m_pnv.copyFrom(plane_nv);
+    this.m_pnv.normalize();
+    this.m_pdis = plane_dis;
+  }
+  /**
+   * calculate the intersection point in world space
+   */
+
+
+  intersectPlane() {
+    if (this.m_camera != null && this.m_stage != null) {
+      this.m_camera.update();
+      this.m_camera.getWorldPickingRayByScreenXY(this.m_stage.mouseX, this.m_stage.mouseY, this.m_rlpv, this.m_rltv);
+      Plane_1.default.IntersectionSLV2(this.m_pnv, this.m_pdis, this.m_rlpv, this.m_rltv, this.position);
+    }
+  }
+
+  destroy() {
+    this.m_camera = null;
+    this.m_stage = null;
+  }
+
+}
+
+exports.default = CameraViewRay;
 
 /***/ }),
 
@@ -15169,89 +16016,6 @@ class Texture3DProxy extends TextureProxy_1.default {
 }
 
 exports.default = Texture3DProxy;
-
-/***/ }),
-
-/***/ "56a9":
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/***************************************************************************/
-
-/*                                                                         */
-
-/*  Copyright 2018-2022 by                                                 */
-
-/*  Vily(vily313@126.com)                                                  */
-
-/*                                                                         */
-
-/***************************************************************************/
-
-var __importDefault = this && this.__importDefault || function (mod) {
-  return mod && mod.__esModule ? mod : {
-    "default": mod
-  };
-};
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-const MathConst_1 = __importDefault(__webpack_require__("6e01"));
-/**
- * 正在被渲染的可渲染实体的集合
- */
-
-
-class RenderingEntitySet {
-  constructor() {
-    this.m_entities = new Array(2048);
-    this.m_total = 0;
-    this.m_flag = false;
-  }
-
-  query(q) {
-    q.query(this.m_entities, this.m_total);
-  }
-
-  getTotal() {
-    return this.m_total;
-  }
-
-  clear() {
-    if (this.m_flag) {
-      this.m_flag = false;
-      let len = this.m_entities.length;
-      let ls = this.m_entities;
-
-      for (let i = 0; i < len; ++i) {
-        ls[i] = null;
-      }
-
-      this.m_total = 0;
-    }
-  }
-
-  reset(total) {
-    this.m_flag = true;
-
-    if (total > this.m_entities.length) {
-      total = MathConst_1.default.GetNearestCeilPow2(total);
-      this.m_entities = new Array(total);
-    }
-
-    this.m_total = 0;
-  }
-
-  addEntity(et) {
-    this.m_entities[this.m_total++] = et;
-  }
-
-}
-
-exports.default = RenderingEntitySet;
 
 /***/ }),
 
@@ -16255,8 +17019,7 @@ class RPOBlock {
       if (RendererDevice_1.default.IsMobileWeb()) {
         // 如果不这么做，vro和shader attributes没有完全匹配的时候可能在某些设备上会有问题(例如ip6s上无法正常绘制)
         // 注意临时产生的 vro 对象的回收问题
-        // let vro: IVertexRenderObj = this.vtxResource.getVROByResUid(disp.vbuf.getUid(), this.m_shader.getCurrentShd(), true);
-        let vro = this.vtxResource.getVROByResUid(disp.getVtxResUid(), this.m_shader.getCurrentShd(), true);
+        let vro = this.vtxResource.getVROByResUid(disp.vbuf.getUid(), this.m_shader.getCurrentShd(), true);
         vro.run();
       } else {
         unit.vro.run();
@@ -16320,336 +17083,129 @@ exports.default = RPOBlock;
 
 /***/ }),
 
-/***/ "5f58":
+/***/ "61d7":
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-/***************************************************************************/
-
-/*                                                                         */
-
-/*  Copyright 2018-2022 by                                                 */
-
-/*  Vily(vily313@126.com)                                                  */
-
-/*                                                                         */
-
-/***************************************************************************/
-
-var __importDefault = this && this.__importDefault || function (mod) {
-  return mod && mod.__esModule ? mod : {
-    "default": mod
-  };
-};
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-const MeshBase_1 = __importDefault(__webpack_require__("cb29"));
+const TexAreaNode_1 = __webpack_require__("8ae0");
 
-const AABB_1 = __importDefault(__webpack_require__("fecb"));
-
-class BoundsMesh extends MeshBase_1.default {
-  constructor() {
-    super();
-    this.m_rayTester = null;
+class TextureAtlas {
+  constructor(width, height) {
+    this.m_uid = 0;
+    this.m_texAreaNode = null;
+    this.m_keyMap = new Map();
+    this.m_area = new TexAreaNode_1.TexArea();
+    this.m_offset = 2;
+    this.m_minSize = 32;
+    this.m_width = 32;
+    this.m_height = 32;
+    this.m_uvFlipY = false;
+    if (width < 128) width = 128;
+    if (height < 128) height = 128;
+    this.m_width = width;
+    this.m_height = height;
+    this.m_texAreaNode = new TexAreaNode_1.TexAreaNode(0, 0, width, height);
+    this.m_uid = TextureAtlas.s_uid++;
   }
 
-  setBounds(minV, maxV) {
-    if (this.bounds == null) {
-      this.bounds = new AABB_1.default();
-    }
-
-    this.bounds.min.copyFrom(minV);
-    this.bounds.max.copyFrom(maxV);
-    this.bounds.updateFast();
+  getUid() {
+    return this.m_uid;
   }
 
-  setRayTester(rayTester) {
-    this.m_rayTester = rayTester;
+  getWidth() {
+    return this.m_width;
   }
 
-  __$attachVBuf() {
-    return null;
+  getHeight() {
+    return this.m_height;
   }
 
-  __$detachVBuf(vbuf) {}
-
-  isEnabled() {
-    return this.bounds != null;
+  setMinSize(minSize) {
+    this.m_minSize = Math.max(minSize, 4);
   }
 
-  isPolyhedral() {
-    return false;
-  }
-  /**
-   * 射线和自身的相交检测(多面体或几何函数(例如球体))
-   * @rlpv            表示物体坐标空间的射线起点
-   * @rltv            表示物体坐标空间的射线朝向
-   * @outV            如果检测相交存放物体坐标空间的交点
-   * @boundsHit       表示是否包围盒体已经和射线相交了
-   * @return          返回值 -1 表示不会进行检测,1表示相交,0表示不相交
-   */
-
-
-  testRay(rlpv, rltv, outV, boundsHit) {
-    if (this.m_rayTester != null) {
-      return this.m_rayTester.testRay(rlpv, rltv, outV, boundsHit);
-    }
-
-    return 1;
-  }
-
-  __$destroy() {
-    this.bounds = null;
-    this.m_rayTester = null;
-  }
-
-}
-
-exports.default = BoundsMesh;
-
-/***/ }),
-
-/***/ "625d":
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/***************************************************************************/
-
-/*                                                                         */
-
-/*  Copyright 2018-2022 by                                                 */
-
-/*  Vily(vily313@126.com)                                                  */
-
-/*                                                                         */
-
-/***************************************************************************/
-
-var __importDefault = this && this.__importDefault || function (mod) {
-  return mod && mod.__esModule ? mod : {
-    "default": mod
-  };
-};
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-const ShaderUniformData_1 = __importDefault(__webpack_require__("b3bd"));
-
-const ShaderCodeBuffer_1 = __importDefault(__webpack_require__("faa5"));
-
-const MaterialBase_1 = __importDefault(__webpack_require__("0fc4"));
-
-class BrokenQuadLine3DShaderBuffer extends ShaderCodeBuffer_1.default {
-  constructor() {
-    super();
-    this.m_uniqueName = "";
-    this.dynColorEnabled = false;
-  }
-
-  initialize(texEnabled) {
-    //console.log("BrokenQuadLine3DShaderBuffer::initialize()...");
-    this.m_uniqueName = "BrokenQuadLine3DShd";
-
-    if (this.dynColorEnabled) {
-      this.m_uniqueName += "_dynColor";
-    }
-  }
-
-  getFragShaderCode() {
-    let fragCode = `
-precision mediump float;
-varying vec4 v_vtxColor;
-void main()
-{
-    gl_FragColor = v_vtxColor;
-}
-`;
-    return fragCode;
-  }
-
-  getVertShaderCode() {
-    let vtxCode = `
-precision mediump float;
-attribute vec4 a_vs;
-attribute vec4 a_vs2;
-`;
-
-    if (this.dynColorEnabled) {
-      vtxCode += "\nuniform vec4 u_color;";
-    } else {
-      vtxCode += "\nattribute vec4 a_cvs;";
-    }
-
-    vtxCode += `
-attribute vec4 a_cvs2;
-uniform vec4 u_stageParam;
-uniform vec4 u_frustumParam;
-uniform mat4 u_objMat;
-uniform mat4 u_viewMat;
-uniform mat4 u_projMat;
-varying vec4 v_vtxColor;
-void main()
-{
-vec4 pc = u_frustumParam;
-vec4 ps = u_stageParam;
-mat4 voMat4 = u_viewMat * u_objMat;
-float nearZ = pc[0];
-
-// cvs2 is prev pos
-// vs is curr pos
-// vs2 is next pos
-// prev pos -> curr pos -> next pos
-
-vec4 prev = voMat4 * vec4(a_cvs2.xyz, 1.0);
-vec4 pos = voMat4 * vec4(a_vs.xyz, 1.0);
-vec4 pv1b = pos;
-vec4 next = voMat4 * vec4(a_vs2.xyz, 1.0);
-
-float f = (pos.z < nearZ) ? 0.0 : 1.0;
-vec3 dir = next.xyz - pos.xyz;
-vec3 pv3 = ((pos.z - 1.0)/(pos.z - next.z)) * dir;
-pv3 = (pos.xyz + pv3) * f;
-pos.xyz = pos.xyz * (1.0 - f) + pv3;
-float sk = 1.0;//pc[3] / nearZ / ps[2];
-// calc screen pos
-dir = next.xyz - pos.xyz;
-f = abs(pos.z) * sk;
-pv3 = normalize(cross(dir, pos.xyz)) * f;
-
-f = (prev.z < nearZ) ? 0.0 : 1.0;
-dir = pv1b.xyz - prev.xyz;
-vec3 pv3b = ((prev.z - 1.0)/(prev.z - pv1b.z)) * dir;
-pv3b = (prev.xyz + pv3b) * f;
-prev.xyz = prev.xyz * (1.0 - f) + pv3b;
-
-// calc screen pos
-dir = pv1b.xyz - prev.xyz;
-f = abs(prev.z) * sk;
-pv3b = normalize(cross(dir, prev.xyz)) * f;
-
-pv3 = normalize(pv3);
-pv3b = normalize(pv3b);
-dir = pv3;
-pv3b = normalize(pv3 + pv3b);
-f = abs(dot(pv3b, dir));
-f = a_vs.w / f;
-pv3b *= f;
-gl_Position = u_projMat * vec4(pv3b + pos.xyz, 1.0);
-`;
-
-    if (this.dynColorEnabled) {
-      vtxCode += "\nv_vtxColor = u_color;";
-    } else {
-      vtxCode += "\nv_vtxColor = a_cvs;";
-    } // vtxCode += "\nv_vtxColor = vec4(abs(dir), 1.0);";
-
-
-    vtxCode += "\n}";
-    return vtxCode;
-  }
-
-  getUniqueShaderName() {
-    //console.log("H ########################### this.m_uniqueName: "+this.m_uniqueName);
-    return this.m_uniqueName;
-  }
-
-  toString() {
-    return "[BrokenQuadLine3DShaderBuffer()]";
-  }
-
-  static GetInstance() {
-    if (BrokenQuadLine3DShaderBuffer.s_instance != null) {
-      return BrokenQuadLine3DShaderBuffer.s_instance;
-    }
-
-    BrokenQuadLine3DShaderBuffer.s_instance = new BrokenQuadLine3DShaderBuffer();
-    return BrokenQuadLine3DShaderBuffer.s_instance;
-  }
-
-}
-
-BrokenQuadLine3DShaderBuffer.s_instance = null;
-
-class BrokenQuadLine3DMaterial extends MaterialBase_1.default {
-  constructor(dynColorEnabled = false) {
-    super();
-    this.m_dynColorEnabled = false;
-    this.m_data = null;
-    this.premultiplyAlpha = false;
-    this.normalEnabled = false;
-    this.shadowReceiveEnabled = false;
-
-    if (dynColorEnabled) {
-      this.m_data = new Float32Array([1.0, 1.0, 1.0, 1.0]);
-    }
-
-    this.m_dynColorEnabled = dynColorEnabled;
-  }
-
-  getCodeBuf() {
-    BrokenQuadLine3DShaderBuffer.GetInstance().dynColorEnabled = this.m_dynColorEnabled;
-    return BrokenQuadLine3DShaderBuffer.GetInstance();
-  }
-
-  setRGB3f(pr, pg, pb) {
-    this.m_data[0] = pr;
-    this.m_data[1] = pg;
-    this.m_data[2] = pb;
-  }
-
-  getRGB3f(color) {
-    let ds = this.m_data;
-    color.setRGB3f(ds[0], ds[1], ds[2]);
-  }
-
-  setRGBA4f(pr, pg, pb, pa) {
-    this.m_data[0] = pr;
-    this.m_data[1] = pg;
-    this.m_data[2] = pb;
-    this.m_data[3] = pa;
-  }
-
-  getRGBA4f(color) {
-    color.fromArray4(this.m_data);
-  }
-
-  setAlpha(pa) {
-    this.m_data[3] = pa;
-  }
-
-  getAlpha() {
-    return this.m_data[3];
-  }
-
-  setColor(color) {
-    color.toArray4(this.m_data);
-  }
-
-  getColor(color) {
-    color.fromArray4(this.m_data);
-  }
-
-  createSelfUniformData() {
-    if (this.m_dynColorEnabled) {
-      let oum = new ShaderUniformData_1.default();
-      oum.uniformNameList = ["u_color"];
-      oum.dataList = [this.m_data];
-      return oum;
+  getAreaByName(uniqueNS) {
+    if (this.m_keyMap.has(uniqueNS)) {
+      return this.m_keyMap.get(uniqueNS);
     }
 
     return null;
   }
 
+  getTexAreaByXY(px, py) {
+    let node = this.m_texAreaNode.findByXY(px, py);
+
+    if (node != null) {
+      if (this.m_keyMap.has(node.uniqueNS)) {
+        return this.m_keyMap.get(node.uniqueNS);
+      }
+    }
+
+    return null;
+  }
+
+  addSubTexArea(uniqueNS, areaWidth, areaHeight) {
+    if (uniqueNS == undefined || uniqueNS == "") {
+      if (uniqueNS == undefined) {
+        console.error("the value of the uniqueNS is invalid(uniqueNS value is undefined).");
+      } else {
+        console.error("the value of the uniqueNS is invalid(uniqueNS value is '').");
+      }
+    }
+
+    if (this.m_keyMap.has(uniqueNS)) {
+      return this.m_keyMap.get(uniqueNS);
+    } else {
+      let area = this.m_area;
+      area.offset = this.m_offset;
+      area.minSize = this.m_minSize;
+      area.uniqueNS = uniqueNS;
+      area.rect.width = areaWidth + area.offset * 2;
+      area.rect.height = areaHeight + area.offset * 2;
+      let flag = this.m_texAreaNode.addTexArea(area);
+
+      if (flag) {
+        area = new TexAreaNode_1.TexArea();
+        area.copyFrom(this.m_area);
+        this.m_keyMap.set(uniqueNS, area);
+        area.atlasUid = this.m_uid;
+        let rect = area.rect;
+        let texRect = area.texRect;
+        texRect.copyFrom(rect);
+        texRect.x += area.offset;
+        texRect.y += area.offset;
+        texRect.width -= area.offset * 2;
+        texRect.height -= area.offset * 2;
+        texRect.flipY(this.m_height);
+        let uMin = texRect.x / this.m_width;
+        let vMin = texRect.y / this.m_height;
+        let uMax = texRect.getRight() / this.m_width;
+        let vMax = texRect.getTop() / this.m_height;
+
+        if (this.m_uvFlipY) {
+          area.uvs.set([uMin, vMax, uMax, vMax, uMax, vMin, uMin, vMin], 0);
+        } else {
+          area.uvs.set([uMin, vMin, uMax, vMin, uMax, vMax, uMin, vMax], 0);
+        }
+
+        return area;
+      } else {
+        console.warn(this.m_uid + ",####### 超出了...");
+        return null;
+      }
+    }
+  }
+
 }
 
-exports.default = BrokenQuadLine3DMaterial;
+TextureAtlas.s_uid = 0;
+exports.default = TextureAtlas;
 
 /***/ }),
 
@@ -16664,64 +17220,64 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 class MaterialConst {
-  static GetTypeByTypeNS(tns) {
-    const mc = MaterialConst;
+  constructor() {}
 
+  static GetTypeByTypeNS(tns) {
     switch (tns) {
       case "mat4":
-        return mc.SHADER_MAT4;
+        return MaterialConst.SHADER_MAT4;
         break;
 
       case "mat3":
-        return mc.SHADER_MAT3;
+        return MaterialConst.SHADER_MAT3;
         break;
 
       case "mat2":
-        return mc.SHADER_MAT2;
+        return MaterialConst.SHADER_MAT2;
         break;
 
       case "float":
-        return mc.SHADER_FLOAT;
+        return MaterialConst.SHADER_FLOAT;
         break;
 
       case "int":
-        return mc.SHADER_INT;
+        return MaterialConst.SHADER_INT;
         break;
 
       case "vec4":
-        return mc.SHADER_VEC4;
+        return MaterialConst.SHADER_VEC4;
         break;
 
       case "vec3":
-        return mc.SHADER_VEC3;
+        return MaterialConst.SHADER_VEC3;
         break;
 
       case "vec2":
-        return mc.SHADER_VEC2;
+        return MaterialConst.SHADER_VEC2;
         break;
 
       case "vec4[]":
-        return mc.SHADER_VEC4FV;
+        return MaterialConst.SHADER_VEC4FV;
         break;
 
       case "vec3[]":
-        return mc.SHADER_VEC3FV;
+        return MaterialConst.SHADER_VEC3FV;
         break;
 
       case "vec2[]":
-        return mc.SHADER_VEC2FV;
+        return MaterialConst.SHADER_VEC2FV;
         break;
 
       case "sampler2D":
-        return mc.SHADER_SAMPLER2D;
+        return MaterialConst.SHADER_SAMPLER2D;
         break;
 
       case "sampler3D":
-        return mc.SHADER_SAMPLER3D;
+        return MaterialConst.SHADER_SAMPLER3D;
         break;
 
       case "samplerCube":
-        return mc.SHADER_SAMPLERCUBE;
+        return MaterialConst.SHADER_SAMPLERCUBE;
         break;
 
       default:
@@ -16732,49 +17288,47 @@ class MaterialConst {
   }
 
   static GetTypeNSByType(type) {
-    const mc = MaterialConst;
-
     switch (type) {
-      case mc.SHADER_MAT4:
+      case MaterialConst.SHADER_MAT4:
         return "mat4";
         break;
 
-      case mc.SHADER_MAT3:
+      case MaterialConst.SHADER_MAT3:
         return "mat3";
         break;
 
-      case mc.SHADER_MAT2:
+      case MaterialConst.SHADER_MAT2:
         return "mat2";
         break;
 
-      case mc.SHADER_FLOAT:
+      case MaterialConst.SHADER_FLOAT:
         return "float";
         break;
 
-      case mc.SHADER_VEC4:
+      case MaterialConst.SHADER_VEC4:
         return "vec4";
 
-      case mc.SHADER_VEC3:
+      case MaterialConst.SHADER_VEC3:
         return "vec3";
         break;
 
-      case mc.SHADER_VEC2:
+      case MaterialConst.SHADER_VEC2:
         return "vec2";
         break;
 
-      case mc.SHADER_SAMPLER2D:
+      case MaterialConst.SHADER_SAMPLER2D:
         return "sampler2D";
         break;
 
-      case mc.SHADER_SAMPLER3D:
+      case MaterialConst.SHADER_SAMPLER3D:
         return "sampler3D";
         break;
 
-      case mc.SHADER_SAMPLERCUBE:
+      case MaterialConst.SHADER_SAMPLERCUBE:
         return "samplerCube";
         break;
 
-      case mc.SHADER_UNDEFINED:
+      case MaterialConst.SHADER_UNDEFINED:
         return "undefined";
         break;
 
@@ -16821,7 +17375,8 @@ MaterialConst.SHADER_PRECISION_HIGHP = 3121; // texture uniform name define
 
 MaterialConst.UNIFORM_TEX_SAMPLER2D = "sampler2D";
 MaterialConst.UNIFORM_TEX_SAMPLERCUBE = "samplerCube";
-MaterialConst.UNIFORM_TEX_SAMPLER3D = "sampler3D";
+MaterialConst.UNIFORM_TEX_SAMPLER3D = "sampler3D"; //
+
 MaterialConst.UNIFORMNS_TEX_SAMPLER_0 = "u_sampler0";
 MaterialConst.UNIFORMNS_TEX_SAMPLER_1 = "u_sampler1";
 MaterialConst.UNIFORMNS_TEX_SAMPLER_2 = "u_sampler2";
@@ -16858,31 +17413,20 @@ Object.defineProperty(exports, "__esModule", {
 
 const ROVertexRes_1 = __webpack_require__("45db");
 
-const ROIndicesRes_1 = __webpack_require__("8ae4"); // class VtxMap {
-// }
-
+const ROIndicesRes_1 = __webpack_require__("8ae4");
 
 class GpuVtxObject {
   constructor() {
-    this.m_uid = GpuVtxObject.s_uid++;
-    this.m_attachCount = 0;
     this.version = -1; // wait del times
 
     this.waitDelTimes = 0; // renderer context unique id
 
     this.rcuid = 0; // texture resource unique id
 
-    this.resUid = 0; // vertex = new ROVertexRes();
-
-    this.vertex = null; // = new ROVertexRes();
-
+    this.resUid = 0;
+    this.vertex = new ROVertexRes_1.ROVertexRes();
     this.indices = new ROIndicesRes_1.ROIndicesRes();
-  }
-
-  createVertex(rc, shdp, vtx) {
-    this.vertex = ROVertexRes_1.ROVertexRes.create(rc, shdp, vtx);
-
-    this.vertex.__$attachThis();
+    this.m_attachCount = 0;
   }
 
   __$attachThis() {
@@ -16893,8 +17437,8 @@ class GpuVtxObject {
     --this.m_attachCount; //console.log("GpuVtxObject::__$detachThis() this.m_attachCount: "+this.m_attachCount);
 
     if (this.m_attachCount < 1) {
-      this.m_attachCount = 0; // console.log("GpuVtxObject::__$detachThis() this.m_attachCount value is 0.");
-      // do something
+      this.m_attachCount = 0;
+      console.log("GpuVtxObject::__$detachThis() this.m_attachCount value is 0."); // do something
     }
   }
 
@@ -16903,8 +17447,8 @@ class GpuVtxObject {
   }
 
   createVRO(rc, shdp, vaoEnabled) {
-    // console.log("GpuVtxObject::createVRO(), this.resUid: ", this.resUid, ", uid: ", this.m_uid, ", this.indices.getUid(): ", this.indices.getUid());
-    let vro = this.vertex.createVRO(rc, shdp, vaoEnabled, this.indices);
+    let vro = this.vertex.createVRO(rc, shdp, vaoEnabled, this.indices, this.indices.getUid()); //vro.ibuf = this.indices.getGpuBuf();
+
     vro.ibufStep = this.indices.ibufStep;
     return vro;
   }
@@ -16916,13 +17460,7 @@ class GpuVtxObject {
 
   destroy(rc) {
     if (this.getAttachCount() < 1 && this.resUid >= 0) {
-      if (this.vertex != null) {
-        this.vertex.__$detachThis();
-
-        this.vertex.destroy(rc);
-        this.vertex = null;
-      }
-
+      this.vertex.destroy(rc);
       this.indices.destroy(rc);
       this.resUid = -1;
     }
@@ -16930,7 +17468,6 @@ class GpuVtxObject {
 
 }
 
-GpuVtxObject.s_uid = 0;
 exports.GpuVtxObject = GpuVtxObject;
 
 /***/ }),
@@ -17000,28 +17537,6 @@ exports.default = RawTexData;
 
 /***/ }),
 
-/***/ "69ed":
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-var ShaderCodeType;
-
-(function (ShaderCodeType) {
-  ShaderCodeType["VertHead"] = "vertHead";
-  ShaderCodeType["VertBody"] = "vertBody";
-  ShaderCodeType["FragHead"] = "fragHead";
-  ShaderCodeType["FragBody"] = "fragBody";
-})(ShaderCodeType || (ShaderCodeType = {}));
-
-exports.ShaderCodeType = ShaderCodeType;
-
-/***/ }),
-
 /***/ "6c6b":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -17069,9 +17584,9 @@ class MaterialShaderBuffer extends ShaderCodeBuffer_1.default {
   }
 
   createTextureList() {
-    this.m_texBuilder.reset();
-    this.decorator.buildTextureList(this.m_texBuilder);
-    return this.m_texBuilder.getTextures();
+    this.m_texBulder.reset();
+    this.decorator.buildTextureList(this.m_texBulder);
+    return this.m_texBulder.getTextures();
   }
 
   buildShader() {
@@ -17552,13 +18067,13 @@ class FrameBufferObject {
     }
   }
 
-  clearOnlyColor(color4) {
+  clearOnlyColor(color) {
     if (this.m_fbo != null) {
       if (RendererDevice_1.default.IsWebGL2()) {
-        this.m_clearColorArr[0] = color4[0];
-        this.m_clearColorArr[1] = color4[1];
-        this.m_clearColorArr[2] = color4[2];
-        this.m_clearColorArr[3] = color4[3];
+        this.m_clearColorArr[0] = color.r;
+        this.m_clearColorArr[1] = color.g;
+        this.m_clearColorArr[2] = color.b;
+        this.m_clearColorArr[3] = color.a;
 
         if (this.m_preAttachTotal > 1) {
           for (let i = 0; i < this.m_preAttachTotal; ++i) {
@@ -17568,7 +18083,7 @@ class FrameBufferObject {
           this.m_gl.clearBufferfv(this.m_gl.COLOR, 0, this.m_clearColorArr);
         }
       } else {
-        this.m_gl.clearColor(color4[0], color4[1], color4[2], color4[3]);
+        this.m_gl.clearColor(color.r, color.g, color.b, color.a);
       }
     } //trace("XXXXXXXXXXXXXXXXXXXX FrameBufferObject::clearOnlyColor(), m_fbo: ", m_fbo);
 
@@ -18103,38 +18618,170 @@ Object.defineProperty(exports, "__esModule", {
 
 const MathConst_1 = __importDefault(__webpack_require__("6e01"));
 
+const Vector3D_1 = __importDefault(__webpack_require__("8e17"));
+
 const SubStage3D_1 = __importDefault(__webpack_require__("0236"));
 
 const CameraBase_1 = __importDefault(__webpack_require__("c51d"));
 
+const EntityNodeQueue_1 = __importDefault(__webpack_require__("af68"));
+
+const Entity3DNodeLinker_1 = __importDefault(__webpack_require__("a80a"));
+
 const RendererSpace_1 = __importDefault(__webpack_require__("a446"));
 
-const RunnableQueue_1 = __importDefault(__webpack_require__("9c4d"));
+const RaySelector_1 = __importDefault(__webpack_require__("c711"));
 
-const RendererSceneBase_1 = __importDefault(__webpack_require__("aa80"));
+const RayGpuSelector_1 = __importDefault(__webpack_require__("955e"));
 
-class RendererSubScene extends RendererSceneBase_1.default {
+const MouseEvt3DController_1 = __importDefault(__webpack_require__("765c"));
+
+const FBOInstance_1 = __importDefault(__webpack_require__("af29"));
+
+const Matrix4_1 = __importDefault(__webpack_require__("18c7"));
+
+class RendererSubScene {
   constructor(parent, renderer, evtFlowEnabled) {
-    super(1024);
-    this.m_perspectiveEnabled = true;
+    this.m_uid = -1;
+    this.m_adapter = null;
+    this.m_renderProxy = null;
+    this.m_rcontext = null;
+    this.m_renderer = null;
     this.m_parent = null;
+    this.m_processids = new Uint8Array(128);
+    this.m_processidsLen = 0;
+    this.m_rspace = null;
+    this.m_mouse_rltv = new Vector3D_1.default();
+    this.m_mouse_rlpv = new Vector3D_1.default();
+    this.m_accessor = null; // event flow control enable
+
+    this.m_evtFlowEnabled = false;
+    this.m_evt3DCtr = null;
+    this.m_mouseEvtEnabled = true;
+    this.m_camera = null;
+    this.m_viewX = 0.0;
+    this.m_viewY = 0.0;
+    this.m_viewW = 800.0;
+    this.m_viewH = 800.0;
+    this.m_nodeWaitLinker = null;
+    this.m_nodeWaitQueue = null;
+    this.m_perspectiveEnabled = true;
+    this.m_rparam = null;
+    this.m_stage3D = null;
+    this.m_shader = null;
+    this.m_runFlag = -1;
+    this.m_autoRunning = true;
+    this.m_currStage3D = null;
+    this.m_enabled = true;
+    this.textureBlock = null;
+    this.materialBlock = null;
+    this.entityBlock = null;
+    this.m_containers = [];
+    this.m_containersTotal = 0;
+    this.m_mouseTestBoo = true;
+    this.m_cullingTestBoo = true;
+    this.m_rayTestFlag = true;
+    this.m_rayTestEnabled = true;
     this.m_evtFlowEnabled = evtFlowEnabled;
     this.m_parent = parent;
     this.m_renderer = renderer;
     this.m_shader = renderer.getDataBuilder().getRenderShader();
-    this.m_localRunning = true;
+    this.m_uid = 1024 + RendererSubScene.s_uid++;
   }
 
-  createSubScene(rparam = null, renderProcessesTotal = 3, createNewCamera = true) {
-    return this.m_parent.createSubScene(rparam, renderProcessesTotal, createNewCamera);
+  enable() {
+    this.m_enabled = true;
+  }
+
+  disable() {
+    this.m_enabled = false;
+  }
+
+  isEnabled() {
+    return this.m_enabled;
+  }
+
+  getUid() {
+    return this.m_uid;
+  }
+
+  getRPONodeBuilder() {
+    return null;
+  }
+
+  getRenderProxy() {
+    return this.m_renderProxy;
+  } // set new view port rectangle area
+
+
+  setViewPort(px, py, pw, ph) {
+    if (this.m_renderProxy != null) {
+      this.m_viewX = px;
+      this.m_viewY = py;
+      this.m_viewW = pw;
+      this.m_viewH = ph;
+    }
+  } // apply new view port rectangle area
+
+
+  reseizeViewPort() {
+    this.m_renderProxy.reseizeRCViewPort();
+  }
+
+  getRendererAdapter() {
+    return this.m_adapter;
+  }
+
+  getRenderer() {
+    return this.m_renderer;
+  }
+
+  getRendererContext() {
+    return this.m_rcontext;
+  }
+
+  getStage3D() {
+    return this.m_renderProxy.getStage3D();
   }
 
   getCurrentStage3D() {
     return this.m_currStage3D;
   }
 
+  getViewWidth() {
+    return this.m_renderProxy.getStage3D().viewWidth;
+  }
+
+  getViewHeight() {
+    return this.m_renderProxy.getStage3D().viewHeight;
+  }
+
   getCamera() {
     return this.m_camera;
+  }
+  /**
+   * 获取渲染器可渲染对象管理器状态(版本号)
+   */
+
+
+  getRendererStatus() {
+    return this.m_renderer.getRendererStatus();
+  }
+
+  getMouseXYWorldRay(rl_position, rl_tv) {
+    this.m_camera.getWorldPickingRayByScreenXY(this.m_stage3D.mouseX, this.m_stage3D.mouseY, rl_position, rl_tv);
+  }
+
+  createCamera() {
+    return new CameraBase_1.default();
+  }
+
+  createFBOInstance() {
+    return new FBOInstance_1.default(this, this.textureBlock.getRTTStrore());
+  }
+
+  createMatrix4() {
+    return new Matrix4_1.default();
   }
 
   setEvt3DController(evt3DCtr) {
@@ -18151,21 +18798,68 @@ class RendererSubScene extends RendererSceneBase_1.default {
     this.m_evt3DCtr = evt3DCtr;
   }
 
+  isRayPickSelected() {
+    return this.m_evt3DCtr != null && this.m_evt3DCtr.isSelected();
+  }
+
+  enableMouseEvent(gpuTestEnabled = true) {
+    if (this.m_evt3DCtr == null) {
+      if (gpuTestEnabled) {
+        this.m_rspace.setRaySelector(new RayGpuSelector_1.default());
+      } else {
+        this.m_rspace.setRaySelector(new RaySelector_1.default());
+      }
+
+      this.setEvt3DController(new MouseEvt3DController_1.default());
+    }
+
+    this.m_mouseEvtEnabled = true;
+  }
+
+  disableMouseEvent() {
+    this.m_mouseEvtEnabled = false;
+  }
+
+  getEvt3DController() {
+    return this.m_evt3DCtr;
+  }
+
+  getSpace() {
+    return this.m_rspace;
+  }
+
+  getDevicePixelRatio() {
+    return this.m_adapter.getDevicePixelRatio();
+  }
+
+  addEventListener(type, target, func, captureEnabled = true, bubbleEnabled = false) {
+    this.m_currStage3D.addEventListener(type, target, func, captureEnabled, bubbleEnabled);
+  }
+
+  removeEventListener(type, target, func) {
+    this.m_currStage3D.removeEventListener(type, target, func);
+  }
+
+  setAccessor(accessor) {
+    this.m_accessor = accessor;
+  }
+
   initialize(rparam, renderProcessesTotal = 3, createNewCamera = true) {
     if (this.m_renderProxy == null) {
       if (renderProcessesTotal < 1) {
         renderProcessesTotal = 1;
-      } else if (renderProcessesTotal > 32) {
-        renderProcessesTotal = 32;
       }
 
-      let selfT = this;
-      selfT.runnableQueue = new RunnableQueue_1.default();
+      if (renderProcessesTotal > 8) {
+        renderProcessesTotal = 8;
+      }
+
       this.m_rparam = rparam;
       this.m_perspectiveEnabled = rparam.cameraPerspectiveEnabled;
+      let process = null;
 
       for (; renderProcessesTotal >= 0;) {
-        const process = this.m_renderer.appendProcess(rparam.batchEnabled, rparam.processFixedState);
+        process = this.m_renderer.appendProcess(rparam.batchEnabled, rparam.processFixedState);
         this.m_processids[this.m_processidsLen] = process.getRPIndex();
         this.m_processidsLen++;
         --renderProcessesTotal;
@@ -18179,12 +18873,16 @@ class RendererSubScene extends RendererSceneBase_1.default {
       this.m_viewY = this.m_stage3D.getViewY();
       this.m_viewW = this.m_stage3D.getViewWidth();
       this.m_viewH = this.m_stage3D.getViewHeight();
-      this.m_camera = createNewCamera ? this.createMainCamera() : this.m_renderProxy.getCamera();
+
+      if (createNewCamera) {
+        this.createMainCamera();
+      } else {
+        this.m_camera = this.m_renderProxy.getCamera();
+      }
 
       if (this.m_rspace == null) {
-        let sp = new RendererSpace_1.default();
-        sp.initialize(this.m_renderer, this.m_camera);
-        this.m_rspace = sp;
+        this.m_rspace = new RendererSpace_1.default();
+        this.m_rspace.initialize(this.m_renderer, this.m_camera);
       }
     }
   }
@@ -18203,7 +18901,6 @@ class RendererSubScene extends RendererSceneBase_1.default {
 
     this.m_camera.lookAtRH(this.m_rparam.camPosition, this.m_rparam.camLookAtPos, this.m_rparam.camUpDirect);
     this.m_camera.update();
-    return this.m_camera;
   }
 
   cameraLock() {
@@ -18212,6 +18909,175 @@ class RendererSubScene extends RendererSceneBase_1.default {
 
   cameraUnlock() {
     this.m_camera.unlock();
+  }
+
+  updateRenderBufferSize() {
+    this.m_adapter.updateRenderBufferSize();
+  }
+
+  setRendererProcessParam(index, batchEnabled, processFixedState) {
+    this.m_renderer.setRendererProcessParam(this.m_processids[index], batchEnabled, processFixedState);
+  }
+
+  appendARendererProcess(batchEnabled = true, processFixedState = false) {
+    let process = this.m_renderer.appendProcess(batchEnabled, processFixedState);
+    this.m_processids[this.m_processidsLen] = process.getRPIndex();
+    this.m_processidsLen++;
+  }
+  /**
+   * get the renderer process by process index
+   * @param processIndex IRenderProcess instance index in renderer scene instance
+   */
+
+
+  getRenderProcessAt(processIndex) {
+    return this.m_renderer.getProcessAt(this.m_processids[processIndex]);
+  }
+
+  addContainer(container, processIndex = 0) {
+    if (processIndex < 0) {
+      processIndex = 0;
+    }
+
+    if (container != null && container.__$wuid < 0 && container.__$contId < 1) {
+      let i = 0;
+
+      for (; i < this.m_containersTotal; ++i) {
+        if (this.m_containers[i] == container) {
+          return;
+        }
+      }
+
+      if (i >= this.m_containersTotal) {
+        container.__$wuid = this.m_uid;
+        container.wprocuid = processIndex;
+
+        container.__$setRenderer(this);
+
+        this.m_containers.push(container);
+        this.m_containersTotal++;
+      }
+    }
+  }
+
+  removeContainer(container) {
+    if (container != null && container.__$wuid == this.m_uid && container.getRenderer() == this.m_renderer) {
+      let i = 0;
+
+      for (; i < this.m_containersTotal; ++i) {
+        if (this.m_containers[i] == container) {
+          container.__$wuid = -1;
+          container.wprocuid = -1;
+
+          container.__$setRenderer(null);
+
+          this.m_containers.splice(i, 1);
+          --this.m_containersTotal;
+          break;
+        }
+      }
+    }
+  }
+
+  setAutoRunningEnabled(autoRunning) {
+    this.m_autoRunning = autoRunning;
+  }
+  /**
+   * 将已经在渲染运行时中的entity移动到指定 process uid 的 render process 中去
+   * move rendering runtime displayEntity to different renderer process
+   */
+
+
+  moveEntityTo(entity, processIndex) {
+    this.m_renderer.moveEntityToProcessAt(entity, this.m_processids[processIndex]);
+  }
+  /**
+   * 单独绘制可渲染对象, 可能是使用了 global material也可能没有。这种方式比较耗性能,只能用在特殊的地方。
+   * @param entity 需要指定绘制的 IRenderEntity 实例
+   * @param useGlobalUniform 是否使用当前 global material 所携带的 uniform, default value: false
+   * @param forceUpdateUniform 是否强制更新当前 global material 所对应的 shader program 的 uniform, default value: true
+   */
+
+
+  drawEntity(entity, useGlobalUniform = false, forceUpdateUniform = true) {
+    this.m_renderer.drawEntity(entity, useGlobalUniform, forceUpdateUniform);
+  }
+  /**
+   * add an entity to the renderer process of the renderer instance
+   * @param entity IRenderEntity instance(for example: DisplayEntity class instance)
+   * @param processid this destination renderer process id
+   * @param deferred if the value is true,the entity will not to be immediately add to the renderer process by its id
+   */
+
+
+  addEntity(entity, processIndex = 0, deferred = true) {
+    if (entity != null && entity.__$testSpaceEnabled()) {
+      if (entity.isPolyhedral()) {
+        if (entity.hasMesh()) {
+          this.m_renderer.addEntity(entity, this.m_processids[processIndex], deferred);
+
+          if (this.m_rspace != null) {
+            this.m_rspace.addEntity(entity);
+          }
+        } else {
+          // wait queue
+          if (this.m_nodeWaitLinker == null) {
+            this.m_nodeWaitLinker = new Entity3DNodeLinker_1.default();
+            this.m_nodeWaitQueue = new EntityNodeQueue_1.default();
+          }
+
+          let node = this.m_nodeWaitQueue.addEntity(entity);
+          node.rstatus = processIndex;
+          this.m_nodeWaitLinker.addNode(node);
+        }
+      } else {
+        this.m_renderer.addEntity(entity, this.m_processids[processIndex], deferred);
+
+        if (this.m_rspace != null) {
+          this.m_rspace.addEntity(entity);
+        }
+      }
+    }
+  } // 这是真正的完全将entity从world中清除
+
+
+  removeEntity(entity) {
+    if (entity != null) {
+      let node = null;
+
+      if (this.m_nodeWaitLinker != null) {
+        let node = this.m_nodeWaitQueue.getNodeByEntity(entity);
+
+        if (node != null) {
+          this.m_nodeWaitLinker.removeNode(node);
+          this.m_nodeWaitQueue.removeEntity(entity);
+        }
+      }
+
+      if (node == null) {
+        this.m_renderer.removeEntity(entity);
+
+        if (this.m_rspace != null) {
+          this.m_rspace.removeEntity(entity);
+        }
+      }
+    }
+  }
+
+  updateMaterialUniformToCurrentShd(material) {
+    this.m_renderer.updateMaterialUniformToCurrentShd(material);
+  } // 首先要锁定Material才能用这种绘制方式,再者这个entity已经完全加入渲染器了渲染资源已经准备完毕,这种方式比较耗性能，只能用在特殊的地方
+  // drawEntityByLockMaterial(entity: IRenderEntity): void {
+  //     this.m_renderer.drawEntityByLockMaterial(entity);
+  // }
+
+
+  showInfoAt(index) {
+    this.m_renderer.showInfoAt(index);
+  }
+
+  updateCameraData(camera) {
+    this.m_rcontext.updateCameraDataFromCamera(this.m_renderProxy.getCamera());
   }
   /**
    * the function only resets the renderer instance rendering status.
@@ -18225,6 +19091,7 @@ class RendererSubScene extends RendererSceneBase_1.default {
     }
 
     if (this.m_renderProxy.getCamera() != this.m_camera) {
+      //let boo: boolean = this.m_renderProxy.testViewPortChanged(this.m_viewX, this.m_viewY, this.m_viewW, this.m_viewH);
       if (this.m_renderProxy.isAutoSynViewAndStage()) {
         this.m_viewX = this.m_renderProxy.getViewX();
         this.m_viewY = this.m_renderProxy.getViewY();
@@ -18261,14 +19128,188 @@ class RendererSubScene extends RendererSceneBase_1.default {
     this.renderBegin(contextBeginEnabled);
 
     if (this.m_rspace != null) {
+      //this.m_rspace.setCamera(camFlag ? this.m_renderProxy.getCamera() : this.m_currCamera);
       this.m_rspace.setCamera(this.m_camera);
       this.m_rspace.runBegin();
     }
   }
 
-  render() {
-    if (this.m_renderProxy != null) {
-      this.run(true);
+  setRayTestEanbled(enabled) {
+    this.m_rayTestEnabled = enabled;
+  }
+  /**
+   * @param evtFlowPhase  0(none phase),1(capture phase),2(bubble phase)
+   * @param status: 1(default process),1(deselect ray pick target)
+   * @requires 1 is send evt yes,0 is send evt no,-1 is event nothing
+   */
+
+
+  runMouseTest(evtFlowPhase, status) {
+    let flag = -1;
+
+    if (this.m_evt3DCtr != null && this.m_mouseEvtEnabled) {
+      if (this.m_rayTestFlag && this.m_evt3DCtr.getEvtType() > 0) {
+        // 是否对已经获得的拾取列表做进一步的gpu拾取
+        let selector = this.m_rspace.getRaySelector();
+
+        if (selector != null) {
+          if (this.m_rayTestEnabled) {
+            this.mouseRayTest();
+          } else {
+            selector.clear();
+          } // 如果有gpu拾取则进入这个管理器, 这个管理器得到最终的拾取结果再和前面的计算结果做比较
+
+
+          let total = selector.getSelectedNodesTotal();
+
+          if (total > 1) {
+            let i = 0;
+            let list = selector.getSelectedNodes();
+            let node = null;
+
+            for (; i < total; ++i) {
+              node = list[i];
+
+              if (node.entity.isPolyhedral()) {//this.m_renderer.drawEntityByLockMaterial(node.entity);
+              }
+            }
+          }
+        }
+
+        this.m_rayTestFlag = false;
+      }
+
+      flag = this.m_evt3DCtr.run(evtFlowPhase, status);
+    }
+
+    this.m_mouseTestBoo = false;
+    return flag;
+  }
+  /**
+   * update all data or status of the renderer runtime
+   * should call this function per frame
+   */
+
+
+  update(autoCycle = true, mouseEventEnabled = true) {
+    if (this.m_currStage3D != null) this.m_currStage3D.enterFrame();
+
+    if (autoCycle && this.m_autoRunning) {
+      if (this.m_runFlag != 0) this.runBegin();
+      this.m_runFlag = 1;
+    }
+
+    this.m_mouseTestBoo = true;
+    this.m_cullingTestBoo = true;
+    this.m_rayTestFlag = true; // wait mesh data ready to finish
+
+    if (this.m_nodeWaitLinker != null) {
+      let nextNode = this.m_nodeWaitLinker.getBegin();
+
+      if (nextNode != null) {
+        let pnode;
+        let entity;
+        let status;
+
+        while (nextNode != null) {
+          if (nextNode.entity.hasMesh()) {
+            pnode = nextNode;
+            nextNode = nextNode.next;
+            entity = pnode.entity;
+            status = pnode.rstatus;
+            this.m_nodeWaitLinker.removeNode(pnode);
+            this.m_nodeWaitQueue.removeEntity(pnode.entity); //console.log("RenderScene::update(), ready a mesh data that was finished.");
+
+            this.addEntity(entity, status);
+          } else {
+            nextNode = nextNode.next;
+          }
+        }
+      }
+    } //  this.m_renderer.update();          
+
+
+    let i = 0;
+
+    for (; i < this.m_containersTotal; ++i) {
+      this.m_containers[i].update();
+    } // space update
+
+
+    if (this.m_rspace != null) {
+      this.m_rspace.update();
+    }
+
+    if (this.m_rspace != null && this.m_cullingTestBoo) {
+      if (this.m_evt3DCtr != null || this.m_rspace.getRaySelector() != null) {
+        this.m_rspace.run();
+      }
+    }
+
+    if (this.m_mouseTestBoo && !this.m_evtFlowEnabled) {
+      if (mouseEventEnabled) {
+        this.runMouseTest(1, 0);
+      } else if (this.m_evt3DCtr != null) {
+        this.m_evt3DCtr.mouseOutEventTarget();
+      }
+    }
+  } // 渲染可见性裁剪测试
+
+
+  cullingTest() {
+    if (this.m_rspace != null) {
+      this.m_rspace.run();
+    }
+
+    this.m_cullingTestBoo = false;
+  } // 鼠标位置的射线拾取测试
+
+
+  mouseRayTest() {
+    if (this.m_rspace != null) {
+      this.getMouseXYWorldRay(this.m_mouse_rlpv, this.m_mouse_rltv);
+      this.m_rspace.rayTest(this.m_mouse_rlpv, this.m_mouse_rltv);
+    }
+  } // rendering running
+
+
+  run(autoCycle = false) {
+    if (this.m_enabled) {
+      //console.log("rendererSubScene::run...");
+      if (autoCycle && this.m_autoRunning) {
+        if (this.m_runFlag != 1) this.update();
+        this.m_runFlag = 2;
+      }
+
+      for (let i = 0; i < this.m_processidsLen; ++i) {
+        this.m_renderer.runAt(this.m_processids[i]);
+      }
+
+      if (autoCycle) {
+        this.runEnd();
+      }
+    }
+  }
+
+  runAt(index) {
+    this.m_renderer.runAt(this.m_processids[index]);
+  }
+
+  runEnd() {
+    if (this.m_evt3DCtr != null) {
+      this.m_evt3DCtr.runEnd();
+    }
+
+    if (this.m_rspace != null) {
+      this.m_rspace.runEnd();
+    }
+
+    if (this.m_autoRunning) {
+      this.m_runFlag = -1;
+    }
+
+    if (this.m_accessor != null) {
+      this.m_accessor.renderEnd(this);
     }
   }
 
@@ -18286,8 +19327,33 @@ class RendererSubScene extends RendererSceneBase_1.default {
     }
   }
 
+  setClearUint24Color(colorUint24, alpha = 1.0) {
+    this.m_renderProxy.setClearUint24Color(colorUint24, alpha);
+  }
+
+  setClearRGBColor3f(pr, pg, pb) {
+    this.m_renderProxy.setClearRGBColor3f(pr, pg, pb);
+  }
+
+  setClearRGBAColor4f(pr, pg, pb, pa) {
+    this.m_renderProxy.setClearRGBAColor4f(pr, pg, pb, pa);
+  }
+
+  setClearColor(color) {
+    this.m_renderProxy.setClearRGBAColor4f(color.r, color.g, color.b, color.a);
+  }
+
+  setRenderToBackBuffer() {
+    this.m_renderProxy.setRenderToBackBuffer();
+  }
+
+  toString() {
+    return "[RendererSubScene(uid = " + this.m_uid + ")]";
+  }
+
 }
 
+RendererSubScene.s_uid = 0;
 exports.default = RendererSubScene;
 
 /***/ }),
@@ -19001,17 +20067,11 @@ class MouseEvt3DController {
     if (this.m_mainStage == null) {
       this.m_mainStage = mainStage;
       this.m_currStage = currStage;
-      let ME = MouseEvent_1.default;
-      mainStage.addEventListener(ME.MOUSE_DOWN, this, this.mouseListener, true, false);
-      mainStage.addEventListener(ME.MOUSE_UP, this, this.mouseListener, true, false);
-      mainStage.addEventListener(ME.MOUSE_CLICK, this, this.mouseListener, true, false);
-      mainStage.addEventListener(ME.MOUSE_DOUBLE_CLICK, this, this.mouseListener, true, false);
-      mainStage.addEventListener(ME.MOUSE_MOVE, this, this.mouseListener, true, false);
-      mainStage.addEventListener(ME.MOUSE_WHEEL, this, this.mouseListener, true, false);
-      mainStage.addEventListener(ME.MOUSE_RIGHT_DOWN, this, this.mouseListener, true, false);
-      mainStage.addEventListener(ME.MOUSE_RIGHT_UP, this, this.mouseListener, true, false);
-      mainStage.addEventListener(ME.MOUSE_MIDDLE_DOWN, this, this.mouseListener, true, false);
-      mainStage.addEventListener(ME.MOUSE_MIDDLE_UP, this, this.mouseListener, true, false);
+      mainStage.addEventListener(MouseEvent_1.default.MOUSE_DOWN, this, this.mouseDownListener, true, false);
+      mainStage.addEventListener(MouseEvent_1.default.MOUSE_UP, this, this.mouseUpListener, true, false);
+      mainStage.addEventListener(MouseEvent_1.default.MOUSE_CLICK, this, this.mouseClickListener, true, false);
+      mainStage.addEventListener(MouseEvent_1.default.MOUSE_MOVE, this, this.mouseMoveListener, true, false);
+      mainStage.addEventListener(MouseEvent_1.default.MOUSE_WHEEL, this, this.mouseWheeelListener, true, false);
     }
   }
 
@@ -19019,7 +20079,7 @@ class MouseEvt3DController {
     this.m_raySelector = raySelector;
   }
 
-  mouseListener(evt) {
+  mouseWheeelListener(evt) {
     if (this.m_currStage != null) {
       this.m_currStage.mouseX = this.m_mainStage.mouseX;
       this.m_currStage.mouseY = this.m_mainStage.mouseY;
@@ -19031,77 +20091,70 @@ class MouseEvt3DController {
     this.m_evtWheelDeltaYs[this.m_evtTotal] = evt.wheelDeltaY;
     this.m_mouseEvt.type = evt.type;
     this.m_evtTotal++;
-  }
-  /*
-  private mouseWheelListener(evt: any): void {
-      if (this.m_currStage != null) {
-          this.m_currStage.mouseX = this.m_mainStage.mouseX;
-          this.m_currStage.mouseY = this.m_mainStage.mouseY;
-      }
-      this.m_evtTypes[this.m_evtTotal] = (evt.type);
-      this.m_evtXList[this.m_evtTotal] = (evt.mouseX);
-      this.m_evtYList[this.m_evtTotal] = (evt.mouseY);
-      this.m_evtWheelDeltaYs[this.m_evtTotal] = (evt.wheelDeltaY);
-      this.m_mouseEvt.type = evt.type;
-      this.m_evtTotal++;
-  }
-  // 鼠标动了, 摄像机动了, 被渲染对象本身动了,都可能形成mouse move事件
-  private mouseMoveListener(evt: any): void {
-      if (this.m_currStage != null) {
-          this.m_currStage.mouseX = this.m_mainStage.mouseX;
-          this.m_currStage.mouseY = this.m_mainStage.mouseY;
-      }
-      this.m_evtTypes[this.m_evtTotal] = (evt.type);
-      this.m_evtXList[this.m_evtTotal] = (evt.mouseX);
-      this.m_evtYList[this.m_evtTotal] = (evt.mouseY);
-      this.m_evtWheelDeltaYs[this.m_evtTotal] = (0);
-      this.m_mouseEvt.type = evt.type;
-      this.m_evtTotal++;
-  }
-  private mouseDownListener(evt: any): void {
-      if (this.m_currStage != null) {
-          this.m_currStage.mouseX = this.m_mainStage.mouseX;
-          this.m_currStage.mouseY = this.m_mainStage.mouseY;
-      }
-      if (MouseEvt3DController.s_unlockMouseEvt) {
-          this.m_evtTypes[this.m_evtTotal] = (evt.type);
-          this.m_evtXList[this.m_evtTotal] = (evt.mouseX);
-          this.m_evtYList[this.m_evtTotal] = (evt.mouseY);
-          this.m_evtWheelDeltaYs[this.m_evtTotal] = (0);
-          this.m_mouseEvt.type = evt.type;
-          this.m_evtTotal++;
-      }
-  }
-  private mouseUpListener(evt: any): void {
-      if (this.m_currStage != null) {
-          this.m_currStage.mouseX = this.m_mainStage.mouseX;
-          this.m_currStage.mouseY = this.m_mainStage.mouseY;
-      }
-      if (MouseEvt3DController.s_unlockMouseEvt) {
-          this.m_evtTypes[this.m_evtTotal] = (evt.type);
-          this.m_evtXList[this.m_evtTotal] = (evt.mouseX);
-          this.m_evtYList[this.m_evtTotal] = (evt.mouseY);
-          this.m_evtWheelDeltaYs[this.m_evtTotal] = (0);
-          this.m_mouseEvt.type = evt.type;
-          this.m_evtTotal++;
-      }
-  }
-  private mouseClickListener(evt: any): void {
-      if (this.m_currStage != null) {
-          this.m_currStage.mouseX = this.m_mainStage.mouseX;
-          this.m_currStage.mouseY = this.m_mainStage.mouseY;
-      }
-      if (MouseEvt3DController.s_unlockMouseEvt) {
-          this.m_evtTypes[this.m_evtTotal] = (evt.type);
-          this.m_evtXList[this.m_evtTotal] = (evt.mouseX);
-          this.m_evtYList[this.m_evtTotal] = (evt.mouseY);
-          this.m_evtWheelDeltaYs[this.m_evtTotal] = (0);
-          this.m_mouseEvt.type = evt.type;
-          this.m_evtTotal++;
-      }
-  }
-  //*/
+  } // 鼠标动了, 摄像机动了, 被渲染对象本身动了,都可能形成mouse move事件
 
+
+  mouseMoveListener(evt) {
+    if (this.m_currStage != null) {
+      this.m_currStage.mouseX = this.m_mainStage.mouseX;
+      this.m_currStage.mouseY = this.m_mainStage.mouseY; //this.m_currStage.mouseMove();
+    }
+
+    this.m_evtTypes[this.m_evtTotal] = evt.type;
+    this.m_evtXList[this.m_evtTotal] = evt.mouseX;
+    this.m_evtYList[this.m_evtTotal] = evt.mouseY;
+    this.m_evtWheelDeltaYs[this.m_evtTotal] = 0;
+    this.m_mouseEvt.type = evt.type;
+    this.m_evtTotal++;
+  }
+
+  mouseDownListener(evt) {
+    if (this.m_currStage != null) {
+      this.m_currStage.mouseX = this.m_mainStage.mouseX;
+      this.m_currStage.mouseY = this.m_mainStage.mouseY;
+    }
+
+    if (MouseEvt3DController.s_unlockMouseEvt) {
+      this.m_evtTypes[this.m_evtTotal] = evt.type;
+      this.m_evtXList[this.m_evtTotal] = evt.mouseX;
+      this.m_evtYList[this.m_evtTotal] = evt.mouseY;
+      this.m_evtWheelDeltaYs[this.m_evtTotal] = 0;
+      this.m_mouseEvt.type = evt.type;
+      this.m_evtTotal++;
+    }
+  }
+
+  mouseUpListener(evt) {
+    if (this.m_currStage != null) {
+      this.m_currStage.mouseX = this.m_mainStage.mouseX;
+      this.m_currStage.mouseY = this.m_mainStage.mouseY;
+    }
+
+    if (MouseEvt3DController.s_unlockMouseEvt) {
+      this.m_evtTypes[this.m_evtTotal] = evt.type;
+      this.m_evtXList[this.m_evtTotal] = evt.mouseX;
+      this.m_evtYList[this.m_evtTotal] = evt.mouseY;
+      this.m_evtWheelDeltaYs[this.m_evtTotal] = 0;
+      this.m_mouseEvt.type = evt.type;
+      this.m_evtTotal++;
+    }
+  }
+
+  mouseClickListener(evt) {
+    if (this.m_currStage != null) {
+      this.m_currStage.mouseX = this.m_mainStage.mouseX;
+      this.m_currStage.mouseY = this.m_mainStage.mouseY;
+    }
+
+    if (MouseEvt3DController.s_unlockMouseEvt) {
+      this.m_evtTypes[this.m_evtTotal] = evt.type;
+      this.m_evtXList[this.m_evtTotal] = evt.mouseX;
+      this.m_evtYList[this.m_evtTotal] = evt.mouseY;
+      this.m_evtWheelDeltaYs[this.m_evtTotal] = 0;
+      this.m_mouseEvt.type = evt.type;
+      this.m_evtTotal++;
+    }
+  }
 
   mouseOutEventTarget() {
     if (this.m_currStage != null) {
@@ -19159,22 +20212,6 @@ class MouseEvt3DController {
 
               case MouseEvent_1.default.MOUSE_UP:
                 this.m_currStage.mouseUp(1);
-                break;
-
-              case MouseEvent_1.default.MOUSE_RIGHT_DOWN:
-                this.m_currStage.mouseRightDown(1);
-                break;
-
-              case MouseEvent_1.default.MOUSE_RIGHT_UP:
-                this.m_currStage.mouseRightUp(1);
-                break;
-
-              case MouseEvent_1.default.MOUSE_MIDDLE_DOWN:
-                this.m_currStage.mouseMiddleDown(1);
-                break;
-
-              case MouseEvent_1.default.MOUSE_MIDDLE_UP:
-                this.m_currStage.mouseMiddleUp(1);
                 break;
 
               case MouseEvent_1.default.MOUSE_MOVE:
@@ -19314,22 +20351,6 @@ class MouseEvt3DController {
                   this.m_currStage.mouseBgClick();
                   break;
 
-                case MouseEvent_1.default.MOUSE_RIGHT_DOWN:
-                  this.m_currStage.mouseBgRightDown();
-                  break;
-
-                case MouseEvent_1.default.MOUSE_RIGHT_UP:
-                  this.m_currStage.mouseBgRightUp();
-                  break;
-
-                case MouseEvent_1.default.MOUSE_MIDDLE_DOWN:
-                  this.m_currStage.mouseBgMiddleDown();
-                  break;
-
-                case MouseEvent_1.default.MOUSE_MIDDLE_UP:
-                  this.m_currStage.mouseBgMiddleUp();
-                  break;
-
                 default:
                   break;
               }
@@ -19348,22 +20369,6 @@ class MouseEvt3DController {
 
               case MouseEvent_1.default.MOUSE_UP:
                 this.m_currStage.mouseUp(2);
-                break;
-
-              case MouseEvent_1.default.MOUSE_RIGHT_DOWN:
-                this.m_currStage.mouseRightDown(2);
-                break;
-
-              case MouseEvent_1.default.MOUSE_RIGHT_UP:
-                this.m_currStage.mouseRightUp(2);
-                break;
-
-              case MouseEvent_1.default.MOUSE_MIDDLE_DOWN:
-                this.m_currStage.mouseMiddleDown(2);
-                break;
-
-              case MouseEvent_1.default.MOUSE_MIDDLE_UP:
-                this.m_currStage.mouseMiddleUp(2);
                 break;
 
               default:
@@ -19492,8 +20497,6 @@ Object.defineProperty(exports, "__esModule", {
 const RenderSortBlock_1 = __importDefault(__webpack_require__("264c"));
 
 const RPOBlock_1 = __importDefault(__webpack_require__("5f3c"));
-
-const ROTransPool_1 = __importDefault(__webpack_require__("9156"));
 
 class RenderProcess {
   constructor(shader, rpoNodeBuilder, rpoUnitBuilder, vtxResource, batchEnabled, processFixedState) {
@@ -19668,7 +20671,7 @@ class RenderProcess {
     if (disp != null) {
       if (disp.__$$runit != null && disp.__$$runit.getRPROUid() < 0) {
         if (disp.__$$runit.getRPROUid() != this.uid) {
-          // console.log("RenderProcess(" + this.uid + ")::addDisp(): ", disp.ivsCount, disp, disp.drawMode);
+          //console.log("RenderProcess("+this.uid+"), addDisp: ",disp.ivsCount,disp,disp.drawMode);
           let node = this.m_rpoNodeBuilder.create();
           node.unit = this.m_rpoUnitBuilder.getNodeByUid(disp.__$ruid);
           node.unit.shader = this.m_shader;
@@ -19723,17 +20726,10 @@ class RenderProcess {
       if (disp.__$$runit != null) {
         let nodeUId = disp.__$$runit.getRPOUid();
 
-        let node = this.m_rpoNodeBuilder.getNodeByUid(nodeUId); // console.log("RenderProcess("+this.uid+")::removeDisp(), nodeUId: ",nodeUId,disp);
-        // console.log("removeDisp(), node != null: "+(node != null),", this.m_blockList: ",this.m_blockList);
+        let node = this.m_rpoNodeBuilder.getNodeByUid(nodeUId); //  console.log("removeDisp(), nodeUId: ",nodeUId, ", this.uid: ",this.getUid());
+        //  console.log("removeDisp(), node != null: "+(node != null),", this.m_blockList: ",this.m_blockList);
 
         if (node != null) {
-          let runit = node.unit;
-          let transU = runit.transUniform;
-
-          if (transU != null) {
-            ROTransPool_1.default.RemoveTransUniform(transU.key);
-          }
-
           if (this.m_sortBlock == null) {
             let block = this.m_blockList[node.index];
             block.removeNode(node);
@@ -19744,13 +20740,13 @@ class RenderProcess {
 
           this.m_rpoUnitBuilder.setRPNodeParam(disp.__$ruid, this.getUid(), -1);
           --this.m_nodesLen;
+          let runit = node.unit;
 
           if (this.m_rpoNodeBuilder.restore(node)) {
             this.m_rpoUnitBuilder.restore(runit);
-          } // this.m_vtxResource.__$detachRes(disp.vbuf.getUid());
+          }
 
-
-          this.m_vtxResource.__$detachRes(disp.getVtxResUid());
+          this.m_vtxResource.__$detachRes(disp.vbuf.getUid());
 
           disp.__$$runit = null;
           disp.__$ruid = -1;
@@ -19915,6 +20911,312 @@ exports.default = RenderProcess;
 
 /***/ }),
 
+/***/ "76b0":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/***************************************************************************/
+
+/*                                                                         */
+
+/*  Copyright 2018-2022 by                                                 */
+
+/*  Vily(vily313@126.com)                                                  */
+
+/*                                                                         */
+
+/***************************************************************************/
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+const SurfaceNormalCalc_1 = __importDefault(__webpack_require__("35fa"));
+
+const VtxBufConst_1 = __importDefault(__webpack_require__("8a0a"));
+
+const AABB_1 = __importDefault(__webpack_require__("fecb"));
+
+const MeshBase_1 = __importDefault(__webpack_require__("cb29"));
+
+const ROVertexBuffer_1 = __importDefault(__webpack_require__("e7d2"));
+
+const RenderConst_1 = __webpack_require__("e08e");
+
+const Color4_1 = __importDefault(__webpack_require__("3930"));
+
+const AABBCalc_1 = __webpack_require__("e160");
+
+class RectPlaneMesh extends MeshBase_1.default {
+  constructor(bufDataUsage = VtxBufConst_1.default.VTX_STATIC_DRAW) {
+    super(bufDataUsage);
+    this.color0 = new Color4_1.default();
+    this.color1 = new Color4_1.default();
+    this.color2 = new Color4_1.default();
+    this.color3 = new Color4_1.default();
+    this.offsetU = 0.0;
+    this.offsetV = 0.0;
+    this.uScale = 1.0;
+    this.vScale = 1.0;
+    this.flipVerticalUV = false;
+    /**
+     * axisFlag = 0 is XOY plane,
+     * axisFlag = 1 is XOZ plane,
+     * axisFlag = 2 is YOZ plane
+     */
+
+    this.axisFlag = 0;
+    this.m_polyhedralBoo = true;
+    this.m_vs = null;
+    this.m_uvs = null;
+    this.m_nvs = null;
+    this.m_cvs = null;
+    this.m_tvs = null;
+    this.m_btvs = null;
+    this.vsFloat32 = null;
+    this.dataStepList = null;
+  }
+
+  getVS() {
+    return this.m_vs;
+  }
+
+  getUVS() {
+    return this.m_uvs;
+  }
+
+  setUVS(uvsLen8) {
+    if (uvsLen8 != null && uvsLen8.length == 8) {
+      if (this.m_uvs == null) {
+        this.m_uvs = uvsLen8.slice(0);
+      } else {
+        this.m_uvs.set(uvsLen8);
+      }
+    }
+  }
+
+  getNVS() {
+    return this.m_nvs;
+  }
+
+  getCVS() {
+    return this.m_cvs;
+  }
+
+  initialize(startX, startY, pwidth, pheight) {
+    if (this.m_vs != null) {
+      return;
+    }
+
+    let minX = startX;
+    let minY = startY;
+    let maxX = startX + pwidth;
+    let maxY = startY + pheight;
+    let pz = 0.0; //
+    // ccw is positive, left-bottom pos(minX,minY) -> right-bottom pos(maxX,minY) -> right-top pos(maxX,maxY)  -> right-top pos(minX,maxY)
+
+    this.m_ivs = new Uint16Array([0, 1, 2, 0, 2, 3]); //this.m_ivs = new Uint32Array([0,1,2,0,2,3]);
+
+    switch (this.axisFlag) {
+      case 0:
+        // XOY plane
+        this.m_vs = new Float32Array([minX, minY, pz, maxX, minY, pz, maxX, maxY, pz, minX, maxY, pz]);
+        break;
+
+      case 1:
+        // XOZ plane
+        this.m_vs = new Float32Array([maxX, pz, minY, minX, pz, minY, minX, pz, maxY, maxX, pz, maxY]);
+        break;
+
+      case 2:
+        // YOZ plane
+        this.m_vs = new Float32Array([pz, minX, minY, pz, maxX, minY, pz, maxX, maxY, pz, minX, maxY]);
+        break;
+
+      default:
+        break;
+    }
+
+    if (this.bounds == null) this.bounds = new AABB_1.default();
+    this.bounds.addXYZFloat32Arr(this.m_vs);
+    this.bounds.updateFast();
+    ROVertexBuffer_1.default.Reset();
+    ROVertexBuffer_1.default.AddFloat32Data(this.m_vs, 3);
+
+    if (this.m_uvs == null && this.isVBufEnabledAt(VtxBufConst_1.default.VBUF_UVS_INDEX)) {
+      if (this.flipVerticalUV) {
+        this.m_uvs = new Float32Array([this.offsetU + 0.0 * this.uScale, this.offsetV + 1.0 * this.vScale, this.offsetU + 1.0 * this.uScale, this.offsetV + 1.0 * this.vScale, this.offsetU + 1.0 * this.uScale, this.offsetV + 0.0 * this.vScale, this.offsetU + 0.0 * this.uScale, this.offsetV + 0.0 * this.vScale]);
+      } else {
+        this.m_uvs = new Float32Array([this.offsetU + 0.0 * this.uScale, this.offsetV + 0.0 * this.vScale, this.offsetU + 1.0 * this.uScale, this.offsetV + 0.0 * this.vScale, this.offsetU + 1.0 * this.uScale, this.offsetV + 1.0 * this.vScale, this.offsetU + 0.0 * this.uScale, this.offsetV + 1.0 * this.vScale]);
+      }
+    }
+
+    if (this.isVBufEnabledAt(VtxBufConst_1.default.VBUF_NVS_INDEX)) {
+      switch (this.axisFlag) {
+        case 0:
+          this.m_nvs = new Float32Array([0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0]);
+          break;
+
+        case 1:
+          this.m_nvs = new Float32Array([0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0]);
+          break;
+
+        case 2:
+          this.m_nvs = new Float32Array([1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 0.0]);
+          break;
+
+        default:
+          break;
+      }
+    }
+
+    if (this.isVBufEnabledAt(VtxBufConst_1.default.VBUF_CVS_INDEX)) {
+      this.m_cvs = new Float32Array([this.color0.r, this.color0.g, this.color0.b, this.color1.r, this.color1.g, this.color1.b, this.color2.r, this.color2.g, this.color2.b, this.color3.r, this.color3.g, this.color3.b]);
+    }
+
+    if (this.isVBufEnabledAt(VtxBufConst_1.default.VBUF_TVS_INDEX)) {
+      let numTriangles = 2;
+      this.m_tvs = new Float32Array(12);
+      this.m_btvs = new Float32Array(12);
+      SurfaceNormalCalc_1.default.ClacTrisTangent(this.m_vs, this.m_vs.length, this.m_uvs, this.m_nvs, numTriangles, this.m_ivs, this.m_tvs, this.m_btvs);
+    }
+
+    this.drawMode = RenderConst_1.RenderDrawMode.ELEMENTS_TRIANGLES;
+    this.buildVbuf();
+    this.vtxTotal = 4;
+    this.trisNumber = 2;
+    /*
+    // VtxBufData 使用样例, 要注释掉上面的构建调用
+    let bufData:VtxBufData = new VtxBufData(2);
+    bufData.addAttributeDataAt(0,this.m_vs, 3);
+    bufData.addAttributeDataAt(1,this.m_uvs, 2);
+      let vs2:Float32Array = this.m_vs = new Float32Array([
+        100.0 + maxX,pz,100.0 + minY,
+        100.0 + minX,pz,100.0 + minY,
+        100.0 + minX,pz,100.0 + maxY,
+        //100.0 + maxX,pz,100.0 + maxY
+    ]);
+    
+    bufData.addAttributeDataAt(0,vs2, 3);
+    bufData.addAttributeDataAt(1,this.m_uvs, 2);
+    //this.m_ivs = new Uint16Array([0,1,2,0,2,3, 4+0,4+1,4+2,4+0,4+2,4+3]);
+    //let p1ivs:Uint16Array = new Uint16Array([4+0,4+1,4+2,4+0,4+2,4+3]);
+    let p1ivs:Uint16Array = new Uint16Array([4+0,4+1,4+2]);
+      bufData.addIndexData(this.m_ivs);
+    bufData.addIndexData(p1ivs);
+      this.m_vbuf = ROVertexBuffer.CreateByBufDataSeparate(bufData,this.getBufDataUsage());
+    this.vtCount = bufData.getIndexDataLengthTotal();
+    this.vtxTotal = bufData.getVerticesTotal();
+    this.trisNumber = bufData.getTrianglesTotal();
+    //console.log("this.vtxTotal: "+this.vtxTotal);
+    //console.log("this.trisNumber: "+this.trisNumber);
+    //*/
+
+    this.buildEnd();
+  }
+
+  reinitialize() {
+    this.buildVbuf();
+  }
+
+  buildVbuf() {
+    ROVertexBuffer_1.default.Reset();
+    ROVertexBuffer_1.default.AddFloat32Data(this.m_vs, 3);
+
+    if (this.isVBufEnabledAt(VtxBufConst_1.default.VBUF_UVS_INDEX)) {
+      ROVertexBuffer_1.default.AddFloat32Data(this.m_uvs, 2);
+    }
+
+    if (this.isVBufEnabledAt(VtxBufConst_1.default.VBUF_NVS_INDEX)) {
+      ROVertexBuffer_1.default.AddFloat32Data(this.m_nvs, 3);
+    }
+
+    if (this.isVBufEnabledAt(VtxBufConst_1.default.VBUF_CVS_INDEX)) {
+      ROVertexBuffer_1.default.AddFloat32Data(this.m_cvs, 3);
+    }
+
+    if (this.isVBufEnabledAt(VtxBufConst_1.default.VBUF_TVS_INDEX)) {
+      ROVertexBuffer_1.default.AddFloat32Data(this.m_tvs, 3);
+      ROVertexBuffer_1.default.AddFloat32Data(this.m_btvs, 3);
+    }
+
+    ROVertexBuffer_1.default.vbWholeDataEnabled = this.vbWholeDataEnabled;
+    this.updateWireframeIvs();
+    this.vtCount = this.m_ivs.length;
+
+    if (this.m_vbuf != null) {
+      if (this.forceUpdateIVS) {
+        this.m_vbuf.setUintIVSData(this.m_ivs);
+      }
+
+      ROVertexBuffer_1.default.UpdateBufData(this.m_vbuf);
+    } else {
+      this.m_vbuf = ROVertexBuffer_1.default.CreateBySaveData(this.getBufDataUsage(), this.getBufSortFormat());
+    }
+
+    this.m_vbuf.setUintIVSData(this.m_ivs);
+    this.buildEnd();
+  } // 是否是多面体实体,如果是，则可以进行三角面的相关计算等操作, 如果不是则需要进行相关的几何算法计算
+
+
+  isPolyhedral() {
+    return this.m_polyhedralBoo;
+  } // 设置自身是否是多面体实体，根据实际需要改变相关的状态值
+
+
+  setPolyhedral(boo) {
+    this.m_polyhedralBoo = boo;
+  }
+  /**
+   * 射线和自身的相交检测(多面体或几何函数(例如球体))
+   * @boundsHit       表示是否包围盒体已经和射线相交了
+   * @rlpv            表示物体坐标空间的射线起点
+   * @rltv            表示物体坐标空间的射线朝向
+   * @outV            如果检测相交存放物体坐标空间的交点
+   * @return          返回值 -1 表示不会进行检测,1表示相交,0表示不相交
+   */
+
+
+  testRay(rlpv, rltv, outV, boundsHit) {
+    if (this.m_polyhedralBoo) return -1;
+
+    if (boundsHit) {
+      let boo = AABBCalc_1.AABBCalc.IntersectionRL2(rltv, rlpv, this.bounds, outV);
+      return boo ? 1 : -1;
+    }
+
+    return -1;
+  }
+
+  toString() {
+    return "[RectPlaneMesh()]";
+  }
+
+  __$destroy() {
+    if (this.isResFree()) {
+      this.bounds = null;
+      this.m_vs = null;
+      this.m_uvs = null;
+      this.m_nvs = null;
+      this.m_cvs = null;
+
+      super.__$destroy();
+    }
+  }
+
+}
+
+exports.default = RectPlaneMesh;
+
+/***/ }),
+
 /***/ "78e9":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -20000,6 +21302,17 @@ exports.default = UniformLine;
 
 "use strict";
 
+/***************************************************************************/
+
+/*                                                                         */
+
+/*  Copyright 2018-2022 by                                                 */
+
+/*  Vily(vily313@126.com)                                                  */
+
+/*                                                                         */
+
+/***************************************************************************/
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -20229,10 +21542,8 @@ const RendererConst_1 = __importDefault(__webpack_require__("bbf4"));
 class Entity3DNode {
   constructor() {
     this.uid = -1;
-    this.rstatus = 0;
-    /**
-     * project occlusion culling test enabled
-     */
+    this.rstatus = 0; //distanceFlag:boolean = false;
+    // project occlusion culling test enabled
 
     this.pcoEnabled = false;
     this.drawEnabled = true;
@@ -20262,30 +21573,31 @@ class Entity3DNode {
     this.rpoNode = null;
     this.spaceId = -1;
     this.camVisi = 0;
-  }
+  } //private static m_camVisiList:number[] = [];
+
 
   static GetFreeId() {
-    if (Entity3DNode.m_freeIds.length > 0) {
-      return Entity3DNode.m_freeIds.pop();
+    if (Entity3DNode.m_freeIdList.length > 0) {
+      return Entity3DNode.m_freeIdList.pop();
     }
 
     return -1;
   }
 
   static GetByUid(uid) {
-    if (uid > -1 && uid < Entity3DNode.m_nodesLen) {
-      return Entity3DNode.m_nodes[uid];
+    if (uid > -1 && uid < Entity3DNode.m_nodeListLen) {
+      return Entity3DNode.m_nodeList[uid];
     }
 
     return null;
   }
 
   static SetCamVisiByUid(uid, status) {
-    Entity3DNode.m_nodes[uid].camVisi = status;
+    Entity3DNode.m_nodeList[uid].camVisi = status;
   }
 
   static GetCamVisiByUid(uid) {
-    return Entity3DNode.m_nodes[uid].camVisi;
+    return Entity3DNode.m_nodeList[uid].camVisi;
   }
 
   static Create() {
@@ -20293,44 +21605,42 @@ class Entity3DNode {
     let index = Entity3DNode.GetFreeId();
 
     if (index >= 0) {
-      node = Entity3DNode.m_nodes[index];
+      node = Entity3DNode.m_nodeList[index];
       node.uid = index;
-      Entity3DNode.m_flags[index] = Entity3DNode.s_b;
+      Entity3DNode.m_nodeFlagList[index] = Entity3DNode.s_FLAG_BUSY;
     } else {
       // create a new nodeIndex
       node = new Entity3DNode();
-      Entity3DNode.m_nodes.push(node);
-      Entity3DNode.m_flags.push(Entity3DNode.s_b);
-      node.uid = Entity3DNode.m_nodesLen;
-      Entity3DNode.m_nodesLen++;
+      Entity3DNode.m_nodeList.push(node);
+      Entity3DNode.m_nodeFlagList.push(Entity3DNode.s_FLAG_BUSY);
+      node.uid = Entity3DNode.m_nodeListLen;
+      Entity3DNode.m_nodeListLen++;
     }
 
     return node;
   }
 
   static Restore(pnode) {
-    if (pnode != null && pnode.uid >= 0 && Entity3DNode.m_flags[pnode.uid] == Entity3DNode.s_b) {
-      Entity3DNode.m_freeIds.push(pnode.uid);
-      Entity3DNode.m_flags[pnode.uid] = Entity3DNode.s_f;
+    if (pnode != null && pnode.uid >= 0 && Entity3DNode.m_nodeFlagList[pnode.uid] == Entity3DNode.s_FLAG_BUSY) {
+      Entity3DNode.m_freeIdList.push(pnode.uid);
+      Entity3DNode.m_nodeFlagList[pnode.uid] = Entity3DNode.s_FLAG_FREE;
       pnode.reset();
     }
   }
 
-} // busy
+}
 
-
-Entity3DNode.s_b = 1; // free
-
-Entity3DNode.s_f = 0;
-Entity3DNode.m_nodesLen = 0;
-Entity3DNode.m_nodes = [];
-Entity3DNode.m_flags = [];
-Entity3DNode.m_freeIds = [];
+Entity3DNode.s_FLAG_BUSY = 1;
+Entity3DNode.s_FLAG_FREE = 0;
+Entity3DNode.m_nodeListLen = 0;
+Entity3DNode.m_nodeList = [];
+Entity3DNode.m_nodeFlagList = [];
+Entity3DNode.m_freeIdList = [];
 exports.default = Entity3DNode;
 
 /***/ }),
 
-/***/ "7b29":
+/***/ "7c63":
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -20347,244 +21657,204 @@ exports.default = Entity3DNode;
 
 /***************************************************************************/
 
-var __importDefault = this && this.__importDefault || function (mod) {
-  return mod && mod.__esModule ? mod : {
-    "default": mod
-  };
-};
-
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-const EventBase_1 = __importDefault(__webpack_require__("a996"));
+const RenderConst_1 = __webpack_require__("e08e");
 
-const MouseEvent_1 = __importDefault(__webpack_require__("1710"));
-
-const MouseEvt3DDispatcher_1 = __importDefault(__webpack_require__("badb"));
-
-class StageBase {
-  constructor(rcuid) {
-    this.m_rcuid = 0;
-    this.m_viewX = 0.0;
-    this.m_viewY = 0.0;
-    this.m_viewW = 1.0;
-    this.m_viewH = 1.0;
-    this.m_stW = 800;
-    this.m_stH = 600; // mouse event dispatcher
-
-    this.m_dp = new MouseEvt3DDispatcher_1.default(); // 是否舞台尺寸和view自动同步一致
-
-    this.m_autoSynViewAndStageSize = true;
-    this.m_preStageWidth = 0;
-    this.m_preStageHeight = 0;
-    this.m_mouseEvt = new MouseEvent_1.default();
-    this.m_baseEvt = new EventBase_1.default();
-    this.uProbe = null;
-    this.pixelRatio = 1.0;
-    this.stageWidth = 800;
-    this.stageHeight = 600; // 实际宽高, 和gpu端对齐
-
-    this.stageHalfWidth = 400;
-    this.stageHalfHeight = 300;
-    this.mouseX = 0;
-    this.mouseY = 0; // sdiv页面实际占据的像素宽高
-
-    this.viewWidth = 800;
-    this.viewHeight = 600;
-    this.mouseViewX = 0;
-    this.mouseViewY = 0;
-    this.m_rcuid = rcuid;
-  }
-  /**
-   * @returns return renderer context unique id
-   */
-
-
-  getRCUid() {
-    return this.m_rcuid;
+class ROStateUnit {
+  constructor() {
+    this.stencilMask = -1;
   }
 
-  getDevicePixelRatio() {
-    return window.devicePixelRatio;
+}
+
+class RODrawState {
+  constructor() {
+    this.m_units = new Array(128);
+    this.m_unit = null;
+    this.m_blendMode = RenderConst_1.RenderBlendMode.NORMAL;
+    this.m_cullMode = RenderConst_1.CullFaceMode.NONE;
+    this.m_depthTestType = RenderConst_1.DepthTestMode.DISABLE;
+    this.m_cullDisabled = true;
+    this.m_context = null;
+    this.m_gl = null;
+    this.roColorMask = -11;
   }
 
-  getViewX() {
-    return this.m_viewX;
+  reset() {
+    this.roColorMask = -11;
   }
 
-  getViewY() {
-    return this.m_viewY;
+  setRenderContext(context) {
+    this.m_context = context;
+    this.m_gl = context.getRC();
+    let rcui = this.m_gl.rcuid;
+    this.m_unit = this.m_units[rcui];
+
+    if (this.m_unit == null) {
+      this.m_unit = this.m_units[rcui] = new ROStateUnit();
+    }
   }
 
-  getViewWidth() {
-    return this.m_viewW;
+  setColorMask(mr, mg, mb, ma) {
+    this.m_gl.colorMask(mr, mg, mb, ma);
   }
 
-  getViewHeight() {
-    return this.m_viewH;
+  setStencilFunc(func, ref, mask) {
+    this.m_gl.stencilFunc(func, ref, mask);
   }
 
-  dispatchMouseEvt(phase, tar = null) {
-    const evt = this.m_mouseEvt;
-    evt.mouseX = this.mouseX;
-    evt.mouseY = this.mouseY;
-    evt.target = tar == null ? this : tar;
-    evt.phase = phase;
-    this.m_dp.dispatchEvt(this.m_mouseEvt);
+  setStencilMask(mask) {
+    if (this.m_unit.stencilMask != mask && mask >= 0) {
+      this.m_unit.stencilMask = mask;
+      this.m_gl.stencilMask(mask);
+    }
   }
 
-  mouseDown(phase = 1) {
-    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_DOWN;
-    this.dispatchMouseEvt(phase);
+  setStencilOp(fail, zfail, zpass) {
+    this.m_gl.stencilOp(fail, zfail, zpass);
   }
 
-  mouseUp(phase = 1) {
-    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_UP;
-    this.dispatchMouseEvt(phase);
+  setDepthTestEnable(enable) {
+    if (enable) {
+      this.m_gl.enable(this.m_gl.DEPTH_TEST);
+    } else {
+      this.m_gl.disable(this.m_gl.DEPTH_TEST);
+    }
   }
 
-  mouseClick() {
-    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_CLICK;
-    this.dispatchMouseEvt(1);
+  setCullFaceEnable(enable) {
+    if (enable) {
+      this.m_gl.enable(this.m_gl.CULL_FACE);
+    } else {
+      this.m_gl.disable(this.m_gl.CULL_FACE);
+    }
   }
 
-  mouseDoubleClick() {
-    console.log("stage apply mouseDoubleClick()...");
-    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_DOUBLE_CLICK;
-    this.dispatchMouseEvt(1);
+  setBlendEnable(enable) {
+    if (enable) {
+      this.m_gl.enable(this.m_gl.BLEND);
+    } else {
+      this.m_gl.disable(this.m_gl.BLEND);
+    }
   }
 
-  mouseRightDown(phase = 1) {
-    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_RIGHT_DOWN;
-    this.dispatchMouseEvt(phase);
-  }
+  setCullFaceMode(mode) {
+    if (this.m_cullMode != mode) {
+      this.m_cullMode = mode;
 
-  mouseRightUp(phase = 1) {
-    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_RIGHT_UP;
-    this.dispatchMouseEvt(phase);
-  }
+      if (mode != RenderConst_1.CullFaceMode.NONE) {
+        if (this.m_cullDisabled) {
+          this.m_cullDisabled = false;
+          this.m_gl.enable(this.m_gl.CULL_FACE);
+        }
 
-  mouseMiddleDown(phase = 1) {
-    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_MIDDLE_DOWN;
-    this.dispatchMouseEvt(phase);
-  }
-
-  mouseMiddleUp(phase = 1) {
-    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_MIDDLE_UP;
-    this.dispatchMouseEvt(phase);
-  }
-
-  mouseBgDown() {
-    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_BG_DOWN;
-    this.dispatchMouseEvt(1);
-  }
-
-  mouseBgUp() {
-    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_BG_UP;
-    this.dispatchMouseEvt(1);
-  }
-
-  mouseBgClick() {
-    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_BG_CLICK;
-    this.dispatchMouseEvt(1);
-  }
-
-  mouseBgRightDown() {
-    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_BG_RIGHT_DOWN;
-    this.dispatchMouseEvt(1);
-  }
-
-  mouseBgRightUp() {
-    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_BG_RIGHT_UP;
-    this.dispatchMouseEvt(1);
-  }
-
-  mouseBgMiddleDown() {
-    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_BG_MIDDLE_DOWN;
-    this.dispatchMouseEvt(1);
-  }
-
-  mouseBgMiddleUp() {
-    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_BG_MIDDLE_UP;
-    this.dispatchMouseEvt(1);
-  }
-
-  mouseRightClick() {
-    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_RIGHT_CLICK;
-    this.dispatchMouseEvt(1);
-  }
-
-  mouseMove() {
-    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_MOVE;
-    this.dispatchMouseEvt(1);
-  }
-
-  mouseWheel(evt) {
-    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_WHEEL;
-    this.m_mouseEvt.wheelDeltaY = evt.wheelDeltaY;
-    this.dispatchMouseEvt(1);
-  } // 等同于 touchCancle
-
-
-  mouseCancel() {
-    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_CANCEL;
-    this.dispatchMouseEvt(1);
-  } //param [{x,y},{x,y},...]
-
-
-  mouseMultiDown(posArray) {
-    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_MULTI_DOWN;
-    this.m_mouseEvt.posArray = posArray;
-    this.dispatchMouseEvt(1);
-  } //param [{x,y},{x,y},...]
-
-
-  mouseMultiUp(posArray) {
-    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_MULTI_UP;
-    this.m_mouseEvt.posArray = posArray;
-    this.dispatchMouseEvt(1);
-  } //param [{x,y},{x,y},...]
-
-
-  mouseMultiMove(posArray) {
-    this.m_mouseEvt.type = MouseEvent_1.default.MOUSE_MULTI_MOVE;
-    this.m_mouseEvt.posArray = posArray;
-    this.dispatchMouseEvt(1);
-  }
-
-  mouseWindowUp(phase = 1) {}
-
-  mouseWindowRightUp(phase = 1) {}
-
-  addTarget(funcs, listeners, target, func) {
-    let i = 0;
-
-    for (i = funcs.length - 1; i >= 0; --i) {
-      if (target === listeners[i]) {
-        break;
+        this.m_gl.cullFace(mode);
+      } else if (!this.m_cullDisabled) {
+        this.m_cullDisabled = true;
+        this.m_gl.disable(this.m_gl.CULL_FACE);
       }
     }
+  }
 
-    if (i < 0) {
-      listeners.push(target);
-      funcs.push(func);
+  setBlendMode(mode, params) {
+    if (this.m_blendMode != mode) {
+      //console.log("this.m_blendMode: "+this.m_blendMode + ",mode: "+mode, params);
+      this.m_blendMode = mode;
+
+      if (mode > 0) {
+        if (params[0] < 1) {
+          //FUNC_ADD
+          this.m_gl.blendEquation(this.m_gl.FUNC_ADD);
+          this.m_gl.blendFunc(this.m_gl.ONE, this.m_gl.ZERO);
+          this.m_gl.blendEquation(params[1]);
+          this.m_gl.blendFunc(params[3], params[4]);
+        } else {
+          this.m_gl.blendEquationSeparate(params[1], params[2]);
+          this.m_gl.blendFuncSeparate(params[3], params[4], params[5], params[6]);
+        }
+      } else {
+        this.m_gl.disable(this.m_gl.BLEND);
+      }
     }
   }
 
-  removeTarget(funcs, listeners, target) {
-    for (let i = funcs.length - 1; i >= 0; --i) {
-      if (target === listeners[i]) {
-        listeners.splice(i, 1);
-        funcs.splice(i, 1);
-        break;
+  setDepthTestMode(type) {
+    if (this.m_depthTestType != type) {
+      this.m_depthTestType = type; //trace("RendererBase::setDepthTest(),type：",std::to_string(static_cast<int>(type)));
+
+      switch (type) {
+        case RenderConst_1.DepthTestMode.ALWAYS:
+          //console.log("ALWAYS type: ", type,this.m_gl.ALWAYS);
+          this.m_gl.depthMask(false);
+          this.m_gl.depthFunc(this.m_gl.ALWAYS);
+          break;
+
+        case RenderConst_1.DepthTestMode.SKY:
+          this.m_gl.depthMask(true);
+          this.m_gl.depthFunc(this.m_gl.LEQUAL);
+          break;
+
+        case RenderConst_1.DepthTestMode.OPAQUE:
+          //console.log("OPAQUE type: ", type,this.m_gl.LESS);
+          this.m_gl.depthMask(true);
+          this.m_gl.depthFunc(this.m_gl.LESS);
+          break;
+
+        case RenderConst_1.DepthTestMode.OPAQUE_OVERHEAD:
+          this.m_gl.depthMask(false);
+          this.m_gl.depthFunc(this.m_gl.EQUAL);
+          break;
+
+        case RenderConst_1.DepthTestMode.DECALS:
+          this.m_gl.depthMask(false);
+          this.m_gl.depthFunc(this.m_gl.LEQUAL);
+          break;
+
+        case RenderConst_1.DepthTestMode.BLEND:
+          this.m_gl.depthMask(false);
+          this.m_gl.depthFunc(this.m_gl.LESS);
+          break;
+
+        case RenderConst_1.DepthTestMode.WIRE_FRAME:
+          this.m_gl.depthMask(true);
+          this.m_gl.depthFunc(this.m_gl.LEQUAL);
+          break;
+
+        case RenderConst_1.DepthTestMode.NEXT_LAYER:
+          this.m_gl.depthMask(false);
+          this.m_gl.depthFunc(this.m_gl.ALWAYS);
+          break;
+
+        case RenderConst_1.DepthTestMode.TRUE_EQUAL:
+          this.m_gl.depthMask(true);
+          this.m_gl.depthFunc(this.m_gl.EQUAL);
+          break;
+
+        case RenderConst_1.DepthTestMode.TRUE_GREATER:
+          this.m_gl.depthMask(true);
+          this.m_gl.depthFunc(this.m_gl.GREATER);
+          break;
+
+        case RenderConst_1.DepthTestMode.TRUE_GEQUAL:
+          this.m_gl.depthMask(true);
+          this.m_gl.depthFunc(this.m_gl.GEQUAL);
+          break;
+
+        case RenderConst_1.DepthTestMode.WIRE_FRAME_NEXT:
+          break;
+
+        default:
+          break;
       }
     }
   }
 
 }
 
-exports.default = StageBase;
+exports.RODrawState = RODrawState;
 
 /***/ }),
 
@@ -21118,6 +22388,17 @@ exports.default = RenderMaskBitfield;
 
 "use strict";
 
+/***************************************************************************/
+
+/*                                                                         */
+
+/*  Copyright 2018-2022 by                                                 */
+
+/*  Vily(vily313@126.com)                                                  */
+
+/*                                                                         */
+
+/***************************************************************************/
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -21177,11 +22458,7 @@ const UniformConst_1 = __importDefault(__webpack_require__("ab73"));
 class StageParamUniformBuilder {
   create(rc, shdp) {
     let param = UniformConst_1.default.StageParam;
-
-    if (shdp.hasUniformByName(param.name)) {
-      return rc.uniformContext.createShaderGlobalUniformFromProbe(rc.getStage3D().uProbe, param.name, [param.name]);
-    }
-
+    if (shdp.hasUniformByName(param.name)) return rc.uniformContext.createShaderGlobalUniformFromProbe(rc.getStage3D().uProbe, param.name, [param.name]);
     return null;
   }
 
@@ -21552,42 +22829,40 @@ const BitConst_1 = __importDefault(__webpack_require__("ca6c"));
 class VtxBufConst {
   //
   static ToGL(gl, param) {
-    const vbc = VtxBufConst;
-
     switch (param) {
-      case vbc.VTX_STATIC_DRAW:
+      case VtxBufConst.VTX_STATIC_DRAW:
         return gl.STATIC_DRAW;
         break;
 
-      case vbc.VTX_DYNAMIC_DRAW:
+      case VtxBufConst.VTX_DYNAMIC_DRAW:
         return gl.DYNAMIC_DRAW;
         break;
 
-      case vbc.VTX_STREAM_DRAW:
+      case VtxBufConst.VTX_STREAM_DRAW:
         return gl.STREAM_DRAW;
         break;
 
-      case vbc.VTX_STATIC_READ:
+      case VtxBufConst.VTX_STATIC_READ:
         return gl.STATIC_READ;
         break;
 
-      case vbc.VTX_DYNAMIC_READ:
+      case VtxBufConst.VTX_DYNAMIC_READ:
         return gl.DYNAMIC_READ;
         break;
 
-      case vbc.VTX_STREAM_READ:
+      case VtxBufConst.VTX_STREAM_READ:
         return gl.STREAM_READ;
         break;
 
-      case vbc.VTX_STATIC_COPY:
+      case VtxBufConst.VTX_STATIC_COPY:
         return gl.STATIC_COPY;
         break;
 
-      case vbc.VTX_DYNAMIC_COPY:
+      case VtxBufConst.VTX_DYNAMIC_COPY:
         return gl.DYNAMIC_COPY;
         break;
 
-      case vbc.VTX_STREAM_COPY:
+      case VtxBufConst.VTX_STREAM_COPY:
         return gl.STREAM_COPY;
         break;
 
@@ -21599,48 +22874,46 @@ class VtxBufConst {
   }
 
   static GetVBufTypeByNS(pns) {
-    const vbc = VtxBufConst;
-
     switch (pns) {
-      case vbc.VBUF_VS_NS:
-        return vbc.VBUF_VS;
+      case VtxBufConst.VBUF_VS_NS:
+        return VtxBufConst.VBUF_VS;
         break;
 
-      case vbc.VBUF_UVS_NS:
-        return vbc.VBUF_UVS;
+      case VtxBufConst.VBUF_UVS_NS:
+        return VtxBufConst.VBUF_UVS;
         break;
 
-      case vbc.VBUF_NVS_NS:
-        return vbc.VBUF_NVS;
+      case VtxBufConst.VBUF_NVS_NS:
+        return VtxBufConst.VBUF_NVS;
         break;
 
-      case vbc.VBUF_CVS_NS:
-        return vbc.VBUF_CVS;
+      case VtxBufConst.VBUF_CVS_NS:
+        return VtxBufConst.VBUF_CVS;
         break;
       ///////////////////
 
-      case vbc.VBUF_VS2_NS:
-        return vbc.VBUF_VS2;
+      case VtxBufConst.VBUF_VS2_NS:
+        return VtxBufConst.VBUF_VS2;
         break;
 
-      case vbc.VBUF_UVS2_NS:
-        return vbc.VBUF_UVS2;
+      case VtxBufConst.VBUF_UVS2_NS:
+        return VtxBufConst.VBUF_UVS2;
         break;
 
       case VtxBufConst.VBUF_NVS2_NS:
         return VtxBufConst.VBUF_NVS2;
         break;
 
-      case vbc.VBUF_CVS2_NS:
-        return vbc.VBUF_CVS2;
+      case VtxBufConst.VBUF_CVS2_NS:
+        return VtxBufConst.VBUF_CVS2;
         break;
 
-      case vbc.VBUF_TVS_NS:
-        return vbc.VBUF_TVS;
+      case VtxBufConst.VBUF_TVS_NS:
+        return VtxBufConst.VBUF_TVS;
         break;
 
-      case vbc.VBUF_TVS2_NS:
-        return vbc.VBUF_TVS2;
+      case VtxBufConst.VBUF_TVS2_NS:
+        return VtxBufConst.VBUF_TVS2;
         break;
 
       default:
@@ -21650,48 +22923,46 @@ class VtxBufConst {
   }
 
   static GetVBufNSByType(type) {
-    const vbc = VtxBufConst;
-
     switch (type) {
-      case vbc.VBUF_VS:
-        return vbc.VBUF_VS_NS;
+      case VtxBufConst.VBUF_VS:
+        return VtxBufConst.VBUF_VS_NS;
         break;
 
-      case vbc.VBUF_UVS:
-        return vbc.VBUF_UVS_NS;
+      case VtxBufConst.VBUF_UVS:
+        return VtxBufConst.VBUF_UVS_NS;
         break;
 
-      case vbc.VBUF_NVS:
-        return vbc.VBUF_NVS_NS;
+      case VtxBufConst.VBUF_NVS:
+        return VtxBufConst.VBUF_NVS_NS;
         break;
 
-      case vbc.VBUF_CVS:
-        return vbc.VBUF_CVS_NS;
+      case VtxBufConst.VBUF_CVS:
+        return VtxBufConst.VBUF_CVS_NS;
         break;
       ///////////////////
 
-      case vbc.VBUF_VS2:
-        return vbc.VBUF_VS2_NS;
+      case VtxBufConst.VBUF_VS2:
+        return VtxBufConst.VBUF_VS2_NS;
         break;
 
-      case vbc.VBUF_UVS2:
-        return vbc.VBUF_UVS2_NS;
+      case VtxBufConst.VBUF_UVS2:
+        return VtxBufConst.VBUF_UVS2_NS;
         break;
 
-      case vbc.VBUF_NVS2:
-        return vbc.VBUF_NVS2_NS;
+      case VtxBufConst.VBUF_NVS2:
+        return VtxBufConst.VBUF_NVS2_NS;
         break;
 
-      case vbc.VBUF_CVS2:
-        return vbc.VBUF_CVS2_NS;
+      case VtxBufConst.VBUF_CVS2:
+        return VtxBufConst.VBUF_CVS2_NS;
         break;
 
-      case vbc.VBUF_TVS:
-        return vbc.VBUF_TVS_NS;
+      case VtxBufConst.VBUF_TVS:
+        return VtxBufConst.VBUF_TVS_NS;
         break;
 
-      case vbc.VBUF_TVS2:
-        return vbc.VBUF_TVS2_NS;
+      case VtxBufConst.VBUF_TVS2:
+        return VtxBufConst.VBUF_TVS2_NS;
         break;
 
       default:
@@ -21764,6 +23035,391 @@ exports.default = VtxBufConst;
 
 /***/ }),
 
+/***/ "8ae0":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+const AABB2D_1 = __importDefault(__webpack_require__("e2fe"));
+
+var TexAreaFillType;
+
+(function (TexAreaFillType) {
+  TexAreaFillType[TexAreaFillType["NONE"] = 0] = "NONE";
+  TexAreaFillType[TexAreaFillType["ONE"] = 1] = "ONE";
+  TexAreaFillType[TexAreaFillType["TWO_H"] = 2] = "TWO_H";
+  TexAreaFillType[TexAreaFillType["TWO_V"] = 3] = "TWO_V";
+  TexAreaFillType[TexAreaFillType["THREE"] = 4] = "THREE";
+  TexAreaFillType[TexAreaFillType["FOUR"] = 5] = "FOUR";
+})(TexAreaFillType = exports.TexAreaFillType || (exports.TexAreaFillType = {}));
+
+class TexArea {
+  constructor(px = 0.0, py = 0.0, pwidth = 100.0, pheight = 100.0) {
+    this.uniqueNS = "TexArea"; // 自身在列表数组中的序号
+
+    this.listIndex = -1;
+    this.atlasUid = 0;
+    /**
+     * 占据的区域
+     */
+
+    this.rect = null; // 纹理覆盖实际区域
+
+    this.texRect = null;
+    this.offset = 2;
+    this.minSize = 32;
+    this.uvs = new Float32Array(8);
+    this.rect = new AABB2D_1.default(px, py, pwidth, pheight);
+    this.texRect = new AABB2D_1.default(px, py, pwidth, pheight);
+  }
+
+  copyFrom(dst) {
+    this.uniqueNS = dst.uniqueNS;
+    this.rect.copyFrom(dst.rect);
+    this.offset = dst.offset;
+    this.uvs.set(dst.uvs, 0);
+  }
+
+  update() {
+    this.rect.update();
+  }
+
+}
+
+exports.TexArea = TexArea;
+
+class TexAreaNode {
+  constructor(px = 0.0, py = 0.0, pwidth = 100.0, pheight = 100.0) {
+    this.rect = null;
+    this.subNodes = null;
+    this.uniqueNS = "TexAreaNode";
+    this.subIndex = 0; // 记录自身的填满方式
+
+    this.m_fillType = TexAreaFillType.NONE;
+    this.rect = new AABB2D_1.default(px, py, pwidth, pheight);
+  }
+
+  isFull() {
+    if (this.subNodes == null) {
+      return false;
+    }
+
+    let node = null;
+    let nodes = this.subNodes;
+
+    if (nodes.length == 1) {
+      return true;
+    }
+
+    for (let i = 0; i < nodes.length; ++i) {
+      node = nodes[i];
+
+      if (!node.isFull()) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  fillFour(texArea, map) {
+    let boo = false;
+
+    if (this.subNodes == null) {
+      let rect = this.rect;
+      let srcR = texArea.rect;
+      let halfW = this.rect.width * 0.5;
+      let halfH = this.rect.height * 0.5; // // 四区域均分
+
+      let leftBottomAreaNode = new TexAreaNode(rect.x, rect.y, halfW, halfH);
+      let rightBottomAreaNode = new TexAreaNode(rect.x + halfW, rect.y, halfW, halfH);
+      let rightTopAreaNode = new TexAreaNode(rect.x + halfW, rect.y + halfH, halfW, halfH);
+      let leftTopAreaNode = new TexAreaNode(rect.x, rect.y + halfH, halfW, halfH);
+      /*
+      // // 四区域不均分, 会产生更多的无效碎片
+      let leftBottomAreaNode: TexAreaNode = new TexAreaNode(  rect.x,                 rect.y,                    srcR.width, srcR.height  );
+      let rightBottomAreaNode: TexAreaNode = new TexAreaNode( rect.x + srcR.width,    rect.y,                    this.rect.width - srcR.width, srcR.height  );
+      let rightTopAreaNode: TexAreaNode = new TexAreaNode(    rect.x + srcR.width,    rect.y + srcR.height,      this.rect.width - srcR.width, this.rect.height - srcR.height  );
+      let leftTopAreaNode: TexAreaNode = new TexAreaNode(     rect.x,                 rect.y + srcR.height,      srcR.width, this.rect.height - srcR.height  );
+        //*/
+
+      this.subNodes = [leftBottomAreaNode, rightBottomAreaNode, rightTopAreaNode, leftTopAreaNode];
+
+      for (let i = 0; i < this.subNodes.length; ++i) {
+        this.subNodes[i].subIndex = i;
+      }
+
+      let node = this.subNodes[0]; // 通过面积排序, 优先使用面积小的
+
+      this.subNodes.sort((a, b) => {
+        return a.rect.width * a.rect.height - b.rect.width * b.rect.height;
+      });
+      this.m_fillType = TexAreaFillType.FOUR;
+      boo = node.fillOne(texArea);
+    } else {
+      let node = null;
+      let nodes = this.subNodes;
+
+      for (let i = 0; i < nodes.length; ++i) {
+        node = nodes[i];
+
+        if (!node.isFull()) {
+          boo = node.addTexArea(texArea);
+
+          if (boo) {
+            break;
+          }
+        }
+      }
+    }
+
+    return boo;
+  } ///*
+
+
+  fillThree(texArea) {
+    let boo = false;
+
+    if (this.subNodes == null) {
+      let rect = this.rect;
+      let srcR = texArea.rect; // // 三区域不均分，尽量保留最大可用空间
+
+      let areaNode0 = new TexAreaNode(rect.x, rect.y, srcR.width, srcR.height);
+      let areaNode1;
+      let areaNode2;
+
+      if (srcR.width > srcR.height) {
+        areaNode1 = new TexAreaNode(rect.x + srcR.width, rect.y, this.rect.width - srcR.width, this.rect.height);
+        areaNode2 = new TexAreaNode(rect.x, rect.y + srcR.height, srcR.width, this.rect.height - srcR.height);
+      } else {
+        areaNode1 = new TexAreaNode(rect.x + srcR.width, rect.y, this.rect.width - srcR.width, srcR.height);
+        areaNode2 = new TexAreaNode(rect.x, rect.y + srcR.height, this.rect.width, this.rect.height - srcR.height);
+      }
+
+      this.subNodes = [areaNode0, areaNode1, areaNode2];
+
+      for (let i = 0; i < this.subNodes.length; ++i) {
+        this.subNodes[i].subIndex = i; //  if(this.subNodes[i].rect.width < texArea.minSize || this.subNodes[i].rect.height < texArea.minSize) {
+        //      console.log("new subnode less minSize.");
+        //  }
+      } // 通过面积排序, 优先使用面积小的
+      //this.subNodes.sort((a, b) => { return a.rect.width * a.rect.height - b.rect.width * b.rect.height });
+      // 如果一个拆分的区域小于 minSize 则可以从subNodes里面删除并且放回回收整合逻辑，整合为更大的一片有效区域
+
+
+      let a = this.subNodes[1];
+      let b = this.subNodes[2]; // 指定排序,优先使用面积小的
+
+      if (a.rect.width * a.rect.height > b.rect.width * b.rect.height) {
+        this.subNodes[1] = b;
+        this.subNodes[2] = a;
+      }
+
+      this.m_fillType = TexAreaFillType.THREE;
+      return this.subNodes[0].fillOne(texArea);
+    } else {
+      let node = null;
+      let nodes = this.subNodes;
+
+      for (let i = 0; i < nodes.length; ++i) {
+        node = nodes[i];
+
+        if (!node.isFull()) {
+          boo = node.addTexArea(texArea);
+
+          if (boo) {
+            break;
+          }
+        }
+      }
+    }
+
+    return boo;
+  }
+
+  fillTwoH(texArea) {
+    if (this.subNodes == null) {
+      let width0 = texArea.rect.width;
+      let width1 = this.rect.width - texArea.rect.width;
+      let height = this.rect.height;
+      let rect = this.rect;
+      let leftArea = new TexAreaNode(rect.x, rect.y, width0, height);
+      let rightArea = new TexAreaNode(rect.x + width0, rect.y, width1, height);
+      this.subNodes = [leftArea, rightArea];
+      this.m_fillType = TexAreaFillType.TWO_H;
+      return leftArea.fillOne(texArea);
+    }
+
+    if (!this.subNodes[1].isFull()) {
+      return this.subNodes[1].addTexArea(texArea);
+    }
+
+    return false;
+  }
+
+  fillTwoV(texArea) {
+    if (this.subNodes == null) {
+      let width = this.rect.width;
+      let height0 = texArea.rect.height;
+      let height1 = this.rect.height - texArea.rect.height;
+      let rect = this.rect;
+      let bottomArea = new TexAreaNode(rect.x, rect.y, width, height0);
+      let topArea = new TexAreaNode(rect.x, rect.y + height0, width, height1);
+      this.subNodes = [bottomArea, topArea];
+      this.m_fillType = TexAreaFillType.TWO_V;
+      return bottomArea.fillOne(texArea);
+    }
+
+    if (!this.subNodes[1].isFull()) {
+      return this.subNodes[1].addTexArea(texArea);
+    }
+
+    return false;
+  } //*/
+
+
+  fillOne(texArea) {
+    let boo = true;
+
+    if (this.subNodes == null) {
+      this.subNodes = [this];
+      this.m_fillType = TexAreaFillType.ONE;
+      texArea.rect.x = this.rect.x;
+      texArea.rect.y = this.rect.y;
+      texArea.update();
+      this.uniqueNS = texArea.uniqueNS; //console.log("fillOne: ",texArea);
+    }
+
+    return boo;
+  }
+
+  findByXY(px, py) {
+    if (this.rect.containsXY(px, py)) {
+      if (this.subNodes != null) {
+        if (this.m_fillType == TexAreaFillType.ONE) {
+          return this;
+        }
+
+        let node;
+
+        for (let i = 0; i < this.subNodes.length; ++i) {
+          node = this.subNodes[i].findByXY(px, py);
+
+          if (node != null) {
+            return node;
+          }
+        }
+      }
+    }
+
+    return null;
+  }
+  /**
+   * 添加 texture area 到当前空间管理节点,  默认用四分法均分这个区域无法分的情况再不平衡的2分法(横向或者纵向),叶子节点则不会划分而直接使用当前节点区域
+   * @param texArea 填入的纹理区域
+   * @param map
+   */
+
+
+  addTexArea(texArea) {
+    let srcW = texArea.rect.width;
+    let srcH = texArea.rect.height;
+
+    if (this.rect.width <= texArea.minSize && this.rect.height <= texArea.minSize) {
+      if (srcW <= this.rect.width && srcH <= this.rect.height && !this.isFull()) {
+        // 填入当前区域，不需要划分子区域。
+        // 检测是否已经填满, 如果填满了就不能填入了
+        return this.fillOne(texArea);
+      } else {
+        return false;
+      }
+    }
+
+    let dstW = this.rect.width > texArea.minSize ? this.rect.width : texArea.minSize;
+    let dstH = this.rect.height > texArea.minSize ? this.rect.height : texArea.minSize; //console.log("srcW,dstW: ",srcW,dstW);
+
+    if (srcW <= dstW && srcH <= dstH) {
+      // 开始做空间划分
+      let pw = dstW * 0.5;
+      let ph = dstH * 0.5;
+      let fillType = this.m_fillType;
+
+      if (this.m_fillType == TexAreaFillType.NONE) {
+        if (srcW <= pw && srcH <= ph) {
+          fillType = TexAreaFillType.FOUR;
+        } else if (srcW <= pw) {
+          fillType = TexAreaFillType.TWO_H;
+        } else if (srcH <= ph) {
+          fillType = TexAreaFillType.TWO_V;
+        } else {
+          fillType = TexAreaFillType.ONE;
+        }
+      } else if (fillType == TexAreaFillType.ONE) {
+        return false;
+      }
+
+      if (!this.isFull()) {
+        if (fillType == TexAreaFillType.THREE || fillType == TexAreaFillType.FOUR) {
+          // 四块区域均分
+          // 检测是否已经填满子空间, 如果填满了就不能填入了
+          // 分配策略为: 尽可能的保留最大有效可用空间, 减少无效碎片
+          // 一下注释掉的代码实际上更容易产生碎片
+          // let k: number = 1.0;
+          // if(texArea.rect.width > texArea.rect.height) {
+          //     k = texArea.rect.height / texArea.rect.width;
+          // }
+          // else {
+          //     k = texArea.rect.width / texArea.rect.height;
+          // }
+          // if(Math.random() < 0.9) {
+          //     return this.fillThree(texArea, map);
+          // }
+          // else {
+          //     // 更容易产生无效碎片，因为分配的区域增多了
+          //     return this.fillFour(texArea, map);
+          // }
+          return this.fillThree(texArea);
+        } else if (fillType == TexAreaFillType.TWO_H) {
+          // 横向非均匀划分
+          // 检测是否已经填满子空间, 如果填满了就不能填入了
+          return this.fillTwoH(texArea);
+        } else if (fillType == TexAreaFillType.TWO_V) {
+          //console.log("B");
+          // 纵向非均匀划分
+          // 检测是否已经填满子空间, 如果填满了就不能填入了
+          return this.fillTwoV(texArea);
+        } else {
+          //console.log("C");
+          // 填入当前区域，不需要划分子区域。
+          // 检测是否已经填满, 如果填满了就不能填入了
+          //fillType == TexAreaFillType.ONE
+          return this.fillOne(texArea);
+        }
+      }
+
+      return false;
+    }
+
+    return false;
+  }
+
+}
+
+exports.TexAreaNode = TexAreaNode;
+
+/***/ }),
+
 /***/ "8ae4":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -21787,13 +23443,13 @@ Object.defineProperty(exports, "__esModule", {
 
 class ROIndicesRes {
   constructor() {
-    this.m_uid = ROIndicesRes.s_uid++;
+    this.m_uid = 0;
     this.m_vtx = null;
     this.m_vtxUid = 0;
     this.m_gpuBuf = null;
     this.m_ivsSize = 0;
-    this.version = -1;
     this.ibufStep = 0;
+    this.m_uid = ROIndicesRes.s_uid + 1;
   }
 
   getUid() {
@@ -21834,27 +23490,26 @@ class ROIndicesRes {
     }
   }
 
-  initialize(rc, ivtx) {
-    if (this.m_gpuBuf == null && ivtx.getIvsData() != null) {
-      // console.log("ROIndicesRes::initialize(), uid: ", this.m_uid, ", ivtx: ", ivtx);
-      this.version = ivtx.indicesVer;
-      this.m_vtx = ivtx;
-      this.m_vtxUid = ivtx.getUid();
-      this.m_ivs = ivtx.getIvsData();
+  initialize(rc, vtx) {
+    if (this.m_gpuBuf == null && vtx.getIvsData() != null) {
+      this.version = vtx.indicesVer;
+      this.m_vtx = vtx;
+      this.m_vtxUid = vtx.getUid();
+      this.m_ivs = vtx.getIvsData();
       this.m_gpuBuf = rc.createBuf();
       rc.bindEleBuf(this.m_gpuBuf);
 
-      if (ivtx.bufData == null) {
-        rc.eleBufData(this.m_ivs, ivtx.getBufDataUsage());
+      if (vtx.bufData == null) {
+        rc.eleBufData(this.m_ivs, vtx.getBufDataUsage());
         this.m_ivsSize = this.m_ivs.length;
       } else {
-        rc.eleBufDataMem(ivtx.bufData.getIndexDataTotalBytes(), ivtx.getBufDataUsage());
+        rc.eleBufDataMem(vtx.bufData.getIndexDataTotalBytes(), vtx.getBufDataUsage());
         let uintArr = null;
         let offset = 0;
         this.m_ivsSize = 0;
 
-        for (let i = 0, len = ivtx.bufData.getIndexDataTotal(); i < len; ++i) {
-          uintArr = ivtx.bufData.getIndexDataAt(i);
+        for (let i = 0, len = vtx.bufData.getIndexDataTotal(); i < len; ++i) {
+          uintArr = vtx.bufData.getIndexDataAt(i);
           rc.eleBufSubData(uintArr, offset);
           offset += uintArr.byteLength;
           this.m_ivsSize += uintArr.length;
@@ -21870,7 +23525,6 @@ class ROIndicesRes {
       this.m_gpuBuf = null;
       this.m_ivs = null;
       this.m_ivsSize = 0;
-      console.log("ROIndicesRes::destroy() this.m_uid: ", this.m_uid);
     }
   }
 
@@ -21960,152 +23614,6 @@ TextureConst.NEAREST_MIPMAP_NEAREST = 4004;
 TextureConst.LINEAR_MIPMAP_NEAREST = 4005;
 TextureConst.NEAREST_MIPMAP_LINEAR = 4006;
 exports.default = TextureConst;
-
-/***/ }),
-
-/***/ "8dd9":
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/***************************************************************************/
-
-/*                                                                         */
-
-/*  Copyright 2018-2022 by                                                 */
-
-/*  Vily(vily313@126.com)                                                  */
-
-/*                                                                         */
-
-/***************************************************************************/
-
-var __importDefault = this && this.__importDefault || function (mod) {
-  return mod && mod.__esModule ? mod : {
-    "default": mod
-  };
-};
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-const EvtNode_1 = __importDefault(__webpack_require__("ee5a"));
-
-const EventBase_1 = __importDefault(__webpack_require__("a996"));
-
-class EventBaseDispatcher {
-  constructor() {
-    this.m_evtNodeMap = new Map();
-    this.uuid = "";
-    this.data = null;
-    this.currentTarget = null;
-    this.enabled = true;
-  }
-
-  getClassType() {
-    return EventBase_1.default.EventClassType;
-  }
-
-  destroy() {
-    this.m_evtNodeMap.forEach(k => {
-      k.destroy();
-    });
-    this.data = null;
-    this.currentTarget = null;
-  } // @return      1 is send evt yes,0 is send evt no
-
-
-  dispatchEvt(evt) {
-    if (this.enabled && evt != null) {
-      if (this.uuid != "") evt.uuid = this.uuid;
-      if (this.data != null) evt.data = this.data;
-      if (this.currentTarget != null) evt.currentTarget = this.currentTarget;
-      let t = evt.type;
-
-      if (t > 1 && this.m_evtNodeMap.has(t)) {
-        return this.m_evtNodeMap.get(t).dispatch(evt);
-      } // else {
-      //     console.log("EventBaseDispatcher::dispatchEvt(), Warn: undefined Event type.");
-      // }
-
-    }
-
-    return 0;
-  } //@return if the evt can be dispatched in this node,it returns 1,otherwise it returns 0
-
-
-  passTestEvt(evt) {
-    if (evt != null) {
-      let t = evt.type;
-
-      if (t > 1 && this.m_evtNodeMap.has(t)) {
-        return this.m_evtNodeMap.get(t).passTestEvt(evt);
-      }
-    }
-
-    return 0;
-  } //@return if the evt phase is in this node,it returns 1,otherwise it returns 0
-
-
-  passTestPhase(phase) {
-    this.m_evtNodeMap.forEach(k => {
-      if (k.passTestPhase(phase) == 1) {
-        return 1;
-      }
-    });
-    return 0;
-  }
-
-  addEventListener(type, target, func, captureEnabled = true, bubbleEnabled = false) {
-    if (func != null && target != null) {
-      let t = type; // - EventBase.GetMouseEvtTypeValueBase();
-
-      if (t > 1) {
-        //(capture phase),2(bubble phase)
-        let phase = 0;
-
-        if (captureEnabled != bubbleEnabled) {
-          if (captureEnabled) {
-            phase = 1;
-          } else {
-            phase = 2;
-          }
-        }
-
-        if (this.m_evtNodeMap.has(type)) {
-          this.m_evtNodeMap.get(t).addListener(target, func, phase);
-        } else {
-          let node = new EvtNode_1.default();
-          node.type = 33;
-          node.addListener(target, func, phase);
-          this.m_evtNodeMap.set(t, node);
-        }
-      } else {
-        console.log("EventBaseDispatcher::addEventListener(), Warn: undefined Event type.");
-      }
-    }
-  }
-
-  removeEventListener(type, target, func) {
-    if (func != null && target != null) {
-      let t = type;
-
-      if (t > 1) {
-        if (this.m_evtNodeMap.has(type)) {
-          this.m_evtNodeMap.get(t).removeListener(target, func);
-        }
-      } //  else
-      //  {
-      //      console.log("EventBaseDispatcher::removeEventListener(), Warn: undefined Event type.");
-      //  }
-
-    }
-  }
-
-}
-
-exports.default = EventBaseDispatcher;
 
 /***/ }),
 
@@ -22256,6 +23764,17 @@ exports.default = VertexRenderObj;
 
 "use strict";
 
+/***************************************************************************/
+
+/*                                                                         */
+
+/*  Copyright 2018-2022 by                                                 */
+
+/*  Vily(vily313@126.com)                                                  */
+
+/*                                                                         */
+
+/***************************************************************************/
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -22284,7 +23803,6 @@ class Vector3D {
     this.y = py;
     this.z = pz;
     this.w = pw;
-    return this;
   }
 
   fromArray(arr, offset = 0) {
@@ -22294,41 +23812,16 @@ class Vector3D {
     return this;
   }
 
-  toArray(arr, offset = 0) {
-    arr[offset] = this.x;
-    arr[offset + 1] = this.y;
-    arr[offset + 2] = this.z;
-    return this;
-  }
-
-  fromArray4(arr, offset = 0) {
-    this.x = arr[offset];
-    this.y = arr[offset + 1];
-    this.z = arr[offset + 2];
-    this.w = arr[offset + 3];
-    return this;
-  }
-
-  toArray4(arr, offset = 0) {
-    arr[offset] = this.x;
-    arr[offset + 1] = this.y;
-    arr[offset + 2] = this.z;
-    arr[offset + 3] = this.w;
-    return this;
-  }
-
   setXYZ(px, py, pz) {
     this.x = px;
     this.y = py;
     this.z = pz;
-    return this;
   }
 
   copyFrom(v3) {
     this.x = v3.x;
     this.y = v3.y;
     this.z = v3.z;
-    return this;
   }
 
   dot(a) {
@@ -22339,7 +23832,6 @@ class Vector3D {
     this.x *= a.x;
     this.y *= a.y;
     this.z *= a.z;
-    return this;
   }
 
   normalize() {
@@ -22350,8 +23842,6 @@ class Vector3D {
       this.y /= d;
       this.z /= d;
     }
-
-    return this;
   }
 
   normalizeTo(a) {
@@ -22372,21 +23862,18 @@ class Vector3D {
     this.x *= s.x;
     this.y *= s.y;
     this.z *= s.z;
-    return this;
   }
 
   scaleBy(s) {
     this.x *= s;
     this.y *= s;
     this.z *= s;
-    return this;
   }
 
   negate() {
     this.x = -this.x;
     this.y = -this.y;
     this.z = -this.z;
-    return this;
   }
 
   equalsXYZ(a) {
@@ -22416,14 +23903,12 @@ class Vector3D {
     this.x += a.x;
     this.y += a.y;
     this.z += a.z;
-    return this;
   }
 
   subtractBy(a) {
     this.x -= a.x;
     this.y -= a.y;
     this.z -= a.z;
-    return this;
   }
 
   subtract(a) {
@@ -22445,7 +23930,6 @@ class Vector3D {
     this.x = px;
     this.y = py;
     this.z = pz;
-    return this;
   }
 
   reflectBy(nv) {
@@ -22453,35 +23937,30 @@ class Vector3D {
     this.x = this.x - idotn2 * nv.x;
     this.y = this.y - idotn2 * nv.y;
     this.z = this.z - idotn2 * nv.z;
-    return this;
   }
 
   scaleVecTo(va, scale) {
     this.x = va.x * scale;
     this.y = va.y * scale;
     this.z = va.z * scale;
-    return this;
   }
 
   subVecsTo(va, vb) {
     this.x = va.x - vb.x;
     this.y = va.y - vb.y;
     this.z = va.z - vb.z;
-    return this;
   }
 
   addVecsTo(va, vb) {
     this.x = va.x + vb.x;
     this.y = va.y + vb.y;
     this.z = va.z + vb.z;
-    return this;
   }
 
   crossVecsTo(va, vb) {
     this.x = va.y * vb.z - va.z * vb.y;
     this.y = va.z * vb.x - va.x * vb.z;
     this.z = va.x * vb.y - va.y * vb.x;
-    return this;
   }
 
   toString() {
@@ -22583,26 +24062,6 @@ class Vector3D {
     rv.y = iv.y - idotn2 * nv.y;
     rv.z = iv.z - idotn2 * nv.z;
   }
-  /**
-   * 逆时针转到垂直
-   */
-
-
-  static VerticalCCWOnXOY(v) {
-    const x = v.x;
-    v.x = -v.y;
-    v.y = x;
-  }
-  /**
-   * 顺时针转到垂直
-   */
-
-
-  static VerticalCWOnXOY(v) {
-    const y = v.y;
-    v.y = -v.x;
-    v.x = y;
-  }
 
 }
 
@@ -22611,9 +24070,9 @@ Vector3D.Y_AXIS = new Vector3D(0, 1, 0);
 Vector3D.Z_AXIS = new Vector3D(0, 0, 1);
 Vector3D.ZERO = new Vector3D(0, 0, 0);
 Vector3D.ONE = new Vector3D(1, 1, 1);
-exports.default = Vector3D;
 const v_m_v0 = new Vector3D();
 const v_m_v1 = new Vector3D();
+exports.default = Vector3D;
 
 /***/ }),
 
@@ -22639,40 +24098,25 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 class ROTransPool {
-  // private static s_tcountMap: Map<number, number> = new Map();
-  static SetTransUniform(mat, uniform, shdp) {
-    let k = (mat.getUid() + 1) * 131 + shdp.getUid();
-
-    if (!ROTransPool.s_transMap.has(k)) {
-      ROTransPool.s_transMap.set(k, uniform);
-      uniform.key = k; // let count = ROTransPool.s_tcountMap.get(mat.getUid());
-      // ROTransPool.s_tcountMap.set(mat.getUid(), count+1);
-    } // ROTransPool.s_transMap.set(mat.getUid(), uniform);
-
+  static SetTransUniform(mat, uniform) {
+    ROTransPool.s_transMap.set(mat.getUid(), uniform);
   }
 
-  static GetTransUniform(mat, shdp) {
+  static GetTransUniform(mat) {
     if (mat.getUid() < 0) {
       throw Error("mat.getUid() < 0");
     }
 
-    let k = (mat.getUid() + 1) * 131 + shdp.getUid();
-    if (ROTransPool.s_transMap.has(k)) return ROTransPool.s_transMap.get(k); // if (ROTransPool.s_transMap.has(mat.getUid())) return ROTransPool.s_transMap.get(mat.getUid());
-
+    if (ROTransPool.s_transMap.has(mat.getUid())) return ROTransPool.s_transMap.get(mat.getUid());
     return null;
   }
 
-  static HasTransUniform(mat, shdp) {
-    let k = (mat.getUid() + 1) * 131 + shdp.getUid();
-    return ROTransPool.s_transMap.has(k); // return ROTransPool.s_transMap.has(mat.getUid());
+  static HasTransUniform(mat) {
+    return ROTransPool.s_transMap.has(mat.getUid());
   }
 
-  static RemoveTransUniform(key) {
-    if (ROTransPool.s_transMap.has(key)) {
-      console.log("ROTransPool::RemoveTransUniform(), key: ", key);
-      ROTransPool.s_transMap.delete(key);
-    } // ROTransPool.s_transMap.delete(mat.getUid());
-
+  static RemoveTransUniform(mat) {
+    ROTransPool.s_transMap.delete(mat.getUid());
   }
 
 }
@@ -22754,17 +24198,15 @@ class VROBase {
   run() {}
 
   __$attachThis() {
-    ++this.m_attachCount; // console.log("VROBase::__$attachThis() this.m_attachCount: ", this.m_attachCount, ", uid: ", this.m_uid);
+    ++this.m_attachCount;
   }
 
   __$detachThis() {
     --this.m_attachCount;
 
     if (this.m_attachCount < 1) {
-      this.m_attachCount = 0;
-      console.log("VROBase::__$detachThis() this.m_attachCount value is 0.");
-    } // console.log("VROBase::__$detachThis() this.m_attachCount: ", this.m_attachCount, ", uid: ", this.m_uid);
-
+      this.m_attachCount = 0; //console.log("VROBase::__$detachThis() this.m_attachCount value is 0.");
+    }
   }
 
   __$destroy() {
@@ -22848,45 +24290,6 @@ class Keyboard {
     }
   }
 
-  static AddEventListener(type, target, func) {
-    if (func != null) {
-      let i = 0;
-
-      switch (type) {
-        case KeyboardEvent_1.default.KEY_DOWN:
-          for (i = Keyboard.m_down_listener.length - 1; i >= 0; --i) {
-            if (func === Keyboard.m_down_listener[i]) {
-              break;
-            }
-          }
-
-          if (i < 0) {
-            Keyboard.m_down_ers.push(target);
-            Keyboard.m_down_listener.push(func);
-          }
-
-          break;
-
-        case KeyboardEvent_1.default.KEY_UP:
-          for (i = Keyboard.m_up_listener.length - 1; i >= 0; --i) {
-            if (func === Keyboard.m_up_listener[i]) {
-              break;
-            }
-          }
-
-          if (i < 0) {
-            Keyboard.m_up_ers.push(target);
-            Keyboard.m_up_listener.push(func);
-          }
-
-          break;
-
-        default:
-          break;
-      }
-    }
-  }
-
   static RemoveEventListener(type, func) {
     if (func != null) {
       let i;
@@ -22922,40 +24325,50 @@ class Keyboard {
 
 }
 
-Keyboard.SHIFT = 16;
-Keyboard.CTRL = 17;
-Keyboard.ALT = 18;
-Keyboard.ESC = 27;
-Keyboard.A = 65;
-Keyboard.B = 66;
-Keyboard.C = 67;
-Keyboard.D = 68;
-Keyboard.E = 69;
-Keyboard.F = 70;
-Keyboard.G = 71;
-Keyboard.H = 72;
-Keyboard.I = 73;
-Keyboard.J = 74;
-Keyboard.K = 75;
-Keyboard.L = 76;
-Keyboard.M = 77;
-Keyboard.N = 78;
-Keyboard.O = 79;
-Keyboard.P = 80;
-Keyboard.Q = 81;
-Keyboard.R = 82;
-Keyboard.S = 83;
-Keyboard.T = 84;
-Keyboard.U = 85;
-Keyboard.V = 86;
-Keyboard.W = 87;
-Keyboard.X = 88;
-Keyboard.Y = 89;
-Keyboard.Z = 90;
 Keyboard.m_down_ers = [];
 Keyboard.m_down_listener = [];
 Keyboard.m_up_ers = [];
 Keyboard.m_up_listener = [];
+
+Keyboard.AddEventListener = function (type, target, func) {
+  if (func != null) {
+    let i = 0;
+
+    switch (type) {
+      case KeyboardEvent_1.default.KEY_DOWN:
+        for (i = Keyboard.m_down_listener.length - 1; i >= 0; --i) {
+          if (func === Keyboard.m_down_listener[i]) {
+            break;
+          }
+        }
+
+        if (i < 0) {
+          Keyboard.m_down_ers.push(target);
+          Keyboard.m_down_listener.push(func);
+        }
+
+        break;
+
+      case KeyboardEvent_1.default.KEY_UP:
+        for (i = Keyboard.m_up_listener.length - 1; i >= 0; --i) {
+          if (func === Keyboard.m_up_listener[i]) {
+            break;
+          }
+        }
+
+        if (i < 0) {
+          Keyboard.m_up_ers.push(target);
+          Keyboard.m_up_listener.push(func);
+        }
+
+        break;
+
+      default:
+        break;
+    }
+  }
+};
+
 exports.default = Keyboard;
 
 /***/ }),
@@ -23004,29 +24417,17 @@ const PixelPickIndexMaterial_1 = __importDefault(__webpack_require__("e7ce"));
 
 const AABBCalc_1 = __webpack_require__("e160");
 
-class QueryUnit {
-  constructor() {
-    this.ets = null;
-    this.total = 0;
-  }
-
-  query(ets, total) {
-    this.ets = ets;
-    this.total = total;
-  }
-
-}
-
 class RayGpuSelector {
   constructor() {
     this.m_initColor = new Color4_1.default();
     this.m_indexMaterial = new PixelPickIndexMaterial_1.default();
     this.m_renderer = null;
     this.m_camera = null;
+    this.m_headNode = null;
     this.m_rsn = null; // 最多检测256个对象
 
     this.m_hitList = new Uint8Array(256);
-    this.m_rsnList = new Array(256);
+    this.m_rsnList = null;
     this.m_selectedNode = null;
     this.m_selectedTotal = 0;
     this.m_testMode = 0;
@@ -23039,15 +24440,13 @@ class RayGpuSelector {
     this.m_outv = new Vector3D_1.default();
     this.m_vecs = [null, null];
     this.m_gpuTestEnabled = true;
-    this.m_qu = new QueryUnit();
-    this.etset = null;
     this.m_uintArray = new Uint8Array(4);
     this.m_uintList = new Uint8Array(256);
+  } //  setGPUTestEnabled(enabled:boolean):void
+  //  {
+  //      this.m_gpuTestEnabled = enabled;
+  //  }
 
-    for (let i = 0; i < 256; ++i) {
-      this.m_rsnList[i] = new RaySelectedNode_1.default();
-    }
-  }
 
   setRenderer(renderer) {
     this.m_renderer = renderer;
@@ -23071,9 +24470,30 @@ class RayGpuSelector {
     this.m_camera = cam;
   }
 
+  setCullingNodeHead(headNode) {
+    this.m_headNode = headNode;
+
+    if (this.m_rsnList == null) {
+      this.m_rsnList = [];
+      let i = 0;
+
+      for (; i < 256; ++i) {
+        this.m_rsnList.push(new RaySelectedNode_1.default());
+      }
+    }
+  } //  setSelectedNode(node:RaySelectedNode):void
+  //  {
+  //      this.m_selectedNode = node;
+  //  }
+
+
   getSelectedNode() {
     return this.m_selectedNode;
-  }
+  } //  setSelectedNodes(nodes:RaySelectedNode[], total:number):void
+  //  {
+  //      //this.m_rsnList = nodes;
+  //  }
+
 
   getSelectedNodes() {
     return this.m_rsnList;
@@ -23117,71 +24537,72 @@ class RayGpuSelector {
   }
 
   run() {
-    if (this.etset.getTotal() > 0) {
+    let nextNode = this.m_headNode; //console.log("RaySelect run() nextNode != null: "+(nextNode != null));
+
+    if (nextNode != null) {
       let dis = 0.0;
       let rtv = this.m_rltv;
       let rpv = this.m_rlpv;
       let outv = this.m_outv;
       let node = null;
       let total = 0;
-      let minv = MathConst_1.default.MATH_MIN_POSITIVE;
-      let maxv = MathConst_1.default.MATH_MAX_POSITIVE;
 
-      if (Math.abs(rtv.x) > minv) {
+      if (Math.abs(rtv.x) > MathConst_1.default.MATH_MIN_POSITIVE) {
         this.m_rlinvtv.x = 1.0 / rtv.x;
       } else {
-        this.m_rlinvtv.x = maxv;
+        this.m_rlinvtv.x = MathConst_1.default.MATH_MAX_POSITIVE;
       }
 
-      if (Math.abs(rtv.y) > minv) {
+      if (Math.abs(rtv.y) > MathConst_1.default.MATH_MIN_POSITIVE) {
         this.m_rlinvtv.y = 1.0 / rtv.y;
       } else {
-        this.m_rlinvtv.y = maxv;
+        this.m_rlinvtv.y = MathConst_1.default.MATH_MAX_POSITIVE;
       }
 
-      if (Math.abs(rtv.z) > minv) {
+      if (Math.abs(rtv.z) > MathConst_1.default.MATH_MIN_POSITIVE) {
         this.m_rlinvtv.z = 1.0 / rtv.z;
       } else {
-        this.m_rlinvtv.z = maxv;
+        this.m_rlinvtv.z = MathConst_1.default.MATH_MAX_POSITIVE;
       }
 
-      let rivs = this.m_rlsiv;
-      let rtvs = this.m_rlinvtv;
-      rivs[0] = rtvs.x < 0 ? 1 : 0;
-      rivs[1] = rtvs.y < 0 ? 1 : 0;
-      rivs[2] = rtvs.z < 0 ? 1 : 0;
-      let qu = this.m_qu;
-      this.etset.query(qu);
-      let ets = qu.ets;
-      let tot = qu.total;
-      let vecs = this.m_vecs;
+      if (this.m_rlinvtv.x < 0) this.m_rlsiv[0] = 1;else this.m_rlsiv[0] = 0;
+      if (this.m_rlinvtv.y < 0) this.m_rlsiv[1] = 1;else this.m_rlsiv[1] = 0;
+      if (this.m_rlinvtv.z < 0) this.m_rlsiv[2] = 1;else this.m_rlsiv[2] = 0;
 
-      for (let i = 0; i < tot; ++i) {
-        let et = ets[i];
-
-        if (et.mouseEnabled) {
-          const bounds = et.getGlobalBounds();
-          outv.subVecsTo(bounds.center, rpv);
+      while (nextNode != null) {
+        if (nextNode.drawEnabled && nextNode.entity.mouseEnabled) {
+          outv.x = nextNode.bounds.center.x - rpv.x;
+          outv.y = nextNode.bounds.center.y - rpv.y;
+          outv.z = nextNode.bounds.center.z - rpv.z;
           dis = outv.dot(rtv);
           outv.x -= dis * rtv.x;
           outv.y -= dis * rtv.y;
           outv.z -= dis * rtv.z;
 
-          if (outv.getLengthSquared() <= bounds.radius2) {
+          if (outv.getLengthSquared() <= nextNode.bounds.radius2) {
             // 如果只是几何检测(例如球体包围体的检测)就不需要在进入后续的aabb检测
-            vecs[0] = bounds.min;
-            vecs[1] = bounds.max;
+            if (nextNode.rayTestState < 1) {
+              this.m_vecs[0] = nextNode.bounds.min;
+              this.m_vecs[1] = nextNode.bounds.max;
 
-            if (AABBCalc_1.AABBCalc.IntersectionRL3(vecs, rivs, rtvs, rtv, rpv, outv)) {
-              node = this.m_rsnList[total];
-              node.entity = et;
-              node.dis = this.m_rlinvtv.w;
-              node.wpv.copyFrom(outv); //  console.log("H Hit Dis: "+rtv.dot(outv));
+              if (AABBCalc_1.AABBCalc.IntersectionRL3(this.m_vecs, this.m_rlsiv, this.m_rlinvtv, rtv, rpv, outv)) {
+                node = this.m_rsnList[total];
+                node.entity = nextNode.entity;
+                node.dis = this.m_rlinvtv.w;
+                node.wpv.copyFrom(outv); //  console.log("H Hit Dis: "+rtv.dot(outv));
+                //console.log("Ray hit test a renderNode.");
 
-              ++total;
-            }
+                ++total;
+              }
+            } //  else
+            //  {
+            //      //其他检测方式
+            //  }
+
           }
         }
+
+        nextNode = nextNode.next;
       }
 
       this.m_selectedNode = null;
@@ -23386,8 +24807,7 @@ class RayGpuSelector {
     rcontext.unlockRenderState();
     RendererState_1.default.UnlockBlendMode();
     RendererState_1.default.UnlockDepthTestMode();
-    const c = this.m_initColor;
-    rcontext.setClearRGBAColor4f(c.r, c.g, c.b, c.a);
+    rcontext.setClearRGBAColor4f(this.m_initColor.r, this.m_initColor.g, this.m_initColor.b, this.m_initColor.a);
     rcontext.resetState();
   }
 
@@ -23399,7 +24819,10 @@ class RayGpuSelector {
   getWorldPosByRayDistance(cameraDistance, tv, camPv, resultV) {
     resultV.x = tv.x * cameraDistance + camPv.x;
     resultV.y = tv.y * cameraDistance + camPv.y;
-    resultV.z = tv.z * cameraDistance + camPv.z;
+    resultV.z = tv.z * cameraDistance + camPv.z; //console.log("### cameraDistance: "+cameraDistance);
+    //  console.log("tv: "+tv.toString());
+    //  console.log("camPv: "+camPv.toString());
+    //  console.log("resultV: "+resultV.toString());
   }
 
 }
@@ -23475,63 +24898,6 @@ MaterialResource.s_shdDataDict = new Map();
 MaterialResource.s_shdDataList = [];
 MaterialResource.s_shdDataListLen = 0;
 exports.default = MaterialResource;
-
-/***/ }),
-
-/***/ "9693":
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-class RendererSceneNode {
-  constructor(rscene) {
-    this.m_rscene = null;
-    this.priority = 0;
-    this.processIdList = null;
-    this.contextResetEnabled = false;
-    this.p0Call0 = null;
-    this.p0Call1 = null;
-    this.p1Call0 = null;
-    this.p1Call1 = null;
-
-    if (rscene == null) {
-      throw Error("rscene is null !!!");
-    }
-
-    this.m_rscene = rscene;
-  }
-
-  setPhase0Callback(beforeCall, afterCall) {
-    this.p0Call0 = beforeCall;
-    this.p0Call1 = afterCall;
-  }
-
-  setPhase1Callback(beforeCall, afterCall) {
-    this.p1Call0 = beforeCall;
-    this.p1Call1 = afterCall;
-  }
-
-  enableMouseEvent(gpuTestEnabled = true) {
-    this.m_rscene.enableMouseEvent(gpuTestEnabled);
-  }
-
-  getRScene() {
-    return this.m_rscene;
-  }
-
-  clear() {
-    this.m_rscene = null;
-    this.processIdList = null;
-  }
-
-}
-
-exports.default = RendererSceneNode;
 
 /***/ }),
 
@@ -23788,6 +25154,353 @@ exports.default = ROTextureResource;
 
 /***/ }),
 
+/***/ "99cf":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/***************************************************************************/
+
+/*                                                                         */
+
+/*  Copyright 2018-2022 by                                                 */
+
+/*  Vily(vily313@126.com)                                                  */
+
+/*                                                                         */
+
+/***************************************************************************/
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+const DashedLineMesh_1 = __importDefault(__webpack_require__("9c3c"));
+
+const DisplayEntity_1 = __importDefault(__webpack_require__("402a"));
+
+const Color4_1 = __importDefault(__webpack_require__("3930"));
+
+const Line3DMaterial_1 = __importDefault(__webpack_require__("32cc"));
+
+class Line3DEntity extends DisplayEntity_1.default {
+  constructor() {
+    super();
+    this.m_posarr = null;
+    this.m_colorarr = null;
+    this.m_material = null;
+    this.m_lineMesh = null;
+    this.color = new Color4_1.default(1.0, 0.0, 0.0, 1.0);
+    this.dynColorEnabled = false;
+  }
+
+  setRGB3f(pr, pg, pb) {
+    if (this.m_material != null) {
+      this.m_material.setRGB3f(pr, pg, pb);
+    }
+
+    this.color.setRGB3f(pr, pg, pb);
+  }
+
+  createMaterial() {
+    if (this.getMaterial() == null) {
+      this.m_material = new Line3DMaterial_1.default(this.dynColorEnabled);
+      this.setMaterial(this.m_material);
+    }
+  }
+
+  __activeMesh(material) {
+    if (this.getMesh() == null) {
+      let mesh = new DashedLineMesh_1.default();
+      mesh.vbWholeDataEnabled = false;
+      mesh.setBufSortFormat(material.getBufSortFormat());
+      mesh.initialize(this.m_posarr, this.m_colorarr);
+      this.setMesh(mesh);
+    }
+
+    this.m_lineMesh = this.getMesh();
+  }
+
+  setPosAt(i, pos) {
+    if (this.m_lineMesh != null) {
+      this.m_lineMesh.setVSXYZAt(i, pos.x, pos.y, pos.z);
+    }
+  }
+
+  reinitializeMesh() {
+    if (this.m_lineMesh != null) {
+      this.m_lineMesh.initialize(this.m_posarr, this.m_colorarr);
+      this.setIvsParam(0, this.m_lineMesh.vtCount);
+    }
+  }
+
+  initialize(begin, end = null) {
+    if (this.m_posarr == null) {
+      this.m_posarr = [100.0, 0.0, 0.0, 0.0, 0, 0];
+    }
+
+    this.m_posarr[0] = begin.x;
+    this.m_posarr[1] = begin.y;
+    this.m_posarr[2] = begin.z;
+
+    if (end == null) {
+      this.m_posarr[3] = 0;
+      this.m_posarr[4] = 0;
+      this.m_posarr[5] = 0;
+    } else {
+      this.m_posarr[3] = end.x;
+      this.m_posarr[4] = end.y;
+      this.m_posarr[5] = end.z;
+    }
+
+    this.m_colorarr = [this.color.r, this.color.g, this.color.b, this.color.r, this.color.g, this.color.b];
+    this.createMaterial();
+    this.activeDisplay();
+  }
+
+  initializeRectXOY(px, py, pw, ph) {
+    pw += px;
+    ph += py;
+
+    if (!this.dynColorEnabled) {
+      this.m_colorarr = [this.color.r, this.color.g, this.color.b, this.color.r, this.color.g, this.color.b, this.color.r, this.color.g, this.color.b, this.color.r, this.color.g, this.color.b, this.color.r, this.color.g, this.color.b, this.color.r, this.color.g, this.color.b, this.color.r, this.color.g, this.color.b, this.color.r, this.color.g, this.color.b];
+    }
+
+    this.m_posarr = [px, py, 0.0, pw, py, 0.0, pw, py, 0.0, pw, ph, 0.0, pw, ph, 0.0, px, ph, 0.0, px, ph, 0.0, px, py, 0.0];
+    this.createMaterial();
+    this.activeDisplay();
+  }
+
+  initializeRectXOZ(px, pz, pw, pl) {
+    pw += px;
+    pl += pz;
+
+    if (!this.dynColorEnabled) {
+      this.m_colorarr = [this.color.r, this.color.g, this.color.b, this.color.r, this.color.g, this.color.b, this.color.r, this.color.g, this.color.b, this.color.r, this.color.g, this.color.b, this.color.r, this.color.g, this.color.b, this.color.r, this.color.g, this.color.b, this.color.r, this.color.g, this.color.b, this.color.r, this.color.g, this.color.b];
+    }
+
+    this.m_posarr = [px, 0.0, pz, pw, 0.0, pz, pw, 0.0, pz, pw, 0.0, pl, pw, 0.0, pl, px, 0.0, pl, px, 0.0, pl, px, 0.0, pz];
+    this.createMaterial();
+    this.activeDisplay();
+  }
+
+  initializeByPosList(posList, colorList = null) {
+    this.m_posarr = [];
+
+    if (!this.dynColorEnabled) {
+      this.m_colorarr = [];
+
+      if (colorList == null) {
+        for (let i = 0; i < posList.length; ++i) {
+          this.m_colorarr.push(this.color.r, this.color.g, this.color.b, this.color.r, this.color.g, this.color.b);
+        }
+      } else {
+        let color;
+
+        for (let i = 0; i < posList.length; ++i) {
+          color = colorList[i];
+          this.m_colorarr.push(color.r, color.g, color.b);
+          this.m_colorarr.push(color.r, color.g, color.b);
+        }
+      }
+    }
+
+    for (let i = 1; i < posList.length; ++i) {
+      this.m_posarr.push(posList[i - 1].x, posList[i - 1].y, posList[i - 1].z);
+      this.m_posarr.push(posList[i].x, posList[i].y, posList[i].z);
+    }
+
+    this.createMaterial();
+    this.activeDisplay();
+  }
+
+  initializePolygon(posList, colorList = null) {
+    this.initializeByPosList(posList, colorList);
+  }
+
+  destroy() {
+    super.destroy();
+    this.m_lineMesh = null;
+  }
+
+  toString() {
+    return "[Line3DEntity]";
+  }
+
+}
+
+exports.default = Line3DEntity;
+
+/***/ }),
+
+/***/ "9c3c":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/***************************************************************************/
+
+/*                                                                         */
+
+/*  Copyright 2018-2022 by                                                 */
+
+/*  Vily(vily313@126.com)                                                  */
+
+/*                                                                         */
+
+/***************************************************************************/
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+const Vector3D_1 = __importDefault(__webpack_require__("8e17"));
+
+const RadialLine_1 = __importDefault(__webpack_require__("38de"));
+
+const AABB_1 = __importDefault(__webpack_require__("fecb"));
+
+const VtxBufConst_1 = __importDefault(__webpack_require__("8a0a"));
+
+const MeshBase_1 = __importDefault(__webpack_require__("cb29"));
+
+const ROVertexBuffer_1 = __importDefault(__webpack_require__("e7d2"));
+
+const RenderConst_1 = __webpack_require__("e08e");
+
+class DashedLineMesh extends MeshBase_1.default {
+  constructor(bufDataUsage = VtxBufConst_1.default.VTX_STATIC_DRAW) {
+    super(bufDataUsage);
+    this.m_vs = null;
+    this.m_cvs = null;
+    this.m_lsTotal = 0; // 用于射线检测
+
+    this.rayTestRadius = 2.0;
+  }
+
+  getVS() {
+    return this.m_vs;
+  }
+
+  setVS(vs) {
+    this.m_vs = vs;
+  }
+
+  getCVS() {
+    return this.m_cvs;
+  }
+
+  setCVS(cvs) {
+    this.m_cvs = cvs;
+  }
+
+  initialize(posarr, colors) {
+    if (this.m_vs != null || posarr.length >= 6) {
+      if (this.m_vs == null) {
+        this.m_vs = new Float32Array(posarr);
+      }
+
+      this.vtCount = Math.floor(this.m_vs.length / 3);
+      this.m_lsTotal = Math.floor(this.vtCount / 2);
+
+      if (this.bounds == null) {
+        this.bounds = new AABB_1.default();
+      }
+
+      this.bounds.addXYZFloat32Arr(this.m_vs);
+      this.bounds.updateFast();
+      ROVertexBuffer_1.default.Reset();
+      ROVertexBuffer_1.default.AddFloat32Data(this.m_vs, 3);
+
+      if (this.isVBufEnabledAt(VtxBufConst_1.default.VBUF_CVS_INDEX)) {
+        if (this.m_cvs == null) this.m_cvs = new Float32Array(colors);
+        ROVertexBuffer_1.default.AddFloat32Data(this.m_cvs, 3);
+      }
+
+      ROVertexBuffer_1.default.vbWholeDataEnabled = this.vbWholeDataEnabled;
+
+      if (this.m_vbuf != null) {
+        ROVertexBuffer_1.default.UpdateBufData(this.m_vbuf);
+      } else {
+        this.m_vbuf = ROVertexBuffer_1.default.CreateBySaveData(this.getBufDataUsage());
+      }
+
+      this.drawMode = RenderConst_1.RenderDrawMode.ARRAYS_LINES;
+      this.buildEnd();
+    }
+  }
+
+  setVSXYZAt(i, px, py, pz) {
+    if (this.m_vbuf != null) {
+      this.m_vbuf.setData3fAt(i, 0, px, py, pz);
+    }
+  }
+
+  toString() {
+    return "DashedLineMesh()";
+  }
+
+  isPolyhedral() {
+    return false;
+  } // @boundsHit       表示是否包围盒体已经和射线相交了
+  // @rlpv            表示物体坐标空间的射线起点
+  // @rltv            表示物体坐标空间的射线朝向
+  // @outV            如果检测相交存放物体坐标空间的交点
+  // @return          返回值 -1 表示不会进行检测,1表示相交,0表示不相交
+  //
+
+
+  testRay(rlpv, rltv, outV, boundsHit) {
+    let j = 0;
+    let vs = this.m_vs;
+    let flag = 0;
+    let radius = this.rayTestRadius;
+
+    for (let i = 0; i < this.m_lsTotal; ++i) {
+      DashedLineMesh.s_pv0.setXYZ(vs[j], vs[j + 1], vs[j + 2]);
+      DashedLineMesh.s_pv1.setXYZ(vs[j + 3], vs[j + 4], vs[j + 5]);
+      flag = RadialLine_1.default.IntersectionLS(rlpv, rltv, DashedLineMesh.s_pv0, DashedLineMesh.s_pv1, outV, radius);
+
+      if (flag > 0) {
+        return 1;
+      }
+
+      j += 6;
+    }
+
+    return 0;
+  }
+
+  __$destroy() {
+    if (this.isResFree()) {
+      this.bounds = null;
+      this.m_vs = null;
+      this.m_cvs = null;
+
+      super.__$destroy();
+    }
+  }
+
+}
+
+DashedLineMesh.s_pv0 = new Vector3D_1.default();
+DashedLineMesh.s_pv1 = new Vector3D_1.default();
+exports.default = DashedLineMesh;
+
+/***/ }),
+
 /***/ "9c4d":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -23941,19 +25654,6 @@ class RunnableQueue {
     }
   }
 
-  destroy() {
-    let ro = this.m_linker.getBegin();
-    let next = ro;
-
-    while (next != null) {
-      ro = next;
-      next = ro.next;
-      ro.target = null;
-    }
-
-    this.m_linker.clear();
-  }
-
 }
 
 exports.default = RunnableQueue;
@@ -24099,48 +25799,6 @@ exports.default = Uint16TextureProxy;
 
 /***/ }),
 
-/***/ "9f82":
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/***************************************************************************/
-
-/*                                                                         */
-
-/*  Copyright 2018-2022 by                                                 */
-
-/*  Vily(vily313@126.com)                                                  */
-
-/*                                                                         */
-
-/***************************************************************************/
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-class RPStatus {
-  constructor() {
-    this.sdkVer = 0;
-    this.version = 0;
-    this.drawCallTimes = 0;
-    this.drawTrisNumber = 0;
-    this.povNumber = 0;
-  }
-
-  reset() {
-    this.drawCallTimes = 0;
-    this.drawTrisNumber = 0;
-    this.povNumber = 0;
-  }
-
-}
-
-exports.RPStatus = RPStatus;
-
-/***/ }),
-
 /***/ "a156":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -24256,15 +25914,325 @@ exports.ShaderProgramBuilder = ShaderProgramBuilder;
 
 /***/ }),
 
-/***/ "a221":
+/***/ "a2f2":
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
+/***************************************************************************/
+
+/*                                                                         */
+
+/*  Copyright 2018-2022 by                                                 */
+
+/*  Vily(vily313@126.com)                                                  */
+
+/*                                                                         */
+
+/***************************************************************************/
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
+const Vector3D_1 = __importDefault(__webpack_require__("8e17"));
+
+const VtxBufConst_1 = __importDefault(__webpack_require__("8a0a"));
+
+const DashedLineMesh_1 = __importDefault(__webpack_require__("9c3c"));
+
+const DisplayEntity_1 = __importDefault(__webpack_require__("402a"));
+
+const Color4_1 = __importDefault(__webpack_require__("3930"));
+
+const Line3DMaterial_1 = __importDefault(__webpack_require__("32cc"));
+
+class BoxFrame3D extends DisplayEntity_1.default {
+  constructor(dynColorBoo = false) {
+    super();
+    this.m_dynColorBoo = false;
+    this.m_minV = new Vector3D_1.default(-100.0, -100.0, -100.0);
+    this.m_maxV = new Vector3D_1.default(100.0, 100.0, 100.0);
+    this.m_posarr = null;
+    this.m_selfMesh = null;
+    this.m_currMaterial = null; // 用于射线检测
+
+    this.rayTestRadius = 8.0;
+    this.color = new Color4_1.default(1.0, 1.0, 1.0, 1.0);
+    this.m_abVersion = -1;
+    this.m_dynColorBoo = dynColorBoo;
+  }
+
+  setLineWidth(lineW) {//if(this.getMesh())
+    //{
+    //    //this.getMesh().vbuf.lineWidth = lineW;
+    //}
+  }
+
+  setRGB3f(pr, pg, pb) {
+    if (this.m_dynColorBoo) {
+      this.m_currMaterial.setRGB3f(pr, pg, pb);
+    }
+  }
+
+  createMaterial() {
+    if (this.getMaterial() == null) {
+      this.m_currMaterial = new Line3DMaterial_1.default(this.m_dynColorBoo);
+      this.setMaterial(this.m_currMaterial);
+    }
+  }
+
+  __activeMesh(material) {
+    if (this.getMesh() == null) {
+      let colorarr = null;
+
+      if (!this.m_dynColorBoo) {
+        colorarr = [];
+        let i = 0;
+
+        for (; i < 24; ++i) {
+          colorarr.push(this.color.r, this.color.g, this.color.b);
+        }
+      }
+
+      this.m_selfMesh = new DashedLineMesh_1.default(VtxBufConst_1.default.VTX_DYNAMIC_DRAW);
+      this.m_selfMesh.rayTestRadius = this.rayTestRadius;
+      this.m_selfMesh.vbWholeDataEnabled = false;
+      this.m_selfMesh.setBufSortFormat(material.getBufSortFormat());
+
+      if (this.m_dynColorBoo) {
+        this.m_selfMesh.initialize(this.m_posarr, null);
+      } else {
+        this.m_selfMesh.initialize(this.m_posarr, colorarr);
+      }
+
+      this.setMesh(this.m_selfMesh);
+    }
+  }
+
+  initializeByAABB(aabb) {
+    this.initialize(aabb.min, aabb.max);
+  }
+
+  initialize(minV, maxV) {
+    this.m_minV.copyFrom(minV);
+    this.m_maxV.copyFrom(maxV);
+    this.m_posarr = [// bottom frame plane: -y, first pos: (+x,-y,+z), plane positions wrap mode: CCW
+    this.m_minV.x, this.m_minV.y, this.m_minV.z, this.m_minV.x, this.m_minV.y, this.m_maxV.z, this.m_minV.x, this.m_minV.y, this.m_minV.z, this.m_maxV.x, this.m_minV.y, this.m_minV.z, this.m_minV.x, this.m_minV.y, this.m_maxV.z, this.m_maxV.x, this.m_minV.y, this.m_maxV.z, this.m_maxV.x, this.m_minV.y, this.m_minV.z, this.m_maxV.x, this.m_minV.y, this.m_maxV.z, // wall frame
+    this.m_minV.x, this.m_minV.y, this.m_minV.z, this.m_minV.x, this.m_maxV.y, this.m_minV.z, this.m_minV.x, this.m_minV.y, this.m_maxV.z, this.m_minV.x, this.m_maxV.y, this.m_maxV.z, this.m_maxV.x, this.m_minV.y, this.m_minV.z, this.m_maxV.x, this.m_maxV.y, this.m_minV.z, this.m_maxV.x, this.m_minV.y, this.m_maxV.z, this.m_maxV.x, this.m_maxV.y, this.m_maxV.z, // top frame plane: +y
+    this.m_minV.x, this.m_maxV.y, this.m_minV.z, this.m_minV.x, this.m_maxV.y, this.m_maxV.z, this.m_minV.x, this.m_maxV.y, this.m_minV.z, this.m_maxV.x, this.m_maxV.y, this.m_minV.z, this.m_minV.x, this.m_maxV.y, this.m_maxV.z, this.m_maxV.x, this.m_maxV.y, this.m_maxV.z, this.m_maxV.x, this.m_maxV.y, this.m_minV.z, this.m_maxV.x, this.m_maxV.y, this.m_maxV.z];
+    this.createMaterial();
+    this.activeDisplay();
+    if (this.m_selfMesh == null) this.m_selfMesh = this.getMesh();
+  }
+
+  initializeByPosList8(posList8) {
+    this.m_posarr = [// bottom frame
+    posList8[0].x, posList8[0].y, posList8[0].z, posList8[1].x, posList8[1].y, posList8[1].z, posList8[1].x, posList8[1].y, posList8[1].z, posList8[2].x, posList8[2].y, posList8[2].z, posList8[2].x, posList8[2].y, posList8[2].z, posList8[3].x, posList8[3].y, posList8[3].z, posList8[3].x, posList8[3].y, posList8[3].z, posList8[0].x, posList8[0].y, posList8[0].z, // wall frame
+    posList8[0].x, posList8[0].y, posList8[0].z, posList8[4].x, posList8[4].y, posList8[4].z, posList8[1].x, posList8[1].y, posList8[1].z, posList8[5].x, posList8[5].y, posList8[5].z, posList8[2].x, posList8[2].y, posList8[2].z, posList8[6].x, posList8[6].y, posList8[6].z, posList8[3].x, posList8[3].y, posList8[3].z, posList8[7].x, posList8[7].y, posList8[7].z, // top frame
+    posList8[4].x, posList8[4].y, posList8[4].z, posList8[5].x, posList8[5].y, posList8[5].z, posList8[5].x, posList8[5].y, posList8[5].z, posList8[6].x, posList8[6].y, posList8[6].z, posList8[6].x, posList8[6].y, posList8[6].z, posList8[7].x, posList8[7].y, posList8[7].z, posList8[7].x, posList8[7].y, posList8[7].z, posList8[4].x, posList8[4].y, posList8[4].z];
+    this.createMaterial();
+    this.activeDisplay();
+    if (this.m_selfMesh == null) this.m_selfMesh = this.getMesh();
+  }
+
+  getVertexAt(vtxIndex, outPos) {
+    if (this.m_selfMesh != null) {
+      let k = 0;
+
+      switch (vtxIndex) {
+        case 0:
+          outPos.setXYZ(this.m_posarr[k], this.m_posarr[++k], this.m_posarr[++k]);
+          break;
+
+        case 1:
+          k = 3;
+          outPos.setXYZ(this.m_posarr[k], this.m_posarr[++k], this.m_posarr[++k]);
+          break;
+
+        case 2:
+          k = 15; // 3 * 5
+
+          outPos.setXYZ(this.m_posarr[k], this.m_posarr[++k], this.m_posarr[++k]);
+          break;
+
+        case 3:
+          k = 9; // 3 * 3
+
+          outPos.setXYZ(this.m_posarr[k], this.m_posarr[++k], this.m_posarr[++k]);
+          break;
+
+        case 4:
+          k = 27; // 3 * 9
+
+          outPos.setXYZ(this.m_posarr[k], this.m_posarr[++k], this.m_posarr[++k]);
+          break;
+
+        case 5:
+          k = 33; // 3 * 11
+
+          outPos.setXYZ(this.m_posarr[k], this.m_posarr[++k], this.m_posarr[++k]);
+          break;
+
+        case 6:
+          k = 45; // 3 * 15
+
+          outPos.setXYZ(this.m_posarr[k], this.m_posarr[++k], this.m_posarr[++k]);
+          break;
+
+        case 7:
+          k = 39; // 3 * 13
+
+          outPos.setXYZ(this.m_posarr[k], this.m_posarr[++k], this.m_posarr[++k]);
+          break;
+
+        default:
+          break;
+      }
+    }
+  }
+
+  setVertexAt(vtxIndex, pos) {
+    if (this.m_selfMesh != null) {
+      let k = 0;
+
+      switch (vtxIndex) {
+        case 0:
+          this.m_posarr[k] = pos.x;
+          this.m_posarr[++k] = pos.y;
+          this.m_posarr[++k] = pos.z;
+          this.m_selfMesh.setVSXYZAt(0, pos.x, pos.y, pos.z);
+          this.m_selfMesh.setVSXYZAt(2, pos.x, pos.y, pos.z);
+          this.m_selfMesh.setVSXYZAt(8, pos.x, pos.y, pos.z);
+          break;
+
+        case 1:
+          k = 3;
+          this.m_posarr[k] = pos.x;
+          this.m_posarr[++k] = pos.y;
+          this.m_posarr[++k] = pos.z;
+          this.m_selfMesh.setVSXYZAt(1, pos.x, pos.y, pos.z);
+          this.m_selfMesh.setVSXYZAt(4, pos.x, pos.y, pos.z);
+          this.m_selfMesh.setVSXYZAt(10, pos.x, pos.y, pos.z);
+          break;
+
+        case 2:
+          k = 15;
+          this.m_posarr[k] = pos.x;
+          this.m_posarr[++k] = pos.y;
+          this.m_posarr[++k] = pos.z;
+          this.m_selfMesh.setVSXYZAt(5, pos.x, pos.y, pos.z);
+          this.m_selfMesh.setVSXYZAt(7, pos.x, pos.y, pos.z);
+          this.m_selfMesh.setVSXYZAt(14, pos.x, pos.y, pos.z);
+          break;
+
+        case 3:
+          k = 9;
+          this.m_posarr[k] = pos.x;
+          this.m_posarr[++k] = pos.y;
+          this.m_posarr[++k] = pos.z;
+          this.m_selfMesh.setVSXYZAt(3, pos.x, pos.y, pos.z);
+          this.m_selfMesh.setVSXYZAt(6, pos.x, pos.y, pos.z);
+          this.m_selfMesh.setVSXYZAt(12, pos.x, pos.y, pos.z);
+          break;
+
+        case 4:
+          k = 27;
+          this.m_posarr[k] = pos.x;
+          this.m_posarr[++k] = pos.y;
+          this.m_posarr[++k] = pos.z;
+          this.m_selfMesh.setVSXYZAt(9, pos.x, pos.y, pos.z);
+          this.m_selfMesh.setVSXYZAt(16, pos.x, pos.y, pos.z);
+          this.m_selfMesh.setVSXYZAt(18, pos.x, pos.y, pos.z);
+          break;
+
+        case 5:
+          k = 33;
+          this.m_posarr[k] = pos.x;
+          this.m_posarr[++k] = pos.y;
+          this.m_posarr[++k] = pos.z;
+          this.m_selfMesh.setVSXYZAt(11, pos.x, pos.y, pos.z);
+          this.m_selfMesh.setVSXYZAt(17, pos.x, pos.y, pos.z);
+          this.m_selfMesh.setVSXYZAt(20, pos.x, pos.y, pos.z);
+          break;
+
+        case 6:
+          k = 45;
+          this.m_posarr[k] = pos.x;
+          this.m_posarr[++k] = pos.y;
+          this.m_posarr[++k] = pos.z;
+          this.m_selfMesh.setVSXYZAt(15, pos.x, pos.y, pos.z);
+          this.m_selfMesh.setVSXYZAt(21, pos.x, pos.y, pos.z);
+          this.m_selfMesh.setVSXYZAt(23, pos.x, pos.y, pos.z);
+          break;
+
+        case 7:
+          k = 39;
+          this.m_posarr[k] = pos.x;
+          this.m_posarr[++k] = pos.y;
+          this.m_posarr[++k] = pos.z;
+          this.m_selfMesh.setVSXYZAt(13, pos.x, pos.y, pos.z);
+          this.m_selfMesh.setVSXYZAt(19, pos.x, pos.y, pos.z);
+          this.m_selfMesh.setVSXYZAt(22, pos.x, pos.y, pos.z);
+          break;
+
+        default:
+          break;
+      }
+    }
+  }
+
+  updateFrame(minV, maxV) {
+    if (this.m_selfMesh != null) {
+      this.m_minV.copyFrom(minV);
+      this.m_maxV.copyFrom(maxV);
+      let m = this.m_selfMesh; // bottom frame
+
+      m.setVSXYZAt(0, minV.x, minV.y, minV.z);
+      m.setVSXYZAt(1, minV.x, minV.y, maxV.z);
+      m.setVSXYZAt(2, minV.x, minV.y, minV.z);
+      m.setVSXYZAt(3, maxV.x, minV.y, minV.z);
+      m.setVSXYZAt(4, minV.x, minV.y, maxV.z);
+      m.setVSXYZAt(5, maxV.x, minV.y, maxV.z);
+      m.setVSXYZAt(6, maxV.x, minV.y, minV.z);
+      m.setVSXYZAt(7, maxV.x, minV.y, maxV.z); // wall frame
+
+      m.setVSXYZAt(8, minV.x, minV.y, minV.z);
+      m.setVSXYZAt(9, minV.x, maxV.y, minV.z);
+      m.setVSXYZAt(10, minV.x, minV.y, maxV.z);
+      m.setVSXYZAt(11, minV.x, maxV.y, maxV.z);
+      m.setVSXYZAt(12, maxV.x, minV.y, minV.z);
+      m.setVSXYZAt(13, maxV.x, maxV.y, minV.z);
+      m.setVSXYZAt(14, maxV.x, minV.y, maxV.z);
+      m.setVSXYZAt(15, maxV.x, maxV.y, maxV.z); // top frame
+
+      m.setVSXYZAt(16, minV.x, maxV.y, minV.z);
+      m.setVSXYZAt(17, minV.x, maxV.y, maxV.z);
+      m.setVSXYZAt(18, minV.x, maxV.y, minV.z);
+      m.setVSXYZAt(19, maxV.x, maxV.y, minV.z);
+      m.setVSXYZAt(20, minV.x, maxV.y, maxV.z);
+      m.setVSXYZAt(21, maxV.x, maxV.y, maxV.z);
+      m.setVSXYZAt(22, maxV.x, maxV.y, minV.z);
+      m.setVSXYZAt(23, maxV.x, maxV.y, maxV.z);
+    }
+  }
+
+  updateFrameByAABB(ab) {
+    if (this.m_abVersion != ab.version) {
+      this.m_abVersion = ab.version;
+      this.updateFrame(ab.min, ab.max);
+    }
+  }
+
+}
+
+exports.default = BoxFrame3D;
 
 /***/ }),
 
@@ -24300,11 +26268,11 @@ const RSEntityFlag_1 = __importDefault(__webpack_require__("11e6"));
 
 const SpaceCullingMask_1 = __webpack_require__("cc48");
 
+const RPONode_1 = __importDefault(__webpack_require__("265e"));
+
 const EntityNodeQueue_1 = __importDefault(__webpack_require__("af68"));
 
 const Entity3DNodeLinker_1 = __importDefault(__webpack_require__("a80a"));
-
-const RenderingEntitySet_1 = __importDefault(__webpack_require__("56a9"));
 
 class RendererSpace {
   constructor() {
@@ -24312,7 +26280,7 @@ class RendererSpace {
     this.m_renderer = null;
     this.m_camera = null;
     this.m_stage3d = null;
-    this.m_emptyRPONode = null;
+    this.m_emptyRPONode = new RPONode_1.default();
     this.m_rpoNodeBuilder = null;
     this.m_nodeQueue = new EntityNodeQueue_1.default();
     this.m_nodeWLinker = new Entity3DNodeLinker_1.default();
@@ -24320,7 +26288,6 @@ class RendererSpace {
     this.m_cullingor = null;
     this.m_raySelector = null;
     this.m_entitysTotal = 0;
-    this.renderingEntitySet = new RenderingEntitySet_1.default();
     this.m_uid = RendererSpace.s_uid++;
     this.m_nodeQueue.initialize(1);
   }
@@ -24335,7 +26302,6 @@ class RendererSpace {
       this.m_stage3d = renderer.getStage3D();
       this.m_camera = camera;
       this.m_rpoNodeBuilder = renderer.getRPONodeBuilder();
-      this.m_emptyRPONode = this.m_rpoNodeBuilder.createRPONode();
     }
   }
 
@@ -24366,26 +26332,20 @@ class RendererSpace {
 
   getRaySelector() {
     return this.m_raySelector;
-  }
-
-  getPOVNumber() {
-    return this.m_cullingor != null ? this.m_cullingor.getPOVNumber() : 0;
   } // 可以添加真正被渲染的实体也可以添加只是为了做检测的实体(不允许有material)
 
 
   addEntity(entity) {
-    const SCM = SpaceCullingMask_1.SpaceCullingMask;
-
-    if (entity.getGlobalBounds() != null && entity.spaceCullMask > SCM.NONE) {
+    if (entity.getGlobalBounds() != null && entity.spaceCullMask > SpaceCullingMask_1.SpaceCullingMask.NONE) {
       if (RSEntityFlag_1.default.TestSpaceEnabled(entity.__$rseFlag)) {
         entity.update();
         ++this.m_entitysTotal;
         let node = this.m_nodeQueue.addEntity(entity);
         node.bounds = entity.getGlobalBounds();
-        node.pcoEnabled = (entity.spaceCullMask & SCM.POV) == SCM.POV;
+        node.pcoEnabled = (entity.spaceCullMask & SpaceCullingMask_1.SpaceCullingMask.POV) == SpaceCullingMask_1.SpaceCullingMask.POV;
         let boo = entity.isInRendererProcess() || entity.getMaterial() == null;
 
-        if (boo && (entity.spaceCullMask & SCM.POV) == SCM.POV) {
+        if (boo && (entity.spaceCullMask & SpaceCullingMask_1.SpaceCullingMask.POV) == SpaceCullingMask_1.SpaceCullingMask.POV) {
           node.rstatus = 1;
 
           if (entity.getMaterial() == null) {
@@ -24422,8 +26382,7 @@ class RendererSpace {
           this.m_nodeWLinker.removeNode(node);
         }
 
-        this.m_nodeQueue.removeEntity(entity); // node.reset();
-
+        this.m_nodeQueue.removeEntity(entity);
         --this.m_entitysTotal;
       }
     }
@@ -24469,13 +26428,10 @@ class RendererSpace {
     nextNode = this.m_nodeSLinker.getBegin();
 
     if (nextNode != null) {
-      let total = 0;
-
       if (this.m_cullingor != null) {
         this.m_cullingor.setCamera(this.m_camera);
         this.m_cullingor.setCullingNodeHead(nextNode);
         this.m_cullingor.run();
-        total = this.m_cullingor.total;
       } else {
         let ab = null;
         let cam = this.m_camera; //let camPos:Vector3D = cam.getPosition();
@@ -24483,11 +26439,9 @@ class RendererSpace {
         while (nextNode != null) {
           if (nextNode.rpoNode.isVsible() && nextNode.entity.isDrawEnabled()) {
             ab = nextNode.bounds;
-            const boo = cam.visiTestSphere2(ab.center, ab.radius);
-            nextNode.drawEnabled = boo;
-            nextNode.entity.drawEnabled = boo;
-            nextNode.rpoNode.drawEnabled = boo;
-            total += boo ? 1 : 0; //  if(nextNode.drawEnabled && nextNode.distanceFlag)
+            nextNode.drawEnabled = cam.visiTestSphere2(ab.center, ab.radius);
+            nextNode.entity.drawEnabled = nextNode.drawEnabled;
+            nextNode.rpoNode.drawEnabled = nextNode.drawEnabled; //  if(nextNode.drawEnabled && nextNode.distanceFlag)
             //  {
             //      nextNode.rpoNode.setValue(-Vector3D.DistanceSquared(camPos,ab.center));
             //      //console.log((nextNode.entity as any).name,",a runit.value: ",nextNode.rpoNode.unit.value);
@@ -24502,30 +26456,13 @@ class RendererSpace {
           nextNode = nextNode.next;
         }
       }
-
-      const etset = this.renderingEntitySet;
-
-      if (total > 0) {
-        etset.reset(total);
-        nextNode = this.m_nodeSLinker.getBegin();
-
-        while (nextNode != null) {
-          if (nextNode.drawEnabled) {
-            etset.addEntity(nextNode.entity);
-          }
-
-          nextNode = nextNode.next;
-        }
-      } else {
-        etset.clear();
-      }
     }
   }
 
   rayTest(rlpv, rltv) {
     if (this.m_raySelector != null) {
-      this.m_raySelector.etset = this.renderingEntitySet;
       this.m_raySelector.setCamera(this.m_camera);
+      this.m_raySelector.setCullingNodeHead(this.m_nodeSLinker.getBegin());
       this.m_raySelector.setRay(rlpv, rltv);
       this.m_raySelector.run();
     }
@@ -24545,6 +26482,231 @@ class RendererSpace {
 
 RendererSpace.s_uid = 0;
 exports.default = RendererSpace;
+
+/***/ }),
+
+/***/ "a46e":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/***************************************************************************/
+
+/*                                                                         */
+
+/*  Copyright 2018-2022 by                                                 */
+
+/*  Vily(vily313@126.com)                                                  */
+
+/*                                                                         */
+
+/***************************************************************************/
+// 摄像机拉近拉远的控制(主要是移动端的多点触摸)
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+const Vector3D_1 = __importDefault(__webpack_require__("8e17"));
+
+const MouseEvent_1 = __importDefault(__webpack_require__("1710"));
+
+const RendererDevice_1 = __importDefault(__webpack_require__("3b73"));
+
+class CameraZoomController {
+  constructor() {
+    this.m_camera = null;
+    this.m_touchZoomBoo = false;
+    this.m_preDis = 0;
+    this.m_touchZoomSpd = 2.0;
+    this.m_slideSpd = 1.0;
+    this.m_mouseWheelZoomSpd = 6.0;
+    this.m_tempa = new Vector3D_1.default();
+    this.m_tempb = new Vector3D_1.default();
+    this.m_preva = new Vector3D_1.default();
+    this.m_prevb = new Vector3D_1.default();
+    this.m_va = new Vector3D_1.default();
+    this.m_vb = new Vector3D_1.default();
+    this.m_lookAt = new Vector3D_1.default();
+    this.m_fowardDis = 0;
+    this.m_initBoo = true;
+    this.m_lookAtCtrlEnabled = true;
+    this.m_flagDrag = 0;
+    this.m_flagZoom = 0;
+    this.m_windowsEnvFlag = true;
+    this.syncLookAt = false;
+    /**
+     * 取值为2, 表示相机的拉近拉远
+     * 取值为1, 表示相机的拖动
+     */
+
+    this.m_flagType = 2;
+    this.m_windowsEnvFlag = !(RendererDevice_1.default.IsMobileWeb() || RendererDevice_1.default.IsSafariWeb());
+  }
+
+  setMobileZoomSpeed(spd) {
+    this.m_touchZoomSpd = spd;
+  }
+
+  seSlideSpeed(spd) {
+    this.m_slideSpd = spd;
+  }
+  /**
+   * set mousewheel zoom camera forward speed
+   * @param spd default value is 6.0
+   */
+
+
+  setMouseWheelZoomSpd(spd) {
+    this.m_mouseWheelZoomSpd = spd;
+  }
+
+  bindCamera(camera) {
+    this.m_camera = camera;
+  }
+
+  initialize(stage3D) {
+    if (this.m_initBoo) {
+      this.m_initBoo = false;
+      stage3D.addEventListener(MouseEvent_1.default.MOUSE_WHEEL, this, this.mouseWheelListener, true, true);
+      stage3D.addEventListener(MouseEvent_1.default.MOUSE_MULTI_MOVE, this, this.mouseMultiMoveListener, true, true);
+      stage3D.addEventListener(MouseEvent_1.default.MOUSE_MULTI_UP, this, this.mouseMultiUpListener, true, true);
+    }
+  }
+
+  setLookAtCtrlEnabled(enabled) {
+    this.m_lookAtCtrlEnabled = enabled;
+  }
+
+  mouseWheelListener(evt) {
+    if (evt.wheelDeltaY > 0) {
+      this.m_fowardDis += this.m_mouseWheelZoomSpd;
+    } else {
+      this.m_fowardDis -= this.m_mouseWheelZoomSpd;
+    }
+  }
+
+  mouseMultiMoveListener(evt) {
+    this.setTouchPosArray(evt.posArray);
+  }
+
+  mouseMultiUpListener(evt) {
+    this.setTouchPosArray(evt.posArray);
+  }
+
+  resetState() {
+    this.m_flagDrag = 0;
+    this.m_flagZoom = 0;
+    this.m_flagType = 0;
+  }
+
+  setTouchPosArray(posArray) {
+    if (posArray != null && posArray.length > 1) {
+      let dis = 0;
+      this.m_va.setXYZ(posArray[0].x, posArray[0].y, 0);
+      this.m_vb.setXYZ(posArray[1].x, posArray[1].y, 0);
+
+      if (this.m_touchZoomBoo) {
+        dis = Vector3D_1.default.Distance(this.m_va, this.m_vb);
+
+        if (this.m_flagType < 1) {
+          this.m_tempa.copyFrom(this.m_va);
+          this.m_tempb.copyFrom(this.m_vb);
+          this.m_tempa.subVecsTo(this.m_va, this.m_preva);
+          this.m_tempb.subVecsTo(this.m_vb, this.m_prevb);
+          this.m_tempa.normalize();
+          this.m_tempb.normalize();
+
+          if (this.m_tempa.dot(this.m_tempb) > 0.9) {
+            // 可能是拖动
+            this.m_flagDrag++;
+          } else {
+            // 可能是缩放
+            this.m_flagZoom++;
+          } //DivLog.ShowLog("> "+this.m_flagDrag+","+this.m_flagZoom);
+
+
+          if (this.m_flagDrag > 3 || this.m_flagZoom > 3) {
+            this.m_flagType = this.m_flagDrag > this.m_flagZoom ? 1 : 2;
+          }
+        } else {
+          this.m_tempa.subVecsTo(this.m_va, this.m_preva);
+        }
+
+        let dv = Math.abs(this.m_preDis - dis);
+
+        if (dv > 0.1) {
+          this.m_fowardDis = (dis - this.m_preDis) * this.m_touchZoomSpd;
+          this.m_preDis = dis;
+        }
+      } else {
+        this.m_touchZoomBoo = true;
+        this.m_preDis = Vector3D_1.default.Distance(this.m_va, this.m_vb);
+        this.resetState();
+      }
+    } else {
+      this.resetState();
+      this.m_touchZoomBoo = false;
+    }
+
+    this.m_preva.copyFrom(this.m_va);
+    this.m_prevb.copyFrom(this.m_vb);
+  }
+
+  run(lookAtPos, minDis) {
+    let lookAtEnabled = this.m_lookAtCtrlEnabled;
+
+    if (lookAtPos == null) {
+      lookAtPos = this.m_lookAt;
+    }
+
+    if (this.m_camera != null) {
+      if (this.syncLookAt) {
+        this.m_camera.setLookAtPosition(lookAtPos);
+      }
+
+      if (this.m_flagType == 2) {
+        // camera foward update
+        if (Math.abs(this.m_fowardDis) > 0.001) {
+          let dis = Vector3D_1.default.Distance(this.m_camera.getPosition(), this.m_camera.getLookAtPosition());
+          let pd = this.m_fowardDis;
+
+          if (this.m_fowardDis > 0) {
+            if (dis > minDis) {
+              pd = dis - minDis;
+              if (pd > this.m_fowardDis) pd = this.m_fowardDis;
+            } else {
+              pd = 0;
+            }
+          }
+
+          if (Math.abs(pd) > 0.1) {
+            this.m_camera.forward(pd);
+            if (lookAtEnabled) this.m_camera.setLookPosXYZFixUp(lookAtPos.x, lookAtPos.y, lookAtPos.z);
+          }
+
+          if (this.m_windowsEnvFlag) {
+            this.m_fowardDis *= 0.95;
+          } else {
+            this.m_fowardDis = 0;
+          }
+        }
+      } else if (this.m_flagType == 1) {
+        // drag to slide
+        this.m_camera.slideViewOffsetXY(-this.m_tempa.x * this.m_slideSpd, this.m_tempa.y * this.m_slideSpd);
+      }
+    }
+  }
+
+}
+
+exports.default = CameraZoomController;
 
 /***/ }),
 
@@ -24955,6 +27117,18 @@ exports.default = Entity3DNodeLinker;
 
 "use strict";
 
+/***************************************************************************/
+
+/*                                                                         */
+
+/*  Copyright 2018-2022 by                                                 */
+
+/*  Vily(vily313@126.com)                                                  */
+
+/*                                                                         */
+
+/***************************************************************************/
+// 基本事件类
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -24966,9 +27140,9 @@ class EventBase {
 
     this.phase = 0; // 事件类型
 
-    this.type = EventBase.RESIZE; // 元事件发送者
+    this.type = EventBase.RESIZE; // 事件发送者
 
-    this.target = null; // 逻辑事件产生者, 例如容器发送了一个mouse down事件, 则容器是target而ray pick到的这个 entity就是currentTarget
+    this.target = null; // 事件产生者, 例如容器发送了一个mouse down事件, 则容器是target而ray pick到的这个 entity就是currentTarget
 
     this.currentTarget = null;
     this.data = null;
@@ -25006,6 +27180,17 @@ exports.default = EventBase;
 
 "use strict";
 
+/***************************************************************************/
+
+/*                                                                         */
+
+/*  Copyright 2018-2022 by                                                 */
+
+/*  Vily(vily313@126.com)                                                  */
+
+/*                                                                         */
+
+/***************************************************************************/
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -25025,1048 +27210,6 @@ var ShadowMode;
 })(ShadowMode || (ShadowMode = {}));
 
 exports.ShadowMode = ShadowMode;
-
-/***/ }),
-
-/***/ "aa80":
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/***************************************************************************/
-
-/*                                                                         */
-
-/*  Copyright 2018-2022 by                                                 */
-
-/*  Vily(vily313@126.com)                                                  */
-
-/*                                                                         */
-
-/***************************************************************************/
-// 整个渲染场景的入口类
-
-var __importDefault = this && this.__importDefault || function (mod) {
-  return mod && mod.__esModule ? mod : {
-    "default": mod
-  };
-};
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-const Vector3D_1 = __importDefault(__webpack_require__("8e17"));
-
-const Stage3D_1 = __importDefault(__webpack_require__("3806"));
-
-const CameraBase_1 = __importDefault(__webpack_require__("c51d"));
-
-const RendererParam_1 = __importDefault(__webpack_require__("c497"));
-
-const EntityNodeQueue_1 = __importDefault(__webpack_require__("af68"));
-
-const Entity3DNodeLinker_1 = __importDefault(__webpack_require__("a80a"));
-
-const RunnableQueue_1 = __importDefault(__webpack_require__("9c4d"));
-
-const TextureBlock_1 = __webpack_require__("5d04");
-
-const RendererSpace_1 = __importDefault(__webpack_require__("a446"));
-
-const RaySelector_1 = __importDefault(__webpack_require__("c711"));
-
-const RayGpuSelector_1 = __importDefault(__webpack_require__("955e"));
-
-const MouseEvt3DController_1 = __importDefault(__webpack_require__("765c"));
-
-const FBOInstance_1 = __importDefault(__webpack_require__("af29"));
-
-const CameraDsistanceSorter_1 = __importDefault(__webpack_require__("d7e2"));
-
-const Matrix4Pool_1 = __importDefault(__webpack_require__("2139"));
-
-const ShaderProgramBuilder_1 = __webpack_require__("a156");
-
-const Matrix4_1 = __importDefault(__webpack_require__("18c7"));
-
-class RendererSceneBase {
-  constructor(uidBase = 0) {
-    this.___$$$$$$$Author = "VilyLei(vily313@126.com)";
-    this.m_uid = -1;
-    this.m_adapter = null;
-    this.m_renderProxy = null;
-    this.m_shader = null;
-    this.m_rcontext = null;
-    this.m_renderer = null;
-    this.m_processids = new Uint8Array(128);
-    this.m_processidsLen = 0;
-    this.m_rspace = null;
-    this.m_mouse_rltv = new Vector3D_1.default();
-    this.m_mouse_rlpv = new Vector3D_1.default();
-    this.m_accessor = null; // event flow control enable
-
-    this.m_evtFlowEnabled = false;
-    this.m_evt3DCtr = null;
-    this.m_mouseEvtEnabled = true;
-    this.m_viewX = 0.0;
-    this.m_viewY = 0.0;
-    this.m_viewW = 800.0;
-    this.m_viewH = 800.0;
-    this.m_camera = null;
-    this.m_currCamera = null;
-    this.m_nodeWaitLinker = null;
-    this.m_nodeWaitQueue = null;
-    this.m_camDisSorter = null; // private m_subscList: RendererSubScene[] = [];
-
-    this.m_subscListLen = 0;
-    this.m_localRunning = false;
-    this.m_containers = [];
-    this.m_containersTotal = 0;
-    this.m_runFlag = -1;
-    this.m_autoRunning = true;
-    this.m_processUpdate = false;
-    this.m_rparam = null;
-    this.m_enabled = true;
-    this.m_currStage3D = null;
-    this.m_stage3D = null;
-    this.runnableQueue = null;
-    this.textureBlock = null;
-    this.stage3D = null;
-    this.materialBlock = null;
-    this.entityBlock = null;
-    this.m_mouseTestBoo = true;
-    this.m_cullingTestBoo = true;
-    this.m_rayTestFlag = true;
-    this.m_rayTestEnabled = true;
-    this.m_prependNodes = null;
-    this.m_appendNodes = null;
-    this.m_uid = uidBase + RendererSceneBase.s_uid++;
-  }
-
-  createRendererParam() {
-    return new RendererParam_1.default();
-  }
-
-  createSubScene(rparam = null, renderProcessesTotal = 3, createNewCamera = true) {
-    return null;
-  }
-
-  enable() {
-    this.m_enabled = true;
-  }
-
-  disable() {
-    this.m_enabled = false;
-  }
-
-  isEnabled() {
-    return this.m_enabled;
-  }
-
-  getUid() {
-    return this.m_uid;
-  }
-
-  getDiv() {
-    return this.m_renderProxy.getDiv();
-  }
-
-  getCanvas() {
-    return this.m_renderProxy.getCanvas();
-  }
-
-  getRPONodeBuilder() {
-    return null;
-  }
-
-  getRenderProxy() {
-    return this.m_renderProxy;
-  } // set new view port rectangle area
-
-
-  setViewPort(px, py, pw, ph) {
-    if (this.m_renderProxy != null) {
-      this.m_viewX = px;
-      this.m_viewY = py;
-      this.m_viewW = pw;
-      this.m_viewH = ph;
-      this.m_renderProxy.setViewPort(px, py, pw, ph);
-    }
-  }
-
-  setViewPortFromCamera(camera) {
-    if (this.m_renderProxy != null && camera != null) {
-      this.m_viewX = camera.getViewX();
-      this.m_viewY = camera.getViewY();
-      this.m_viewW = camera.getViewWidth();
-      this.m_viewH = camera.getViewHeight();
-      this.m_renderProxy.setViewPort(this.m_viewX, this.m_viewY, this.m_viewW, this.m_viewH);
-    }
-  } // apply new view port rectangle area
-
-
-  reseizeViewPort() {
-    this.m_renderProxy.reseizeRCViewPort();
-  }
-
-  lockViewport() {
-    this.m_adapter.lockViewport();
-  }
-
-  unlockViewport() {
-    this.m_adapter.unlockViewport();
-  }
-
-  getRendererAdapter() {
-    return this.m_adapter;
-  }
-
-  getRenderer() {
-    return this.m_renderer;
-  }
-
-  getRendererContext() {
-    return this.m_rcontext;
-  }
-
-  getStage3D() {
-    return this.m_renderProxy.getStage3D();
-  }
-  /**
-   * 获取渲染器可渲染对象管理器状态(版本号)
-   */
-
-
-  getRendererStatus() {
-    return this.m_renderer.getRendererStatus();
-  }
-
-  getViewWidth() {
-    return this.m_renderProxy.getStage3D().viewWidth;
-  }
-
-  getViewHeight() {
-    return this.m_renderProxy.getStage3D().viewHeight;
-  }
-
-  getCamera() {
-    return this.m_renderProxy.getCamera();
-  }
-
-  asynFBOSizeWithViewport() {
-    this.m_rcontext.asynFBOSizeWithViewport();
-  }
-
-  synFBOSizeWithViewport() {
-    this.m_rcontext.synFBOSizeWithViewport();
-  }
-
-  cameraLock() {
-    this.m_renderProxy.cameraLock();
-  }
-
-  cameraUnlock() {
-    this.m_renderProxy.cameraUnlock();
-  }
-
-  getMouseXYWorldRay(rl_position, rl_tv) {
-    // this.m_renderProxy.getMouseXYWorldRay(rl_position, rl_tv);
-    this.m_camera.getWorldPickingRayByScreenXY(this.m_stage3D.mouseX, this.m_stage3D.mouseY, rl_position, rl_tv);
-  }
-
-  createCamera() {
-    return new CameraBase_1.default();
-  }
-
-  createFBOInstance() {
-    return new FBOInstance_1.default(this, this.textureBlock.getRTTStrore());
-  }
-
-  createMatrix4() {
-    return new Matrix4_1.default();
-  }
-
-  createVector3(x = 0.0, y = 0.0, z = 0.0, w = 1.0) {
-    return new Vector3D_1.default(x, y, z, w);
-  }
-
-  setClearUint24Color(colorUint24, alpha = 1.0) {
-    this.m_renderProxy.setClearUint24Color(colorUint24, alpha);
-  }
-
-  setClearRGBColor3f(pr, pg, pb) {
-    this.m_renderProxy.setClearRGBColor3f(pr, pg, pb);
-  }
-
-  setClearRGBAColor4f(pr, pg, pb, pa) {
-    this.m_renderProxy.setClearRGBAColor4f(pr, pg, pb, pa);
-  }
-
-  setClearColor(color) {
-    this.m_renderProxy.setClearRGBAColor4f(color.r, color.g, color.b, color.a);
-  }
-
-  setRenderToBackBuffer() {
-    this.m_rcontext.setRenderToBackBuffer();
-  }
-
-  drawBackBufferToCanvas(dstCanvasCtx, px, py, width, height) {
-    let srcCanvas = this.getCanvas();
-    dstCanvasCtx.drawImage(srcCanvas, px, py, width, height);
-  }
-
-  updateRenderBufferSize() {
-    this.m_adapter.updateRenderBufferSize();
-  }
-
-  setEvt3DController(evt3DCtr) {
-    if (evt3DCtr != null) {
-      evt3DCtr.initialize(this.getStage3D(), this.getStage3D());
-      evt3DCtr.setRaySelector(this.m_rspace.getRaySelector());
-    }
-
-    this.m_evt3DCtr = evt3DCtr;
-  }
-
-  isRayPickSelected() {
-    return this.m_evt3DCtr != null && this.m_evt3DCtr.isSelected();
-  }
-
-  enableMouseEvent(gpuTestEnabled = true) {
-    if (this.m_evt3DCtr == null) {
-      if (gpuTestEnabled) {
-        this.m_rspace.setRaySelector(new RayGpuSelector_1.default());
-      } else {
-        this.m_rspace.setRaySelector(new RaySelector_1.default());
-      }
-
-      this.setEvt3DController(new MouseEvt3DController_1.default());
-    }
-
-    this.m_mouseEvtEnabled = true;
-  }
-
-  disableMouseEvent() {
-    this.m_mouseEvtEnabled = false;
-  }
-
-  getEvt3DController() {
-    return this.m_evt3DCtr;
-  }
-
-  getSpace() {
-    return this.m_rspace;
-  }
-
-  getDevicePixelRatio() {
-    return this.m_adapter.getDevicePixelRatio();
-  }
-
-  addEventListener(type, target, func, captureEnabled = true, bubbleEnabled = false) {
-    this.m_currStage3D.addEventListener(type, target, func, captureEnabled, bubbleEnabled);
-  }
-
-  removeEventListener(type, target, func) {
-    this.m_currStage3D.removeEventListener(type, target, func);
-  }
-
-  setAccessor(accessor) {
-    this.m_accessor = accessor;
-  } // for overriding by sub class
-
-
-  createRendererIns() {
-    // return new RendererInstance();
-    return null;
-  }
-
-  rendererInsInited() {} // for overriding by sub class
-
-
-  initThis() {// this.tickUpdate();
-  }
-
-  initialize(rparam = null, renderProcessesTotal = 3, createNewCamera = true) {
-    if (this.m_renderer == null) {
-      if (rparam == null) rparam = new RendererParam_1.default();
-      this.m_rparam = rparam;
-      let selfT = this;
-      selfT.stage3D = new Stage3D_1.default(this.getUid(), document);
-      selfT.runnableQueue = new RunnableQueue_1.default();
-      selfT.textureBlock = new TextureBlock_1.TextureBlock();
-
-      if (renderProcessesTotal < 1) {
-        renderProcessesTotal = 1;
-      }
-
-      if (renderProcessesTotal > 128) {
-        renderProcessesTotal = 128;
-      }
-
-      this.m_evtFlowEnabled = rparam.evtFlowEnabled;
-      let rins = this.createRendererIns();
-
-      rins.__$setStage3D(this.stage3D);
-
-      Matrix4Pool_1.default.Allocate(rparam.getMatrix4AllocateSize());
-      let camera = new CameraBase_1.default();
-      rins.initialize(rparam, camera, new ShaderProgramBuilder_1.ShaderProgramBuilder(rins.getRCUid()));
-      this.m_renderer = rins;
-      this.m_processids[0] = 0;
-      this.m_processidsLen++;
-
-      for (; renderProcessesTotal >= 0;) {
-        const process = this.m_renderer.appendProcess(rparam.batchEnabled, rparam.processFixedState);
-        this.m_processids[this.m_processidsLen] = process.getRPIndex();
-        this.m_processidsLen++;
-        --renderProcessesTotal;
-      }
-
-      this.m_rcontext = this.m_renderer.getRendererContext();
-      this.m_renderProxy = this.m_rcontext.getRenderProxy();
-      this.m_adapter = this.m_renderProxy.getRenderAdapter();
-      let stage3D = this.m_renderProxy.getStage3D();
-      this.m_viewW = stage3D.stageWidth;
-      this.m_viewH = stage3D.stageHeight;
-      this.m_shader = this.m_renderer.getDataBuilder().getRenderShader();
-      this.textureBlock.setRenderer(this.m_renderProxy);
-      this.rendererInsInited();
-      this.m_camDisSorter = new CameraDsistanceSorter_1.default(this.m_renderProxy);
-
-      if (this.m_rspace == null) {
-        let space = new RendererSpace_1.default();
-        space.initialize(this.m_renderer, this.m_renderProxy.getCamera());
-        this.m_rspace = space;
-      }
-
-      this.initThis();
-    }
-  }
-
-  setRendererProcessParam(index, batchEnabled, processFixedState) {
-    this.m_renderer.setRendererProcessParam(this.m_processids[index], batchEnabled, processFixedState);
-  }
-
-  appendARendererProcess(batchEnabled = true, processFixedState = false) {
-    let process = this.m_renderer.appendProcess(batchEnabled, processFixedState);
-    this.m_processids[this.m_processidsLen] = process.getRPIndex();
-    this.m_processidsLen++;
-  }
-  /**
-   * get the renderer process by process index
-   * @param processIndex IRenderProcess instance index in renderer scene instance
-   */
-
-
-  getRenderProcessAt(processIndex) {
-    return this.m_renderer.getProcessAt(this.m_processids[processIndex]);
-  }
-
-  addContainer(container, processIndex = 0) {
-    if (processIndex < 0) {
-      processIndex = 0;
-    }
-
-    if (container != null && container.__$wuid < 0 && container.__$contId < 1) {
-      let i = 0;
-
-      for (; i < this.m_containersTotal; ++i) {
-        if (this.m_containers[i] == container) {
-          return;
-        }
-      }
-
-      if (i >= this.m_containersTotal) {
-        container.__$wuid = this.m_uid;
-        container.wprocuid = processIndex;
-
-        container.__$setRenderer(this);
-
-        this.m_containers.push(container);
-        this.m_containersTotal++;
-      }
-    }
-  }
-
-  removeContainer(container) {
-    // if (container != null && container.__$wuid == this.m_uid && container.getRenderer() == this.m_renderer) {
-    if (container != null && container.__$wuid == this.m_uid && container.getRenderer() == this) {
-      let i = 0;
-
-      for (; i < this.m_containersTotal; ++i) {
-        if (this.m_containers[i] == container) {
-          container.__$wuid = -1;
-          container.wprocuid = -1;
-
-          container.__$setRenderer(null);
-
-          this.m_containers.splice(i, 1);
-          --this.m_containersTotal;
-          break;
-        }
-      }
-    }
-  }
-
-  setAutoRunningEnabled(autoRunning) {
-    this.m_autoRunning = autoRunning;
-  }
-
-  setAutoRenderingSort(sortEnabled) {
-    this.m_processUpdate = sortEnabled;
-  }
-
-  setProcessSortEnabledAt(processIndex, sortEnabled, sorter = null) {
-    this.m_renderer.setProcessSortEnabledAt(processIndex, sortEnabled);
-
-    if (sortEnabled) {
-      let process = this.m_renderer.getProcessAt(processIndex);
-      sorter = sorter != null ? sorter : this.m_camDisSorter;
-
-      if (process != null) {
-        process.setSorter(sorter);
-      }
-    }
-  }
-
-  setProcessSortEnabled(process, sortEnabled, sorter = null) {
-    this.m_renderer.setProcessSortEnabled(process, sortEnabled);
-
-    if (sortEnabled && process != null && !process.hasSorter()) {
-      sorter = sorter != null ? sorter : this.m_camDisSorter;
-      process.setSorter(sorter);
-    }
-  }
-  /**
-   * 将已经在渲染运行时中的entity移动到指定 process uid 的 render process 中去
-   * move rendering runtime displayEntity to different renderer process
-   */
-
-
-  moveEntityTo(entity, processindex) {
-    this.m_renderer.moveEntityToProcessAt(entity, this.m_processids[processindex]);
-  }
-  /**
-   * 单独绘制可渲染对象, 可能是使用了 global material也可能没有。这种方式比较耗性能,只能用在特殊的地方。
-   * @param entity 需要指定绘制的 IRenderEntity 实例
-   * @param useGlobalUniform 是否使用当前 global material 所携带的 uniform, default value: false
-   * @param forceUpdateUniform 是否强制更新当前 global material 所对应的 shader program 的 uniform, default value: true
-   */
-
-
-  drawEntity(entity, useGlobalUniform = false, forceUpdateUniform = true) {
-    this.m_renderer.drawEntity(entity, useGlobalUniform, forceUpdateUniform);
-  }
-  /**
-   * add an entity to the renderer process of the renderer instance
-   * @param entity IRenderEntityBase instance(for example: DisplayEntity class instance)
-   * @param processid this destination renderer process id
-   * @param deferred if the value is true,the entity will not to be immediately add to the renderer process by its id
-   */
-
-
-  addEntity(entity, processid = 0, deferred = true) {
-    if (entity.getREType() < 12) {
-      let re = entity;
-
-      if (re != null && re.__$testSpaceEnabled()) {
-        if (re.isPolyhedral()) {
-          if (re.hasMesh()) {
-            this.m_renderer.addEntity(re, this.m_processids[processid], deferred);
-
-            if (this.m_rspace != null) {
-              this.m_rspace.addEntity(re);
-            }
-          } else {
-            // 这里的等待队列可能会和加入容器的操作冲突
-            // wait queue
-            if (this.m_nodeWaitLinker == null) {
-              this.m_nodeWaitLinker = new Entity3DNodeLinker_1.default();
-              this.m_nodeWaitQueue = new EntityNodeQueue_1.default();
-            }
-
-            let node = this.m_nodeWaitQueue.addEntity(re);
-            node.rstatus = processid;
-            this.m_nodeWaitLinker.addNode(node);
-          }
-        } else {
-          this.m_renderer.addEntity(re, this.m_processids[processid], deferred);
-
-          if (this.m_rspace != null) {
-            this.m_rspace.addEntity(re);
-          }
-        }
-      }
-    } else {
-      let re = entity;
-      this.addContainer(re, processid);
-    }
-  }
-  /**
-   * remove an entity from the rendererinstance
-   * @param entity IRenderEntityBase instance(for example: DisplayEntity class instance)
-   */
-
-
-  removeEntity(entity) {
-    if (entity.getREType() < 12) {
-      let re = entity;
-
-      if (entity != null) {
-        let node = null;
-
-        if (this.m_nodeWaitLinker != null) {
-          let node = this.m_nodeWaitQueue.getNodeByEntity(re);
-
-          if (node != null) {
-            this.m_nodeWaitLinker.removeNode(node);
-            this.m_nodeWaitQueue.removeEntity(re);
-          }
-        }
-
-        if (node == null) {
-          this.m_renderer.removeEntity(re);
-
-          if (this.m_rspace != null) {
-            this.m_rspace.removeEntity(re);
-          }
-        }
-      }
-    } else {
-      let re = entity;
-      this.removeContainer(re);
-    }
-  }
-
-  updateMaterialUniformToCurrentShd(material) {
-    this.m_renderer.updateMaterialUniformToCurrentShd(material);
-  }
-
-  showInfoAt(index) {
-    this.m_renderer.showInfoAt(index);
-  }
-
-  getRenderUnitsTotal() {
-    return this.m_renderer.getRenderUnitsTotal();
-  }
-
-  useCamera(camera, syncCamView = false) {
-    this.m_currCamera = camera;
-
-    if (syncCamView) {
-      this.m_renderProxy.setRCViewPort(camera.getViewX(), camera.getViewY(), camera.getViewWidth(), camera.getViewHeight(), true);
-      this.m_renderProxy.reseizeRCViewPort();
-    }
-
-    camera.update();
-    this.m_rcontext.resetUniform();
-    this.m_renderProxy.updateCameraDataFromCamera(camera);
-  }
-
-  useMainCamera() {
-    this.m_currCamera = null;
-    let camera = this.m_renderProxy.getCamera();
-    this.m_renderProxy.setRCViewPort(camera.getViewX(), camera.getViewY(), camera.getViewWidth(), camera.getViewHeight(), true);
-    this.m_renderProxy.reseizeRCViewPort();
-    this.m_renderProxy.updateCamera();
-    this.m_rcontext.resetUniform();
-    this.m_renderProxy.updateCameraDataFromCamera(this.m_renderProxy.getCamera());
-  }
-
-  updateCameraDataFromCamera(camera) {
-    this.m_renderProxy.updateCameraDataFromCamera(camera);
-  }
-  /**
-   * reset renderer rendering state
-   */
-
-
-  resetState() {
-    this.m_rcontext.resetState();
-  }
-  /**
-   * reset render shader uniform location
-   */
-
-
-  resetUniform() {
-    this.m_rcontext.resetUniform();
-  }
-
-  enableSynViewAndStage() {
-    this.m_renderProxy.enableSynViewAndStage();
-  }
-  /**
-   * the function only resets the renderer instance rendering status.
-   * you should use it before the run or runAt function is called.
-   */
-
-
-  renderBegin(contextBeginEnabled = true) {
-    if (this.m_currCamera == null) {
-      this.m_adapter.unlockViewport();
-
-      if (this.m_renderProxy.isAutoSynViewAndStage()) {
-        let boo = this.m_renderProxy.testViewPortChanged(this.m_viewX, this.m_viewY, this.m_viewW, this.m_viewH);
-        this.m_viewX = this.m_renderProxy.getViewX();
-        this.m_viewY = this.m_renderProxy.getViewY();
-        this.m_viewW = this.m_renderProxy.getViewWidth();
-        this.m_viewH = this.m_renderProxy.getViewHeight();
-
-        if (boo) {
-          this.m_renderProxy.setRCViewPort(this.m_viewX, this.m_viewY, this.m_viewW, this.m_viewH, true);
-          this.m_renderProxy.reseizeRCViewPort();
-        }
-      } else {
-        this.m_renderProxy.setViewPort(this.m_viewX, this.m_viewY, this.m_viewW, this.m_viewH);
-      }
-
-      this.m_renderProxy.updateCamera();
-      this.m_renderProxy.updateCameraDataFromCamera(this.m_renderProxy.getCamera());
-    }
-
-    this.m_shader.renderBegin();
-
-    if (contextBeginEnabled) {
-      this.m_rcontext.renderBegin(this.m_currCamera == null);
-    }
-
-    this.m_currCamera = null;
-
-    if (this.m_accessor != null) {
-      this.m_accessor.renderBegin(this);
-    }
-  }
-  /**
-   * the function resets the renderer scene status.
-   * you should use it on the frame starting time.
-   */
-
-
-  runBegin(autoCycle = true, contextBeginEnabled = true) {
-    if (autoCycle && this.m_autoRunning) {
-      if (this.m_runFlag >= 0) this.runEnd();
-      this.m_runFlag = 0;
-    }
-
-    let cam = this.m_currCamera;
-    let camFlag = cam == null;
-    this.renderBegin(contextBeginEnabled);
-
-    if (this.m_rspace != null) {
-      this.m_rspace.setCamera(camFlag ? this.m_renderProxy.getCamera() : cam);
-      this.m_rspace.runBegin();
-    }
-  }
-
-  renderContextBegin() {
-    this.m_rcontext.renderBegin();
-  }
-
-  setRayTestEnabled(enabled) {
-    this.m_rayTestEnabled = enabled;
-  }
-  /**
-   *
-   * @param evtFlowPhase its value is 0(none phase),1(capture phase),2(bubble phase)
-   * @param status its vaule is 1(default process),1(deselect ray pick target)
-   * @returns 1 is send evt yes,0 is send evt no,-1 is event nothing
-   */
-
-
-  runMouseTest(evtFlowPhase, status) {
-    let flag = -1;
-
-    if (this.m_evt3DCtr != null && this.m_mouseEvtEnabled) {
-      if (this.m_rayTestFlag && this.m_evt3DCtr.getEvtType() > 0) {
-        // 是否对已经获得的拾取列表做进一步的gpu拾取
-        // if (this.m_uid > 1000) {
-        //     console.log("sub sc runMouseTest...", this.m_rayTestFlag, this.m_evt3DCtr.getEvtType());
-        // }
-        let selector = this.m_rspace.getRaySelector();
-
-        if (selector != null) {
-          if (this.m_rayTestEnabled) {
-            this.mouseRayTest();
-          } else {
-            selector.clear();
-          } // 如果有gpu拾取则进入这个管理器, 这个管理器得到最终的拾取结果再和前面的计算结果做比较
-
-
-          let total = selector.getSelectedNodesTotal();
-
-          if (total > 1) {
-            let i = 0;
-            let list = selector.getSelectedNodes();
-            let node = null;
-
-            for (; i < total; ++i) {
-              node = list[i];
-
-              if (node.entity.isPolyhedral()) {//this.m_renderer.drawEntityByLockMaterial(node.entity);
-              }
-            }
-          }
-        }
-
-        this.m_rayTestFlag = false;
-      }
-
-      flag = this.m_evt3DCtr.run(evtFlowPhase, status);
-    }
-
-    this.m_mouseTestBoo = false;
-    return flag;
-  }
-  /**
-   * update all data or status of the renderer runtime
-   * should call this function per frame
-   */
-
-
-  update(autoCycle = true, mouseEventEnabled = true) {
-    // this.stage3D.enterFrame();
-    const st = this.m_currStage3D;
-    if (st != null) st.enterFrame();
-
-    if (autoCycle && this.m_autoRunning) {
-      if (this.m_runFlag != 0) this.runBegin();
-      this.m_runFlag = 1;
-    } // camera visible test, ray cast test, Occlusion Culling test
-
-
-    this.m_mouseTestBoo = true;
-    this.m_cullingTestBoo = true;
-    this.m_rayTestFlag = true; // wait mesh data ready to finish
-
-    if (this.m_nodeWaitLinker != null) {
-      let nextNode = this.m_nodeWaitLinker.getBegin();
-
-      if (nextNode != null) {
-        let pnode;
-        let status;
-
-        while (nextNode != null) {
-          if (nextNode.entity.hasMesh()) {
-            pnode = nextNode;
-            nextNode = nextNode.next;
-            const entity = pnode.entity;
-            status = pnode.rstatus;
-            this.m_nodeWaitLinker.removeNode(pnode);
-            this.m_nodeWaitQueue.removeEntity(pnode.entity); //console.log("RenderScene::update(), ready a mesh data that was finished.");
-
-            this.addEntity(entity, status);
-          } else {
-            nextNode = nextNode.next;
-          }
-        }
-      }
-    }
-
-    let i = 0;
-
-    for (; i < this.m_containersTotal; ++i) {
-      this.m_containers[i].update();
-    }
-
-    this.m_renderer.update(); // space update
-
-    if (this.m_rspace != null) {
-      this.m_rspace.update();
-
-      if (this.m_cullingTestBoo) {
-        if (this.m_evt3DCtr != null || this.m_processUpdate || this.m_rspace.getRaySelector() != null) {
-          this.m_rspace.run();
-          this.m_renderProxy.status.povNumber = this.m_rspace.getPOVNumber();
-        }
-      }
-    }
-
-    if (this.m_processUpdate) {
-      // this.m_renderer.updateAllProcess();
-      if (this.m_localRunning) {
-        for (let i = 0; i < this.m_processidsLen; ++i) {
-          this.m_renderer.updateProcessAt(this.m_processids[i]);
-        }
-      } else {
-        this.m_renderer.updateAllProcess();
-      }
-    }
-
-    if (this.m_mouseTestBoo && !this.m_evtFlowEnabled) {
-      if (mouseEventEnabled) {
-        this.runMouseTest(1, 0);
-      } else if (this.m_evt3DCtr != null) {
-        this.m_evt3DCtr.mouseOutEventTarget();
-      }
-    }
-  } // 运行渲染可见性裁剪测试，射线检测等空间管理机制
-
-
-  cullingTest() {
-    if (this.m_rspace != null) {
-      this.m_rspace.run();
-      this.m_renderProxy.status.povNumber = this.m_rspace.getPOVNumber();
-    }
-
-    this.m_cullingTestBoo = false;
-  } // 鼠标位置的射线拾取测试
-
-
-  mouseRayTest() {
-    if (this.m_rspace != null) {
-      // this.m_renderProxy.getMouseXYWorldRay(this.m_mouse_rlpv, this.m_mouse_rltv);
-      this.getMouseXYWorldRay(this.m_mouse_rlpv, this.m_mouse_rltv);
-      this.m_rspace.rayTest(this.m_mouse_rlpv, this.m_mouse_rltv);
-    }
-  }
-
-  runRenderNodes(nodes) {
-    if (nodes != null) {
-      // console.log("CoSC runRenderNodes(), nodes.length: ", nodes.length);
-      for (let i = 0; i < nodes.length; ++i) {
-        nodes[i].render();
-      }
-    }
-  }
-
-  addRenderNodes(node, nodes) {
-    for (let i = 0; i < nodes.length; ++i) {
-      if (node == nodes[i]) {
-        return;
-      }
-    }
-
-    nodes.push(node);
-  }
-
-  prependRenderNode(node) {
-    if (node != null && node != this) {
-      if (this.m_prependNodes == null) this.m_prependNodes = [];
-      this.addRenderNodes(node, this.m_prependNodes);
-    }
-  }
-
-  appendRenderNode(node) {
-    if (node != null && node != this) {
-      if (this.m_appendNodes == null) this.m_appendNodes = [];
-      let ls = this.m_appendNodes;
-
-      for (let i = 0; i < ls.length; ++i) {
-        if (node == ls[i]) {
-          return;
-        }
-      }
-
-      ls.push(node);
-    }
-  }
-
-  removeRenderNode(node) {
-    if (node != null) {
-      let ls = this.m_prependNodes;
-
-      if (ls != null) {
-        for (let i = 0; i < ls.length; ++i) {
-          if (node == ls[i]) {
-            ls.splice(i, 1);
-            break;
-          }
-        }
-      }
-    }
-  }
-  /**
-   * run all renderer processes in the renderer instance
-   */
-
-
-  run(autoCycle = true) {
-    if (this.m_enabled) {
-      if (autoCycle && this.m_autoRunning) {
-        if (this.m_runFlag != 1) this.update();
-        this.m_runFlag = 2;
-      }
-
-      this.runnableQueue.run();
-      this.runRenderNodes(this.m_prependNodes);
-
-      if (this.m_localRunning) {
-        for (let i = 0; i < this.m_processidsLen; ++i) {
-          this.m_renderer.runAt(this.m_processids[i]);
-        }
-      } else {
-        this.m_renderer.run();
-      }
-
-      this.runRenderNodes(this.m_appendNodes);
-
-      if (autoCycle) {
-        this.runEnd();
-      }
-    }
-  }
-  /**
-   * run the specific renderer process by its index in the renderer instance
-   * @param index the renderer process index in the renderer instance
-   */
-
-
-  runAt(index) {
-    if (this.m_enabled) {
-      this.m_renderer.runAt(this.m_processids[index]);
-    }
-  }
-
-  contextRunEnd() {//this.m_rcontext.runEnd();
-  }
-
-  runEnd() {
-    if (this.m_evt3DCtr != null) {
-      this.m_evt3DCtr.runEnd();
-    } // if(this.m_localRunning) {
-    // this.m_rcontext.runEnd();
-    // }
-
-
-    this.contextRunEnd();
-
-    if (this.m_rspace != null) {
-      this.m_rspace.runEnd();
-    }
-
-    if (this.m_autoRunning) {
-      this.m_runFlag = -1;
-    }
-
-    if (this.m_accessor != null) {
-      this.m_accessor.renderEnd(this);
-    }
-  }
-
-  render() {}
-
-  renderFlush() {
-    if (this.m_renderProxy != null) {
-      this.m_renderProxy.flush();
-    }
-  }
-
-  updateCamera() {
-    if (this.m_renderProxy != null) {
-      this.m_renderProxy.updateCamera();
-    }
-  }
-
-  destroy() {
-    this.runnableQueue.destroy();
-  }
-
-}
-
-RendererSceneBase.s_uid = 0;
-exports.default = RendererSceneBase;
 
 /***/ }),
 
@@ -26438,6 +27581,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+const BitConst_1 = __importDefault(__webpack_require__("ca6c"));
+
 const VtxBufConst_1 = __importDefault(__webpack_require__("8a0a"));
 
 const RendererDevice_1 = __importDefault(__webpack_require__("3b73"));
@@ -26539,61 +27684,62 @@ class ShaderData {
         locationsTotal += 1;
         let vbufType = VtxBufConst_1.default.GetVBufTypeByNS(attri.name);
 
-        if (vbufType >= 3001 && vbufType <= 3010) {
-          this.m_layoutBit |= 1 << vbufType - 3001; //BitConst.BIT_ONE_0;
-        } else {
-          locationsTotal -= 1;
-          vbufType = 0;
-        }
-        /*
         switch (vbufType) {
-            case VtxBufConst.VBUF_VS:
-                //mid += mid * 131 + 1;
-                this.m_layoutBit |= BitConst.BIT_ONE_0;
-                break;
-            case VtxBufConst.VBUF_UVS:
-                //mid += mid * 131 + 2;
-                this.m_layoutBit |= BitConst.BIT_ONE_1;
-                break;
-            case VtxBufConst.VBUF_NVS:
-                //mid += mid * 131 + 3;
-                this.m_layoutBit |= BitConst.BIT_ONE_2;
-                break;
-            case VtxBufConst.VBUF_CVS:
-                //mid += mid * 131 + 4;
-                this.m_layoutBit |= BitConst.BIT_ONE_3;
-                break;
-            case VtxBufConst.VBUF_TVS:
-                //mid += mid * 131 + 5;
-                this.m_layoutBit |= BitConst.BIT_ONE_4;
-                break;
-              case VtxBufConst.VBUF_VS2:
-                //mid += mid * 131 + 6;
-                this.m_layoutBit |= BitConst.BIT_ONE_5;
-                break;
-            case VtxBufConst.VBUF_UVS2:
-                //mid += mid * 131 + 7;
-                this.m_layoutBit |= BitConst.BIT_ONE_6;
-                break;
-            case VtxBufConst.VBUF_NVS2:
-                //mid += mid * 131 + 8;
-                this.m_layoutBit |= BitConst.BIT_ONE_7;
-                break;
-            case VtxBufConst.VBUF_CVS2:
-                //mid += mid * 131 + 9;
-                this.m_layoutBit |= BitConst.BIT_ONE_8;
-                break;
-            case VtxBufConst.VBUF_TVS2:
-                //mid += mid * 131 + 11;
-                this.m_layoutBit |= BitConst.BIT_ONE_9;
-                break;
-            default:
-                locationsTotal -= 1;
-                vbufType = 0;
-                break;
-        }
-        //*/
+          case VtxBufConst_1.default.VBUF_VS:
+            //mid += mid * 131 + 1;
+            this.m_layoutBit |= BitConst_1.default.BIT_ONE_0;
+            break;
 
+          case VtxBufConst_1.default.VBUF_UVS:
+            //mid += mid * 131 + 2;
+            this.m_layoutBit |= BitConst_1.default.BIT_ONE_1;
+            break;
+
+          case VtxBufConst_1.default.VBUF_NVS:
+            //mid += mid * 131 + 3;
+            this.m_layoutBit |= BitConst_1.default.BIT_ONE_2;
+            break;
+
+          case VtxBufConst_1.default.VBUF_CVS:
+            //mid += mid * 131 + 4;
+            this.m_layoutBit |= BitConst_1.default.BIT_ONE_3;
+            break;
+
+          case VtxBufConst_1.default.VBUF_TVS:
+            //mid += mid * 131 + 5;
+            this.m_layoutBit |= BitConst_1.default.BIT_ONE_4;
+            break;
+
+          case VtxBufConst_1.default.VBUF_VS2:
+            //mid += mid * 131 + 6;
+            this.m_layoutBit |= BitConst_1.default.BIT_ONE_5;
+            break;
+
+          case VtxBufConst_1.default.VBUF_UVS2:
+            //mid += mid * 131 + 7;
+            this.m_layoutBit |= BitConst_1.default.BIT_ONE_6;
+            break;
+
+          case VtxBufConst_1.default.VBUF_NVS2:
+            //mid += mid * 131 + 8;
+            this.m_layoutBit |= BitConst_1.default.BIT_ONE_7;
+            break;
+
+          case VtxBufConst_1.default.VBUF_CVS2:
+            //mid += mid * 131 + 9;
+            this.m_layoutBit |= BitConst_1.default.BIT_ONE_8;
+            break;
+
+          case VtxBufConst_1.default.VBUF_TVS2:
+            //mid += mid * 131 + 11;
+            this.m_layoutBit |= BitConst_1.default.BIT_ONE_9;
+            break;
+
+          default:
+            locationsTotal -= 1;
+            vbufType = 0;
+            break;
+        }
 
         if (vbufType > 0) {
           layoutTypes.push(VtxBufConst_1.default.GetVBufAttributeTypeByVBufType(vbufType));
@@ -26908,10 +28054,6 @@ class DisplayEntityContainer {
     return this.m_globalBounds;
   }
 
-  getLocalBounds() {
-    return null;
-  }
-
   getGlobalBoundsVer() {
     if (this.m_globalBounds != null) {
       return this.m_globalBounds.version;
@@ -27193,14 +28335,6 @@ class DisplayEntityContainer {
     return this.m_visible;
   }
 
-  isVisible() {
-    return this.m_visible;
-  }
-
-  getREType() {
-    return 12;
-  }
-
   getUid() {
     return this.m_uid;
   }
@@ -27253,10 +28387,10 @@ class DisplayEntityContainer {
     this.m_transformStatus |= 1;
   }
 
-  getPosition(pv = null) {
-    if (!pv) pv = new Vector3D_1.default();
-    pv.copyFrom(this.m_pos);
-    return pv;
+  getPosition(pv) {
+    pv.x = this.m_pos.x;
+    pv.y = this.m_pos.y;
+    pv.z = this.m_pos.z;
   }
 
   getRotationX() {
@@ -27287,14 +28421,6 @@ class DisplayEntityContainer {
     this.m_rz = degrees;
     this.m_transformStatus |= 2;
     this.m_rotateBoo = true;
-  }
-
-  setRotation3(r) {
-    this.m_rx = r.x;
-    this.m_transformStatus |= 2;
-    this.m_rotateBoo = true;
-    this.m_ry = r.y;
-    this.m_rz = r.z;
   }
 
   setRotationXYZ(rx, ry, rz) {
@@ -27339,28 +28465,25 @@ class DisplayEntityContainer {
     this.m_transformStatus |= 2;
   }
 
-  setScale3(sv) {
-    this.setScaleXYZ(sv.x, sv.y, sv.z);
-  }
-
   setScaleXY(sx, sy) {
-    this.setScaleXYZ(sx, sy, this.m_sz);
+    this.m_sx = sx;
+    this.m_sy = sy;
+    this.m_transformStatus |= 2;
   }
 
   setScale(s) {
-    this.setScaleXYZ(s, s, s);
+    this.m_sx = s;
+    this.m_sy = s;
+    this.m_sz = s;
+    this.m_transformStatus |= 2;
   }
 
   getRotationXYZ(pv) {
-    if (!pv) pv = new Vector3D_1.default();
     pv.setXYZ(this.m_rx, this.m_ry, this.m_rz);
-    return pv;
   }
 
   getScaleXYZ(pv) {
-    if (!pv) pv = new Vector3D_1.default();
     pv.setXYZ(this.m_sx, this.m_sy, this.m_sz);
-    return pv;
   }
 
   localToParent(pv) {
@@ -27699,7 +28822,7 @@ class FBOInstance {
   constructor(renderer, texStroe) {
     this.m_backBufferColor = new Color4_1.default();
     this.m_adapter = null;
-    this.m_rproxy = null;
+    this.m_renderProxy = null;
     this.m_rcontext = null;
     this.m_bgColor = new Color4_1.default();
     this.m_renderer = null;
@@ -27734,8 +28857,8 @@ class FBOInstance {
     this.uns = "FBOInstance";
     this.m_renderer = renderer;
     this.m_texStore = texStroe;
-    this.m_rproxy = renderer.getRenderProxy();
-    this.m_adapter = this.m_rproxy.getRenderAdapter();
+    this.m_renderProxy = renderer.getRenderProxy();
+    this.m_adapter = this.m_renderProxy.getRenderAdapter();
     this.m_rcontext = renderer.getRendererContext();
   }
   /**
@@ -27782,12 +28905,12 @@ class FBOInstance {
   }
 
   getStage3D() {
-    return this.m_rproxy.getStage3D();
+    return this.m_renderProxy.getStage3D();
   }
 
   getCamera() {
-    if (this.m_rproxy != null) {
-      return this.m_rproxy.getCamera();
+    if (this.m_renderProxy != null) {
+      return this.m_renderProxy.getCamera();
     }
 
     return null;
@@ -27802,14 +28925,14 @@ class FBOInstance {
   }
 
   updateCamera() {
-    if (this.m_rproxy != null) {
-      this.m_rproxy.updateCamera();
+    if (this.m_renderProxy != null) {
+      this.m_renderProxy.updateCamera();
     }
   }
 
   updateCameraDataFromCamera(cam) {
-    if (this.m_rproxy != null) {
-      this.m_rproxy.updateCameraDataFromCamera(cam);
+    if (this.m_renderProxy != null) {
+      this.m_renderProxy.updateCameraDataFromCamera(cam);
     }
   } ////////////////////////////////////////////////////// render state conctrl
 
@@ -27834,12 +28957,12 @@ class FBOInstance {
     if (this.m_gRState >= 0 || state >= 0) {
       this.m_rcontext.useGlobalRenderState(state < 0 ? this.m_gRState : state);
     } else {
-      this.m_rproxy.lockRenderState();
+      this.m_renderProxy.lockRenderState();
     }
   }
 
   unlockRenderState() {
-    this.m_rproxy.unlockRenderState();
+    this.m_renderProxy.unlockRenderState();
   } ////////////////////////////////////////////////////// render color mask conctrl
 
 
@@ -27863,13 +28986,13 @@ class FBOInstance {
     if (this.m_gRColorMask >= 0 || colorMask >= 0) {
       this.m_rcontext.useGlobalRenderColorMask(colorMask < 0 ? this.m_gRColorMask : colorMask);
     } else {
-      this.m_rproxy.lockRenderColorMask();
+      this.m_renderProxy.lockRenderColorMask();
     }
   }
 
   unlockRenderColorMask() {
     this.m_rcontext.useGlobalRenderColorMask(RendererState_1.default.COLOR_MASK_ALL_TRUE);
-    this.m_rproxy.unlockRenderColorMask();
+    this.m_renderProxy.unlockRenderColorMask();
   } ////////////////////////////////////////////////////// material conctrl
 
 
@@ -28064,7 +29187,7 @@ class FBOInstance {
   }
 
   generateMipmapTextureAt(i) {
-    this.m_texs[i].generateMipmap(this.m_rproxy.Texture);
+    this.m_texs[i].generateMipmap(this.m_renderProxy.Texture);
   }
   /**
    * 设置渲染到纹理的目标纹理对象(可由用自行创建)和framebuffer output attachment index
@@ -28114,7 +29237,7 @@ class FBOInstance {
     if (texture == null) {
       texture = this.m_texStore.createRTTTex2D(128, 128, false);
 
-      texture.__$setRenderProxy(this.m_rproxy);
+      texture.__$setRenderProxy(this.m_renderProxy);
 
       texture.internalFormat = TextureFormat_1.default.RGBA16F;
       texture.srcFormat = TextureFormat_1.default.RGBA;
@@ -28122,7 +29245,7 @@ class FBOInstance {
       texture.minFilter = TextureConst_1.default.LINEAR;
       texture.magFilter = TextureConst_1.default.LINEAR;
 
-      texture.__$setRenderProxy(this.m_rproxy);
+      texture.__$setRenderProxy(this.m_renderProxy);
     }
 
     return this.setRenderToTexture(texture, outputIndex);
@@ -28157,7 +29280,7 @@ class FBOInstance {
     texture.minFilter = TextureConst_1.default.LINEAR;
     texture.magFilter = TextureConst_1.default.LINEAR;
 
-    texture.__$setRenderProxy(this.m_rproxy);
+    texture.__$setRenderProxy(this.m_renderProxy);
 
     return texture;
   }
@@ -28169,7 +29292,7 @@ class FBOInstance {
   }
 
   setRenderToBackBuffer() {
-    this.m_rproxy.setClearColor(this.m_backBufferColor);
+    this.m_renderProxy.setClearColor(this.m_backBufferColor);
     this.m_rcontext.setRenderToBackBuffer();
   }
 
@@ -28290,8 +29413,7 @@ class FBOInstance {
   runBeginDo() {
     if (this.m_runFlag) {
       this.m_runFlag = false;
-      this.m_rproxy.rshader.resetRenderState();
-      this.m_rproxy.getClearRGBAColor4f(this.m_backBufferColor);
+      this.m_renderProxy.getClearRGBAColor4f(this.m_backBufferColor);
 
       if (this.m_viewportLock) {
         this.m_adapter.lockViewport();
@@ -28312,7 +29434,7 @@ class FBOInstance {
         this.m_adapter.setClearDepth(this.m_clearDepth);
       }
 
-      this.m_rproxy.setClearColor(this.m_bgColor);
+      this.m_renderProxy.setClearColor(this.m_bgColor);
       let i = 0;
 
       for (; i < this.m_texsTot; ++i) {
@@ -28389,7 +29511,7 @@ class FBOInstance {
   }
 
   runEnd() {
-    this.m_rproxy.setClearColor(this.m_backBufferColor);
+    this.m_renderProxy.setClearColor(this.m_backBufferColor);
     this.m_runFlag = true;
 
     if (this.m_viewportLock) {
@@ -28492,61 +29614,59 @@ const Entity3DNode_1 = __importDefault(__webpack_require__("7b0e"));
 
 class EntityNodeQueue {
   constructor() {
-    this.m_listLen = 0;
-    this.m_ids = [];
-    this.m_list = [];
-    this.m_entieies = [];
-    this.m_fs = []; // free id list
-
-    this.m_fids = [];
+    this.m_nodeListLen = 0;
+    this.m_nodeIdList = [];
+    this.m_nodeList = [];
+    this.m_entityList = [];
+    this.m_nodeFlagList = [];
+    this.m_freeIdList = [];
   }
 
   getFreeId() {
-    if (this.m_fids.length > 0) {
-      return this.m_fids.pop();
+    if (this.m_freeIdList.length > 0) {
+      return this.m_freeIdList.pop();
     }
 
     return -1;
   }
 
   createNode() {
-    let node;
     let index = this.getFreeId();
 
     if (index >= 0) {
-      this.m_fs[index] = 1;
-      node = this.m_list[index];
-      node.spaceId = index;
-      return node;
+      this.m_nodeFlagList[index] = 1;
+      return this.m_nodeList[index];
     } else {
       // create a new nodeIndex
-      index = this.m_listLen;
-      node = Entity3DNode_1.default.Create();
-      this.m_list.push(node);
-      this.m_entieies.push(null);
+      index = this.m_nodeListLen;
+      let node = Entity3DNode_1.default.Create();
+      this.m_nodeList.push(node);
+      this.m_entityList.push(null);
       node.spaceId = index; //node.distanceFlag = false;
 
-      this.m_fs.push(1);
-      this.m_ids.push(index);
-      this.m_fs.push(1);
-      this.m_listLen++;
+      this.m_nodeFlagList.push(1);
+      this.m_nodeIdList.push(index);
+      this.m_nodeFlagList.push(1);
+      this.m_nodeListLen++;
       return node;
     }
   }
 
   restoreId(id) {
-    if (id > 0 && this.m_fs[id] == 1) {
-      this.m_fids.push(id);
-      this.m_fs[id] = 0;
-      this.m_entieies[id] = null;
+    if (id > 0 && this.m_nodeFlagList[id] == 1) {
+      this.m_freeIdList.push(id);
+      this.m_nodeFlagList[id] = 0;
+      this.m_entityList[id] = null;
     }
   } // 可以添加真正被渲染的实体也可以添加只是为了做检测的实体(不允许有material)
 
 
   addEntity(entity) {
     let node = this.createNode();
-    this.m_entieies[node.spaceId] = entity;
-    node.entity = entity;
+    this.m_entityList[node.spaceId] = entity;
+    node.entity = entity; //node.distanceFlag = RSEntityFlag.TestSortEnabled(entity.__$rseFlag);
+    //console.log("Queue node.distanceFlag: ",node.distanceFlag);
+
     entity.__$rseFlag = RSEntityFlag_1.default.AddSpaceUid(entity.__$rseFlag, node.spaceId);
     return node;
   }
@@ -28555,7 +29675,7 @@ class EntityNodeQueue {
     if (total > 0) {
       for (let i = 0; i < total; i++) {
         let node = this.createNode();
-        this.m_entieies[node.spaceId] = null;
+        this.m_entityList[node.spaceId] = null;
       }
     }
   }
@@ -28564,8 +29684,8 @@ class EntityNodeQueue {
     if (RSEntityFlag_1.default.TestSpaceContains(entity.__$rseFlag)) {
       let uid = RSEntityFlag_1.default.GetSpaceUid(entity.__$rseFlag);
 
-      if (this.m_entieies[uid] == entity) {
-        return this.m_list[uid];
+      if (this.m_entityList[uid] == entity) {
+        return this.m_nodeList[uid];
       }
     }
 
@@ -28576,12 +29696,16 @@ class EntityNodeQueue {
     if (RSEntityFlag_1.default.TestSpaceContains(entity.__$rseFlag)) {
       let uid = RSEntityFlag_1.default.GetSpaceUid(entity.__$rseFlag);
 
-      if (this.m_entieies[uid] == entity) {
-        this.m_list[uid].reset();
+      if (this.m_entityList[uid] == entity) {
+        this.m_nodeList[uid].entity = null;
         this.restoreId(uid);
         entity.__$rseFlag = RSEntityFlag_1.default.RemoveSpaceUid(entity.__$rseFlag);
       }
     }
+  }
+
+  toString() {
+    return "[EntityNodeQueue()]";
   }
 
 }
@@ -28607,19 +29731,17 @@ exports.default = EntityNodeQueue;
 
 /***************************************************************************/
 
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-function getNearestCeilPow2(int_n) {
-  let x = 1;
-
-  while (x < int_n) {
-    x <<= 1;
-  }
-
-  return x;
-}
+const MathConst_1 = __importDefault(__webpack_require__("6e01"));
 /**
  * renderer runtime texture resource object
  */
@@ -28673,7 +29795,7 @@ class TextureRenderObj {
 
     if (this.direct) {
       if (this.m_texTotal < 1 && ptexList.length > 0) {
-        let len = getNearestCeilPow2(ptexList.length);
+        let len = MathConst_1.default.GetNearestCeilPow2(ptexList.length);
         this.m_samplers = new Uint16Array(len);
         this.m_gtexList = new Array(len);
         this.m_texList = ptexList;
@@ -28996,43 +30118,91 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+const Vector3D_1 = __importDefault(__webpack_require__("8e17"));
+
+const Stage3D_1 = __importDefault(__webpack_require__("3806"));
+
+const CameraBase_1 = __importDefault(__webpack_require__("c51d"));
+
+const RendererParam_1 = __importDefault(__webpack_require__("c497"));
+
+const EntityNodeQueue_1 = __importDefault(__webpack_require__("af68"));
+
+const Entity3DNodeLinker_1 = __importDefault(__webpack_require__("a80a"));
+
+const RunnableQueue_1 = __importDefault(__webpack_require__("9c4d"));
+
 const RendererInstance_1 = __importDefault(__webpack_require__("d958"));
+
+const TextureBlock_1 = __webpack_require__("5d04");
+
+const RendererSpace_1 = __importDefault(__webpack_require__("a446"));
+
+const RaySelector_1 = __importDefault(__webpack_require__("c711"));
+
+const RayGpuSelector_1 = __importDefault(__webpack_require__("955e"));
+
+const MouseEvt3DController_1 = __importDefault(__webpack_require__("765c"));
+
+const FBOInstance_1 = __importDefault(__webpack_require__("af29"));
+
+const CameraDsistanceSorter_1 = __importDefault(__webpack_require__("d7e2"));
 
 const RendererSubScene_1 = __importDefault(__webpack_require__("70f2"));
 
-const RendererSceneBase_1 = __importDefault(__webpack_require__("aa80"));
+const Matrix4Pool_1 = __importDefault(__webpack_require__("2139"));
 
-const RenderableMaterialBlock_1 = __webpack_require__("1b95");
+const ShaderProgramBuilder_1 = __webpack_require__("a156");
 
-const RenderableEntityBlock_1 = __webpack_require__("251a");
+const Matrix4_1 = __importDefault(__webpack_require__("18c7"));
 
-class RendererScene extends RendererSceneBase_1.default {
+class RendererScene {
   constructor() {
-    super();
+    this.m_uid = -1;
+    this.m_adapter = null;
+    this.m_renderProxy = null;
+    this.m_shader = null;
+    this.m_rcontext = null;
+    this.m_renderer = null;
+    this.m_processids = new Uint8Array(128);
+    this.m_processidsLen = 0;
+    this.m_rspace = null;
+    this.m_mouse_rltv = new Vector3D_1.default();
+    this.m_mouse_rlpv = new Vector3D_1.default();
+    this.m_accessor = null; // event flow control enable
+
+    this.m_evtFlowEnabled = false;
+    this.m_evt3DCtr = null;
+    this.m_mouseEvtEnabled = true;
+    this.m_viewX = 0.0;
+    this.m_viewY = 0.0;
+    this.m_viewW = 800.0;
+    this.m_viewH = 800.0;
+    this.m_nodeWaitLinker = null;
+    this.m_nodeWaitQueue = null;
+    this.m_camDisSorter = null; // recorde renderer sub scenes
+
+    this.m_subscList = [];
+    this.m_subscListLen = 0;
+    this.m_runFlag = -1;
+    this.m_autoRunning = true;
+    this.m_processUpdate = false;
     this.m_tickId = -1;
-  }
-
-  createRendererIns() {
-    this.m_currStage3D = this.stage3D;
-    this.m_stage3D = this.stage3D;
-    return new RendererInstance_1.default();
-  }
-
-  rendererInsInited() {
-    this.m_camera = this.m_renderProxy.getCamera();
-  }
-
-  initThis() {
-    let selfT = this;
-    selfT.materialBlock = new RenderableMaterialBlock_1.RenderableMaterialBlock();
-    selfT.entityBlock = new RenderableEntityBlock_1.RenderableEntityBlock();
-    this.materialBlock.initialize();
-    this.entityBlock.initialize();
-    this.tickUpdate();
-  }
-
-  contextRunEnd() {
-    this.m_rcontext.runEnd();
+    this.m_rparam = null;
+    this.m_enabled = true;
+    this.runnableQueue = new RunnableQueue_1.default();
+    this.textureBlock = new TextureBlock_1.TextureBlock();
+    this.stage3D = null;
+    this.materialBlock = null;
+    this.entityBlock = null;
+    this.m_containers = [];
+    this.m_containersTotal = 0;
+    this.m_currCamera = null;
+    this.m_mouseTestBoo = true;
+    this.m_cullingTestBoo = true;
+    this.m_rayTestFlag = true;
+    this.m_rayTestEnabled = true;
+    this.m_uid = RendererScene.s_uid++;
   }
 
   tickUpdate() {
@@ -29044,30 +30214,818 @@ class RendererScene extends RendererSceneBase_1.default {
     this.textureBlock.run();
   }
 
-  createSubScene(rparam = null, renderProcessesTotal = 3, createNewCamera = true) {
-    if (this.m_renderer != null && this.materialBlock != null) {
-      this.m_localRunning = true;
-      let subsc = new RendererSubScene_1.default(this, this.m_renderer, this.m_evtFlowEnabled); // this.m_subscList.push(subsc);
+  enable() {
+    this.m_enabled = true;
+  }
 
+  disable() {
+    this.m_enabled = false;
+  }
+
+  isEnabled() {
+    return this.m_enabled;
+  }
+
+  getUid() {
+    return this.m_uid;
+  }
+
+  getDiv() {
+    return this.m_renderProxy.getDiv();
+  }
+
+  getCanvas() {
+    return this.m_renderProxy.getCanvas();
+  }
+
+  getRPONodeBuilder() {
+    return null;
+  }
+
+  getRenderProxy() {
+    return this.m_renderProxy;
+  } // set new view port rectangle area
+
+
+  setViewPort(px, py, pw, ph) {
+    if (this.m_renderProxy != null) {
+      this.m_viewX = px;
+      this.m_viewY = py;
+      this.m_viewW = pw;
+      this.m_viewH = ph;
+      this.m_renderProxy.setViewPort(px, py, pw, ph);
+    }
+  }
+
+  setViewPortFromCamera(camera) {
+    if (this.m_renderProxy != null && camera != null) {
+      this.m_viewX = camera.getViewX();
+      this.m_viewY = camera.getViewY();
+      this.m_viewW = camera.getViewWidth();
+      this.m_viewH = camera.getViewHeight();
+      this.m_renderProxy.setViewPort(this.m_viewX, this.m_viewY, this.m_viewW, this.m_viewH);
+    }
+  } // apply new view port rectangle area
+
+
+  reseizeViewPort() {
+    this.m_renderProxy.reseizeRCViewPort();
+  }
+
+  lockViewport() {
+    this.m_adapter.lockViewport();
+  }
+
+  unlockViewport() {
+    this.m_adapter.unlockViewport();
+  }
+
+  getRendererAdapter() {
+    return this.m_adapter;
+  }
+
+  getRenderer() {
+    return this.m_renderer;
+  }
+
+  getRendererContext() {
+    return this.m_rcontext;
+  }
+
+  getStage3D() {
+    return this.m_renderProxy.getStage3D();
+  }
+  /**
+   * 获取渲染器可渲染对象管理器状态(版本号)
+   */
+
+
+  getRendererStatus() {
+    return this.m_renderer.getRendererStatus();
+  }
+
+  getViewWidth() {
+    return this.m_renderProxy.getStage3D().viewWidth;
+  }
+
+  getViewHeight() {
+    return this.m_renderProxy.getStage3D().viewHeight;
+  }
+
+  getCamera() {
+    return this.m_renderProxy.getCamera();
+  }
+
+  asynFBOSizeWithViewport() {
+    this.m_rcontext.asynFBOSizeWithViewport();
+  }
+
+  synFBOSizeWithViewport() {
+    this.m_rcontext.synFBOSizeWithViewport();
+  }
+
+  cameraLock() {
+    this.m_renderProxy.cameraLock();
+  }
+
+  cameraUnlock() {
+    this.m_renderProxy.cameraUnlock();
+  }
+
+  getMouseXYWorldRay(rl_position, rl_tv) {
+    this.m_renderProxy.getMouseXYWorldRay(rl_position, rl_tv);
+  }
+
+  createCamera() {
+    return new CameraBase_1.default();
+  }
+
+  createFBOInstance() {
+    return new FBOInstance_1.default(this, this.textureBlock.getRTTStrore());
+  }
+
+  createMatrix4() {
+    return new Matrix4_1.default();
+  }
+
+  setClearUint24Color(colorUint24, alpha = 1.0) {
+    this.m_renderProxy.setClearUint24Color(colorUint24, alpha);
+  }
+
+  setClearRGBColor3f(pr, pg, pb) {
+    this.m_renderProxy.setClearRGBColor3f(pr, pg, pb);
+  }
+
+  setClearRGBAColor4f(pr, pg, pb, pa) {
+    this.m_renderProxy.setClearRGBAColor4f(pr, pg, pb, pa);
+  }
+
+  setClearColor(color) {
+    this.m_renderProxy.setClearRGBAColor4f(color.r, color.g, color.b, color.a);
+  }
+
+  setRenderToBackBuffer() {
+    this.m_rcontext.setRenderToBackBuffer();
+  }
+
+  drawBackBufferToCanvas(dstCanvas) {
+    let srcCanvas = this.getCanvas();
+    var ctx = dstCanvas.getContext("2d");
+    ctx.drawImage(srcCanvas, 0, 0, dstCanvas.width, dstCanvas.height);
+  }
+
+  updateRenderBufferSize() {
+    this.m_adapter.updateRenderBufferSize();
+  }
+
+  setEvt3DController(evt3DCtr) {
+    if (evt3DCtr != null) {
+      evt3DCtr.initialize(this.getStage3D(), this.getStage3D());
+      evt3DCtr.setRaySelector(this.m_rspace.getRaySelector());
+    }
+
+    this.m_evt3DCtr = evt3DCtr;
+  }
+
+  isRayPickSelected() {
+    return this.m_evt3DCtr != null && this.m_evt3DCtr.isSelected();
+  }
+
+  enableMouseEvent(gpuTestEnabled = true) {
+    if (this.m_evt3DCtr == null) {
+      if (gpuTestEnabled) {
+        this.m_rspace.setRaySelector(new RayGpuSelector_1.default());
+      } else {
+        this.m_rspace.setRaySelector(new RaySelector_1.default());
+      }
+
+      this.setEvt3DController(new MouseEvt3DController_1.default());
+    }
+
+    this.m_mouseEvtEnabled = true;
+  }
+
+  disableMouseEvent() {
+    this.m_mouseEvtEnabled = false;
+  }
+
+  getEvt3DController() {
+    return this.m_evt3DCtr;
+  }
+
+  getSpace() {
+    return this.m_rspace;
+  }
+
+  getDevicePixelRatio() {
+    return this.m_adapter.getDevicePixelRatio();
+  }
+  /**
+   * very important renderer scene system function
+   */
+
+
+  createSubScene() {
+    if (this.m_renderer != null) {
+      let subsc = new RendererSubScene_1.default(this, this.m_renderer, this.m_evtFlowEnabled);
+      this.m_subscList.push(subsc);
       this.m_subscListLen++;
       let sc = subsc;
       sc.textureBlock = this.textureBlock;
-      sc.materialBlock = this.materialBlock;
-      sc.entityBlock = this.entityBlock;
-
-      if (rparam != null) {
-        sc.initialize(rparam, renderProcessesTotal, createNewCamera);
-      }
-
       return subsc;
     }
 
-    throw Error("Illegal operation!!!");
     return null;
+  }
+
+  addEventListener(type, target, func, captureEnabled = true, bubbleEnabled = false) {
+    this.stage3D.addEventListener(type, target, func, captureEnabled, bubbleEnabled);
+  }
+
+  removeEventListener(type, target, func) {
+    this.stage3D.removeEventListener(type, target, func);
+  }
+
+  setAccessor(accessor) {
+    this.m_accessor = accessor;
+  }
+
+  initialize(rparam = null, renderProcessesTotal = 3) {
+    if (this.m_renderer == null) {
+      if (rparam == null) rparam = new RendererParam_1.default();
+      this.m_rparam = rparam;
+      let selfT = this;
+      selfT.stage3D = new Stage3D_1.default(this.getUid(), document);
+
+      if (renderProcessesTotal < 1) {
+        renderProcessesTotal = 1;
+      }
+
+      if (renderProcessesTotal > 8) {
+        renderProcessesTotal = 8;
+      }
+
+      this.m_evtFlowEnabled = rparam.evtFlowEnabled;
+      this.m_renderer = new RendererInstance_1.default();
+
+      this.m_renderer.__$setStage3D(this.stage3D);
+
+      Matrix4Pool_1.default.Allocate(rparam.getMatrix4AllocateSize());
+      let camera = new CameraBase_1.default();
+      this.m_renderer.initialize(rparam, camera, new ShaderProgramBuilder_1.ShaderProgramBuilder(this.m_renderer.getRCUid()));
+      this.m_processids[0] = 0;
+      this.m_processidsLen++;
+      let process = null;
+
+      for (; renderProcessesTotal >= 0;) {
+        process = this.m_renderer.appendProcess(rparam.batchEnabled, rparam.processFixedState);
+        this.m_processids[this.m_processidsLen] = process.getRPIndex();
+        this.m_processidsLen++;
+        --renderProcessesTotal;
+      }
+
+      this.m_rcontext = this.m_renderer.getRendererContext();
+      this.m_renderProxy = this.m_rcontext.getRenderProxy();
+      this.m_adapter = this.m_renderProxy.getRenderAdapter();
+      let stage3D = this.m_renderProxy.getStage3D();
+      this.m_viewW = stage3D.stageWidth;
+      this.m_viewH = stage3D.stageHeight;
+      this.m_shader = this.m_renderer.getDataBuilder().getRenderShader();
+      this.textureBlock.setRenderer(this.m_renderProxy);
+      this.m_camDisSorter = new CameraDsistanceSorter_1.default(this.m_renderProxy);
+
+      if (this.m_rspace == null) {
+        let space = new RendererSpace_1.default();
+        space.initialize(this.m_renderer, this.m_renderProxy.getCamera());
+        this.m_rspace = space;
+      }
+
+      this.tickUpdate();
+    }
+  }
+
+  setRendererProcessParam(index, batchEnabled, processFixedState) {
+    this.m_renderer.setRendererProcessParam(this.m_processids[index], batchEnabled, processFixedState);
+  }
+
+  appendARendererProcess(batchEnabled = true, processFixedState = false) {
+    let process = this.m_renderer.appendProcess(batchEnabled, processFixedState);
+    this.m_processids[this.m_processidsLen] = process.getRPIndex();
+    this.m_processidsLen++;
+  }
+  /**
+   * get the renderer process by process index
+   * @param processIndex IRenderProcess instance index in renderer scene instance
+   */
+
+
+  getRenderProcessAt(processIndex) {
+    return this.m_renderer.getProcessAt(this.m_processids[processIndex]);
+  }
+
+  addContainer(container, processIndex = 0) {
+    if (processIndex < 0) {
+      processIndex = 0;
+    }
+
+    if (container != null && container.__$wuid < 0 && container.__$contId < 1) {
+      let i = 0;
+
+      for (; i < this.m_containersTotal; ++i) {
+        if (this.m_containers[i] == container) {
+          return;
+        }
+      }
+
+      if (i >= this.m_containersTotal) {
+        container.__$wuid = this.m_uid;
+        container.wprocuid = processIndex;
+
+        container.__$setRenderer(this);
+
+        this.m_containers.push(container);
+        this.m_containersTotal++;
+      }
+    }
+  }
+
+  removeContainer(container) {
+    if (container != null && container.__$wuid == this.m_uid && container.getRenderer() == this.m_renderer) {
+      let i = 0;
+
+      for (; i < this.m_containersTotal; ++i) {
+        if (this.m_containers[i] == container) {
+          container.__$wuid = -1;
+          container.wprocuid = -1;
+
+          container.__$setRenderer(null);
+
+          this.m_containers.splice(i, 1);
+          --this.m_containersTotal;
+          break;
+        }
+      }
+    }
+  }
+
+  setAutoRunningEnabled(autoRunning) {
+    this.m_autoRunning = autoRunning;
+  }
+
+  setAutoRenderingSort(sortEnabled) {
+    this.m_processUpdate = sortEnabled;
+  }
+
+  setProcessSortEnabledAt(processIndex, sortEnabled, sorter = null) {
+    this.m_renderer.setProcessSortEnabledAt(processIndex, sortEnabled);
+
+    if (sortEnabled) {
+      let process = this.m_renderer.getProcessAt(processIndex);
+      sorter = sorter != null ? sorter : this.m_camDisSorter;
+
+      if (process != null) {
+        process.setSorter(sorter);
+      }
+    }
+  }
+
+  setProcessSortEnabled(process, sortEnabled, sorter = null) {
+    this.m_renderer.setProcessSortEnabled(process, sortEnabled);
+
+    if (sortEnabled && process != null && !process.hasSorter()) {
+      sorter = sorter != null ? sorter : this.m_camDisSorter;
+      process.setSorter(sorter);
+    }
+  }
+  /**
+   * 将已经在渲染运行时中的entity移动到指定 process uid 的 render process 中去
+   * move rendering runtime displayEntity to different renderer process
+   */
+
+
+  moveEntityTo(entity, processindex) {
+    this.m_renderer.moveEntityToProcessAt(entity, this.m_processids[processindex]);
+  }
+  /**
+   * 单独绘制可渲染对象, 可能是使用了 global material也可能没有。这种方式比较耗性能,只能用在特殊的地方。
+   * @param entity 需要指定绘制的 IRenderEntity 实例
+   * @param useGlobalUniform 是否使用当前 global material 所携带的 uniform, default value: false
+   * @param forceUpdateUniform 是否强制更新当前 global material 所对应的 shader program 的 uniform, default value: true
+   */
+
+
+  drawEntity(entity, useGlobalUniform = false, forceUpdateUniform = true) {
+    this.m_renderer.drawEntity(entity, useGlobalUniform, forceUpdateUniform);
+  }
+  /**
+   * add an entity to the renderer process of the renderer instance
+   * @param entity IRenderEntity instance(for example: DisplayEntity class instance)
+   * @param processid this destination renderer process id
+   * @param deferred if the value is true,the entity will not to be immediately add to the renderer process by its id
+   */
+
+
+  addEntity(entity, processid = 0, deferred = true) {
+    if (entity != null && entity.__$testSpaceEnabled()) {
+      if (entity.isPolyhedral()) {
+        if (entity.hasMesh()) {
+          this.m_renderer.addEntity(entity, this.m_processids[processid], deferred);
+
+          if (this.m_rspace != null) {
+            this.m_rspace.addEntity(entity);
+          }
+        } else {
+          // 这里的等待队列可能会和加入容器的操作冲突
+          // wait queue
+          if (this.m_nodeWaitLinker == null) {
+            this.m_nodeWaitLinker = new Entity3DNodeLinker_1.default();
+            this.m_nodeWaitQueue = new EntityNodeQueue_1.default();
+          }
+
+          let node = this.m_nodeWaitQueue.addEntity(entity);
+          node.rstatus = processid;
+          this.m_nodeWaitLinker.addNode(node);
+        }
+      } else {
+        this.m_renderer.addEntity(entity, this.m_processids[processid], deferred);
+
+        if (this.m_rspace != null) {
+          this.m_rspace.addEntity(entity);
+        }
+      }
+    }
+  }
+  /**
+   * remove an entity from the rendererinstance
+   * @param entity IRenderEntity instance(for example: DisplayEntity class instance)
+   */
+
+
+  removeEntity(entity) {
+    if (entity != null) {
+      let node = null;
+
+      if (this.m_nodeWaitLinker != null) {
+        let node = this.m_nodeWaitQueue.getNodeByEntity(entity);
+
+        if (node != null) {
+          this.m_nodeWaitLinker.removeNode(node);
+          this.m_nodeWaitQueue.removeEntity(entity);
+        }
+      }
+
+      if (node == null) {
+        this.m_renderer.removeEntity(entity);
+
+        if (this.m_rspace != null) {
+          this.m_rspace.removeEntity(entity);
+        }
+      }
+    }
+  }
+
+  updateMaterialUniformToCurrentShd(material) {
+    this.m_renderer.updateMaterialUniformToCurrentShd(material);
+  }
+
+  showInfoAt(index) {
+    this.m_renderer.showInfoAt(index);
+  }
+
+  getRenderUnitsTotal() {
+    return this.m_renderer.getRenderUnitsTotal();
+  }
+
+  useCamera(camera, syncCamView = false) {
+    this.m_currCamera = camera;
+
+    if (syncCamView) {
+      this.m_renderProxy.setRCViewPort(camera.getViewX(), camera.getViewY(), camera.getViewWidth(), camera.getViewHeight(), true);
+      this.m_renderProxy.reseizeRCViewPort();
+    }
+
+    camera.update();
+    this.m_rcontext.resetUniform();
+    this.m_renderProxy.updateCameraDataFromCamera(camera);
+  }
+
+  useMainCamera() {
+    this.m_currCamera = null;
+    let camera = this.m_renderProxy.getCamera();
+    this.m_renderProxy.setRCViewPort(camera.getViewX(), camera.getViewY(), camera.getViewWidth(), camera.getViewHeight(), true);
+    this.m_renderProxy.reseizeRCViewPort();
+    this.m_renderProxy.updateCamera();
+    this.m_rcontext.resetUniform();
+    this.m_renderProxy.updateCameraDataFromCamera(this.m_renderProxy.getCamera());
+  }
+
+  updateCameraDataFromCamera(camera) {
+    this.m_renderProxy.updateCameraDataFromCamera(camera);
+  }
+  /**
+   * reset renderer rendering state
+   */
+
+
+  resetState() {
+    this.m_rcontext.resetState();
+  }
+  /**
+   * reset render shader uniform location
+   */
+
+
+  resetUniform() {
+    this.m_rcontext.resetUniform();
+  }
+
+  enableSynViewAndStage() {
+    this.m_renderProxy.enableSynViewAndStage();
+  }
+  /**
+   * the function only resets the renderer instance rendering status.
+   * you should use it before the run or runAt function is called.
+   */
+
+
+  renderBegin(contextBeginEnabled = true) {
+    if (this.m_currCamera == null) {
+      this.m_adapter.unlockViewport();
+
+      if (this.m_renderProxy.isAutoSynViewAndStage()) {
+        let boo = this.m_renderProxy.testViewPortChanged(this.m_viewX, this.m_viewY, this.m_viewW, this.m_viewH);
+        this.m_viewX = this.m_renderProxy.getViewX();
+        this.m_viewY = this.m_renderProxy.getViewY();
+        this.m_viewW = this.m_renderProxy.getViewWidth();
+        this.m_viewH = this.m_renderProxy.getViewHeight();
+
+        if (boo) {
+          this.m_renderProxy.setRCViewPort(this.m_viewX, this.m_viewY, this.m_viewW, this.m_viewH, true);
+          this.m_renderProxy.reseizeRCViewPort();
+        }
+      } else {
+        this.m_renderProxy.setViewPort(this.m_viewX, this.m_viewY, this.m_viewW, this.m_viewH);
+      }
+
+      this.m_renderProxy.updateCamera();
+      this.m_renderProxy.updateCameraDataFromCamera(this.m_renderProxy.getCamera());
+    }
+
+    this.m_shader.renderBegin();
+
+    if (contextBeginEnabled) {
+      this.m_rcontext.renderBegin(this.m_currCamera == null);
+    }
+
+    this.m_currCamera = null;
+
+    if (this.m_accessor != null) {
+      this.m_accessor.renderBegin(this);
+    }
+  }
+  /**
+   * the function resets the renderer scene status.
+   * you should use it on the frame starting time.
+   */
+
+
+  runBegin(autoCycle = true, contextBeginEnabled = true) {
+    if (autoCycle && this.m_autoRunning) {
+      if (this.m_runFlag >= 0) this.runEnd();
+      this.m_runFlag = 0;
+    }
+
+    let cam = this.m_currCamera;
+    let camFlag = cam == null;
+    this.renderBegin(contextBeginEnabled);
+
+    if (this.m_rspace != null) {
+      this.m_rspace.setCamera(camFlag ? this.m_renderProxy.getCamera() : cam);
+      this.m_rspace.runBegin();
+    }
+  }
+
+  renderContextBegin() {
+    this.m_rcontext.renderBegin();
+  }
+
+  setRayTestEanbled(enabled) {
+    this.m_rayTestEnabled = enabled;
+  } // @param       evtFlowPhase: 0(none phase),1(capture phase),2(bubble phase)
+  // @param       status: 1(default process),1(deselect ray pick target)
+  // @return      1 is send evt yes,0 is send evt no,-1 is event nothing
+
+
+  runMouseTest(evtFlowPhase, status) {
+    let flag = -1;
+
+    if (this.m_evt3DCtr != null && this.m_mouseEvtEnabled) {
+      if (this.m_rayTestFlag && this.m_evt3DCtr.getEvtType() > 0) {
+        // 是否对已经获得的拾取列表做进一步的gpu拾取
+        let selector = this.m_rspace.getRaySelector();
+
+        if (selector != null) {
+          if (this.m_rayTestEnabled) {
+            this.mouseRayTest();
+          } else {
+            selector.clear();
+          } // 如果有gpu拾取则进入这个管理器, 这个管理器得到最终的拾取结果再和前面的计算结果做比较
+
+
+          let total = selector.getSelectedNodesTotal();
+
+          if (total > 1) {
+            let i = 0;
+            let list = selector.getSelectedNodes();
+            let node = null;
+
+            for (; i < total; ++i) {
+              node = list[i];
+
+              if (node.entity.isPolyhedral()) {//this.m_renderer.drawEntityByLockMaterial(node.entity);
+              }
+            }
+          }
+        }
+
+        this.m_rayTestFlag = false;
+      }
+
+      flag = this.m_evt3DCtr.run(evtFlowPhase, status);
+    }
+
+    this.m_mouseTestBoo = false;
+    return flag;
+  }
+  /**
+   * update all data or status of the renderer runtime
+   * should call this function per frame
+   */
+
+
+  update(autoCycle = true, mouseEventEnabled = true) {
+    this.stage3D.enterFrame();
+
+    if (autoCycle && this.m_autoRunning) {
+      if (this.m_runFlag != 0) this.runBegin();
+      this.m_runFlag = 1;
+    } // camera visible test, ray cast test, Occlusion Culling test
+
+
+    this.m_mouseTestBoo = true;
+    this.m_cullingTestBoo = true;
+    this.m_rayTestFlag = true; // wait mesh data ready to finish
+
+    if (this.m_nodeWaitLinker != null) {
+      let nextNode = this.m_nodeWaitLinker.getBegin();
+
+      if (nextNode != null) {
+        let pnode;
+        let entity;
+        let status;
+
+        while (nextNode != null) {
+          if (nextNode.entity.hasMesh()) {
+            pnode = nextNode;
+            nextNode = nextNode.next;
+            entity = pnode.entity;
+            status = pnode.rstatus;
+            this.m_nodeWaitLinker.removeNode(pnode);
+            this.m_nodeWaitQueue.removeEntity(pnode.entity); //console.log("RenderScene::update(), ready a mesh data that was finished.");
+
+            this.addEntity(entity, status);
+          } else {
+            nextNode = nextNode.next;
+          }
+        }
+      }
+    }
+
+    let i = 0;
+
+    for (; i < this.m_containersTotal; ++i) {
+      this.m_containers[i].update();
+    }
+
+    this.m_renderer.update(); // space update
+
+    if (this.m_rspace != null) {
+      this.m_rspace.update();
+
+      if (this.m_cullingTestBoo) {
+        if (this.m_evt3DCtr != null || this.m_processUpdate || this.m_rspace.getRaySelector() != null) {
+          this.m_rspace.run();
+        }
+      }
+    }
+
+    if (this.m_processUpdate) {
+      this.m_renderer.updateAllProcess();
+    }
+
+    if (this.m_mouseTestBoo && !this.m_evtFlowEnabled) {
+      if (mouseEventEnabled) {
+        this.runMouseTest(1, 0);
+      } else if (this.m_evt3DCtr != null) {
+        this.m_evt3DCtr.mouseOutEventTarget();
+      }
+    }
+  } // 运行渲染可见性裁剪测试，射线检测等空间管理机制
+
+
+  cullingTest() {
+    if (this.m_rspace != null) {
+      this.m_rspace.run();
+    }
+
+    this.m_cullingTestBoo = false;
+  } // 鼠标位置的射线拾取测试
+
+
+  mouseRayTest() {
+    if (this.m_rspace != null) {
+      this.m_renderProxy.getMouseXYWorldRay(this.m_mouse_rlpv, this.m_mouse_rltv);
+      this.m_rspace.rayTest(this.m_mouse_rlpv, this.m_mouse_rltv);
+    }
+  }
+  /**
+   * run all renderer processes in the renderer instance
+   */
+
+
+  run(autoCycle = true) {
+    if (this.m_enabled) {
+      if (autoCycle && this.m_autoRunning) {
+        if (this.m_runFlag != 1) this.update();
+        this.m_runFlag = 2;
+      }
+
+      this.runnableQueue.run();
+
+      if (this.m_subscListLen > 0) {
+        for (let i = 0; i < this.m_processidsLen; ++i) {
+          this.m_renderer.runAt(this.m_processids[i]);
+        }
+      } else {
+        this.m_renderer.run();
+      }
+
+      if (autoCycle) {
+        this.runEnd();
+      }
+    }
+  }
+  /**
+   * run the specific renderer process by its index in the renderer instance
+   * @param index the renderer process index in the renderer instance
+   */
+
+
+  runAt(index) {
+    if (this.m_enabled) {
+      this.m_renderer.runAt(this.m_processids[index]);
+    }
+  }
+
+  runEnd() {
+    if (this.m_evt3DCtr != null) {
+      this.m_evt3DCtr.runEnd();
+    }
+
+    this.m_rcontext.runEnd();
+
+    if (this.m_rspace != null) {
+      this.m_rspace.runEnd();
+    }
+
+    if (this.m_autoRunning) {
+      this.m_runFlag = -1;
+    }
+
+    if (this.m_accessor != null) {
+      this.m_accessor.renderEnd(this);
+    }
+  }
+
+  renderFlush() {
+    if (this.m_renderProxy != null) {
+      this.m_renderProxy.flush();
+    }
+  }
+
+  updateCamera() {
+    if (this.m_renderProxy != null) {
+      this.m_renderProxy.updateCamera();
+    }
+  }
+
+  toString() {
+    return "[RendererScene(uid = " + this.m_uid + ")]";
   }
 
 }
 
+RendererScene.s_uid = 0;
 exports.default = RendererScene;
 
 /***/ }),
@@ -29306,10 +31264,6 @@ class RenderShader {
     this.m_transformUniform = null;
     this.m_guniform = null;
   }
-
-  resetRenderState() {
-    this.drawFlag = -1;
-  }
   /**
    * frame begin run this function
    */
@@ -29361,38 +31315,35 @@ class RenderShader {
   }
 
   useUniformV2(ult, type, f32Arr, dataSize, offset) {
-    const mc = MaterialConst_1.default;
-    const rc = this.m_rc;
-
     switch (type) {
-      case mc.SHADER_MAT4:
-        rc.uniformMatrix4fv(ult, false, f32Arr, offset, dataSize * 16);
+      case MaterialConst_1.default.SHADER_MAT4:
+        this.m_rc.uniformMatrix4fv(ult, false, f32Arr, offset, dataSize * 16);
         break;
 
-      case mc.SHADER_MAT3:
-        rc.uniformMatrix3fv(ult, false, f32Arr, 0, dataSize * 9);
+      case MaterialConst_1.default.SHADER_MAT3:
+        this.m_rc.uniformMatrix3fv(ult, false, f32Arr, 0, dataSize * 9);
         break;
 
-      case mc.SHADER_VEC4FV:
+      case MaterialConst_1.default.SHADER_VEC4FV:
         //console.log("MaterialConst.SHADER_VEC4FV dataSize: ",dataSize);
         //console.log(f32Arr);
-        rc.uniform4fv(ult, f32Arr, offset, dataSize * 4);
+        this.m_rc.uniform4fv(ult, f32Arr, offset, dataSize * 4);
         break;
 
-      case mc.SHADER_VEC3FV:
-        rc.uniform3fv(ult, f32Arr, offset, dataSize * 3);
+      case MaterialConst_1.default.SHADER_VEC3FV:
+        this.m_rc.uniform3fv(ult, f32Arr, offset, dataSize * 3);
         break;
 
-      case mc.SHADER_VEC4:
-        rc.uniform4f(ult, f32Arr[0], f32Arr[1], f32Arr[2], f32Arr[3]);
+      case MaterialConst_1.default.SHADER_VEC4:
+        this.m_rc.uniform4f(ult, f32Arr[0], f32Arr[1], f32Arr[2], f32Arr[3]);
         break;
 
-      case mc.SHADER_VEC3:
-        rc.uniform3f(ult, f32Arr[0], f32Arr[1], f32Arr[2]);
+      case MaterialConst_1.default.SHADER_VEC3:
+        this.m_rc.uniform3f(ult, f32Arr[0], f32Arr[1], f32Arr[2]);
         break;
 
-      case mc.SHADER_VEC2:
-        rc.uniform2f(ult, f32Arr[0], f32Arr[1]);
+      case MaterialConst_1.default.SHADER_VEC2:
+        this.m_rc.uniform2f(ult, f32Arr[0], f32Arr[1]);
         break;
 
       default:
@@ -29401,36 +31352,33 @@ class RenderShader {
   }
 
   useUniformV1(ult, type, f32Arr, dataSize) {
-    const mc = MaterialConst_1.default;
-    const rc = this.m_rc;
-
     switch (type) {
-      case mc.SHADER_MAT4:
-        rc.uniformMatrix4fv(ult, false, f32Arr);
+      case MaterialConst_1.default.SHADER_MAT4:
+        this.m_rc.uniformMatrix4fv(ult, false, f32Arr);
         break;
 
-      case mc.SHADER_MAT3:
-        rc.uniformMatrix3fv(ult, false, f32Arr);
+      case MaterialConst_1.default.SHADER_MAT3:
+        this.m_rc.uniformMatrix3fv(ult, false, f32Arr);
         break;
 
-      case mc.SHADER_VEC4FV:
-        rc.uniform4fv(ult, f32Arr, dataSize * 4);
+      case MaterialConst_1.default.SHADER_VEC4FV:
+        this.m_rc.uniform4fv(ult, f32Arr, dataSize * 4);
         break;
 
-      case mc.SHADER_VEC3FV:
-        rc.uniform3fv(ult, f32Arr, dataSize * 3);
+      case MaterialConst_1.default.SHADER_VEC3FV:
+        this.m_rc.uniform3fv(ult, f32Arr, dataSize * 3);
         break;
 
-      case mc.SHADER_VEC4:
-        rc.uniform4f(ult, f32Arr[0], f32Arr[1], f32Arr[2], f32Arr[3]);
+      case MaterialConst_1.default.SHADER_VEC4:
+        this.m_rc.uniform4f(ult, f32Arr[0], f32Arr[1], f32Arr[2], f32Arr[3]);
         break;
 
-      case mc.SHADER_VEC3:
-        rc.uniform3f(ult, f32Arr[0], f32Arr[1], f32Arr[2]);
+      case MaterialConst_1.default.SHADER_VEC3:
+        this.m_rc.uniform3f(ult, f32Arr[0], f32Arr[1], f32Arr[2]);
         break;
 
-      case mc.SHADER_VEC2:
-        rc.uniform2f(ult, f32Arr[0], f32Arr[1]);
+      case MaterialConst_1.default.SHADER_VEC2:
+        this.m_rc.uniform2f(ult, f32Arr[0], f32Arr[1]);
         break;
 
       default:
@@ -29553,11 +31501,22 @@ exports.default = ShaderUniformData;
 
 /***/ }),
 
-/***/ "b4ea":
+/***/ "b9b5":
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
+/***************************************************************************/
+
+/*                                                                         */
+
+/*  Copyright 2018-2022 by                                                 */
+
+/*  Vily(vily313@126.com)                                                  */
+
+/*                                                                         */
+
+/***************************************************************************/
 
 var __importDefault = this && this.__importDefault || function (mod) {
   return mod && mod.__esModule ? mod : {
@@ -29569,202 +31528,134 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-const ImageTextureLoader_1 = __importDefault(__webpack_require__("f63b"));
+const DashedLineMesh_1 = __importDefault(__webpack_require__("9c3c"));
 
-const TextureConst_1 = __importDefault(__webpack_require__("8d98"));
+const DisplayEntity_1 = __importDefault(__webpack_require__("402a"));
 
-const ShaderCodeUUID_1 = __webpack_require__("f3a2");
+const Color4_1 = __importDefault(__webpack_require__("3930"));
 
-exports.ShaderCodeUUID = ShaderCodeUUID_1.ShaderCodeUUID;
+const Line3DMaterial_1 = __importDefault(__webpack_require__("32cc"));
 
-const ShaderLib_1 = __webpack_require__("c052");
+const Vector3D_1 = __importDefault(__webpack_require__("8e17"));
 
-exports.ShaderCodeConfigure = ShaderLib_1.ShaderCodeConfigure;
-exports.ShaderCodeType = ShaderLib_1.ShaderCodeType;
-exports.IShaderLibConfigure = ShaderLib_1.IShaderLibConfigure;
-exports.IShaderLibListener = ShaderLib_1.IShaderLibListener;
-
-const MaterialContextParam_1 = __webpack_require__("4301");
-
-exports.MaterialContextParam = MaterialContextParam_1.MaterialContextParam;
-/**
- * 实现 material 构造 pipeline 的上下文
- */
-
-class MaterialContext {
+class Axis3DEntity extends DisplayEntity_1.default {
   constructor() {
-    this.m_initFlag = true;
-    this.m_texLoader = null;
-    this.m_rscene = null;
-    /**
-     * 全局的灯光模块
-     */
+    super(); // 用于射线检测
 
-    this.lightModule = null;
-    /**
-     * 全局的环境参数
-     */
-
-    this.envLightModule = null;
-    /**
-     * vsm 阴影
-     */
-
-    this.vsmModule = null;
-    /**
-     * material 构造material流水线, 这是一个默认的material pipeline
-     */
-
-    this.pipeline = null;
+    this.rayTestRadius = 8.0;
+    this.colorX = new Color4_1.default(1.0, 0.0, 0.0, 1.0);
+    this.colorY = new Color4_1.default(0.0, 1.0, 0.0, 1.0);
+    this.colorZ = new Color4_1.default(0.0, 0.0, 1.0, 1.0);
+    this.m_posarr = [0, 0, 0, 100.0, 0, 0, 0, 0, 0, 0, 100.0, 0, 0, 0, 0, 0, 0, 100.0];
   }
 
-  addShaderLibListener(listener) {
-    if (MaterialContext.ShaderLib != null) {
-      MaterialContext.ShaderLib.setListener(listener);
+  setLineWidth(lineW) {//if(this.getMesh())
+    //{
+    //    //this.getMesh().vbuf.lineWidth = lineW;
+    //}
+  }
+
+  createMaterial() {
+    if (this.getMaterial() == null) {
+      let cm = new Line3DMaterial_1.default();
+      this.setMaterial(cm);
     }
   }
 
-  getTextureLoader() {
-    return this.m_texLoader;
-  }
-
-  isTextureLoadedAll() {
-    return this.m_texLoader.isLoadedAll();
-  }
-
-  getTextureByUrl(purl, wrapRepeat = true, mipmapEnabled = true) {
-    let tex = null;
-    let suffix = purl.slice(purl.lastIndexOf(".") + 1);
-    suffix = suffix.toLocaleLowerCase();
-
-    switch (suffix) {
-      case "jpeg":
-      case "jpg":
-      case "png":
-      case "gif":
-        tex = this.m_texLoader.getImageTexByUrl(purl);
-        tex.mipmapEnabled = mipmapEnabled;
-        if (wrapRepeat) tex.setWrap(TextureConst_1.default.WRAP_REPEAT);
-        break;
-
-      default:
-        console.warn("texture resource data type is undefined.");
-        break;
-    }
-
-    return tex;
-  }
-
-  createShaderLibConfig() {
-    return {
-      shaderCodeConfigures: [],
-      version: ""
-    };
-  }
-
-  buildConfigure(param, shaderLibConfigure) {
-    if (shaderLibConfigure == null) {
-      let libConfig = this.createShaderLibConfig();
-
-      if (param == null) {
-        param = new MaterialContextParam_1.MaterialContextParam();
-      } // param.loadAllShaderCode = true;
-
-
-      if (param.loadAllShaderCode) {
-        let configure = MaterialContext.ShaderLib.createShaderCodeConfigure(param);
-
-        if (configure != null) {
-          libConfig.shaderCodeConfigures.push(configure);
-        }
-      }
-
-      shaderLibConfigure = libConfig;
-    }
-
-    return shaderLibConfigure;
-  }
-
-  initialize(rscene, param = null, shaderLibConfigure = null) {
-    if (this.m_initFlag) {
-      shaderLibConfigure = this.buildConfigure(param, shaderLibConfigure);
-      this.m_initFlag = false;
-      this.m_rscene = rscene;
-      this.m_texLoader = new ImageTextureLoader_1.default(this.m_rscene.textureBlock);
-      let selfT = this;
-
-      if (param == null) {
-        param = new MaterialContextParam_1.MaterialContextParam();
-      }
-
-      this.m_param = param;
-      if (param.shaderLibVersion != "") shaderLibConfigure.version = param.shaderLibVersion;
-      MaterialContext.ShaderLib.initialize(shaderLibConfigure, param.shaderCodeBinary);
-
-      if (param.loadAllShaderCode) {
-        MaterialContext.ShaderLib.addAllShaderCodeObject();
-      }
-
-      this.initPipes(this.m_param);
-      selfT.pipeline = this.createPipeline();
-      this.initEnd(param);
-
-      if (!param.loadAllShaderCode) {
-        let listener = MaterialContext.ShaderLib.getListener();
-
-        if (listener != null) {
-          listener.shaderLibLoadComplete(0, 0);
-        }
-      }
+  __activeMesh(material) {
+    if (this.getMesh() == null) {
+      let colorarr = [this.colorX.r, this.colorX.g, this.colorX.b, this.colorX.r, this.colorX.g, this.colorX.b, this.colorY.r, this.colorY.g, this.colorY.b, this.colorY.r, this.colorY.g, this.colorY.b, this.colorZ.r, this.colorZ.g, this.colorZ.b, this.colorZ.r, this.colorZ.g, this.colorZ.b];
+      let mesh = new DashedLineMesh_1.default();
+      mesh.rayTestRadius = this.rayTestRadius;
+      mesh.vbWholeDataEnabled = false;
+      mesh.setBufSortFormat(material.getBufSortFormat());
+      mesh.initialize(this.m_posarr, colorarr);
+      this.setMesh(mesh);
     }
   }
+  /**
+   * initialize the axis entity mesh and geometry data
+   * @param axisSize the X/Y/Z axis length
+   */
 
-  initPipes(param) {}
 
-  initEnd(param) {}
-
-  hasShaderCodeObjectWithUUID(uuid) {
-    return MaterialContext.ShaderLib.hasShaderCodeObjectWithUUID(uuid);
-  }
-
-  addShaderCodeObject(uuid, shaderCodeObject) {
-    MaterialContext.ShaderLib.addShaderCodeObject(uuid, shaderCodeObject);
-  }
-
-  addPipeline(pipeline) {
-    if (pipeline != null && pipeline != this.pipeline) {
-      if (this.lightModule != null) pipeline.addPipe(this.lightModule);
-      if (this.envLightModule != null) pipeline.addPipe(this.envLightModule);
-      if (this.vsmModule != null) pipeline.addPipe(this.vsmModule);
+  initialize(axisSize = 100.0) {
+    if (axisSize < 2) {
+      axisSize = 2;
     }
+
+    this.m_posarr[3] = axisSize;
+    this.m_posarr[10] = axisSize;
+    this.m_posarr[17] = axisSize;
+    this.createMaterial();
+    this.activeDisplay();
+  }
+  /**
+   * initialize the axis entity mesh and geometry data
+   * @param sizeX the X axis length
+   * @param sizeY the Y axis length
+   * @param sizeZ the Z axis length
+   */
+
+
+  initializeSizeXYZ(sizeX, sizeY, sizeZ) {
+    this.m_posarr[3] = sizeX;
+    this.m_posarr[10] = sizeY;
+    this.m_posarr[17] = sizeZ;
+    this.createMaterial();
+    this.activeDisplay();
   }
 
-  createPipeline() {
-    let pipeline = this.m_rscene.materialBlock.createMaterialPipeline(MaterialContext.ShaderLib);
-    if (this.lightModule != null) pipeline.addPipe(this.lightModule);
-    if (this.envLightModule != null) pipeline.addPipe(this.envLightModule);
-    if (this.vsmModule != null) pipeline.addPipe(this.vsmModule);
-    return pipeline;
+  initializeCorssSizeXYZ(sizeX, sizeY, sizeZ) {
+    //  this.m_posarr[3] = sizeX;
+    //  this.m_posarr[10] = sizeY;
+    //  this.m_posarr[17] = sizeZ;
+    sizeX *= 0.5;
+    sizeY *= 0.5;
+    sizeZ *= 0.5;
+    this.m_posarr[0] = -sizeX;
+    this.m_posarr[7] = -sizeY;
+    this.m_posarr[14] = -sizeZ;
+    this.m_posarr[3] = sizeX;
+    this.m_posarr[10] = sizeY;
+    this.m_posarr[17] = sizeZ;
+    this.createMaterial();
+    this.activeDisplay();
   }
+  /**
+   * initialize the cross axis entity mesh and geometry data
+   * @param axisSize the X/Y/Z axis length
+   */
 
-  run() {
-    if (this.vsmModule != null && this.m_param.vsmEnabled) {
-      this.vsmModule.run();
+
+  initializeCross(axisSize = 100.0, offset = null) {
+    if (axisSize < 2) {
+      axisSize = 2;
     }
+
+    axisSize *= 0.5;
+
+    if (offset == null) {
+      offset = new Vector3D_1.default();
+    }
+
+    this.m_posarr[0] = -axisSize + offset.x;
+    this.m_posarr[7] = -axisSize + offset.y;
+    this.m_posarr[14] = -axisSize + offset.z;
+    this.m_posarr[3] = axisSize + offset.x;
+    this.m_posarr[10] = axisSize + offset.y;
+    this.m_posarr[17] = axisSize + offset.z;
+    this.createMaterial();
+    this.activeDisplay();
   }
 
-  destroy() {
-    this.m_rscene = null;
+  toString() {
+    return "Axis3DEntity(name=" + this.name + ",uid = " + this.getUid() + ", rseFlag = " + this.__$rseFlag + ")";
   }
 
 }
-/**
- * shader code management module
- */
 
-
-MaterialContext.ShaderLib = new ShaderLib_1.ShaderLib();
-exports.MaterialContext = MaterialContext;
+exports.default = Axis3DEntity;
 
 /***/ }),
 
@@ -29832,11 +31723,9 @@ const EvtNode_1 = __importDefault(__webpack_require__("ee5a"));
 class MouseEvt3DDispatcher {
   constructor() {
     this.m_evtNodes = null;
-    this.m_evtNodesLen = 24;
+    this.m_evtNodesLen = 18;
     this.uuid = "";
     this.data = null;
-    this.currentTarget = null;
-    this.enabled = true;
     this.m_evtNodesLen = MouseEvent_1.default.GetMouseEvtTypeValuesTotal();
     this.m_evtNodes = new Array(this.m_evtNodesLen);
   }
@@ -29846,24 +31735,18 @@ class MouseEvt3DDispatcher {
   }
 
   destroy() {
-    console.log("VVVVVVVVVV this.m_evtNodesLen: ", this.m_evtNodesLen);
-
     for (let i = 0; i < this.m_evtNodesLen; ++i) {
       if (this.m_evtNodes[i] != null) {
         this.m_evtNodes[i].destroy();
       }
     }
-
-    this.data = null;
-    this.currentTarget = null;
   } // @return      1 is send evt yes,0 is send evt no
 
 
   dispatchEvt(evt) {
-    if (this.enabled && evt != null) {
+    if (evt != null) {
       if (this.uuid != "") evt.uuid = this.uuid;
       if (this.data != null) evt.data = this.data;
-      if (this.currentTarget != null) evt.currentTarget = this.currentTarget;
       let t = evt.type - MouseEvent_1.default.GetMouseEvtTypeValueBase();
 
       if (t >= 0 && t < MouseEvent_1.default.GetMouseEvtTypeValuesTotal()) {
@@ -29900,8 +31783,7 @@ class MouseEvt3DDispatcher {
     }
 
     return 0;
-  } // 注意: 一个 target 只能有一个回调函授对应一个类型的事件
-
+  }
 
   addEventListener(type, target, func, captureEnabled = true, bubbleEnabled = false) {
     if (func != null && target != null) {
@@ -29982,333 +31864,159 @@ exports.default = RendererConst;
 
 /***/ }),
 
-/***/ "c052":
+/***/ "bcac":
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
+/***************************************************************************/
+
+/*                                                                         */
+
+/*  Copyright 2018-2022 by                                                 */
+
+/*  Vily(vily313@126.com)                                                  */
+
+/*                                                                         */
+
+/***************************************************************************/
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-const ShaderCodeUUID_1 = __webpack_require__("f3a2");
+const Vector3D_1 = __importDefault(__webpack_require__("8e17"));
 
-const ShaderCodeObject_1 = __webpack_require__("cc55");
-
-const ShaderCodeType_1 = __webpack_require__("69ed");
-
-exports.ShaderCodeType = ShaderCodeType_1.ShaderCodeType;
-
-const ShaderCodeConfigure_1 = __webpack_require__("28a9");
-
-exports.ShaderCodeConfigure = ShaderCodeConfigure_1.ShaderCodeConfigure;
-
-const IShaderLibConfigure_1 = __webpack_require__("a221");
-
-exports.IShaderLibConfigure = IShaderLibConfigure_1.IShaderLibConfigure;
-
-const FileIO_1 = __webpack_require__("ca2f");
-
-const IShaderLibListener_1 = __webpack_require__("12e2");
-
-exports.IShaderLibListener = IShaderLibListener_1.IShaderLibListener;
-
-class ShaderCodeConfigureLib {
+class CameraDragSwinger {
   constructor() {
-    this.m_map = new Map();
-    this.m_uuidList = [];
+    this.m_stage3D = null;
+    this.m_camera = null;
+    this.m_mouseX = 0.0;
+    this.m_mouseY = 0.0;
+    this.m_enabled = false;
+    this.m_rotationSpeed = 0.0;
+    this.m_aotuRotationDelay = 100.0;
+    this.autoRotationEnabled = false;
+    this.autoRotationSpeed = 0.2;
+    this.rotationAttenuationEnabled = false;
+    this.rotationSpeed = 0.2;
   }
 
-  addConfigureWithUUID(uuid, configure) {
-    if (uuid != "" && !this.m_map.has(uuid)) {
-      this.m_map.set(uuid, configure);
-      this.m_uuidList.push(uuid);
+  initialize(stage3D, camera) {
+    if (this.m_stage3D == null) {
+      this.m_stage3D = stage3D;
+      this.m_camera = camera;
     }
   }
 
-  getConfigureWithUUID(uuid) {
-    return this.m_map.get(uuid);
+  attach() {
+    this.m_mouseX = this.m_stage3D.mouseX;
+    this.m_mouseY = this.m_stage3D.mouseY;
+    this.m_enabled = true;
+    this.m_aotuRotationDelay = 100;
   }
 
-  getUUIDList() {
-    return this.m_uuidList;
+  detach() {
+    this.m_enabled = false;
   }
 
-  getUUIDListLength() {
-    return this.m_uuidList.length;
-  }
+  runWithYAxis() {
+    if (this.m_enabled) {
+      let dx = this.m_mouseX - this.m_stage3D.mouseX;
+      let dy = this.m_mouseY - this.m_stage3D.mouseY;
+      let abs_dx = Math.abs(dx);
+      let abs_dy = Math.abs(dy);
 
-}
+      if (abs_dx > abs_dy) {
+        this.m_rotationSpeed = dx * this.rotationSpeed;
 
-class ShaderCodeObjectLoader {
-  constructor(configure) {
-    this.m_loadingTotal = 0;
-    this.m_shaderCodeObject = new ShaderCodeObject_1.ShaderCodeObject();
-    this.m_configure = null;
-    this.version = "";
-    this.m_configure = configure;
-  }
-
-  decodeUint8Arr(u8array) {
-    return new TextDecoder("utf-8").decode(u8array);
-  }
-
-  encodeUint8Arr(code) {
-    return new TextEncoder().encode(code);
-  }
-
-  loadedShdCode(code, type, loadedCallback) {
-    this.m_loadingTotal++;
-
-    if (this.m_configure.buildBinaryFile && !this.m_configure.binary) {
-      let u8arr = this.encodeUint8Arr(code);
-
-      for (let i = 0; i < u8arr.length; ++i) {
-        u8arr[i] = 222 - u8arr[i];
-      }
-
-      ShaderCodeObjectLoader.s_fileIO.downloadBinFile(u8arr, type + "", "bin");
-    }
-
-    switch (type) {
-      case ShaderCodeType_1.ShaderCodeType.VertHead:
-        this.m_shaderCodeObject.vert_head = code;
-        break;
-
-      case ShaderCodeType_1.ShaderCodeType.VertBody:
-        this.m_shaderCodeObject.vert_body = code;
-        break;
-
-      case ShaderCodeType_1.ShaderCodeType.FragHead:
-        this.m_shaderCodeObject.frag_head = code;
-        break;
-
-      case ShaderCodeType_1.ShaderCodeType.FragBody:
-        this.m_shaderCodeObject.frag_body = code;
-        break;
-
-      default:
-        console.error("loaded error shader code data.");
-        break;
-    }
-
-    if (this.m_loadingTotal == this.m_configure.types.length) {
-      loadedCallback(this.m_configure.uuid, this.m_shaderCodeObject);
-      this.m_shaderCodeObject = null;
-      this.m_configure = null;
-    }
-  }
-
-  async loadBinCode(url, type, loadedCallback) {
-    const reader = new FileReader();
-
-    reader.onload = e => {
-      //target.loaded(<ArrayBuffer>reader.result, this.uuid);
-      let u8arr = new Uint8Array(reader.result);
-
-      for (let i = 0; i < u8arr.length; ++i) {
-        u8arr[i] = 222 - u8arr[i];
-      }
-
-      this.loadedShdCode(this.decodeUint8Arr(u8arr), type, loadedCallback);
-    };
-
-    const request = new XMLHttpRequest();
-    request.open("GET", url, true);
-    request.responseType = "blob";
-
-    request.onload = e => {
-      if (request.status <= 206) {
-        reader.readAsArrayBuffer(request.response);
-      } else {
-        console.error("loading binary shader code url error: ", url);
-      }
-    };
-
-    request.onerror = e => {
-      console.error("loading binary shader code url error: ", url);
-    };
-
-    request.send();
-  }
-
-  loadTextCode(url, type, loadedCallback) {
-    let request = new XMLHttpRequest();
-    request.open('GET', url, true);
-
-    request.onload = () => {
-      if (request.status <= 206) {
-        this.loadedShdCode(request.responseText, type, loadedCallback);
-      } else {
-        console.error("loading shader code url error: ", url);
-      }
-    };
-
-    request.onerror = e => {
-      console.error("loading shader code url error: ", url);
-    };
-
-    request.send();
-  }
-
-  loadCode(url, type, loadedCallback) {
-    if (this.m_configure.binary) {
-      this.loadBinCode(url, type, loadedCallback);
-    } else {
-      this.loadTextCode(url, type, loadedCallback);
-    }
-  }
-
-  load(loadedCallback) {
-    this.m_loadingTotal = 0;
-
-    if (this.m_configure.urls == null) {
-      let version = this.version != "" ? this.version + "/" : "";
-      let suffix = this.m_configure.binary ? ".bin" : ".glsl";
-
-      for (let i = 0; i < this.m_configure.types.length; ++i) {
-        let url = "static/shader/" + version + "glsl/" + this.m_configure.uuid + "/" + this.m_configure.types[i] + suffix;
-        this.loadCode(url, this.m_configure.types[i], loadedCallback);
-      }
-    } else {
-      for (let i = 0; i < this.m_configure.urls.length; ++i) {
-        let url = this.m_configure.urls[i];
-        this.loadCode(url, this.m_configure.types[i], loadedCallback);
-      }
-    }
-  }
-
-}
-
-ShaderCodeObjectLoader.s_fileIO = new FileIO_1.FileIO();
-
-class ShaderLib {
-  constructor() {
-    this.m_loadingTotal = 0;
-    this.m_loadedTotal = 0;
-    this.m_loadStatusMap = new Map();
-    this.m_shaderCodeMap = new Map();
-    this.m_configLib = null;
-    this.m_listener = null;
-    this.m_version = "";
-  }
-
-  setListener(listener) {
-    this.m_listener = listener;
-  }
-
-  getListener() {
-    return this.m_listener;
-  }
-
-  initialize(shaderLibConfigure = null, binary = false) {
-    if (this.m_configLib == null) {
-      this.m_configLib = new ShaderCodeConfigureLib();
-      let configure;
-      let list = null;
-
-      if (shaderLibConfigure != null) {
-        list = shaderLibConfigure.shaderCodeConfigures;
-        this.m_version = shaderLibConfigure.version;
-      }
-
-      if (list != null) {
-        for (let i = 0; i < list.length; ++i) {
-          configure = list[i];
-
-          if (configure != null) {
-            this.m_configLib.addConfigureWithUUID(configure.uuid, configure);
-          }
+        if (abs_dx > 0.5) {
+          this.m_camera.swingHorizontalWithAxis(this.m_rotationSpeed, Vector3D_1.default.Y_AXIS);
         }
       } else {
-        configure = new ShaderCodeConfigure_1.ShaderCodeConfigure();
-        configure.uuid = ShaderCodeUUID_1.ShaderCodeUUID.PBR;
-        configure.types = [ShaderCodeType_1.ShaderCodeType.VertHead, ShaderCodeType_1.ShaderCodeType.VertBody, ShaderCodeType_1.ShaderCodeType.FragHead, ShaderCodeType_1.ShaderCodeType.FragBody];
-        configure.binary = binary;
-        this.m_configLib.addConfigureWithUUID(configure.uuid, configure);
-      }
-    }
-  }
+        this.m_rotationSpeed = 0.0;
 
-  addAllShaderCodeObject() {
-    if (this.m_configLib.getUUIDListLength() > 0) {
-      let uuidList = this.m_configLib.getUUIDList();
-
-      for (let i = 0; i < uuidList.length; ++i) {
-        this.addShaderCodeObjectWithUUID(uuidList[i]);
-      }
-    } else {
-      if (this.m_listener != null) this.m_listener.shaderLibLoadComplete(0, 0);
-    }
-  }
-
-  hasShaderCodeObjectWithUUID(uuid) {
-    return this.m_shaderCodeMap.has(uuid);
-  }
-
-  addShaderCodeObjectWithUUID(uuid) {
-    if (!this.m_shaderCodeMap.has(uuid) && !this.m_loadStatusMap.has(uuid)) {
-      this.m_loadingTotal++;
-      let loader = new ShaderCodeObjectLoader(this.m_configLib.getConfigureWithUUID(uuid));
-      loader.version = this.m_version;
-      loader.load((uuid, shaderCodeobject) => {
-        this.m_shaderCodeMap.set(uuid, shaderCodeobject);
-        this.m_loadedTotal++;
-        if (this.m_listener != null) this.m_listener.shaderLibLoadComplete(this.m_loadingTotal, this.m_loadedTotal);
-      });
-    }
-  }
-
-  addShaderCodeObject(uuid, shaderCodeObject) {
-    if (shaderCodeObject != null && shaderCodeObject.uuid == "" + uuid && !this.m_shaderCodeMap.has(uuid)) {
-      this.m_shaderCodeMap.set(uuid, shaderCodeObject);
-    }
-  }
-
-  getShaderCodeObjectWithUUID(uuid) {
-    let obj = null;
-
-    if (this.m_shaderCodeMap.has(uuid)) {
-      obj = this.m_shaderCodeMap.get(uuid);
-    }
-
-    return obj;
-  }
-
-  createShaderCodeConfigure(param) {
-    let configure;
-    let baseUrl = "static/shader/" + (param.shaderLibVersion != "" ? param.shaderLibVersion + "/" : "");
-    baseUrl += "glsl/";
-    let uuid = ShaderCodeUUID_1.ShaderCodeUUID.None;
-
-    if (param.lambertMaterialEnabled) {
-      uuid = ShaderCodeUUID_1.ShaderCodeUUID.Lambert;
-    } else if (param.pbrMaterialEnabled) {
-      uuid = ShaderCodeUUID_1.ShaderCodeUUID.PBR;
-    }
-
-    if (uuid != ShaderCodeUUID_1.ShaderCodeUUID.None) {
-      configure = new ShaderCodeConfigure_1.ShaderCodeConfigure();
-      configure.uuid = uuid;
-      configure.buildBinaryFile = param.buildBinaryFile;
-      baseUrl += configure.uuid + "/";
-
-      if (param.shaderCodeBinary) {
-        if (param.shaderFileNickname) {
-          configure.urls = [baseUrl + "glsl01.bin", baseUrl + "glsl02.bin", baseUrl + "glsl03.bin", baseUrl + "glsl04.bin"];
+        if (abs_dy > 0.5) {
+          this.m_camera.swingVertical(-dy * this.rotationSpeed);
         }
       }
 
-      configure.binary = param.shaderCodeBinary;
+      this.m_mouseX = this.m_stage3D.mouseX;
+      this.m_mouseY = this.m_stage3D.mouseY;
+    } else if (this.autoRotationEnabled) {
+      if (this.m_aotuRotationDelay < 0) {
+        this.m_camera.swingHorizontalWithAxis(this.autoRotationSpeed, Vector3D_1.default.Y_AXIS);
+      } else {
+        this.m_aotuRotationDelay--;
+      }
     }
+  }
 
-    return configure;
+  runWithZAxis() {
+    if (this.m_enabled) {
+      let dx = this.m_mouseX - this.m_stage3D.mouseX;
+      let dy = this.m_mouseY - this.m_stage3D.mouseY;
+      let abs_dx = Math.abs(dx);
+      let abs_dy = Math.abs(dy);
+
+      if (abs_dx > abs_dy) {
+        if (abs_dx > 0.5) {
+          this.m_camera.swingHorizontalWithAxis(dx * 0.2, Vector3D_1.default.Z_AXIS);
+        }
+      } else {
+        if (abs_dy > 0.5) {
+          this.m_camera.swingVertical(dy * -0.2);
+        }
+      }
+
+      this.m_mouseX = this.m_stage3D.mouseX;
+      this.m_mouseY = this.m_stage3D.mouseY;
+    } else if (this.autoRotationEnabled) {
+      if (this.m_aotuRotationDelay < 0) {
+        this.m_camera.swingHorizontalWithAxis(this.autoRotationSpeed, Vector3D_1.default.Z_AXIS);
+      } else {
+        this.m_aotuRotationDelay--;
+      }
+    }
+  }
+
+  runWithCameraAxis() {
+    if (this.m_enabled) {
+      let dx = this.m_mouseX - this.m_stage3D.mouseX;
+      let dy = this.m_mouseY - this.m_stage3D.mouseY;
+      let abs_dx = Math.abs(dx);
+      let abs_dy = Math.abs(dy);
+
+      if (abs_dx > abs_dy) {
+        if (abs_dx > 0.5) {
+          this.m_camera.swingHorizontal(dx * 0.2);
+        }
+      } else {
+        if (abs_dy > 0.5) {
+          this.m_camera.swingVertical(dy * -0.2);
+        }
+      }
+
+      this.m_mouseX = this.m_stage3D.mouseX;
+      this.m_mouseY = this.m_stage3D.mouseY;
+    } else if (this.autoRotationEnabled) {
+      if (this.m_aotuRotationDelay < 0) {
+        this.m_camera.swingHorizontal(this.autoRotationSpeed);
+      } else {
+        this.m_aotuRotationDelay--;
+      }
+    }
   }
 
 }
 
-exports.ShaderLib = ShaderLib;
+exports.CameraDragSwinger = CameraDragSwinger;
 
 /***/ }),
 
@@ -31862,6 +33570,155 @@ exports.default = CameraBase;
 
 /***/ }),
 
+/***/ "c590":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+const RendererDevice_1 = __importDefault(__webpack_require__("3b73"));
+
+exports.RendererDevice = RendererDevice_1.default;
+
+const RendererParam_1 = __importDefault(__webpack_require__("c497"));
+
+exports.RendererParam = RendererParam_1.default;
+
+const Vector3D_1 = __importDefault(__webpack_require__("8e17"));
+
+exports.Vector3D = Vector3D_1.default;
+
+const RendererState_1 = __importDefault(__webpack_require__("29ef"));
+
+exports.RendererState = RendererState_1.default;
+
+const Matrix4_1 = __importDefault(__webpack_require__("18c7"));
+
+exports.Matrix4 = Matrix4_1.default;
+
+const DataMesh_1 = __importDefault(__webpack_require__("519e"));
+
+exports.DataMesh = DataMesh_1.default;
+
+const DisplayEntity_1 = __importDefault(__webpack_require__("402a"));
+
+exports.DisplayEntity = DisplayEntity_1.default;
+
+const Default3DMaterial_1 = __importDefault(__webpack_require__("f63e"));
+
+exports.Default3DMaterial = Default3DMaterial_1.default;
+
+const ShaderMaterial_1 = __importDefault(__webpack_require__("131b"));
+
+exports.ShaderMaterial = ShaderMaterial_1.default;
+
+const Axis3DEntity_1 = __importDefault(__webpack_require__("b9b5"));
+
+exports.Axis3DEntity = Axis3DEntity_1.default;
+
+const BoxFrame3D_1 = __importDefault(__webpack_require__("a2f2"));
+
+exports.BoxFrame3D = BoxFrame3D_1.default;
+
+const Line3DEntity_1 = __importDefault(__webpack_require__("99cf"));
+
+exports.Line3DEntity = Line3DEntity_1.default;
+
+const UserInteraction_1 = __webpack_require__("da82");
+
+exports.UserInteraction = UserInteraction_1.UserInteraction;
+
+const DisplayEntityContainer_1 = __importDefault(__webpack_require__("ae33"));
+
+exports.DisplayEntityContainer = DisplayEntityContainer_1.default;
+
+const RendererScene_1 = __importDefault(__webpack_require__("b161"));
+
+exports.RendererScene = RendererScene_1.default;
+
+const EngineBase_1 = __webpack_require__("1f1a");
+
+exports.Engine = EngineBase_1.EngineBase;
+
+function createVec3(px, py, pz, pw = 1.0) {
+  return new Vector3D_1.default(px, py, pz, pw);
+}
+
+exports.createVec3 = createVec3;
+
+function createMat4(pfs32 = null, index = 0) {
+  return new Matrix4_1.default(pfs32, index);
+}
+
+exports.createMat4 = createMat4;
+
+function createRendererParam(div = null) {
+  return new RendererParam_1.default(div);
+}
+
+exports.createRendererParam = createRendererParam;
+
+function createEngine() {
+  return new EngineBase_1.EngineBase();
+}
+
+exports.createEngine = createEngine;
+
+function createShaderMaterial(shd_uniqueName) {
+  return new ShaderMaterial_1.default(shd_uniqueName);
+}
+
+exports.createShaderMaterial = createShaderMaterial;
+
+function createDisplayEntityFromModel(model, pmaterial = null) {
+  let material = pmaterial;
+
+  if (material == null) {
+    material = new Default3DMaterial_1.default();
+    material.initializeByCodeBuf();
+  }
+
+  if (material.getCodeBuf() == null || material.getBufSortFormat() < 0x1) {
+    throw Error("the material does not call initializeByCodeBuf() function. !!!");
+  }
+
+  const dataMesh = new DataMesh_1.default();
+  dataMesh.vbWholeDataEnabled = false;
+  dataMesh.setVS(model.vertices);
+  dataMesh.setUVS(model.uvsList[0]);
+  dataMesh.setNVS(model.normals);
+  dataMesh.setIVS(model.indices);
+  dataMesh.setVtxBufRenderData(material);
+  dataMesh.initialize(); // console.log("dataMesh: ", dataMesh);
+
+  const entity = new DisplayEntity_1.default();
+  entity.setMesh(dataMesh);
+  entity.setMaterial(material);
+  return entity;
+}
+
+exports.createDisplayEntityFromModel = createDisplayEntityFromModel;
+
+function createAxis3DEntity(size = 100) {
+  let axis = new Axis3DEntity_1.default();
+  axis.initialize(size);
+  return axis;
+}
+
+exports.createAxis3DEntity = createAxis3DEntity;
+
+/***/ }),
+
 /***/ "c62b":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -31879,6 +33736,12 @@ exports.default = CameraBase;
 
 /***************************************************************************/
 
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -31888,6 +33751,8 @@ const RenderConst_1 = __webpack_require__("e08e");
 const RenderColorMask_1 = __webpack_require__("070b");
 
 const RenderStateObject_1 = __webpack_require__("a5ba");
+
+const RendererState_1 = __importDefault(__webpack_require__("29ef"));
 /**
  * 渲染器渲染运行时核心关键执行显示单元,一个unit代表着一个draw call所渲染的所有数据
  * renderer rendering runtime core executable display unit.
@@ -31988,9 +33853,8 @@ class RPOUnit {
   }
 
   drawThis(rc) {
-    const st = rc.status;
-    st.drawCallTimes++;
-    st.drawTrisNumber += this.trisNumber; // TODO(Vily): 下面这个判断流程需要优化(由于几何数据更改之后上传gpu的动作是一帧上传16个这样的速度下实现的，所以需要下面这句代码来保证不出错: [.WebGL-000037DC02C2B800] GL_INVALID_OPERATION: Insufficient buffer size)
+    ++RendererState_1.default.DrawCallTimes;
+    RendererState_1.default.DrawTrisNumber += this.trisNumber; // TODO(Vily): 下面这个判断流程需要优化(由于几何数据更改之后上传gpu的动作是一帧上传16个这样的速度下实现的，所以需要下面这句代码来保证不出错: [.WebGL-000037DC02C2B800] GL_INVALID_OPERATION: Insufficient buffer size)
 
     let ivsCount = this.indicesRes.getVTCount();
     if (this.ivsCount <= ivsCount) ivsCount = this.ivsCount;
@@ -32001,48 +33865,45 @@ class RPOUnit {
       rc.resetPolygonOffset();
     }
 
-    const rdm = RenderConst_1.RenderDrawMode;
-    let gl = rc.RContext;
-
     switch (this.drawMode) {
-      case rdm.ELEMENTS_TRIANGLES:
+      case RenderConst_1.RenderDrawMode.ELEMENTS_TRIANGLES:
         // if(DebugFlag.Flag_0 > 0)console.log("RPOUnit::run(), TRIANGLES drawElements(ivsCount="+this.ivsCount+", ivsIndex="+this.ivsIndex+"),drawOffset: "+this.drawOffset);
         //rc.RContext.drawElements(rc.TRIANGLES, this.ivsCount, this.ibufType,this.ivsIndex * this.ibufStep);
-        gl.drawElements(rc.TRIANGLES, ivsCount, this.ibufType, this.drawOffset);
+        rc.RContext.drawElements(rc.TRIANGLES, ivsCount, this.ibufType, this.drawOffset);
         break;
 
-      case rdm.ELEMENTS_LINES:
+      case RenderConst_1.RenderDrawMode.ELEMENTS_LINES:
         //console.log("RPOUnit::run(), ELEMENTS_LINES drawElements(ivsCount="+this.ivsCount+", ivsIndex="+this.ivsIndex+"),drawOffset: "+this.drawOffset);
         //rc.RContext.drawElements(rc.ELEMENTS_LINES, this.ivsCount, this.ibufType,this.ivsIndex * this.ibufStep);
-        gl.drawElements(rc.LINES, ivsCount, this.ibufType, this.drawOffset);
+        rc.RContext.drawElements(rc.LINES, ivsCount, this.ibufType, this.drawOffset);
         break;
 
-      case rdm.ELEMENTS_TRIANGLE_STRIP:
+      case RenderConst_1.RenderDrawMode.ELEMENTS_TRIANGLE_STRIP:
         //console.log("RPOUnit::run(), TRIANGLE_STRIP drawElements(ivsCount="+this.ivsCount+", ivsIndex="+this.ivsIndex+")");
         //rc.RContext.drawElements(rc.TRIANGLE_STRIP, this.ivsCount, this.ibufType,this.ivsIndex * this.ibufStep);
-        gl.drawElements(rc.TRIANGLE_STRIP, ivsCount, this.ibufType, this.drawOffset);
+        rc.RContext.drawElements(rc.TRIANGLE_STRIP, ivsCount, this.ibufType, this.drawOffset);
         break;
 
-      case rdm.ELEMENTS_INSTANCED_TRIANGLES:
+      case RenderConst_1.RenderDrawMode.ELEMENTS_INSTANCED_TRIANGLES:
         //console.log("RPOUnit::run(), drawElementsInstanced(ivsCount="+this.ivsCount+", ivsIndex="+this.ivsIndex+", insCount: "+this.insCount+")");
         //rc.RContext.drawElementsInstanced(rc.TRIANGLES,this.ivsCount, this.ibufType, this.ivsIndex * this.ibufStep, this.insCount);
-        gl.drawElementsInstanced(rc.TRIANGLES, ivsCount, this.ibufType, this.drawOffset, this.insCount);
+        rc.RContext.drawElementsInstanced(rc.TRIANGLES, ivsCount, this.ibufType, this.drawOffset, this.insCount);
         break;
 
-      case rdm.ELEMENTS_TRIANGLE_FAN:
+      case RenderConst_1.RenderDrawMode.ELEMENTS_TRIANGLE_FAN:
         //console.log("RPOUnit::run(), TRIANGLE_STRIP drawElements(ivsCount="+this.ivsCount+", ivsIndex="+this.ivsIndex+")");
         //rc.RContext.drawElements(rc.TRIANGLE_FAN, this.ivsCount, this.ibufType,this.ivsIndex * this.ibufStep);
-        gl.drawElements(rc.TRIANGLE_FAN, ivsCount, this.ibufType, this.drawOffset);
+        rc.RContext.drawElements(rc.TRIANGLE_FAN, ivsCount, this.ibufType, this.drawOffset);
         break;
 
-      case rdm.ARRAYS_LINES:
+      case RenderConst_1.RenderDrawMode.ARRAYS_LINES:
         //console.log("RPOUnit::run(), ARRAYS_LINES drawArrays(ivsCount="+this.ivsCount+", ivsIndex="+this.ivsIndex+")");
-        gl.drawArrays(rc.LINES, this.ivsIndex, this.ivsCount);
+        rc.RContext.drawArrays(rc.LINES, this.ivsIndex, this.ivsCount);
         break;
 
-      case rdm.ARRAYS_LINE_STRIP:
+      case RenderConst_1.RenderDrawMode.ARRAYS_LINE_STRIP:
         //console.log("RPOUnit::run(), ARRAYS_LINE_STRIP drawArrays(ivsCount="+this.ivsCount+", ivsIndex="+this.ivsIndex+")");
-        gl.drawArrays(rc.LINE_STRIP, this.ivsIndex, this.ivsCount);
+        rc.RContext.drawArrays(rc.LINE_STRIP, this.ivsIndex, this.ivsCount);
         break;
 
       default:
@@ -32051,9 +33912,8 @@ class RPOUnit {
   }
 
   drawPart(rc) {
-    const st = rc.status;
-    st.drawCallTimes++;
-    st.drawTrisNumber += this.trisNumber; // TODO(Vily): 下面这个判断流程需要优化(由于几何数据更改之后上传gpu的动作是一帧上传16个这样的速度下实现的，所以需要下面这句代码来保证不出错: [.WebGL-000037DC02C2B800] GL_INVALID_OPERATION: Insufficient buffer size)
+    ++RendererState_1.default.DrawCallTimes;
+    RendererState_1.default.DrawTrisNumber += this.trisNumber; // TODO(Vily): 下面这个判断流程需要优化(由于几何数据更改之后上传gpu的动作是一帧上传16个这样的速度下实现的，所以需要下面这句代码来保证不出错: [.WebGL-000037DC02C2B800] GL_INVALID_OPERATION: Insufficient buffer size)
 
     let ivsCount = this.indicesRes.getVTCount();
     if (this.ivsCount <= ivsCount) ivsCount = this.ivsCount;
@@ -32064,12 +33924,11 @@ class RPOUnit {
       rc.resetPolygonOffset();
     }
 
-    const rdm = RenderConst_1.RenderDrawMode;
     let i = 0;
     let gl = rc.RContext;
 
     switch (this.drawMode) {
-      case rdm.ELEMENTS_TRIANGLES:
+      case RenderConst_1.RenderDrawMode.ELEMENTS_TRIANGLES:
         for (; i < this.partTotal;) {
           // 这里面可以增加一个回调函数,这个回调函数可以对uniform(或者transformUniform)做一些数据改变，进而来控制相应的状态
           // 因此可以通过改变uniform实现大量的显示绘制
@@ -32081,7 +33940,7 @@ class RPOUnit {
 
         break;
 
-      case rdm.ELEMENTS_LINES:
+      case RenderConst_1.RenderDrawMode.ELEMENTS_LINES:
         for (; i < this.partTotal;) {
           // 这里面可以增加一个回调函数,这个回调函数可以对uniform(或者transformUniform)做一些数据改变，进而来控制相应的状态
           // 因此可以通过改变uniform实现大量的显示绘制
@@ -32093,30 +33952,30 @@ class RPOUnit {
 
         break;
 
-      case rdm.ELEMENTS_TRIANGLE_STRIP:
+      case RenderConst_1.RenderDrawMode.ELEMENTS_TRIANGLE_STRIP:
         //console.log("RPOUnit::run(), TRIANGLE_STRIP drawElements(ivsCount="+this.ivsCount+", ivsIndex="+this.ivsIndex+")");
         //rc.RContext.drawElements(rc.TRIANGLE_STRIP, this.ivsCount, this.ibufType,this.ivsIndex * this.ibufStep);
         gl.drawElements(rc.TRIANGLE_STRIP, this.ivsCount, this.ibufType, this.drawOffset);
         break;
 
-      case rdm.ELEMENTS_INSTANCED_TRIANGLES:
+      case RenderConst_1.RenderDrawMode.ELEMENTS_INSTANCED_TRIANGLES:
         //console.log("RPOUnit::run(), drawElementsInstanced(ivsCount="+this.ivsCount+", ivsIndex="+this.ivsIndex+", insCount: "+this.insCount+")");
         //rc.RContext.drawElementsInstanced(rc.TRIANGLES,this.ivsCount, this.ibufType, this.ivsIndex * this.ibufStep, this.insCount);
         gl.drawElementsInstanced(rc.TRIANGLES, this.ivsCount, this.ibufType, this.drawOffset, this.insCount);
         break;
 
-      case rdm.ELEMENTS_TRIANGLE_FAN:
+      case RenderConst_1.RenderDrawMode.ELEMENTS_TRIANGLE_FAN:
         //console.log("RPOUnit::run(), TRIANGLE_STRIP drawElements(ivsCount="+this.ivsCount+", ivsIndex="+this.ivsIndex+")");
         //rc.RContext.drawElements(rc.TRIANGLE_FAN, this.ivsCount, this.ibufType,this.ivsIndex * this.ibufStep);
         gl.drawElements(rc.TRIANGLE_FAN, this.ivsCount, this.ibufType, this.drawOffset);
         break;
 
-      case rdm.ARRAYS_LINES:
+      case RenderConst_1.RenderDrawMode.ARRAYS_LINES:
         //console.log("RPOUnit::run(), drawArrays(ivsCount="+this.ivsCount+", ivsIndex="+this.ivsIndex+")");
         gl.drawArrays(rc.LINES, this.ivsIndex, this.ivsCount);
         break;
 
-      case rdm.ARRAYS_LINE_STRIP:
+      case RenderConst_1.RenderDrawMode.ARRAYS_LINE_STRIP:
         //console.log("RPOUnit::run(), drawArrays(ivsCount="+this.ivsCount+", ivsIndex="+this.ivsIndex+")");
         gl.drawArrays(rc.LINE_STRIP, this.ivsIndex, this.ivsCount);
         break;
@@ -32203,6 +34062,10 @@ class RPOUnit {
     this.reset();
   }
 
+  toString() {
+    return "[RPOUnit(uid = " + this.uid + ")]";
+  }
+
 }
 
 exports.default = RPOUnit;
@@ -32245,27 +34108,15 @@ const RaySelectedNode_1 = __importDefault(__webpack_require__("c120"));
 
 const AABBCalc_1 = __webpack_require__("e160");
 
-class QueryUnit {
-  constructor() {
-    this.ets = null;
-    this.total = 0;
-  }
-
-  query(ets, total) {
-    this.ets = ets;
-    this.total = total;
-  }
-
-}
-
 class RaySelector {
   constructor() {
     this.m_renderer = null;
     this.m_camera = null;
+    this.m_headNode = null;
     this.m_rsn = null; // 最多检测256个对象
 
     this.m_hitList = new Uint8Array(256);
-    this.m_rsnList = new Array(256);
+    this.m_rsnList = null;
     this.m_selectedNode = null;
     this.m_selectedTotal = 0;
     this.m_testMode = 0;
@@ -32278,13 +34129,11 @@ class RaySelector {
     this.m_outv = new Vector3D_1.default();
     this.m_vecs = [null, null];
     this.m_gpuTestEnabled = false;
-    this.m_qu = new QueryUnit();
-    this.etset = null;
+  } //  setGPUTestEnabled(enabled:boolean):void
+  //  {
+  //      this.m_gpuTestEnabled = enabled;
+  //  }
 
-    for (let i = 0; i < 256; ++i) {
-      this.m_rsnList[i] = new RaySelectedNode_1.default();
-    }
-  }
 
   setRenderer(renderer) {
     this.m_renderer = renderer;
@@ -32308,9 +34157,30 @@ class RaySelector {
     this.m_camera = cam;
   }
 
+  setCullingNodeHead(headNode) {
+    this.m_headNode = headNode;
+
+    if (this.m_rsnList == null) {
+      this.m_rsnList = [];
+      let i = 0;
+
+      for (; i < 256; ++i) {
+        this.m_rsnList.push(new RaySelectedNode_1.default());
+      }
+    }
+  } //  setSelectedNode(node:RaySelectedNode):void
+  //  {
+  //      this.m_selectedNode = node;
+  //  }
+
+
   getSelectedNode() {
     return this.m_selectedNode;
-  }
+  } //  setSelectedNodes(nodes:RaySelectedNode[], total:number):void
+  //  {
+  //      //this.m_rsnList = nodes;
+  //  }
+
 
   getSelectedNodes() {
     return this.m_rsnList;
@@ -32354,71 +34224,73 @@ class RaySelector {
   }
 
   run() {
-    if (this.etset.getTotal() > 0) {
+    let nextNode = this.m_headNode; //console.log("RaySelect run() nextNode != null: "+(nextNode != null));
+
+    if (nextNode != null) {
       let dis = 0.0;
       let rtv = this.m_rltv;
       let rpv = this.m_rlpv;
       let outv = this.m_outv;
       let node = null;
-      let total = 0;
-      let minv = MathConst_1.default.MATH_MIN_POSITIVE;
-      let maxv = MathConst_1.default.MATH_MAX_POSITIVE;
+      let total = 0; //console.log("raySelector rpv,rtv: ", rpv, rtv);
 
-      if (Math.abs(rtv.x) > minv) {
+      if (Math.abs(rtv.x) > MathConst_1.default.MATH_MIN_POSITIVE) {
         this.m_rlinvtv.x = 1.0 / rtv.x;
       } else {
-        this.m_rlinvtv.x = maxv;
+        this.m_rlinvtv.x = MathConst_1.default.MATH_MAX_POSITIVE;
       }
 
-      if (Math.abs(rtv.y) > minv) {
+      if (Math.abs(rtv.y) > MathConst_1.default.MATH_MIN_POSITIVE) {
         this.m_rlinvtv.y = 1.0 / rtv.y;
       } else {
-        this.m_rlinvtv.y = maxv;
+        this.m_rlinvtv.y = MathConst_1.default.MATH_MAX_POSITIVE;
       }
 
-      if (Math.abs(rtv.z) > minv) {
+      if (Math.abs(rtv.z) > MathConst_1.default.MATH_MIN_POSITIVE) {
         this.m_rlinvtv.z = 1.0 / rtv.z;
       } else {
-        this.m_rlinvtv.z = maxv;
+        this.m_rlinvtv.z = MathConst_1.default.MATH_MAX_POSITIVE;
       }
 
-      let rivs = this.m_rlsiv;
-      let rtvs = this.m_rlinvtv;
-      rivs[0] = rtvs.x < 0 ? 1 : 0;
-      rivs[1] = rtvs.y < 0 ? 1 : 0;
-      rivs[2] = rtvs.z < 0 ? 1 : 0;
-      let qu = this.m_qu;
-      this.etset.query(qu);
-      let ets = qu.ets;
-      let tot = qu.total;
-      let vecs = this.m_vecs;
+      if (this.m_rlinvtv.x < 0) this.m_rlsiv[0] = 1;else this.m_rlsiv[0] = 0;
+      if (this.m_rlinvtv.y < 0) this.m_rlsiv[1] = 1;else this.m_rlsiv[1] = 0;
+      if (this.m_rlinvtv.z < 0) this.m_rlsiv[2] = 1;else this.m_rlsiv[2] = 0;
 
-      for (let i = 0; i < tot; ++i) {
-        let et = ets[i];
-
-        if (et.mouseEnabled) {
-          const bounds = et.getGlobalBounds();
-          outv.subVecsTo(bounds.center, rpv);
+      while (nextNode != null) {
+        if (nextNode.drawEnabled && nextNode.entity.mouseEnabled) {
+          //if(AABB.IntersectionRL2(rtv,rpv, nextNode.bounds, outv))
+          outv.x = nextNode.bounds.center.x - rpv.x;
+          outv.y = nextNode.bounds.center.y - rpv.y;
+          outv.z = nextNode.bounds.center.z - rpv.z;
           dis = outv.dot(rtv);
           outv.x -= dis * rtv.x;
           outv.y -= dis * rtv.y;
           outv.z -= dis * rtv.z;
 
-          if (outv.getLengthSquared() <= bounds.radius2) {
+          if (outv.getLengthSquared() <= nextNode.bounds.radius2) {
             // 如果只是几何检测(例如球体包围体的检测)就不需要在进入后续的aabb检测
-            vecs[0] = bounds.min;
-            vecs[1] = bounds.max;
+            if (nextNode.rayTestState < 1) {
+              this.m_vecs[0] = nextNode.bounds.min;
+              this.m_vecs[1] = nextNode.bounds.max;
 
-            if (AABBCalc_1.AABBCalc.IntersectionRL3(vecs, rivs, rtvs, rtv, rpv, outv)) {
-              node = this.m_rsnList[total];
-              node.entity = et;
-              node.dis = this.m_rlinvtv.w;
-              node.wpv.copyFrom(outv); //  console.log("H Hit Dis: "+rtv.dot(outv));
+              if (AABBCalc_1.AABBCalc.IntersectionRL3(this.m_vecs, this.m_rlsiv, this.m_rlinvtv, rtv, rpv, outv)) {
+                node = this.m_rsnList[total];
+                node.entity = nextNode.entity;
+                node.dis = this.m_rlinvtv.w;
+                node.wpv.copyFrom(outv); //  console.log("H Hit Dis: "+rtv.dot(outv));
+                //console.log("Ray hit test a renderNode.");
 
-              ++total;
-            }
+                ++total;
+              }
+            } //  else
+            //  {
+            //      //其他检测方式
+            //  }
+
           }
         }
+
+        nextNode = nextNode.next;
       }
 
       this.m_selectedNode = null;
@@ -32554,54 +34426,6 @@ exports.default = RaySelector;
 
 /***/ }),
 
-/***/ "ca2f":
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-class FileIO {
-  constructor() {}
-
-  downloadBinFile(binData, file_name, suffix = "vrd") {
-    var downloadBlob, downloadURL; //console.log("downloadBinFile, binData: ", binData);
-
-    downloadBlob = function (data, fileName, mimeType) {
-      var blob, url;
-      blob = new Blob([data], {
-        type: mimeType
-      });
-      url = window.URL.createObjectURL(blob);
-      downloadURL(url, fileName);
-      setTimeout(function () {
-        return window.URL.revokeObjectURL(url);
-      }, 1000);
-    };
-
-    downloadURL = function (data, fileName) {
-      var a;
-      a = document.createElement('a');
-      a.href = data;
-      a.download = fileName;
-      document.body.appendChild(a);
-      a.style = 'display: none';
-      a.click();
-      a.remove();
-    };
-
-    downloadBlob(binData, file_name + '.' + suffix, 'application/octet-stream');
-  }
-
-}
-
-exports.FileIO = FileIO;
-
-/***/ }),
-
 /***/ "ca6c":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -32643,13 +34467,15 @@ class BitConst {
 
   static AddBit(target, bit) {
     return bit | target;
-  }
+  } //
+
 
   static AssembleFromIntArray(intArray) {
+    let i = 0;
     let bit = 0x0;
     let len = intArray.length;
 
-    for (let i = 0; i < len; ++i) {
+    for (; i < len; ++i) {
       if (intArray[i] > 0) {
         bit |= 1 << i;
       }
@@ -32738,17 +34564,13 @@ class MeshBase {
     this.m_bufDataStepList = null;
     this.m_bufStatusList = null;
     this.m_bufTypeList = null;
-    this.m_bufSizeList = null;
-    this.m_polyhedral = true; //private m_isDyn:boolean = false;
+    this.m_bufSizeList = null; //private m_isDyn:boolean = false;
     // very important!!!
 
     this.m_layoutBit = 0x0;
     this.m_transMatrix = null;
     this.m_vbuf = null;
-    this.m_ivbuf = null;
-    this.m_ivs = null; // setIVtxBuffer(ivbuf: ROIVertexBuffer): void {
-    // }
-
+    this.m_ivs = null;
     /**
      * 强制更新 vertex indices buffer 数据, 默认值为false
      */
@@ -32780,59 +34602,6 @@ class MeshBase {
     this.m_bufDataUsage = bufDataUsage; //this.m_isDyn = bufDataUsage == VtxBufConst.VTX_DYNAMIC_DRAW;
   }
 
-  isUVSEnabled() {
-    return this.isVBufEnabledAt(VtxBufConst_1.default.VBUF_UVS_INDEX);
-  }
-
-  isNVSEnabled() {
-    return this.isVBufEnabledAt(VtxBufConst_1.default.VBUF_NVS_INDEX);
-  }
-
-  isCVSEnabled() {
-    return this.isVBufEnabledAt(VtxBufConst_1.default.VBUF_CVS_INDEX);
-  }
-
-  toElementsTriangles() {
-    this.drawMode = RenderConst_1.RenderDrawMode.ELEMENTS_TRIANGLES; // this.setPolyhedral(true);
-  }
-
-  toElementsTriangleStrip() {
-    this.drawMode = RenderConst_1.RenderDrawMode.ELEMENTS_TRIANGLE_STRIP;
-  }
-
-  toElementsTriangleFan() {
-    this.drawMode = RenderConst_1.RenderDrawMode.ELEMENTS_TRIANGLE_FAN;
-  }
-
-  toElementsInstancedTriangles() {
-    this.drawMode = RenderConst_1.RenderDrawMode.ELEMENTS_INSTANCED_TRIANGLES;
-  }
-
-  toArraysLines() {
-    this.drawMode = RenderConst_1.RenderDrawMode.ARRAYS_LINES;
-    this.setPolyhedral(false);
-  }
-
-  toArraysLineStrip() {
-    this.drawMode = RenderConst_1.RenderDrawMode.ARRAYS_LINE_STRIP;
-    this.setPolyhedral(false);
-  }
-
-  toArraysPoints() {
-    this.drawMode = RenderConst_1.RenderDrawMode.ARRAYS_POINTS;
-    this.setPolyhedral(false);
-  }
-
-  toElementsLines() {
-    this.drawMode = RenderConst_1.RenderDrawMode.ELEMENTS_LINES;
-    this.setPolyhedral(false);
-  }
-
-  toDisable() {
-    this.drawMode = RenderConst_1.RenderDrawMode.DISABLE;
-    this.setPolyhedral(false);
-  }
-
   createIVSBYSize(size) {
     return size > 65535 ? new Uint32Array(size) : new Uint16Array(size);
   }
@@ -32841,12 +34610,14 @@ class MeshBase {
     return arr.length > 65535 ? new Uint32Array(arr) : new Uint16Array(arr);
   }
 
-  createWireframeIvs(ivs = null) {
-    if (ivs == null) ivs = this.m_ivs;
+  updateWireframeIvs() {
+    this.drawMode = RenderConst_1.RenderDrawMode.ELEMENTS_TRIANGLES;
 
-    if (ivs !== null) {
+    if (this.wireframe && this.m_ivs !== null) {
+      let ivs = this.m_ivs;
       let len = ivs.length * 2;
-      let wivs = len <= 65536 ? new Uint16Array(len) : new Uint32Array(len);
+      let wIvs;
+      if (len < 65535) wIvs = new Uint16Array(len);else wIvs = new Uint32Array(len);
       let a;
       let b;
       let c;
@@ -32856,32 +34627,16 @@ class MeshBase {
         a = ivs[i + 0];
         b = ivs[i + 1];
         c = ivs[i + 2];
-        wivs[k] = a;
-        wivs[k + 1] = b;
-        wivs[k + 2] = b;
-        wivs[k + 3] = c;
-        wivs[k + 4] = c;
-        wivs[k + 5] = a;
+        wIvs[k] = a;
+        wIvs[k + 1] = b;
+        wIvs[k + 2] = b;
+        wIvs[k + 3] = c;
+        wIvs[k + 4] = c;
+        wIvs[k + 5] = a;
         k += 6;
       }
 
-      return wivs;
-    }
-
-    return null;
-  }
-
-  updateWireframeIvs() {
-    this.toElementsTriangles();
-
-    if (this.wireframe) {
-      let wivs = this.createWireframeIvs();
-
-      if (wivs != null) {
-        this.m_ivs = this.createWireframeIvs();
-      }
-
-      this.toElementsLines();
+      this.drawMode = RenderConst_1.RenderDrawMode.ELEMENTS_LINES;
     }
   }
 
@@ -32907,13 +34662,11 @@ class MeshBase {
 
 
   isPolyhedral() {
-    return this.m_polyhedral;
+    return true;
   } // 设置自身是否是多面体实体，根据实际需要改变相关的状态值
 
 
-  setPolyhedral(polyhedral) {
-    this.m_polyhedral = polyhedral;
-  }
+  setPolyhedral(boo) {}
   /**
    * 射线和自身的相交检测(多面体或几何函数(例如球体))
    * @rlpv            表示物体坐标空间的射线起点
@@ -32950,17 +34703,6 @@ class MeshBase {
     }
   }
 
-  __$attachIVBuf() {
-    return this.m_ivbuf;
-  }
-
-  __$detachIVBuf(ivbuf) {
-    if (this.m_vbuf != ivbuf) {
-      throw Error("Fatal Error!");
-    } // ROVertexBuffer.__$$DetachAt(this.m_vbuf.getUid());
-
-  }
-
   __$attachVBuf() {
     if (this.m_vbuf == null) {
       // rebuild vbuf;
@@ -32981,7 +34723,7 @@ class MeshBase {
   }
 
   isGeomDynamic() {
-    return true;
+    return this.m_bufDataUsage;
   }
 
   getBufDataUsage() {
@@ -33176,33 +34918,6 @@ var SpaceCullingMask;
 })(SpaceCullingMask || (SpaceCullingMask = {}));
 
 exports.SpaceCullingMask = SpaceCullingMask;
-
-/***/ }),
-
-/***/ "cc55":
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-class ShaderCodeObject {
-  constructor() {
-    this.vert = "";
-    this.vert_head = "";
-    this.vert_body = "";
-    this.frag = "";
-    this.frag_head = "";
-    this.frag_body = "";
-    this.uuid = "";
-  }
-
-}
-
-exports.ShaderCodeObject = ShaderCodeObject;
 
 /***/ }),
 
@@ -33765,219 +35480,6 @@ exports.default = ImageCubeTextureProxy;
 
 /***/ }),
 
-/***/ "d35c":
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-var __importDefault = this && this.__importDefault || function (mod) {
-  return mod && mod.__esModule ? mod : {
-    "default": mod
-  };
-};
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-const RendererSceneNode_1 = __importDefault(__webpack_require__("9693"));
-
-const RendererParam_1 = __importDefault(__webpack_require__("c497"));
-
-const RendererScene_1 = __importDefault(__webpack_require__("b161"));
-
-class RendererSceneGraph {
-  constructor() {
-    this.m_map = new Map();
-    this.m_nodes = [];
-    this.rayPickFlag = false;
-  }
-
-  clear() {
-    const ls = this.m_nodes;
-    let tot = ls.length;
-    let i = 0;
-
-    for (; i < tot; ++i) {
-      ls[i].clear();
-    }
-
-    this.m_nodes = [];
-    this.m_map.clear();
-  }
-
-  addSceneNode(node, index = -1) {
-    if (node != null && node.getRScene() != null) {
-      const ls = this.m_nodes;
-      let tot = ls.length;
-      let i = 0;
-
-      for (; i < tot; ++i) {
-        if (ls[i] == node) {
-          break;
-        }
-      }
-
-      if (i >= tot) {
-        const sc = node.getRScene();
-
-        if (!this.m_map.has(sc.getUid())) {
-          ls.push(node);
-          this.m_map.set(sc.getUid(), node);
-        }
-      }
-    }
-  }
-
-  getNodesTotal() {
-    return this.m_nodes.length;
-  }
-
-  getNodes() {
-    return this.m_nodes;
-  }
-
-  getNodeAt(i) {
-    if (i >= 0 && i < this.m_nodes.length) return this.m_nodes[i];
-    return null;
-  }
-
-  getSceneAt(i) {
-    if (i >= 0 && i < this.m_nodes.length) return this.m_nodes[i].getRScene();
-    return null;
-  }
-
-  createRendererParam() {
-    return new RendererParam_1.default();
-  }
-
-  createRendererSceneParam() {
-    return new RendererParam_1.default();
-  }
-  /**
-   * @param rparam IRendererParam instance, the default value is null
-   * @param renderProcessesTotal the default value is 3
-   * @param createNewCamera the default value is true
-   */
-
-
-  createScene(rparam = null, renderProcessesTotal = 3, createNewCamera = true) {
-    let sc = new RendererScene_1.default();
-    sc.initialize(rparam, renderProcessesTotal, createNewCamera);
-    let node = new RendererSceneNode_1.default(sc);
-    this.m_nodes.push(node);
-    this.m_map.set(sc.getUid(), node);
-    return sc;
-  }
-  /**
-   * @param rparam IRendererParam instance, the default value is null
-   * @param renderProcessesTotal the default value is 3
-   * @param createNewCamera the default value is true
-   */
-
-
-  createSubScene(rparam, renderProcessesTotal, createNewCamera) {
-    if (this.m_nodes.length > 0) {
-      let sc = this.m_nodes[0].getRScene().createSubScene(rparam, renderProcessesTotal, createNewCamera);
-      let node = new RendererSceneNode_1.default(sc);
-      this.m_nodes.push(node);
-      this.m_map.set(sc.getUid(), node);
-      return sc;
-    }
-
-    return null;
-  }
-
-  addScene(sc) {
-    if (sc != null) {
-      let ls = this.m_nodes;
-
-      for (let i = 0; i < ls.length; ++i) {
-        if (ls[i].getRScene() == sc) {
-          return ls[i];
-        }
-      }
-
-      let node = new RendererSceneNode_1.default(sc);
-      ls.push(node);
-      this.m_map.set(sc.getUid(), node);
-      return node;
-    }
-
-    return null;
-  }
-
-  getNodeBySceneUid(uid) {
-    if (this.m_map.has(uid)) {
-      return this.m_map.get(uid);
-    }
-
-    return null;
-  }
-
-  createNode(sc) {
-    if (sc != null) {
-      return new RendererSceneNode_1.default(sc);
-    }
-
-    return null;
-  }
-
-  run() {
-    let pickFlag = true;
-    let list = this.m_nodes;
-    let total = list.length;
-    let i = total - 1;
-    const node = list[i];
-    let scene = list[i].getRScene();
-    if (node.p0Call0) node.p0Call0(scene, this);
-    scene.runBegin(true, true);
-    scene.update(false, true);
-    pickFlag = scene.isRayPickSelected();
-    this.rayPickFlag = pickFlag;
-    if (node.p0Call1) node.p0Call1(scene, this);
-    i -= 1;
-
-    for (; i >= 0; --i) {
-      const node = list[i];
-      scene = list[i].getRScene();
-      if (node.p0Call0) node.p0Call0(scene, this);
-      scene.runBegin(false, true);
-      scene.update(false, !pickFlag);
-      pickFlag = pickFlag || scene.isRayPickSelected();
-      this.rayPickFlag = pickFlag;
-      if (node.p0Call1) node.p0Call1(scene, this);
-    } /////////////////////////////////////////////////////// ---- mouseTest end.
-    /////////////////////////////////////////////////////// ---- rendering begin.
-
-
-    for (i = 0; i < total; ++i) {
-      const node = list[i];
-      scene = list[i].getRScene();
-      if (node.p1Call0) node.p0Call0(scene, this);
-      scene.renderBegin(node.contextResetEnabled);
-      const idList = node.processIdList;
-
-      if (idList == null) {
-        scene.run(false);
-      } else {
-        for (let j = 0; j < idList.length; ++j) {
-          scene.runAt(idList[j]);
-        }
-      }
-
-      scene.runEnd();
-      if (node.p1Call0) node.p0Call1(scene, this);
-    }
-  }
-
-}
-
-exports.default = RendererSceneGraph;
-
-/***/ }),
-
 /***/ "d53d":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -34002,7 +35504,6 @@ Object.defineProperty(exports, "__esModule", {
 class ShaderUniform {
   constructor() {
     this.uns = "";
-    this.key = -1;
     this.program = null;
     this.types = null;
     this.uniformSize = 0;
@@ -34452,6 +35953,8 @@ const ShaderUniformContext_1 = __webpack_require__("d872");
 
 const RODataBuilder_1 = __importDefault(__webpack_require__("36cb"));
 
+const RendererParam_1 = __importDefault(__webpack_require__("c497"));
+
 const RenderProcessBuider_1 = __importDefault(__webpack_require__("3c81"));
 
 const ROVtxBuilder_1 = __importDefault(__webpack_require__("1e15"));
@@ -34572,6 +36075,7 @@ class RendererInstance {
 
   initialize(param = null, camera = null, shdProgramBuider = null) {
     if (this.m_dataBuilder == null && camera != null) {
+      if (param == null) param = new RendererParam_1.default();
       this.m_batchEnabled = param.batchEnabled;
       this.m_processFixedState = param.processFixedState;
       this.m_renderProxy = this.m_renderInsContext.getRenderProxy();
@@ -34589,7 +36093,6 @@ class RendererInstance {
       this.m_renderInsContext.initialize(param, camera, contextParam);
       this.m_adapter = this.m_renderProxy.getRenderAdapter();
       this.m_dataBuilder.initialize(this.m_renderProxy, this.m_rpoUnitBuilder, this.m_processBuider, this.m_roVtxBuilder);
-      this.m_renderProxy.rshader = this.m_dataBuilder.getRenderShader();
       this.m_renderInsContext.initManager(this.m_dataBuilder);
       this.m_entity3DMana = new DispEntity3DManager_1.default(this.m_uid, this.m_dataBuilder, this.m_rpoUnitBuilder, this.m_processBuider);
       this.m_fixProcess = this.createSeparatedProcess();
@@ -35062,6 +36565,71 @@ exports.default = TextureResSlot;
 
 /***/ }),
 
+/***/ "da82":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+const CameraDragController_1 = __importDefault(__webpack_require__("f444"));
+
+const CameraZoomController_1 = __importDefault(__webpack_require__("a46e"));
+
+const Vector3D_1 = __importDefault(__webpack_require__("8e17"));
+
+const CameraViewRay_1 = __importDefault(__webpack_require__("53ea"));
+
+class UserInteraction {
+  constructor() {
+    this.m_rscene = null;
+    this.stageDragCtrl = new CameraDragController_1.default();
+    this.cameraZoomController = new CameraZoomController_1.default();
+    this.zoomLookAtPosition = null;
+    this.zoomMinDistance = 30;
+    this.viewRay = new CameraViewRay_1.default();
+    /**
+     * 是否启用摄像机用户控制
+     */
+
+    this.cameraCtrlEnabled = true;
+  }
+
+  initialize(rscene) {
+    if (this.m_rscene == null) {
+      this.m_rscene = rscene;
+      this.viewRay.bindCameraAndStage(rscene.getCamera(), rscene.getStage3D());
+      this.viewRay.setPlaneParam(new Vector3D_1.default(0.0, 1.0, 0.0), 0.0);
+      rscene.enableMouseEvent(true);
+      this.stageDragCtrl.initialize(rscene.getStage3D(), rscene.getCamera());
+      this.cameraZoomController.bindCamera(rscene.getCamera());
+      this.cameraZoomController.initialize(rscene.getStage3D());
+      this.cameraZoomController.setLookAtCtrlEnabled(false);
+    }
+  }
+
+  run() {
+    if (this.cameraCtrlEnabled) {
+      this.cameraZoomController.run(this.zoomLookAtPosition, this.zoomMinDistance);
+      this.stageDragCtrl.runWithYAxis();
+    }
+  }
+
+}
+
+exports.UserInteraction = UserInteraction;
+
+/***/ }),
+
 /***/ "dc2b":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -35098,8 +36666,6 @@ const RendererState_1 = __importDefault(__webpack_require__("29ef"));
 class RODisplay {
   constructor() {
     this.m_uid = 0;
-    this.m_partGroup = null;
-    this.m_trans = null;
     this.m_material = null; // 只是持有引用不做任何管理操作
 
     this.m_matFS32 = null;
@@ -35112,14 +36678,15 @@ class RODisplay {
     this.trisNumber = 0;
     this.insCount = 0;
     this.drawMode = RenderConst_1.RenderDrawMode.ELEMENTS_TRIANGLES;
-    this.vbuf = null;
-    this.ivbuf = null; // record render state: shadowMode(one byte) + depthTestMode(one byte) + blendMode(one byte) + cullFaceMode(one byte)
+    this.vbuf = null; // record render state: shadowMode(one byte) + depthTestMode(one byte) + blendMode(one byte) + cullFaceMode(one byte)
     // its value come from: RendererState.CreateRenderState("default", CullFaceMode.BACK,RenderBlendMode.NORMAL,DepthTestMode.OPAQUE);
 
     this.renderState = RendererState_1.default.NORMAL_STATE;
     this.rcolorMask = RendererState_1.default.COLOR_MASK_ALL_TRUE; // mouse interaction enabled flag
 
-    this.mouseEnabled = false; // 只能由渲染系统内部调用
+    this.mouseEnabled = false;
+    this.m_partGroup = null;
+    this.m_trans = null; // 只能由渲染系统内部调用
 
     this.__$ruid = -1; // 用于关联IRPODisplay对象
 
@@ -35128,27 +36695,6 @@ class RODisplay {
     this.__$$rsign = RenderConst_1.DisplayRenderSign.NOT_IN_RENDERER;
     this.__$$runit = null;
     this.m_uid = RODisplay.s_uid++;
-  }
-
-  getVtxResUid() {
-    let v = 131 + this.vbuf.getUid();
-
-    if (this.ivbuf == null) {
-      return v;
-    }
-
-    console.log("RODisplay::getVtxResUid() apply this.ivbuf now.....");
-    return v * 131 + this.ivbuf.getUid();
-  }
-
-  getVtxResVer() {
-    let v = 131 + this.vbuf.version;
-
-    if (this.ivbuf == null) {
-      return v;
-    }
-
-    return v = v * 131 + this.ivbuf.version;
   } // draw parts group: [ivsCount0,ivsIndex0, ivsCount1,ivsIndex1, ivsCount2,ivsIndex2, ...]
 
 
@@ -35329,13 +36875,17 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+const MathConst_1 = __importDefault(__webpack_require__("6e01"));
+
+const Vector3D_1 = __importDefault(__webpack_require__("8e17"));
+
 const AABB2D_1 = __importDefault(__webpack_require__("e2fe"));
 
 const RenderFilter_1 = __importDefault(__webpack_require__("722e"));
 
 const RenderMaskBitfield_1 = __importDefault(__webpack_require__("8333"));
 
-const RODrawState_1 = __webpack_require__("e7f2");
+const RODrawState_1 = __webpack_require__("7c63");
 
 const RenderColorMask_1 = __webpack_require__("070b");
 
@@ -35353,8 +36903,6 @@ const ROVertexResource_1 = __importDefault(__webpack_require__("74c3"));
 
 const ROTextureResource_1 = __importDefault(__webpack_require__("984e"));
 
-const RSTBuilder_1 = __importDefault(__webpack_require__("e035"));
-
 const RendererState_1 = __importDefault(__webpack_require__("29ef"));
 
 const Stencil_1 = __webpack_require__("8171");
@@ -35364,8 +36912,6 @@ const VROBase_1 = __importDefault(__webpack_require__("919c"));
 const RenderingColorMask_1 = __webpack_require__("e602");
 
 const RenderingState_1 = __webpack_require__("53d3");
-
-const RPStatus_1 = __webpack_require__("9f82");
 
 class RenderProxyParam {
   constructor() {
@@ -35414,8 +36960,6 @@ class RenderProxy {
     this.stencil = null;
     this.renderingState = null;
     this.colorMask = null;
-    this.rshader = null;
-    this.status = new RPStatus_1.RPStatus();
     this.m_uid = 0;
     this.m_camUBO = null;
     this.m_adapter = null;
@@ -35662,8 +37206,8 @@ class RenderProxy {
     if (this.m_autoSynViewAndStage) {
       let rect = this.m_viewPortRect;
       rect.setSize(this.m_adapterContext.getRCanvasWidth(), this.m_adapterContext.getRCanvasHeight());
-      this.createMainCamera();
-      console.log("resizeCallback(), viewW,viewH: ", rect.width + "," + rect.height);
+      this.createMainCamera(); //console.log("resizeCallback(), viewW,viewH: ", rect.width+","+rect.height);
+
       this.m_adapterContext.setViewport(rect.x, rect.y, rect.width, rect.height);
       this.updateCameraView();
     }
@@ -35676,7 +37220,7 @@ class RenderProxy {
       let rect = this.m_viewPortRect;
 
       if (this.m_perspectiveEnabled) {
-        this.m_camera.perspectiveRH(Math.PI * this.m_cameraFov / 180.0, rect.width / rect.height, this.m_cameraNear, this.m_cameraFar);
+        this.m_camera.perspectiveRH(MathConst_1.default.DegreeToRadian(this.m_cameraFov), rect.width / rect.height, this.m_cameraNear, this.m_cameraFar);
       } else {
         this.m_camera.orthoRH(this.m_cameraNear, this.m_cameraFar, -0.5 * rect.height, 0.5 * rect.height, -0.5 * rect.width, 0.5 * rect.width);
       }
@@ -35722,12 +37266,13 @@ class RenderProxy {
     let posV3 = param.camPosition;
     let lookAtPosV3 = param.camLookAtPos;
     let upV3 = param.camUpDirect;
+    if (posV3 == null) posV3 = new Vector3D_1.default(800.0, 800.0, 800.0);
+    if (lookAtPosV3 == null) lookAtPosV3 = new Vector3D_1.default(0.0, 0.0, 0.0);
+    if (upV3 == null) upV3 = new Vector3D_1.default(0.0, 1.0, 0.0);
     if (stage != null) stage.uProbe = proxyParam.uniformContext.createUniformVec4Probe(1);
     this.m_perspectiveEnabled = param.cameraPerspectiveEnabled;
     this.m_adapterContext.autoSyncRenderBufferAndWindowSize = param.autoSyncRenderBufferAndWindowSize;
-    this.m_adapterContext.setResizeCallback(() => {
-      this.resizeCallback();
-    });
+    this.m_adapterContext.setResizeCallback(this, this.resizeCallback);
     this.m_adapterContext.setWebGLMaxVersion(this.m_maxWebGLVersion);
     this.m_adapterContext.initialize(this.m_uid, stage, param.getDiv(), param.getRenderContextAttri());
     this.m_WEBGL_VER = this.m_adapterContext.getWebGLVersion();
@@ -35743,15 +37288,13 @@ class RenderProxy {
     selfT.VtxBufUpdater = proxyParam.vtxBufUpdater;
     selfT.uniformContext = proxyParam.uniformContext;
     let rstate = new RODrawState_1.RODrawState();
-    rstate.setRenderContext(this.m_adapterContext); // RendererState.Initialize(rstate, new VROBase());
-
-    let obj = RendererState_1.default;
-    new RSTBuilder_1.default().initialize(obj, rstate, new VROBase_1.default());
+    rstate.setRenderContext(this.m_adapterContext);
+    RendererState_1.default.Initialize(rstate, new VROBase_1.default());
     selfT.RState = rstate;
     selfT.RContext = this.m_rc;
     selfT.stencil = new Stencil_1.Stencil(rstate);
-    selfT.renderingState = new RenderingState_1.RenderingState(RendererState_1.default);
-    selfT.colorMask = new RenderingColorMask_1.RenderingColorMask(RendererState_1.default);
+    selfT.renderingState = new RenderingState_1.RenderingState();
+    selfT.colorMask = new RenderingColorMask_1.RenderingColorMask();
     this.buildCameraParam();
     let rect = this.m_viewPortRect;
     rect.setSize(this.m_adapterContext.getRCanvasWidth(), this.m_adapterContext.getRCanvasHeight());
@@ -35771,6 +37314,7 @@ class RenderProxy {
     this.m_adapterContext.setViewport(rect.x, rect.y, rect.width, rect.height);
     this.m_camera.lookAtRH(posV3, lookAtPosV3, upV3);
     this.m_camera.update();
+    this.m_adapter.bgColor.setRGB3f(0.0, 0.0, 0.0);
     selfT.RGBA = gl.RGBA;
     selfT.UNSIGNED_BYTE = gl.UNSIGNED_BYTE;
     selfT.TRIANGLE_STRIP = gl.TRIANGLE_STRIP;
@@ -35812,14 +37356,11 @@ class RenderProxy {
   }
 
   setClearRGBColor3f(pr, pg, pb) {
-    let cvs = this.m_adapter.bgColor;
-    cvs[0] = pr;
-    cvs[1] = pg;
-    cvs[2] = pb;
+    this.m_adapter.bgColor.setRGB3f(pr, pg, pb);
   }
 
   setClearColor(color) {
-    color.toArray4(this.m_adapter.bgColor);
+    this.m_adapter.bgColor.copyFrom(color);
   }
   /**
    * @param colorUint24 uint24 number rgb color value, example: 0xff0000, it is red rolor
@@ -35828,23 +37369,16 @@ class RenderProxy {
 
 
   setClearUint24Color(colorUint24, alpha = 1.0) {
-    let cvs = this.m_adapter.bgColor;
-    cvs[0] = (colorUint24 >> 16 & 0x0000ff) / 255.0;
-    cvs[1] = (colorUint24 >> 8 & 0x0000ff) / 255.0;
-    cvs[2] = (colorUint24 & 0x0000ff) / 255.0;
-    cvs[3] = alpha;
+    this.m_adapter.bgColor.setRGBUint24(colorUint24);
+    this.m_adapter.bgColor.a = alpha;
   }
 
   setClearRGBAColor4f(pr, pg, pb, pa) {
-    let cvs = this.m_adapter.bgColor;
-    cvs[0] = pr;
-    cvs[1] = pg;
-    cvs[2] = pb;
-    cvs[3] = pa;
+    this.m_adapter.bgColor.setRGBA4f(pr, pg, pb, pa);
   }
 
   getClearRGBAColor4f(color4) {
-    color4.fromArray4(this.m_adapter.bgColor);
+    color4.copyFrom(this.m_adapter.bgColor);
   }
 
   getViewportWidth() {
@@ -36641,171 +38175,6 @@ exports.default = RPONodeLinker;
 
 /***/ }),
 
-/***/ "e035":
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-const RenderColorMask_1 = __webpack_require__("070b");
-
-const RenderStateObject_1 = __webpack_require__("a5ba");
-
-const RenderConst_1 = __webpack_require__("e08e");
-
-class RSTBuilder {
-  constructor() {
-    this.m_inited = true;
-  }
-
-  buildToRST(state) {
-    let b = new RSTBuilder();
-    b.initialize(state, this.m_Rstate, this.m_VRO);
-  }
-
-  initialize(state, rstate, vro) {
-    if (this.m_inited && state.rstb == null) {
-      state.rstb = this;
-      this.m_inited = false;
-      this.m_Rstate = rstate;
-      this.m_VRO = vro;
-      const rso = RenderStateObject_1.RenderStateObject;
-      const rcm = RenderColorMask_1.RenderColorMask;
-      const gbm = RenderConst_1.GLBlendMode;
-      const gbe = RenderConst_1.GLBlendEquation;
-      const cfm = RenderConst_1.CullFaceMode;
-      const dtm = RenderConst_1.DepthTestMode;
-      const rbm = RenderConst_1.RenderBlendMode;
-      state.Rstate = rstate;
-      state.VRO = vro;
-      rcm.Rstate = rstate;
-      rso.Rstate = rstate;
-      state.COLOR_MASK_ALL_TRUE = rcm.Create("all_true", true, true, true, true);
-      state.COLOR_MASK_ALL_FALSE = rcm.Create("all_false", false, false, false, false);
-      state.COLOR_MASK_RED_TRUE = rcm.Create("red_true", true, false, false, false);
-      state.COLOR_MASK_GREEN_TRUE = rcm.Create("green_true", false, true, false, false);
-      state.COLOR_MASK_BLUE_TRUE = rcm.Create("blue_true", false, false, true, false);
-      state.COLOR_MASK_ALPHA_TRUE = rcm.Create("alpha_true", false, false, false, true);
-      state.COLOR_MASK_RED_FALSE = rcm.Create("red_false", false, true, true, true);
-      state.COLOR_MASK_GREEN_FALSE = rcm.Create("green_false", true, false, true, true);
-      state.COLOR_MASK_BLUE_FALSE = rcm.Create("blue_false", true, true, false, true);
-      state.COLOR_MASK_ALPHA_FALSE = rcm.Create("alpha_false", true, true, true, false);
-
-      if (RSTBuilder.m_rbmInited) {
-        RSTBuilder.m_rbmInited = false;
-        rbm.NORMAL = rso.CreateBlendMode("NORMAL", gbm.ONE, gbm.ZERO, gbe.FUNC_ADD);
-        rbm.OPAQUE = rso.CreateBlendMode("OPAQUE", gbm.ONE, gbm.ZERO, gbe.FUNC_ADD);
-        rbm.TRANSPARENT = rso.CreateBlendMode("TRANSPARENT", gbm.SRC_ALPHA, gbm.ONE_MINUS_SRC_ALPHA, gbe.FUNC_ADD);
-        rbm.ALPHA_ADD = rso.CreateBlendMode("ALPHA_ADD", gbm.ONE, gbm.ONE_MINUS_SRC_ALPHA, gbe.FUNC_ADD);
-        rbm.ADD = rso.CreateBlendMode("ADD", gbm.SRC_ALPHA, gbm.ONE, gbe.FUNC_ADD);
-        rbm.ADD_LINEAR = rso.CreateBlendMode("ADD_LINEAR", gbm.ONE, gbm.ONE, gbe.FUNC_ADD);
-        rbm.INVERSE_ALPHA = rso.CreateBlendMode("INVERSE_ALPHA", gbm.ONE, gbm.SRC_ALPHA, gbe.FUNC_ADD);
-        rbm.BLAZE = rso.CreateBlendMode("BLAZE", gbm.SRC_COLOR, gbm.ONE, gbe.FUNC_ADD);
-        rbm.OVERLAY = rso.CreateBlendMode("OVERLAY", gbm.DST_COLOR, gbm.DST_ALPHA, gbe.FUNC_ADD);
-        rbm.OVERLAY2 = rso.CreateBlendMode("OVERLAY2", gbm.DST_COLOR, gbm.SRC_ALPHA, gbe.FUNC_ADD);
-      }
-
-      state.NORMAL_STATE = rso.Create("normal", cfm.BACK, rbm.NORMAL, dtm.OPAQUE);
-      state.BACK_CULLFACE_NORMAL_STATE = state.NORMAL_STATE;
-      state.FRONT_CULLFACE_NORMAL_STATE = rso.Create("front_normal", cfm.FRONT, rbm.NORMAL, dtm.OPAQUE);
-      state.NONE_CULLFACE_NORMAL_STATE = rso.Create("none_normal", cfm.NONE, rbm.NORMAL, dtm.OPAQUE);
-      state.ALL_CULLFACE_NORMAL_STATE = rso.Create("all_cull_normal", cfm.FRONT_AND_BACK, rbm.NORMAL, dtm.OPAQUE);
-      state.BACK_NORMAL_ALWAYS_STATE = rso.Create("back_normal_always", cfm.BACK, rbm.NORMAL, dtm.ALWAYS);
-      state.BACK_TRANSPARENT_STATE = rso.Create("back_transparent", cfm.BACK, rbm.TRANSPARENT, dtm.TRANSPARENT_SORT);
-      state.BACK_TRANSPARENT_ALWAYS_STATE = rso.Create("back_transparent_always", cfm.BACK, rbm.TRANSPARENT, dtm.ALWAYS);
-      state.NONE_TRANSPARENT_STATE = rso.Create("none_transparent", cfm.NONE, rbm.TRANSPARENT, dtm.TRANSPARENT_SORT);
-      state.NONE_TRANSPARENT_ALWAYS_STATE = rso.Create("none_transparent_always", cfm.NONE, rbm.TRANSPARENT, dtm.ALWAYS);
-      state.FRONT_CULLFACE_GREATER_STATE = rso.Create("front_greater", cfm.FRONT, rbm.NORMAL, dtm.TRUE_GREATER);
-      state.BACK_ADD_BLENDSORT_STATE = rso.Create("back_add_blendSort", cfm.BACK, rbm.ADD, dtm.TRANSPARENT_SORT);
-      state.BACK_ADD_ALWAYS_STATE = rso.Create("back_add_always", cfm.BACK, rbm.ADD, dtm.ALWAYS);
-      state.BACK_ALPHA_ADD_ALWAYS_STATE = rso.Create("back_alpha_add_always", cfm.BACK, rbm.ALPHA_ADD, dtm.ALWAYS);
-      state.NONE_ADD_ALWAYS_STATE = rso.Create("none_add_always", cfm.NONE, rbm.ADD, dtm.ALWAYS);
-      state.NONE_ADD_BLENDSORT_STATE = rso.Create("none_add_blendSort", cfm.NONE, rbm.ADD, dtm.TRANSPARENT_SORT);
-      state.NONE_ALPHA_ADD_ALWAYS_STATE = rso.Create("none_alpha_add_always", cfm.NONE, rbm.ALPHA_ADD, dtm.ALWAYS);
-      state.FRONT_ADD_ALWAYS_STATE = rso.Create("front_add_always", cfm.FRONT, rbm.ADD, dtm.ALWAYS);
-      state.FRONT_TRANSPARENT_STATE = rso.Create("front_transparent", cfm.FRONT, rbm.TRANSPARENT, dtm.TRANSPARENT_SORT);
-      state.FRONT_TRANSPARENT_ALWAYS_STATE = rso.Create("front_transparent_always", cfm.FRONT, rbm.TRANSPARENT, dtm.ALWAYS);
-      state.NONE_CULLFACE_NORMAL_ALWAYS_STATE = rso.Create("none_normal_always", cfm.NONE, rbm.NORMAL, dtm.ALWAYS);
-      state.BACK_ALPHA_ADD_BLENDSORT_STATE = rso.Create("back_alpha_add_blendSort", cfm.BACK, rbm.ALPHA_ADD, dtm.TRANSPARENT_SORT);
-    }
-  }
-
-  createBlendMode(name, srcColor, dstColor, blendEquation = 0) {
-    return RenderStateObject_1.RenderStateObject.CreateBlendMode(name, srcColor, dstColor, blendEquation);
-  }
-
-  createBlendModeSeparate(name, srcColor, dstColor, srcAlpha = 0, dstAlpha = 0, blendEquation = 0) {
-    return RenderStateObject_1.RenderStateObject.CreateBlendModeSeparate(name, srcColor, dstColor, srcAlpha, dstAlpha, blendEquation);
-  }
-
-  createRenderState(objName, cullFaceMode, blendMode, depthTestMode) {
-    return RenderStateObject_1.RenderStateObject.Create(objName, cullFaceMode, blendMode, depthTestMode);
-  }
-
-  createRenderColorMask(objName, rBoo, gBoo, bBoo, aBoo) {
-    return RenderColorMask_1.RenderColorMask.Create(objName, rBoo, gBoo, bBoo, aBoo);
-  }
-
-  getRenderStateByName(objName) {
-    return RenderStateObject_1.RenderStateObject.GetRenderStateByName(objName);
-  }
-
-  getRenderColorMaskByName(objName) {
-    return RenderColorMask_1.RenderColorMask.GetColorMaskByName(objName);
-  }
-
-  unlockBlendMode() {
-    RenderStateObject_1.RenderStateObject.UnlockBlendMode();
-  }
-
-  lockBlendMode(cullFaceMode) {
-    RenderStateObject_1.RenderStateObject.LockBlendMode(cullFaceMode);
-  }
-
-  unlockDepthTestMode() {
-    RenderStateObject_1.RenderStateObject.UnlockDepthTestMode();
-  }
-
-  lockDepthTestMode(depthTestMode) {
-    RenderStateObject_1.RenderStateObject.LockDepthTestMode(depthTestMode);
-  }
-
-  resetState() {
-    RenderColorMask_1.RenderColorMask.Reset();
-    RenderStateObject_1.RenderStateObject.Reset();
-    this.m_Rstate.reset();
-
-    this.m_VRO.__$resetVRO();
-  }
-
-  reset(context) {
-    RenderColorMask_1.RenderColorMask.Reset();
-    RenderStateObject_1.RenderStateObject.Reset();
-    this.m_Rstate.setRenderContext(context);
-    this.m_Rstate.reset();
-  }
-
-  resetInfo() {}
-
-  setDepthTestEnable(enable) {
-    this.m_Rstate.setDepthTestEnable(enable);
-  }
-
-  setBlendEnable(enable) {
-    this.m_Rstate.setBlendEnable(enable);
-  }
-
-}
-
-RSTBuilder.m_rbmInited = true;
-exports.default = RSTBuilder;
-
-/***/ }),
-
 /***/ "e08e":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -36966,6 +38335,14 @@ DepthTestMode.TRUE_GREATER = 14; //glDepthMask(true); glDepthFunc(GL_GEQUAL);
 DepthTestMode.TRUE_GEQUAL = 15;
 DepthTestMode.DISABLE = 0;
 exports.DepthTestMode = DepthTestMode;
+
+class RenderConst {} // 32bit psign: 8bit->pageIndex,8bit->block uid,16bit->RenderDispRenderID
+
+
+RenderConst.SCENE_RO_FILTER_BEGIN = 1 << 19;
+RenderConst.SCENE_RO_FILTER_FINISH = 2 << 19;
+RenderConst.SCENE_RO_ERASE = 0;
+exports.RenderConst = RenderConst;
 var DisplayRenderSign;
 
 (function (DisplayRenderSign) {
@@ -37042,7 +38419,7 @@ class AABBCalc {
     return true;
   }
   /*
-  static IntersectionRL3(vecs:IVector3D[],rsigns:Uint8Array,ltInvtv:IVector3D, ltv:IVector3D, lpv:IVector3D,outV:IVector3D):boolean
+  static IntersectionRL3(vecs:Vector3D[],rsigns:Uint8Array,ltInvtv:Vector3D, ltv:Vector3D, lpv:Vector3D,outV:Vector3D):boolean
   {
       let tmin:number, tmax:number, tymin:number, tymax:number;//, tzmin:number, tzmax:number;
       
@@ -37583,6 +38960,17 @@ exports.default = Plane;
 
 "use strict";
 
+/***************************************************************************/
+
+/*                                                                         */
+
+/*  Copyright 2018-2022 by                                                 */
+
+/*  Vily(vily313@126.com)                                                  */
+
+/*                                                                         */
+
+/***************************************************************************/
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -37733,23 +39121,42 @@ exports.default = AABB2D;
 
 /***************************************************************************/
 
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+const RendererState_1 = __importDefault(__webpack_require__("29ef"));
+
 class RenderingColorMask {
-  constructor(st) {
-    let t = this;
-    t.ALL_TRUE = st.COLOR_MASK_ALL_TRUE;
-    t.ALL_FALSE = st.COLOR_MASK_ALL_FALSE;
-    t.RED_TRUE = st.COLOR_MASK_RED_TRUE;
-    t.GREEN_TRUE = st.COLOR_MASK_GREEN_TRUE;
-    t.BLUE_TRUE = st.COLOR_MASK_BLUE_TRUE;
-    t.ALPHA_TRUE = st.COLOR_MASK_ALPHA_TRUE;
-    t.RED_FALSE = st.COLOR_MASK_RED_FALSE;
-    t.GREEN_FALSE = st.COLOR_MASK_GREEN_FALSE;
-    t.BLUE_FALSE = st.COLOR_MASK_BLUE_FALSE;
-    t.ALPHA_FALSE = st.COLOR_MASK_ALPHA_FALSE;
+  constructor() {
+    this.ALL_TRUE = 0;
+    this.ALL_FALSE = 1;
+    this.RED_TRUE = 2;
+    this.GREEN_TRUE = 3;
+    this.BLUE_TRUE = 4;
+    this.ALPHA_TRUE = 5;
+    this.RED_FALSE = 6;
+    this.GREEN_FALSE = 7;
+    this.BLUE_FALSE = 8;
+    this.ALPHA_FALSE = 9;
+    let state = RendererState_1.default;
+    let selfT = this;
+    selfT.ALL_TRUE = state.COLOR_MASK_ALL_TRUE;
+    selfT.ALL_FALSE = state.COLOR_MASK_ALL_FALSE;
+    selfT.RED_TRUE = state.COLOR_MASK_RED_TRUE;
+    selfT.GREEN_TRUE = state.COLOR_MASK_GREEN_TRUE;
+    selfT.BLUE_TRUE = state.COLOR_MASK_BLUE_TRUE;
+    selfT.ALPHA_TRUE = state.COLOR_MASK_ALPHA_TRUE;
+    selfT.RED_FALSE = state.COLOR_MASK_RED_FALSE;
+    selfT.GREEN_FALSE = state.COLOR_MASK_GREEN_FALSE;
+    selfT.BLUE_FALSE = state.COLOR_MASK_BLUE_FALSE;
+    selfT.ALPHA_FALSE = state.COLOR_MASK_ALPHA_FALSE;
   }
 
 }
@@ -37927,14 +39334,26 @@ const VtxCombinedBuf_1 = __importDefault(__webpack_require__("f0f0"));
 
 const VtxSeparatedBuf_1 = __importDefault(__webpack_require__("7a04"));
 
-const ROIVertexBuffer_1 = __importDefault(__webpack_require__("febe"));
+const RenderConst_1 = __webpack_require__("e08e");
 
-class ROVertexBuffer extends ROIVertexBuffer_1.default {
+class ROVertexBuffer {
   constructor(bufDataUsage = VtxBufConst_1.default.VTX_STATIC_DRAW) {
-    super(bufDataUsage);
+    this.m_uid = 0;
     this.m_vtxBuf = null;
+    this.m_ivs = null;
+    this.m_bufDataUsage = 0;
+    this.m_ibufStep = 2; // 2 or 4
+
     this.m_bufTypeList = null;
     this.m_bufSizeList = null;
+    this.layoutBit = 0x0;
+    this.vertexVer = 0;
+    this.indicesVer = 0;
+    this.version = 0;
+    this.drawMode = RenderConst_1.RenderDrawMode.ELEMENTS_TRIANGLES;
+    this.bufData = null;
+    this.m_uid = ROVertexBuffer.s_uid++;
+    this.m_bufDataUsage = bufDataUsage;
   }
 
   setVtxBuf(vtxBuf) {
@@ -38050,9 +39469,7 @@ class ROVertexBuffer extends ROIVertexBuffer_1.default {
    */
 
 
-  destroy() {
-    super.destroy();
-  }
+  destroy() {}
 
   __$destroy() {
     console.log("ROVertexBuffer::__$destroy()... " + this);
@@ -38069,6 +39486,10 @@ class ROVertexBuffer extends ROIVertexBuffer_1.default {
     this.bufData = null;
     this.m_bufTypeList = null;
     this.m_bufSizeList = null;
+  }
+
+  toString() {
+    return "ROVertexBuffer(uid = " + this.m_uid + ")";
   }
 
   static GetFreeId() {
@@ -38371,6 +39792,7 @@ class ROVertexBuffer extends ROIVertexBuffer_1.default {
 
 }
 
+ROVertexBuffer.s_uid = 0;
 ROVertexBuffer.s_combinedBufs = [];
 ROVertexBuffer.s_separatedBufs = [];
 ROVertexBuffer.s_FLAG_BUSY = 1;
@@ -38391,233 +39813,6 @@ ROVertexBuffer.useBufByIndexEnabled = false;
 ROVertexBuffer.vtxFS32 = null;
 ROVertexBuffer.s_timeDelay = 128;
 exports.default = ROVertexBuffer;
-
-/***/ }),
-
-/***/ "e7f2":
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/***************************************************************************/
-
-/*                                                                         */
-
-/*  Copyright 2018-2022 by                                                 */
-
-/*  Vily(vily313@126.com)                                                  */
-
-/*                                                                         */
-
-/***************************************************************************/
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-const RenderConst_1 = __webpack_require__("e08e");
-
-class ROStateUnit {
-  constructor() {
-    this.stencilMask = -1;
-  }
-
-}
-
-class RODrawState {
-  constructor() {
-    this.m_units = new Array(128);
-    this.m_unit = null;
-    this.m_blendMode = RenderConst_1.RenderBlendMode.NORMAL;
-    this.m_cullMode = RenderConst_1.CullFaceMode.NONE;
-    this.m_depthTestType = RenderConst_1.DepthTestMode.DISABLE;
-    this.m_cullDisabled = true;
-    this.m_context = null;
-    this.m_gl = null;
-    this.roColorMask = -11;
-  }
-
-  reset() {
-    this.roColorMask = -11;
-  }
-
-  setRenderContext(context) {
-    this.m_context = context;
-    this.m_gl = context.getRC();
-    let rcui = this.m_gl.rcuid;
-    this.m_unit = this.m_units[rcui];
-
-    if (this.m_unit == null) {
-      this.m_unit = this.m_units[rcui] = new ROStateUnit();
-    }
-  }
-
-  setColorMask(mr, mg, mb, ma) {
-    this.m_gl.colorMask(mr, mg, mb, ma);
-  }
-
-  setStencilFunc(func, ref, mask) {
-    this.m_gl.stencilFunc(func, ref, mask);
-  }
-
-  setStencilMask(mask) {
-    if (this.m_unit.stencilMask != mask && mask >= 0) {
-      this.m_unit.stencilMask = mask;
-      this.m_gl.stencilMask(mask);
-    }
-  }
-
-  setStencilOp(fail, zfail, zpass) {
-    this.m_gl.stencilOp(fail, zfail, zpass);
-  }
-
-  setDepthTestEnable(enable) {
-    if (enable) {
-      this.m_gl.enable(this.m_gl.DEPTH_TEST);
-    } else {
-      this.m_gl.disable(this.m_gl.DEPTH_TEST);
-    }
-  }
-
-  setCullFaceEnable(enable) {
-    if (enable) {
-      this.m_gl.enable(this.m_gl.CULL_FACE);
-    } else {
-      this.m_gl.disable(this.m_gl.CULL_FACE);
-    }
-  }
-
-  setBlendEnable(enable) {
-    if (enable) {
-      this.m_gl.enable(this.m_gl.BLEND);
-    } else {
-      this.m_gl.disable(this.m_gl.BLEND);
-    }
-  }
-
-  setCullFaceMode(mode) {
-    // console.log("this.m_cullMode,mode: ", this.m_cullMode,mode);
-    if (this.m_cullMode != mode) {
-      this.m_cullMode = mode;
-
-      if (mode != RenderConst_1.CullFaceMode.NONE) {
-        if (this.m_cullDisabled) {
-          this.m_cullDisabled = false;
-          this.m_gl.enable(this.m_gl.CULL_FACE);
-        }
-
-        this.m_gl.cullFace(mode);
-      } else if (!this.m_cullDisabled) {
-        this.m_cullDisabled = true;
-        this.m_gl.disable(this.m_gl.CULL_FACE);
-      }
-    }
-  }
-
-  setBlendMode(mode, params) {
-    if (this.m_blendMode != mode) {
-      // if(DebugFlag.Flag_0 > 0) {
-      //     console.log("this.m_blendMode: ",this.m_blendMode,",mode: ",mode,",params: ", params);
-      // }
-      this.m_blendMode = mode;
-
-      if (mode > 0) {
-        if (params[0] < 1) {
-          //FUNC_ADD
-          // this.m_gl.blendEquation(this.m_gl.FUNC_ADD);
-          // this.m_gl.blendFunc(this.m_gl.ONE, this.m_gl.ZERO);
-          this.m_gl.blendEquation(params[1]);
-          this.m_gl.blendFunc(params[3], params[4]);
-        } else {
-          this.m_gl.blendEquationSeparate(params[1], params[2]);
-          this.m_gl.blendFuncSeparate(params[3], params[4], params[5], params[6]);
-        }
-      } else {
-        this.m_gl.disable(this.m_gl.BLEND);
-      }
-    }
-  }
-
-  getDepthTestMode() {
-    return this.m_depthTestType;
-  }
-
-  setDepthTestMode(type) {
-    if (this.m_depthTestType != type) {
-      const gl = this.m_gl;
-      const DTM = RenderConst_1.DepthTestMode;
-      this.m_depthTestType = type; //trace("RendererBase::setDepthTest(),type：",std::to_string(static_cast<int>(type)));
-
-      switch (type) {
-        case DTM.ALWAYS:
-          //console.log("ALWAYS type: ", type,gl.ALWAYS);
-          gl.depthMask(false);
-          gl.depthFunc(gl.ALWAYS);
-          break;
-
-        case DTM.SKY:
-          gl.depthMask(true);
-          gl.depthFunc(gl.LEQUAL);
-          break;
-
-        case DTM.OPAQUE:
-          //console.log("OPAQUE type: ", type,gl.LESS);
-          gl.depthMask(true);
-          gl.depthFunc(gl.LESS);
-          break;
-
-        case DTM.OPAQUE_OVERHEAD:
-          gl.depthMask(false);
-          gl.depthFunc(gl.EQUAL);
-          break;
-
-        case DTM.DECALS:
-          gl.depthMask(false);
-          gl.depthFunc(gl.LEQUAL);
-          break;
-
-        case DTM.BLEND:
-          gl.depthMask(false);
-          gl.depthFunc(gl.LESS);
-          break;
-
-        case DTM.WIRE_FRAME:
-          gl.depthMask(true);
-          gl.depthFunc(gl.LEQUAL);
-          break;
-
-        case DTM.NEXT_LAYER:
-          gl.depthMask(false);
-          gl.depthFunc(gl.ALWAYS);
-          break;
-
-        case DTM.TRUE_EQUAL:
-          gl.depthMask(true);
-          gl.depthFunc(gl.EQUAL);
-          break;
-
-        case DTM.TRUE_GREATER:
-          gl.depthMask(true);
-          gl.depthFunc(gl.GREATER);
-          break;
-
-        case DTM.TRUE_GEQUAL:
-          gl.depthMask(true);
-          gl.depthFunc(gl.GEQUAL);
-          break;
-
-        case DTM.WIRE_FRAME_NEXT:
-          break;
-
-        default:
-          break;
-      }
-    }
-  }
-
-}
-
-exports.RODrawState = RODrawState;
 
 /***/ }),
 
@@ -38664,6 +39859,211 @@ class ViewParamUniformBuilder {
 }
 
 exports.default = ViewParamUniformBuilder;
+
+/***/ }),
+
+/***/ "e9f0":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+const RendererDevice_1 = __importDefault(__webpack_require__("3b73"));
+
+const TextureAtlas_1 = __importDefault(__webpack_require__("61d7"));
+
+class ImageTextureAtlas extends TextureAtlas_1.default {
+  constructor(rscene, canvasWidth, canvasHeight, fillColor, transparent = false, debugEnabled = false) {
+    super(canvasWidth, canvasHeight);
+    this.m_canvas = null;
+    this.m_canvas2D = null;
+    this.m_rscene = null;
+    this.m_texture = null;
+    this.m_transparent = false;
+    this.m_fillColor = null;
+    let canvas = document.createElement('canvas');
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
+    canvas.style.display = 'bolck';
+    canvas.style.left = '0px';
+    canvas.style.top = '0px';
+    canvas.style.position = 'absolute';
+    canvas.style.pointerEvents = 'none';
+    this.m_transparent = transparent;
+
+    if (transparent) {
+      canvas.style.backgroundColor = 'transparent';
+    }
+
+    this.m_fillColor = fillColor;
+    this.m_rscene = rscene;
+    this.m_canvas = canvas;
+    this.m_canvas2D = canvas.getContext("2d");
+
+    if (transparent) {
+      this.m_canvas2D.fillStyle = fillColor.getCSSDecRGBAColor();
+    } else {
+      this.m_canvas2D.fillStyle = fillColor.getCSSHeXRGBColor();
+    }
+
+    this.m_canvas2D.fillRect(0, 0, canvasWidth, canvasHeight);
+    this.m_uvFlipY = true;
+    this.m_texture = this.m_rscene.textureBlock.createImageTex2D(32, 32, false);
+
+    this.m_texture.__$setRenderProxy(this.m_rscene.getRenderProxy());
+
+    this.m_texture.setDataFromImage(this.m_canvas, 0, 0, 0, false);
+    this.m_texture.premultiplyAlpha = true;
+
+    this.m_texture.__$attachThis();
+  }
+
+  clone() {
+    let atlas = new ImageTextureAtlas(this.m_rscene, this.m_width, this.m_height, this.m_fillColor, this.m_transparent);
+    return atlas;
+  }
+
+  getTexture() {
+    return this.m_texture;
+  }
+
+  getCanvas() {
+    return this.m_canvas;
+  }
+
+  addSubImage(uniqueNS, image) {
+    let area = this.getAreaByName(uniqueNS);
+
+    if (area != null) {
+      return area;
+    }
+
+    area = this.addSubTexArea(uniqueNS, image.width, image.height);
+
+    if (area != null) {
+      let rect = area.texRect;
+      this.m_canvas2D.drawImage(image, rect.x, rect.y, rect.width, rect.height);
+      this.m_texture.setDataFromImage(this.m_canvas, 0, 0, 0, false);
+      this.m_texture.updateDataToGpu(null, true);
+    }
+
+    return area;
+  }
+
+  static CreateCharsTexture(chars, size, frontStyle = "rgba(255,255,255,1.0)", bgStyle = "rgba(64,0,64,1.0)") {
+    if (chars == null || chars == "" || size < 8) {
+      return null;
+    } //size = Math.round(size * RendererDevice.GetDevicePixelRatio());
+
+
+    let keyStr = chars + "_" + size + "_" + frontStyle + "_" + bgStyle;
+
+    if (ImageTextureAtlas.s_imgMap.has(keyStr)) {
+      return ImageTextureAtlas.s_imgMap.get(keyStr);
+    }
+
+    let width = size;
+    let height = size + 2;
+
+    if (chars.length > 1) {
+      width = size * chars.length;
+    }
+
+    let canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    canvas.style.display = 'bolck';
+    canvas.style.left = '0px';
+    canvas.style.top = '0px';
+    canvas.style.position = 'absolute';
+    canvas.style.backgroundColor = 'transparent'; //canvas.style.pointerEvents = 'none';
+
+    let ctx2D = canvas.getContext("2d");
+    ctx2D.font = size - 4 + "px Verdana"; //ctx2D.textBaseline = "top" || "hanging" || "middle" || "alphabetic" || "ideographic" || "bottom";
+
+    ctx2D.textBaseline = "top";
+    var metrics = ctx2D.measureText(chars);
+    let texWidth = metrics.width;
+
+    if (chars.length > 1) {
+      width = Math.round(texWidth + 8);
+      canvas.width = width;
+      ctx2D = canvas.getContext("2d");
+      ctx2D.font = size - 4 + "px Verdana";
+      ctx2D.textBaseline = "top";
+    }
+    /*
+    let input = ImageTextureAtlas.s_inputTF;
+    if(ImageTextureAtlas.s_inputTF == null) {
+        ImageTextureAtlas.s_inputTF = document.createElement("input");
+        input = ImageTextureAtlas.s_inputTF;
+        input.type = "text";
+        input.id = "atlas_inputText";
+        input.className = "atlas_inputTFClass";
+        input.disabled = true;
+        
+        let style = input.style;
+        style.left = "10px";
+        style.top = "10px";
+        style.zIndex = "9999";
+        style.position = "absolute";
+        style.borderWidth = "0";
+        // style.visibility = visible ? "visible" : "hidden";
+        style.visibility = "hidden";
+        document.body.appendChild(input);
+    }
+    input.value = chars;
+    let rect = input.getBoundingClientRect();
+    height = Math.round(rect.height) + 8;
+    //*/
+    // console.log("rect.height: ", rect.height, "size: ",size);
+
+
+    ctx2D.fillStyle = bgStyle;
+    ctx2D.fillRect(0, 0, width, height);
+    ctx2D.textAlign = "left";
+    ctx2D.fillStyle = frontStyle; //ctx2D.fillText(chars, (size - texWidth) * 0.5, size - (size - metrics.fontBoundingBoxAscent + metrics.fontBoundingBoxDescent * 2.0) * 0.5);
+    ///*
+
+    if (RendererDevice_1.default.IsMobileWeb()) {
+      if (RendererDevice_1.default.IsIOS()) {
+        ctx2D.fillText(chars, (width - texWidth) * 0.5, -4);
+      } else {
+        ctx2D.fillText(chars, (width - texWidth) * 0.5, 4);
+      }
+    } else {
+      ctx2D.fillText(chars, (width - texWidth) * 0.5, 4);
+    } //*/
+    // ctx2D.fillText(chars, (width - texWidth) * 0.5, 4);
+
+
+    ImageTextureAtlas.s_imgMap.set(keyStr, canvas);
+    return canvas;
+    /*
+    actualBoundingBoxAscent: 22
+    actualBoundingBoxDescent: -17
+    actualBoundingBoxLeft: -4
+    actualBoundingBoxRight: 24
+    fontBoundingBoxAscent: 60
+    fontBoundingBoxDescent: 13
+    */
+  }
+
+}
+
+ImageTextureAtlas.s_imgMap = new Map();
+ImageTextureAtlas.s_inputTF = null;
+exports.default = ImageTextureAtlas;
 
 /***/ }),
 
@@ -38968,255 +40368,15 @@ exports.RPOUnitBuilder = RPOUnitBuilder;
 
 /***/ }),
 
-/***/ "ee3b":
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/***************************************************************************/
-
-/*                                                                         */
-
-/*  Copyright 2018-2022 by                                                 */
-
-/*  Vily(vily313@126.com)                                                  */
-
-/*                                                                         */
-
-/***************************************************************************/
-// 独立的渲染场景子集,也就是子渲染场景类,字渲染场景拥有子集独立的Camera3D对象和view port 区域
-// 不同的子场景，甚至可以拥有独立的matrix3D这样的数据池子
-
-var __importDefault = this && this.__importDefault || function (mod) {
-  return mod && mod.__esModule ? mod : {
-    "default": mod
-  };
-};
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-const SubStage3D_1 = __importDefault(__webpack_require__("0236"));
-
-const MathConst_1 = __importDefault(__webpack_require__("6e01"));
-
-const CameraBase_1 = __importDefault(__webpack_require__("c51d"));
-
-const RendererSpace_1 = __importDefault(__webpack_require__("a446"));
-
-const RunnableQueue_1 = __importDefault(__webpack_require__("9c4d"));
-
-const RendererSceneBase_1 = __importDefault(__webpack_require__("aa80"));
-
-class CoRendererSubScene extends RendererSceneBase_1.default {
-  constructor(parent, renderer, evtFlowEnabled) {
-    super(1024);
-    this.m_perspectiveEnabled = true;
-    this.m_parent = null;
-    this.m_evtFlowEnabled = evtFlowEnabled;
-    this.m_parent = parent;
-    this.m_renderer = renderer;
-    this.m_shader = renderer.getDataBuilder().getRenderShader();
-    this.m_localRunning = true;
-  }
-
-  createSubScene(rparam = null, renderProcessesTotal = 3, createNewCamera = true) {
-    return this.m_parent.createSubScene(rparam, renderProcessesTotal, createNewCamera);
-  }
-
-  getCurrentStage3D() {
-    return this.m_currStage3D;
-  }
-
-  getCamera() {
-    return this.m_camera;
-  }
-
-  setEvt3DController(evt3DCtr) {
-    if (evt3DCtr != null) {
-      if (this.m_currStage3D == null) {
-        this.m_currStage3D = new SubStage3D_1.default(this.m_renderProxy.getRCUid(), null);
-        this.m_currStage3D.uProbe = this.m_renderProxy.uniformContext.createUniformVec4Probe(1);
-      }
-
-      evt3DCtr.initialize(this.getStage3D(), this.m_currStage3D);
-      evt3DCtr.setRaySelector(this.m_rspace.getRaySelector());
-    }
-
-    this.m_evt3DCtr = evt3DCtr;
-  }
-
-  initialize(rparam, renderProcessesTotal = 3, createNewCamera = true) {
-    if (this.m_renderProxy == null) {
-      if (renderProcessesTotal < 1) {
-        renderProcessesTotal = 1;
-      } else if (renderProcessesTotal > 32) {
-        renderProcessesTotal = 32;
-      }
-
-      let selfT = this;
-      selfT.runnableQueue = new RunnableQueue_1.default();
-      this.m_rparam = rparam;
-      this.m_perspectiveEnabled = rparam.cameraPerspectiveEnabled;
-
-      for (; renderProcessesTotal >= 0;) {
-        let process = this.m_renderer.appendProcess(rparam.batchEnabled, rparam.processFixedState);
-        this.m_processids[this.m_processidsLen] = process.getRPIndex();
-        this.m_processidsLen++;
-        --renderProcessesTotal;
-      }
-
-      this.m_rcontext = this.m_renderer.getRendererContext();
-      this.m_renderProxy = this.m_rcontext.getRenderProxy();
-      this.m_adapter = this.m_renderProxy.getRenderAdapter();
-      this.m_stage3D = this.m_renderProxy.getStage3D();
-      this.m_viewX = this.m_stage3D.getViewX();
-      this.m_viewY = this.m_stage3D.getViewY();
-      this.m_viewW = this.m_stage3D.getViewWidth();
-      this.m_viewH = this.m_stage3D.getViewHeight();
-      this.m_camera = createNewCamera ? this.createMainCamera() : this.m_renderProxy.getCamera();
-
-      if (this.m_rspace == null) {
-        let sp = new RendererSpace_1.default();
-        sp.initialize(this.m_renderer, this.m_camera);
-        this.m_rspace = sp;
-      }
-    }
-  }
-
-  createMainCamera() {
-    this.m_camera = new CameraBase_1.default();
-    this.m_camera.setViewXY(this.m_viewX, this.m_viewY);
-    this.m_camera.setViewSize(this.m_viewW, this.m_viewH);
-    let vec3 = this.m_rparam.camProjParam;
-
-    if (this.m_perspectiveEnabled) {
-      this.m_camera.perspectiveRH(MathConst_1.default.DegreeToRadian(vec3.x), this.m_viewW / this.m_viewH, vec3.y, vec3.z);
-    } else {
-      this.m_camera.orthoRH(vec3.y, vec3.z, -0.5 * this.m_viewH, 0.5 * this.m_viewH, -0.5 * this.m_viewW, 0.5 * this.m_viewW);
-    }
-
-    this.m_camera.lookAtRH(this.m_rparam.camPosition, this.m_rparam.camLookAtPos, this.m_rparam.camUpDirect);
-    this.m_camera.update();
-    return this.m_camera;
-  }
-
-  cameraLock() {
-    this.m_camera.lock();
-  }
-
-  cameraUnlock() {
-    this.m_camera.unlock();
-  }
-  /**
-   * the function only resets the renderer instance rendering status.
-   * you should use it before the run or runAt function is called.
-   */
-
-
-  renderBegin(contextBeginEnabled = false) {
-    if (contextBeginEnabled) {
-      this.m_rcontext.renderBegin();
-    }
-
-    if (this.m_renderProxy.getCamera() != this.m_camera) {
-      //let boo: boolean = this.m_renderProxy.testViewPortChanged(this.m_viewX, this.m_viewY, this.m_viewW, this.m_viewH);
-      if (this.m_renderProxy.isAutoSynViewAndStage()) {
-        this.m_viewX = this.m_renderProxy.getViewX();
-        this.m_viewY = this.m_renderProxy.getViewY();
-        this.m_viewW = this.m_renderProxy.getViewWidth();
-        this.m_viewH = this.m_renderProxy.getViewHeight();
-      }
-
-      this.m_camera.setViewXY(this.m_viewX, this.m_viewY);
-      this.m_camera.setViewSize(this.m_viewW, this.m_viewH);
-      this.m_renderProxy.setRCViewPort(this.m_viewX, this.m_viewY, this.m_viewW, this.m_viewH, this.m_renderProxy.isAutoSynViewAndStage());
-      this.m_renderProxy.reseizeRCViewPort();
-    }
-
-    this.m_camera.update();
-    this.m_rcontext.updateCameraDataFromCamera(this.m_camera);
-    this.m_shader.renderBegin();
-
-    if (this.m_accessor != null) {
-      this.m_accessor.renderBegin(this);
-    }
-  }
-  /**
-   * the function resets the renderer scene status.
-   * you should use it on the frame starting time.
-   */
-
-
-  runBegin(autoCycle = true, contextBeginEnabled = false) {
-    if (autoCycle && this.m_autoRunning) {
-      if (this.m_runFlag >= 0) this.runEnd();
-      this.m_runFlag = 0;
-    }
-
-    this.renderBegin(contextBeginEnabled);
-
-    if (this.m_rspace != null) {
-      this.m_rspace.setCamera(this.m_camera);
-      this.m_rspace.runBegin();
-    }
-  }
-
-  render() {
-    if (this.m_renderProxy != null) {
-      this.run(true);
-    }
-  }
-
-  useCamera(camera, syncCamView = false) {
-    this.m_parent.useCamera(camera, syncCamView);
-  }
-
-  useMainCamera() {
-    this.m_parent.useMainCamera();
-  }
-
-  updateCamera() {
-    if (this.m_camera != null) {
-      this.m_camera.update();
-    }
-  }
-
-}
-
-exports.default = CoRendererSubScene;
-
-/***/ }),
-
 /***/ "ee5a":
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-/***************************************************************************/
-
-/*                                                                         */
-
-/*  Copyright 2018-2022 by                                                 */
-
-/*  Vily(vily313@126.com)                                                  */
-
-/*                                                                         */
-
-/***************************************************************************/
-
-var __importDefault = this && this.__importDefault || function (mod) {
-  return mod && mod.__esModule ? mod : {
-    "default": mod
-  };
-};
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-
-const EventBase_1 = __importDefault(__webpack_require__("a996"));
 
 class EvtNode {
   constructor() {
@@ -39226,15 +40386,7 @@ class EvtNode {
     this.m_phases = [];
   }
 
-  createEvent(target = null, currentTarget = null) {
-    let evt = new EventBase_1.default();
-    evt.type = this.type;
-    evt.target = target;
-    evt.currentTarget = currentTarget;
-    return evt;
-  }
-
-  addListener(target, func, phase = 0) {
+  addListener(target, func, phase) {
     let i = this.m_hosts.length - 1;
 
     for (; i >= 0; --i) {
@@ -39247,8 +40399,6 @@ class EvtNode {
       this.m_hosts.push(target);
       this.m_listeners.push(func);
       this.m_phases.push(phase);
-    } else {
-      console.warn("event target(", target, ") has existed.");
     }
   }
 
@@ -39367,9 +40517,9 @@ class MaterialShaderBuffer extends ShaderCodeBuffer_1.default {
   }
 
   createTextureList() {
-    this.m_texBuilder.reset();
-    this.decorator.buildTextureList(this.m_texBuilder);
-    return this.m_texBuilder.getTextures();
+    this.m_texBulder.reset();
+    this.decorator.buildTextureList(this.m_texBulder);
+    return this.m_texBulder.getTextures();
   }
 
   buildShader() {
@@ -39667,6 +40817,106 @@ var ShaderCodeUUID;
 })(ShaderCodeUUID || (ShaderCodeUUID = {}));
 
 exports.ShaderCodeUUID = ShaderCodeUUID;
+
+/***/ }),
+
+/***/ "f444":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/***************************************************************************/
+
+/*                                                                         */
+
+/*  Copyright 2018-2022 by                                                 */
+
+/*  Vily(vily313@126.com)                                                  */
+
+/*                                                                         */
+
+/***************************************************************************/
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+const MouseEvent_1 = __importDefault(__webpack_require__("1710"));
+
+const CameraDragSwinger_1 = __webpack_require__("bcac");
+
+const CameraDragSlide_1 = __webpack_require__("278e");
+
+class CameraDragController {
+  constructor() {
+    this.m_stage3D = null;
+    this.m_dragSwinger = new CameraDragSwinger_1.CameraDragSwinger();
+    this.m_dragSlider = new CameraDragSlide_1.CameraDragSlide();
+    this.m_swing = true;
+  }
+
+  initialize(stage3D, camera) {
+    if (this.m_stage3D == null) {
+      this.m_stage3D = stage3D;
+      this.m_dragSwinger.initialize(stage3D, camera);
+      this.m_dragSlider.initialize(stage3D, camera);
+      stage3D.addEventListener(MouseEvent_1.default.MOUSE_BG_DOWN, this, this.mouseDownListener, true, false);
+      stage3D.addEventListener(MouseEvent_1.default.MOUSE_UP, this, this.mouseUpListener, false, true);
+    }
+  }
+
+  setSlideSpeed(slideSpeed) {
+    this.m_dragSlider.slideSpeed = slideSpeed;
+  }
+
+  enableSwing() {
+    this.m_swing = true;
+  }
+
+  enableSlide() {
+    this.m_swing = false;
+  }
+
+  mouseDownListener(evt) {
+    this.m_dragSwinger.attach();
+    this.m_dragSlider.attach();
+  }
+
+  mouseUpListener(evt) {
+    this.m_dragSwinger.detach();
+    this.m_dragSlider.detach();
+  }
+
+  detach() {
+    this.m_dragSwinger.detach();
+    this.m_dragSlider.detach();
+  }
+
+  runWithYAxis() {
+    if (this.m_swing) {
+      this.m_dragSwinger.runWithYAxis();
+    } else {
+      this.m_dragSlider.run();
+    }
+  }
+
+  runWithZAxis() {
+    if (this.m_swing) {
+      this.m_dragSwinger.runWithZAxis();
+    } else {
+      this.m_dragSlider.run();
+    }
+  }
+
+}
+
+exports.default = CameraDragController;
 
 /***/ }),
 
@@ -40134,14 +41384,7 @@ class ImageTextureLoader {
     }
 
     return null;
-  } // addCallbackByUrl(purl:string, callback: () => void): void {
-  //     if(callback != null) {
-  //         let t = this.m_resMap.get(purl);
-  //         if (t != null) {
-  //         }
-  //     }
-  // }
-
+  }
 
   getImageTexByUrl(purl, mipLevel = 0, offsetTexEnabled = false, powerOf2Fix = false) {
     if (purl == "") {
@@ -40427,7 +41670,7 @@ class Default3DShaderCodeBuffer extends ShaderCodeBuffer_1.default {
 class Default3DMaterial extends MaterialBase_1.default {
   constructor() {
     super();
-    this.m_data = new Float32Array([1.0, 1.0, 1.0, 1.0]);
+    this.m_colorData = new Float32Array([1.0, 1.0, 1.0, 1.0]);
     this.vertColorEnabled = false;
     this.premultiplyAlpha = false;
     this.normalEnabled = false;
@@ -40459,47 +41702,36 @@ class Default3DMaterial extends MaterialBase_1.default {
   }
 
   setRGB3f(pr, pg, pb) {
-    this.m_data[0] = pr;
-    this.m_data[1] = pg;
-    this.m_data[2] = pb;
+    this.m_colorData[0] = pr;
+    this.m_colorData[1] = pg;
+    this.m_colorData[2] = pb;
   }
 
   getRGB3f(color) {
-    let ds = this.m_data;
+    let ds = this.m_colorData;
     color.setRGB3f(ds[0], ds[1], ds[2]);
   }
 
   setRGBA4f(pr, pg, pb, pa) {
-    this.m_data[0] = pr;
-    this.m_data[1] = pg;
-    this.m_data[2] = pb;
-    this.m_data[3] = pa;
+    this.m_colorData[0] = pr;
+    this.m_colorData[1] = pg;
+    this.m_colorData[2] = pb;
+    this.m_colorData[3] = pa;
   }
 
   getRGBA4f(color) {
-    color.fromArray4(this.m_data);
+    let ds = this.m_colorData;
+    color.setRGBA4f(ds[0], ds[1], ds[2], ds[3]);
   }
 
   setAlpha(pa) {
-    this.m_data[3] = pa;
-  }
-
-  getAlpha() {
-    return this.m_data[3];
-  }
-
-  setColor(color) {
-    color.toArray4(this.m_data);
-  }
-
-  getColor(color) {
-    color.fromArray4(this.m_data);
+    this.m_colorData[3] = pa;
   }
 
   createSelfUniformData() {
     let oum = new ShaderUniformData_1.default();
     oum.uniformNameList = ["u_color"];
-    oum.dataList = [this.m_data];
+    oum.dataList = [this.m_colorData];
     return oum;
   }
 
@@ -40681,6 +41913,10 @@ class VaoVertexRenderObj extends VROBase_1.default {
     VaoVertexRenderObj.Restore(this);
   }
 
+  toString() {
+    return "VaoVertexRenderObj(uid = " + this.m_uid + ", type=" + this.m_mid + ")";
+  }
+
   static HasMid(mid) {
     return VROBase_1.default.s_midMap.has(mid);
   }
@@ -40786,7 +42022,6 @@ class ShaderCodeBuffer {
     this.m_texList = null;
     this.m_texEnabled = true;
     this.pipeline = null;
-    this.gamma = false;
     this.vertColorEnabled = false;
     this.premultiplyAlpha = false;
     this.shadowReceiveEnabled = false;
@@ -40816,12 +42051,11 @@ class ShaderCodeBuffer {
   reset() {
     this.m_coder = ShaderCodeBuffer.s_coder;
     this.m_uniform = ShaderCodeBuffer.s_uniform;
-    this.m_texBuilder = ShaderCodeBuffer.s_texBulder;
+    this.m_texBulder = ShaderCodeBuffer.s_texBulder;
     this.m_texture = this.m_uniform;
     this.m_coder.reset();
     this.m_texList = null;
     this.pipeTypes = null;
-    this.gamma = false;
     this.vertColorEnabled = false;
     this.premultiplyAlpha = false;
     this.shadowReceiveEnabled = false;
@@ -40835,18 +42069,6 @@ class ShaderCodeBuffer {
 
   clear() {
     this.m_coder = null;
-  }
-
-  getUniform() {
-    return this.m_uniform;
-  }
-
-  getTexture() {
-    return this.m_texture;
-  }
-
-  getTexBuilder() {
-    return this.m_texBuilder;
   }
 
   setShaderCodeObject(obj) {
@@ -40973,7 +42195,7 @@ exports.default = ShaderCodeBuffer;
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _setPublicPath__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__("1eb2");
-/* harmony import */ var _entry__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("3bea");
+/* harmony import */ var _entry__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__("c590");
 /* harmony import */ var _entry__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_entry__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony reexport (unknown) */ for(var __WEBPACK_IMPORT_KEY__ in _entry__WEBPACK_IMPORTED_MODULE_1__) if(["default"].indexOf(__WEBPACK_IMPORT_KEY__) < 0) (function(key) { __webpack_require__.d(__webpack_exports__, key, function() { return _entry__WEBPACK_IMPORTED_MODULE_1__[key]; }) }(__WEBPACK_IMPORT_KEY__));
 
@@ -41319,119 +42541,6 @@ exports.default = BytesTextureProxy;
 
 /***/ }),
 
-/***/ "febe":
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/***************************************************************************/
-
-/*                                                                         */
-
-/*  Copyright 2018-2022 by                                                 */
-
-/*  Vily(vily313@126.com)                                                  */
-
-/*                                                                         */
-
-/***************************************************************************/
-
-var __importDefault = this && this.__importDefault || function (mod) {
-  return mod && mod.__esModule ? mod : {
-    "default": mod
-  };
-};
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-
-const VtxBufConst_1 = __importDefault(__webpack_require__("8a0a"));
-
-const RenderConst_1 = __webpack_require__("e08e");
-
-class ROIVertexBuffer {
-  constructor(bufDataUsage = VtxBufConst_1.default.VTX_STATIC_DRAW) {
-    this.m_uid = 0;
-    this.m_layoutBit = 0;
-    this.m_ivs = null;
-    this.m_bufDataUsage = 0;
-    this.m_ibufStep = 2; // 2 or 4
-
-    this.layoutBit = 0x0;
-    this.vertexVer = 0;
-    this.indicesVer = 0;
-    this.version = 0;
-    this.drawMode = RenderConst_1.RenderDrawMode.ELEMENTS_TRIANGLES;
-    this.bufData = null;
-    this.m_uid = ROIVertexBuffer.s_uid++;
-    this.m_bufDataUsage = bufDataUsage;
-  }
-
-  getUid() {
-    return this.m_uid;
-  }
-
-  getType() {
-    return 0;
-  }
-
-  setBufSortFormat(layoutBit) {
-    this.m_layoutBit = layoutBit;
-  }
-
-  getBufSortFormat() {
-    return this.m_layoutBit;
-  }
-
-  getIBufStep() {
-    return this.m_ibufStep;
-  }
-
-  getBufDataUsage() {
-    return this.m_bufDataUsage;
-  }
-
-  getIvsData() {
-    return this.m_ivs;
-  }
-
-  setUintIVSData(uint16Or32Arr, status = VtxBufConst_1.default.VTX_STATIC_DRAW) {
-    if (uint16Or32Arr instanceof Uint16Array) {
-      this.m_ibufStep = 2;
-
-      if (uint16Or32Arr.length > 65535) {
-        throw Error("its type is not Uint32Array.");
-      }
-    } else if (uint16Or32Arr instanceof Uint32Array) {
-      this.m_ibufStep = 4;
-    } else {
-      console.error("Error: uint16Or32Arr is not an Uint32Array or an Uint16Array bufferArray instance !!!!");
-      return;
-    }
-
-    this.m_ivs = uint16Or32Arr;
-
-    if (uint16Or32Arr != null) {
-      this.indicesVer++;
-    }
-  }
-  /**
-   * this function is only an empty function.
-   */
-
-
-  destroy() {
-    this.m_layoutBit = 0;
-  }
-
-}
-
-ROIVertexBuffer.s_uid = 0;
-exports.default = ROIVertexBuffer;
-
-/***/ }),
-
 /***/ "fecb":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -41465,6 +42574,12 @@ const Vector3D_1 = __importDefault(__webpack_require__("8e17"));
 
 class AABB {
   constructor() {
+    this.min = new Vector3D_1.default();
+    this.max = new Vector3D_1.default();
+    this.version = -1;
+    this.radius = 50;
+    this.radius2 = 2500;
+    this.center = new Vector3D_1.default(0.0, 0.0, 0.0);
     this.m_long = 100.0;
     this.m_width = 100.0;
     this.m_height = 100.0;
@@ -41472,12 +42587,6 @@ class AABB {
     this.m_halfWidth = 50.0;
     this.m_halfHeight = 50.0;
     this.m_tempV = new Vector3D_1.default();
-    this.min = new Vector3D_1.default();
-    this.max = new Vector3D_1.default();
-    this.version = -1;
-    this.radius = 50;
-    this.radius2 = 2500;
-    this.center = new Vector3D_1.default(0.0, 0.0, 0.0);
     this.reset();
   }
 
@@ -41494,11 +42603,9 @@ class AABB {
   }
 
   reset() {
-    const min = this.min;
-    const max = this.max;
-    let v = min;
+    let v = this.min;
     v.x = v.y = v.z = MathConst_1.default.MATH_MAX_POSITIVE;
-    v = max;
+    v = this.max;
     v.x = v.y = v.z = MathConst_1.default.MATH_MIN_NEGATIVE;
   }
 
@@ -41509,13 +42616,16 @@ class AABB {
   setVolume(width, height, long) {
     this.m_width = width;
     this.m_height = height;
-    this.m_long = long;
+    this.m_long = long; //
+
     this.m_halfLong = 0.5 * this.m_long;
     this.m_halfWidth = 0.5 * this.m_width;
-    this.m_halfHeight = 0.5 * this.m_height;
+    this.m_halfHeight = 0.5 * this.m_height; //
+
     this.max.x = this.center.x + this.m_halfWidth;
     this.max.y = this.center.y + this.m_halfHeight;
-    this.max.z = this.center.z + this.m_halfLong;
+    this.max.z = this.center.z + this.m_halfLong; //
+
     this.min.x = this.center.x - this.m_halfWidth;
     this.min.y = this.center.y - this.m_halfHeight;
     this.min.z = this.center.z - this.m_halfLong;
@@ -41526,73 +42636,94 @@ class AABB {
   union(ab) {
     this.addPosition(ab.min);
     this.addPosition(ab.max);
-    return this;
   }
 
   addPosition(pv) {
-    this.addXYZ(pv.x, pv.y, pv.z);
-    return this;
+    if (this.min.x > pv.x) this.min.x = pv.x;
+    if (this.min.y > pv.y) this.min.y = pv.y;
+    if (this.min.z > pv.z) this.min.z = pv.z;
+    if (this.max.x < pv.x) this.max.x = pv.x;
+    if (this.max.y < pv.y) this.max.y = pv.y;
+    if (this.max.z < pv.z) this.max.z = pv.z;
   }
 
   addXYZ(pvx, pvy, pvz) {
-    const min = this.min;
-    const max = this.max;
-    if (min.x > pvx) min.x = pvx;
-    if (max.x < pvx) max.x = pvx;
-    if (min.y > pvy) min.y = pvy;
-    if (max.y < pvy) max.y = pvy;
-    if (min.z > pvz) min.z = pvz;
-    if (max.z < pvz) max.z = pvz;
+    if (this.min.x > pvx) this.min.x = pvx;
+    if (this.min.y > pvy) this.min.y = pvy;
+    if (this.min.z > pvz) this.min.z = pvz;
+    if (this.max.x < pvx) this.max.x = pvx;
+    if (this.max.y < pvy) this.max.y = pvy;
+    if (this.max.z < pvz) this.max.z = pvz;
   }
 
-  addFloat32Arr(vs, step = 3) {
+  addXYZFloat32Arr(vs, step = 3) {
     let len = vs.length;
+    let pvx = 0.0;
+    let pvy = 0.0;
+    let pvz = 0.0;
 
     for (let i = 0; i < len;) {
-      this.addXYZ(vs[i], vs[i + 1], vs[i + 2]);
+      pvx = vs[i];
+      pvy = vs[i + 1];
+      pvz = vs[i + 2];
       i += step;
+      if (this.min.x > pvx) this.min.x = pvx;
+      if (this.min.y > pvy) this.min.y = pvy;
+      if (this.min.z > pvz) this.min.z = pvz;
+      if (this.max.x < pvx) this.max.x = pvx;
+      if (this.max.y < pvy) this.max.y = pvy;
+      if (this.max.z < pvz) this.max.z = pvz;
     }
   }
 
-  addFloat32AndIndicesArr(vs, indices) {
+  addXYZFloat32AndIndicesArr(vs, indices) {
     let len = indices.length;
+    let pvx = 0.0;
+    let pvy = 0.0;
+    let pvz = 0.0;
     let i;
 
     for (let k = 0; k < len; k++) {
-      i = indices[k] * 3;
-      this.addXYZ(vs[i++], vs[i++], vs[i]);
+      i = k * 3;
+      pvx = vs[i++];
+      pvy = vs[i++];
+      pvz = vs[i];
+      if (this.min.x > pvx) this.min.x = pvx;
+      if (this.min.y > pvy) this.min.y = pvy;
+      if (this.min.z > pvz) this.min.z = pvz;
+      if (this.max.x < pvx) this.max.x = pvx;
+      if (this.max.y < pvy) this.max.y = pvy;
+      if (this.max.z < pvz) this.max.z = pvz;
     }
   }
 
   getClosePosition(in_pos, out_pos, bias = 0.0) {
-    const min = this.min;
-    const max = this.max;
     out_pos.copyFrom(in_pos);
 
-    if (out_pos.x < min.x) {
-      out_pos.x = min.x + bias;
-    } else if (out_pos.x > max.x) {
-      out_pos.x = max.x - bias;
+    if (out_pos.x < this.min.x) {
+      out_pos.x = this.min.x + bias;
+    } else if (out_pos.x > this.max.x) {
+      out_pos.x = this.max.x - bias;
     }
 
-    if (out_pos.y < min.y) {
-      out_pos.y = min.y + bias;
-    } else if (out_pos.y > max.y) {
-      out_pos.y = max.y - bias;
+    if (out_pos.y < this.min.y) {
+      out_pos.y = this.min.y + bias;
+    } else if (out_pos.y > this.max.y) {
+      out_pos.y = this.max.y - bias;
     }
 
-    if (out_pos.z < min.z) {
-      out_pos.z = min.z + bias;
-    } else if (out_pos.z > max.z) {
-      out_pos.z = max.z - bias;
+    if (out_pos.z < this.min.z) {
+      out_pos.z = this.min.z + bias;
+    } else if (out_pos.z > this.max.z) {
+      out_pos.z = this.max.z - bias;
     }
   } // @param	v	Vector3D instance
 
 
   containsV(v) {
-    if (v.x < this.min.x || v.x > this.max.x) return false;
-    if (v.y < this.min.y || v.y > this.max.y) return false;
-    if (v.z < this.min.z || v.z > this.max.z) return false;
+    if (v.x < this.max.x || v.x > this.max.x) return false;
+    if (v.y < this.max.y || v.y > this.max.y) return false;
+    if (v.z < this.max.z || v.z > this.max.z) return false;
     return true;
   } // 是否包含某一点(同一坐标空间的点)
 
@@ -41627,13 +42758,11 @@ class AABB {
 
     this.center.copyFrom(ab.center);
     this.updateVolume();
-    return this;
   }
 
   expand(bias) {
     this.min.subtractBy(bias);
     this.max.addBy(bias);
-    return this;
   }
 
   updateVolume() {
@@ -41644,7 +42773,6 @@ class AABB {
     this.m_halfWidth = 0.5 * this.m_width;
     this.m_halfHeight = 0.5 * this.m_height;
     ++this.version;
-    return this;
   }
 
   updateThis() {
@@ -41656,7 +42784,10 @@ class AABB {
     this.m_halfHeight = this.center.y;
     this.radius2 = this.m_halfWidth * this.m_halfWidth + this.m_halfHeight * this.m_halfHeight + this.m_halfLong * this.m_halfLong;
     this.radius = Math.sqrt(this.radius2);
-    this.center.addBy(this.min);
+    this.center.addBy(this.min); // this.center.x += this.min.x;
+    // this.center.y += this.min.y;
+    // this.center.z += this.min.z;
+
     ++this.version;
   }
 
@@ -41688,14 +42819,36 @@ class AABB {
     }
 
     this.m_long = this.max.z - this.min.z;
-    this.updateThis();
+    this.updateThis(); // this.center.x = 0.5 * this.m_width;
+    // this.center.y = 0.5 * this.m_height;
+    // this.center.z = 0.5 * this.m_long;
+    // this.m_halfLong = this.center.z;
+    // this.m_halfWidth = this.center.x;
+    // this.m_halfHeight = this.center.y;
+    // this.radius2 = this.m_halfWidth * this.m_halfWidth + this.m_halfHeight * this.m_halfHeight + this.m_halfLong * this.m_halfLong;
+    // this.radius = Math.sqrt(this.radius2);
+    // this.center.x += this.min.x;
+    // this.center.y += this.min.y;
+    // this.center.z += this.min.z;
+    // ++this.version;
   }
 
   updateFast() {
     this.m_width = this.max.x - this.min.x;
     this.m_height = this.max.y - this.min.y;
     this.m_long = this.max.z - this.min.z;
-    this.updateThis();
+    this.updateThis(); // this.center.x = 0.5 * this.m_width;
+    // this.center.y = 0.5 * this.m_height;
+    // this.center.z = 0.5 * this.m_long;
+    // this.m_halfLong = this.center.z;
+    // this.m_halfWidth = this.center.x;
+    // this.m_halfHeight = this.center.y;
+    // this.radius2 = this.m_halfWidth * this.m_halfWidth + this.m_halfHeight * this.m_halfHeight + this.m_halfLong * this.m_halfLong;
+    // this.radius = Math.sqrt(this.radius2);
+    // this.center.x += this.min.x;
+    // this.center.y += this.min.y;
+    // this.center.z += this.min.z;
+    // ++this.version;
   }
 
   toString() {
@@ -41755,33 +42908,31 @@ const RendererDevice_1 = __importDefault(__webpack_require__("3b73"));
 
 class TextureFormat {
   static ToGL(gl, format) {
-    const tf = TextureFormat;
-
     switch (format) {
-      case tf.RGBA:
+      case TextureFormat.RGBA:
         break;
 
-      case tf.R8:
+      case TextureFormat.R8:
         return gl.R8;
         break;
 
-      case tf.RGB:
+      case TextureFormat.RGB:
         return gl.RGB;
         break;
 
-      case tf.RGB8:
+      case TextureFormat.RGB8:
         return gl.RGB8;
         break;
 
-      case tf.RGBA8:
+      case TextureFormat.RGBA8:
         return gl.RGBA8;
         break;
 
-      case tf.ALPHA:
+      case TextureFormat.ALPHA:
         return gl.ALPHA;
         break;
 
-      case tf.RGB16F:
+      case TextureFormat.RGB16F:
         if (RendererDevice_1.default.IsWebGL2()) {
           return gl.RGB16F;
         }
@@ -41789,7 +42940,7 @@ class TextureFormat {
         return gl.RGB;
         break;
 
-      case tf.RGBA16F:
+      case TextureFormat.RGBA16F:
         if (RendererDevice_1.default.IsWebGL2()) {
           return gl.RGBA16F;
         }
@@ -41797,12 +42948,12 @@ class TextureFormat {
         return gl.RGBA;
         break;
 
-      case tf.RGB32F:
+      case TextureFormat.RGB32F:
         if (RendererDevice_1.default.IsWebGL2()) gl.RGB32F;
         return gl.RGB;
         break;
 
-      case tf.RGBA32F:
+      case TextureFormat.RGBA32F:
         if (RendererDevice_1.default.IsWebGL2()) gl.RGBA32F;
         return gl.RGBA;
         break;
@@ -41811,11 +42962,11 @@ class TextureFormat {
         return gl.RED;
         break;
 
-      case tf.DEPTH_COMPONENT:
+      case TextureFormat.DEPTH_COMPONENT:
         return gl.DEPTH_COMPONENT;
         break;
 
-      case tf.DEPTH_STENCIL:
+      case TextureFormat.DEPTH_STENCIL:
         return gl.DEPTH_STENCIL;
         break;
 
@@ -41846,4 +42997,3 @@ exports.default = TextureFormat;
 /***/ })
 
 /******/ });
-});

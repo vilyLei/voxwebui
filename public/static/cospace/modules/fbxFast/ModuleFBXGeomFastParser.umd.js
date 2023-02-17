@@ -1723,11 +1723,6 @@ class Matrix4 {
     v3.z = fs[8 + row_index];
     v3.w = fs[12 + row_index];
   }
-  /**
-   * @param orientationStyle the value example: OrientationType.EULER_ANGLES
-   * @returns [position, rotation, scale]
-   */
-
 
   decompose(orientationStyle) {
     // TODO: optimize after 4 lines
@@ -1738,8 +1733,10 @@ class Matrix4 {
 
     mr.copyFrom(this); ///*
 
-    let pos = new Vector3D_1.default(rfs[12], rfs[13], rfs[14]);
-    let scale = new Vector3D_1.default();
+    let pos = this._mvx; //new Vector3D(rfs[12], rfs[13], rfs[14]);
+
+    let scale = this._mvy; //new Vector3D();
+
     scale.x = Math.sqrt(rfs[0] * rfs[0] + rfs[1] * rfs[1] + rfs[2] * rfs[2]);
     scale.y = Math.sqrt(rfs[4] * rfs[4] + rfs[5] * rfs[5] + rfs[6] * rfs[6]);
     scale.z = Math.sqrt(rfs[8] * rfs[8] + rfs[9] * rfs[9] + rfs[10] * rfs[10]);
@@ -1753,7 +1750,7 @@ class Matrix4 {
     rfs[8] /= scale.z;
     rfs[9] /= scale.z;
     rfs[10] /= scale.z;
-    let rot = new Vector3D_1.default();
+    let rot = this._mvz; //new Vector3D();
 
     switch (orientationStyle) {
       case OrientationType_1.default.AXIS_ANGLE:

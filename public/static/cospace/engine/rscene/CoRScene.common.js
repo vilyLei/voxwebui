@@ -3158,7 +3158,8 @@ class MaterialBase {
   }
 
   getTextureAt(index) {
-    return this.m_texList[index];
+    if (this.m_texList != null && this.m_texList.length > index) return this.m_texList[index];
+    return null;
   }
 
   getTextureTotal() {
@@ -12108,7 +12109,8 @@ class DisplayEntity {
     this.m_trs.setPosition(pv);
   }
 
-  getPosition(pv) {
+  getPosition(pv = null) {
+    if (!pv) pv = new Vector3D_1.default();
     this.m_trs.getPosition(pv);
     return pv;
   }
@@ -12130,11 +12132,15 @@ class DisplayEntity {
   }
 
   getRotationXYZ(pv) {
+    if (!pv) pv = new Vector3D_1.default();
     this.m_trs.getRotationXYZ(pv);
+    return pv;
   }
 
   getScaleXYZ(pv) {
+    if (!pv) pv = new Vector3D_1.default();
     this.m_trs.getScaleXYZ(pv);
+    return pv;
   }
 
   localToGlobal(pv) {
@@ -27238,7 +27244,8 @@ class DisplayEntityContainer {
     this.m_transformStatus |= 1;
   }
 
-  getPosition(pv) {
+  getPosition(pv = null) {
+    if (!pv) pv = new Vector3D_1.default();
     pv.copyFrom(this.m_pos);
     return pv;
   }
@@ -27336,11 +27343,15 @@ class DisplayEntityContainer {
   }
 
   getRotationXYZ(pv) {
+    if (!pv) pv = new Vector3D_1.default();
     pv.setXYZ(this.m_rx, this.m_ry, this.m_rz);
+    return pv;
   }
 
   getScaleXYZ(pv) {
+    if (!pv) pv = new Vector3D_1.default();
     pv.setXYZ(this.m_sx, this.m_sy, this.m_sz);
+    return pv;
   }
 
   localToParent(pv) {
