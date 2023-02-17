@@ -102,7 +102,7 @@ class T_CoEntity {
 		return CoEntity.createXOYPlane(minX, minY, width, height, material, texEnabled);
 	}
 	createXOZPlane(minX: number, minZ: number, width: number, long: number, material: IRenderMaterial = null, texEnabled: boolean = false): ITransformEntity {
-		return CoEntity.createYOZPlane(minX, minZ, width, long, material, texEnabled);
+		return CoEntity.createXOZPlane(minX, minZ, width, long, material, texEnabled);
 	}
 
 	createYOZPlane(minY: number, minZ: number, height: number, long: number, material: IRenderMaterial = null, texEnabled: boolean = false): ITransformEntity {
