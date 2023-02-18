@@ -33,6 +33,7 @@ import { VoxMath } from "../cospace/math/VoxMath";
 import { VoxMaterial } from "../cospace/voxmaterial/VoxMaterial";
 import { VoxEntity } from "../cospace/voxentity/VoxEntity";
 import { VoxMesh } from "../cospace/voxmesh/VoxMesh";
+import { VoxRenderer } from "../cospace/voxengine/VoxRenderer";
 let __$$__init = true;
 function initialize(): void {
 	if(__$$__init) {
@@ -91,6 +92,7 @@ function createParamCtrlPanel(): ParamCtrlPanel {
 	return new ParamCtrlPanel();
 }
 function createUIScene(graph: IRendererSceneGraph, uiConfig: IUIConfig = null, atlasSize: number = 512, renderProcessesTotal: number = 3): IVoxUIScene {
+	initialize();
 	let uisc = new VoxUIScene();
 	if(graph != null) {
 		uisc.initialize(graph, atlasSize, renderProcessesTotal);

@@ -1570,6 +1570,14 @@ class T_CoMesh {
   get box() {
     return CoMesh.box;
   }
+  /**
+   * box mesh builder
+   */
+
+
+  get sphere() {
+    return CoMesh.sphere;
+  }
 
   createDataMesh() {
     return CoMesh.createDataMesh();
@@ -3306,7 +3314,6 @@ function initialize() {
     __$$__init = false;
 
     if (VoxRScene_1.VoxRScene.isEnabled()) {
-      console.log("Lib_VoxUI::initialize(), lllll");
       VoxRScene_1.VoxRScene.initialize();
       if (VoxMesh_1.VoxMesh.isEnabled()) VoxMesh_1.VoxMesh.initialize();
       if (VoxMath_1.VoxMath.isEnabled()) VoxMath_1.VoxMath.initialize();
@@ -3397,6 +3404,7 @@ function createParamCtrlPanel() {
 exports.createParamCtrlPanel = createParamCtrlPanel;
 
 function createUIScene(graph, uiConfig = null, atlasSize = 512, renderProcessesTotal = 3) {
+  initialize();
   let uisc = new VoxUIScene_1.VoxUIScene();
 
   if (graph != null) {
@@ -4561,6 +4569,34 @@ class T_CoEntity {
 
   createDisplayEntityContainer() {
     return CoEntity.createDisplayEntityContainer();
+  }
+
+  createXOYPlane(minX, minY, width, height, material = null, texEnabled = false) {
+    return CoEntity.createXOYPlane(minX, minY, width, height, material, texEnabled);
+  }
+
+  createXOZPlane(minX, minZ, width, long, material = null, texEnabled = false) {
+    return CoEntity.createXOZPlane(minX, minZ, width, long, material, texEnabled);
+  }
+
+  createYOZPlane(minY, minZ, height, long, material = null, texEnabled = false) {
+    return CoEntity.createYOZPlane(minY, minZ, height, long, material, texEnabled);
+  }
+
+  createCube(size, material = null, texEnabled = false) {
+    return CoEntity.createCube(size, material, texEnabled);
+  }
+
+  createBox(minV, maxV, material = null, texEnabled = false) {
+    return CoEntity.createBox(minV, maxV, material, texEnabled);
+  }
+
+  createSphere(radius, longitudeNumSegments = 20, latitudeNumSegments = 20, doubleTriFaceEnabled = false, material = null, texEnabled = false) {
+    return CoEntity.createSphere(radius, longitudeNumSegments, latitudeNumSegments, doubleTriFaceEnabled);
+  }
+
+  createCone(radius, height, longitudeNumSegments = 20, alignYRatio = -0.5, material = null, texEnabled = false) {
+    return CoEntity.createCone(radius, height, longitudeNumSegments, alignYRatio, material, texEnabled);
   }
 
 }
@@ -6650,7 +6686,7 @@ class T_CoMath {
       this.m_init = false;
 
       if (url == "" || url === undefined) {
-        url = "static/cospace/math/CoMath.umd.js";
+        url = "static/cospace/math/CoMath.umd.min.js";
       }
 
       new ModuleLoader_1.ModuleLoader(1, () => {
