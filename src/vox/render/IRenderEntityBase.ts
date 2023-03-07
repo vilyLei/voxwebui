@@ -5,10 +5,13 @@
 /*                                                                         */
 /***************************************************************************/
 
+import IROTransform from "../../vox/display/IROTransform";
 /**
  * to be used in the renderer runtime
  */
 export default interface IRenderEntityBase {
+    
+    uuid: string;
     /**
      * mouse interaction enabled, the default value is false
      */
@@ -18,9 +21,10 @@ export default interface IRenderEntityBase {
      */
     getREType(): number;
     getUid(): number;
-    setVisible(boo: boolean): void;
+    setVisible(boo: boolean): IRenderEntityBase;
     getVisible(): boolean;
     isVisible(): boolean;
+    getTransform(): IROTransform;
     update(): void;
     destroy(): void;
 }

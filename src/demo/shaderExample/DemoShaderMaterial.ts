@@ -95,7 +95,7 @@ export class DemoShaderMaterial {
 
 			let material = VoxMaterial.createShaderMaterial("model_shd");
 			material.setFragShaderCode(ShaderCode.frag_body);
-			material.setVtxShaderCode(ShaderCode.vert_body);
+			material.setVertShaderCode(ShaderCode.vert_body);
 			material.addUniformDataAt("u_color", fs);
 			material.setTextureList([
 				this.getTexByUrl("static/assets/metal_01.png")

@@ -397,6 +397,8 @@ const MouseCamZoomer_1 = __importDefault(__webpack_require__("5082"));
 class MouseInteraction {
   constructor() {
     this.m_rscene = null;
+    this.m_autoRun = false;
+    this.m_axisType = 0;
     this.drager = new MouseCamDrager_1.default();
     this.zoomer = new MouseCamZoomer_1.default(); // zoomLookAtPosition: IVector3D = null;
 
@@ -427,6 +429,8 @@ class MouseInteraction {
       z.initialize(rscene.getStage3D());
       z.setLookAtCtrlEnabled(false);
     }
+
+    return this;
   }
 
   enableSwing() {
@@ -443,20 +447,68 @@ class MouseInteraction {
 
   setSyncLookAtEnabled(ennabled) {
     this.zoomer.syncLookAt = ennabled;
+    return this;
   }
 
   setLookAtPosition(v) {
     this.zoomer.setLookAtPosition(v);
+    return this;
+  }
+  /**
+   * @param enabled enable auto runnning or not
+   * @param axisType 0 is y-axis, 1 is z-axis
+   */
+
+
+  setAutoRunning(enabled, axisType = 0) {
+    this.m_axisType = axisType;
+    this.m_autoRun = enabled;
+    const type = CoRScene.EventBase.ENTER_FRAME;
+
+    if (enabled) {
+      this.setSyncLookAtEnabled(true);
+      this.m_rscene.addEventListener(type, this, this.autoRun);
+    } else {
+      this.m_rscene.removeEventListener(type, this, this.autoRun);
+    }
+
+    return this;
+  }
+
+  autoRun(evt) {
+    if (this.cameraCtrlEnabled) {
+      this.zoomer.setLookAtPosition(null);
+      this.zoomer.run(this.zoomMinDistance);
+
+      switch (this.m_axisType) {
+        case 0:
+          this.drager.runWithYAxis();
+          break;
+
+        case 1:
+          this.drager.runWithZAxis();
+          break;
+
+        default:
+          this.drager.runWithYAxis();
+          break;
+      }
+    }
   }
 
   run() {
-    if (this.cameraCtrlEnabled) {
+    if (this.cameraCtrlEnabled && !this.m_autoRun) {
       this.zoomer.run(this.zoomMinDistance);
       this.drager.runWithYAxis();
     }
   }
 
-  destroy() {}
+  destroy() {
+    if (this.m_rscene != null) {
+      this.setAutoRunning(false);
+      this.m_rscene = null;
+    }
+  }
 
 }
 

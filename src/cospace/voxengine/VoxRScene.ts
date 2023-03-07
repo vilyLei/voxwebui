@@ -39,6 +39,7 @@ import { ModuleLoader } from "../modules/loaders/ModuleLoader";
 
 import { CoMaterialPipeType, CoMaterialContextParam, CoShaderCodeUUID, CoProgressDataEvent, CoSelectionEvent, COEventBase, CoVec3, CoTextureConst, CoRenderDrawMode, ICoRScene } from "./ICoRScene";
 import { VoxRenderer } from "./VoxRenderer";
+import IVtxDrawingInfo from "../../vox/render/vtx/IVtxDrawingInfo";
 declare var CoRScene: ICoRScene;
 
 interface I_CoRScene {
@@ -50,23 +51,28 @@ var SelectionEvent: CoSelectionEvent = null;
 var ProgressDataEvent: CoProgressDataEvent = null;
 var MouseEvent: ICoMouseEvent = null;
 var EventBase: COEventBase = null;
+var RendererState: CoRendererState = null;
 
 class T_CoRScene {
 	private m_init = true;
 	private init(): void {
 
-		if(typeof CoRScene !== "undefined") {
+		if (typeof CoRScene !== "undefined") {
 			RendererDevice = CoRScene.RendererDevice;
 			SelectionEvent = CoRScene.SelectionEvent;
 			ProgressDataEvent = CoRScene.ProgressDataEvent;
 			EventBase = CoRScene.EventBase;
 			MouseEvent = CoRScene.MouseEvent;
+			RendererState = CoRScene.RendererState;
 		}
 	}
 	initialize(callback: (urls: string[]) => void = null, url: string = ""): boolean {
 
-		this.init();
 		this.m_init = !this.isEnabled();
+		if (!this.m_init) {
+			VoxRenderer.initialize();
+			this.init();
+		}
 		if (this.m_init) {
 			this.m_init = false;
 			let flag = false;
@@ -84,6 +90,7 @@ class T_CoRScene {
 				url = "static/cospace/engine/rscene/CoRScene.umd.min.js";
 			}
 			new ModuleLoader(1, (): void => {
+				VoxRenderer.initialize();
 				this.init();
 				if (flag) {
 					total++;
@@ -215,7 +222,9 @@ class T_CoRScene {
 	createEventBaseDispatcher(): IEvtDispatcher {
 		return CoRScene.createEventBaseDispatcher();
 	}
-
+	createVtxDrawingInfo(): IVtxDrawingInfo {
+		return CoRScene.createVtxDrawingInfo();
+	}
 	/**
 	 * build default 3d entity rendering material
 	 * @param normalEnabled the default value is false
@@ -258,21 +267,20 @@ class T_CoRScene {
 		return CoRScene.createBoundsMesh();
 	}
 	/**
-	 * @param model geometry model
-	 * @param pmaterial IRenderMaterial instance, the default is null.
-	 * @param vbWhole vtx buffer is whole data, or not, the default is false.
+	 * @param model geometry model data
+	 * @param material IRenderMaterial instance, the default value is null.
+	 * @param texEnabled the default value is false;
 	 */
-	createDataMeshFromModel(model: CoGeomDataType, pmaterial?: IRenderMaterial, vbWhole?: boolean): IDataMesh {
-		return CoRScene.createDataMeshFromModel(model, pmaterial, vbWhole);
+	createDataMeshFromModel(model: CoGeomDataType, material?: IRenderMaterial, texEnabled?: boolean): IDataMesh {
+		return CoRScene.createDataMeshFromModel(model, material, texEnabled);
 	}
 	/**
-	 * @param model geometry model
+	 * @param model geometry model data
 	 * @param pmaterial IRenderMaterial instance, the default is null.
-	 * @param texEnabled texture enabled in the material, the default is true.
-	 * @param vbWhole vtx buffer is whole data or not, the default is false.
+	 * @param texEnabled texture enabled in the material, the default is false.
 	 */
-	createDisplayEntityFromModel(model: CoGeomDataType, pmaterial?: IRenderMaterial, texEnabled?: boolean, vbWhole?: boolean): ITransformEntity {
-		return CoRScene.createDisplayEntityFromModel(model, pmaterial, texEnabled, vbWhole);
+	createDisplayEntityFromModel(model: CoGeomDataType, pmaterial?: IRenderMaterial, texEnabled?: boolean): ITransformEntity {
+		return CoRScene.createDisplayEntityFromModel(model, pmaterial, texEnabled);
 	}
 	/**
 	 * @param minV min position value
@@ -300,11 +308,10 @@ class T_CoRScene {
 	/**
 	 * @param model IDataMesh instance
 	 * @param material IRenderMaterial instance.
-	 * @param texEnabled use texture yes or no.
-	 * @param vbWhole vtx buffer is whole data, or not, the default is false.
+	 * @param texEnabled use texture yes or no, the default is false.
 	 */
-	createDisplayEntityWithDataMesh(mesh: IDataMesh, material: IRenderMaterial, texEnabled?: boolean, vbWhole?: boolean): ITransformEntity {
-		return CoRScene.createDisplayEntityWithDataMesh(mesh, material, texEnabled, vbWhole);
+	createDisplayEntityWithDataMesh(mesh: IDataMesh, material: IRenderMaterial, texEnabled?: boolean): ITransformEntity {
+		return CoRScene.createDisplayEntityWithDataMesh(mesh, material, texEnabled);
 	}
 	/**
 	 * @param transform the default value is false
@@ -360,4 +367,4 @@ class T_CoRScene {
 	}
 }
 const VoxRScene = new T_CoRScene();
-export { MouseEvent, EventBase, ProgressDataEvent, SelectionEvent, RendererDevice, VoxRScene };
+export { RendererState, MouseEvent, EventBase, ProgressDataEvent, SelectionEvent, RendererDevice, VoxRScene };

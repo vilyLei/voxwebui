@@ -4,7 +4,7 @@ interface I_CoGeomModelLoader {
 	
 }
 class CoGeomModelLoader {
-	private m_coapp = new CoDataModule();
+	private static s_coapp = new CoDataModule();
 	private m_loadedCall: (models: CoGeomDataType[], transforms: Float32Array[], format: CoDataFormat, url?: string) => void = null;
 	private m_loadedAllCall: (total: number, url?: string) => void = null;
 	private m_loadTotal = 0;
@@ -20,9 +20,9 @@ class CoGeomModelLoader {
 	load(urls: string[], typeNS: string = ""): void {
 		if (urls != null && urls.length > 0) {
 
-			this.m_coapp.initialize(null, true);
+			CoGeomModelLoader.s_coapp.initialize(null, true);
 			let purls = urls.slice(0);
-			this.m_coapp.deferredInit((): void => {
+			CoGeomModelLoader.s_coapp.deferredInit((): void => {
 				for (let i = 0; i < purls.length; ++i) {
 					this.loadModel(purls[i], typeNS);
 				}
@@ -70,7 +70,7 @@ class CoGeomModelLoader {
 	}
 	private loadGeomModel(url: string, format: CoDataFormat): void {
 
-		let ins = this.m_coapp;
+		let ins = CoGeomModelLoader.s_coapp;
 		if (ins != null) {
 			let unit = ins.getCPUDataByUrlAndCallback(
 				url,
@@ -86,10 +86,12 @@ class CoGeomModelLoader {
 			);
 			if (format == CoDataFormat.FBX) {
 				unit.data.modelReceiver = (models: CoGeomDataType[], transforms: Float32Array[], index: number, total: number): void => {
-					// console.log("XXX: ", index, ",", total);
-					this.m_loadTotal++;
+					// console.log("Loaded a fbx model XXX: ", index, ",", total);
+					if(index == 0) {
+						this.m_loadTotal++;
+					}
 					this.loadedModels(models, transforms, format, unit.url);
-					this.loadedModelFromUnit(unit, 0);
+					this.loadedModelFromUnit(unit, 0, (index + 1) == total);
 				};
 			}
 		}
@@ -99,8 +101,8 @@ class CoGeomModelLoader {
 			this.m_loadedCall(models, transforms, format, url);
 		}
 	}
-	private loadedModelFromUnit(unit: CoGeomDataUnit, status: number = 0): void {
-		this.m_loadedTotal++;
+	private loadedModelFromUnit(unit: CoGeomDataUnit, status: number = 0, flag: boolean = true): void {
+		if(flag)this.m_loadedTotal++;
 		if (this.m_loadedTotal >= this.m_loadTotal) {
 			let total = this.m_loadedTotal;
 			this.reset();
@@ -110,11 +112,6 @@ class CoGeomModelLoader {
 	destroy(): void {
 
 		this.m_loadedCall = null;
-		if (this.m_coapp != null) {
-			// todo
-
-			this.m_coapp = null;
-		}
 	}
 }
 export { CoGeomDataType, CoDataFormat, CoGeomModelLoader };
