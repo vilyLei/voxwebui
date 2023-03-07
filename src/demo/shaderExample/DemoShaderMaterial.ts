@@ -235,10 +235,10 @@ export class DemoShaderMaterial {
 	private getTexByUrl(url: string = ""): IRenderTexture {
 		let sc = this.m_rscene;
 
-		let tex = sc.textureBlock.createImageTex2D(64, 64, false);
+		let tex = sc.textureBlock.createImageTex2D();
 		let img = new Image();
 		img.onload = (evt: any): void => {
-			tex.setDataFromImage(img, 0, 0, 0, false);
+			tex.setDataFromImage(img);
 		};
 		img.src = url;
 		return tex;
@@ -249,8 +249,6 @@ export class DemoShaderMaterial {
 			let RD = VoxRScene.RendererDevice;
 			RD.SHADERCODE_TRACE_ENABLED = false;
 			RD.VERT_SHADER_PRECISION_GLOBAL_HIGHP_ENABLED = true;
-			RD.SetWebBodyColor("#888888");
-
 			let graph = this.m_graph = VoxRScene.createRendererSceneGraph();
 			let rparam = graph.createRendererSceneParam();
 			rparam.setAttriAntialias(!RD.IsMobileWeb());

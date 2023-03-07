@@ -10,6 +10,8 @@ interface IColorClipLabel extends IClipEntity {
 	setLabelCircleClipIndex(i: number): void;
 	getLabelClipsTotal(): number;
 
+	setColors(colors: IColor4[]): void;
+	setColorsWithHex(colors: number[]): void;
 	getColors(): IColor4[];
 	getColorAt(i: number): IColor4;
 	setColorAt(i: number, color4: IColor4): void;

@@ -91,9 +91,11 @@ function createPromptPanel(): PromptPanel {
 function createParamCtrlPanel(): ParamCtrlPanel {
 	return new ParamCtrlPanel();
 }
+let __$$$currUISCene: VoxUIScene = null;
 function createUIScene(graph: IRendererSceneGraph, uiConfig: IUIConfig = null, atlasSize: number = 512, renderProcessesTotal: number = 3): IVoxUIScene {
 	initialize();
 	let uisc = new VoxUIScene();
+	__$$$currUISCene = uisc;
 	if(graph != null) {
 		uisc.initialize(graph, atlasSize, renderProcessesTotal);
 	}
@@ -120,6 +122,43 @@ function createUILayout(): UILayout {
 	return new UILayout();
 }
 
+function createTextLabelButton(uuid: string, text: string, width: number = 90, height: number = 50, textColor: IColor4 = null, fontSize: number = 30, fontName: string = ""): Button {
+
+	if(text == "" || __$$$currUISCene == null) return null;
+
+	let uisc = __$$$currUISCene;
+	let tta = uisc.transparentTexAtlas;
+	return ButtonBuilder.createTextLabelButton(tta, uuid,text,width, height, textColor, fontSize, fontName);
+
+	// let uisc = __$$$currUISCene;
+	// let tta = uisc.transparentTexAtlas;
+	// let fontColor = textColor != null ? textColor : VoxMaterial.createColor4(0, 0, 0, 1.0);
+	// let bgColor = VoxMaterial.createColor4(1, 1, 1, 0.0);
+	// if(fontName != "") {
+	// 	tta.setFontName( fontName );
+	// }
+	// let img = tta.createCharsCanvasFixSize(width, height, text, fontSize, fontColor, bgColor);
+	// tta.addImageToAtlas(text, img);
+
+	// let colorLabel = new ClipColorLabel();
+	// colorLabel.initializeWithoutTex(width, height, 4);
+	// colorLabel.getColorAt(0).setRGB3f(0.5, 0.5, 0.5);
+	// colorLabel.getColorAt(1).setRGB3f(0.7, 0.7, 0.7);
+	// colorLabel.getColorAt(2).setRGB3f(0.6, 0.6, 0.6);
+	// colorLabel.getColorAt(3).copyFrom(colorLabel.getColorAt(1));
+
+	// let iconLable = new ClipLabel();
+	// iconLable.transparent = true;
+	// iconLable.premultiplyAlpha = true;
+	// iconLable.initialize(tta, [text]);
+
+	// let btn = new Button();
+	// btn.uuid = uuid;
+	// btn.addLabel(iconLable);
+	// btn.initializeWithLable(colorLabel);
+	// this.m_uiScene.addEntity(btn);
+	// return btn;
+}
 export {
 	initialize,
 	createColorLabel,
@@ -134,6 +173,7 @@ export {
 	createFlagButton,
 	createSelectButtonGroup,
 	createTextButton,
+	createTextLabelButton,
 
 	createUIPanel,
 	createPromptPanel,

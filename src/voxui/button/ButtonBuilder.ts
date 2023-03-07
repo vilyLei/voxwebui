@@ -48,6 +48,38 @@ class ButtonBuilder {
 		return null;
 	}
 	
+static createTextLabelButton(texAtlas: ICanvasTexAtlas, uuid: string, text: string, width: number = 90, height: number = 50, textColor: IColor4 = null, fontSize: number = 30, fontName: string = ""): Button {
+
+	if(text == "" || texAtlas == null) return null;
+
+	// let uisc = __$$$currUISCene;
+	let tta = texAtlas;
+	let fontColor = textColor != null ? textColor : VoxMaterial.createColor4(0, 0, 0, 1.0);
+	let bgColor = VoxMaterial.createColor4(1, 1, 1, 0.0);
+	if(fontName != "") {
+		tta.setFontName( fontName );
+	}
+	let img = tta.createCharsCanvasFixSize(width, height, text, fontSize, fontColor, bgColor);
+	tta.addImageToAtlas(text, img);
+
+	let colorLabel = new ClipColorLabel();
+	colorLabel.initializeWithoutTex(width, height, 4);
+	colorLabel.getColorAt(0).setRGB3f(0.5, 0.5, 0.5);
+	colorLabel.getColorAt(1).setRGB3f(0.7, 0.7, 0.7);
+	colorLabel.getColorAt(2).setRGB3f(0.6, 0.6, 0.6);
+	colorLabel.getColorAt(3).copyFrom(colorLabel.getColorAt(1));
+
+	let iconLable = new ClipLabel();
+	iconLable.transparent = true;
+	iconLable.premultiplyAlpha = true;
+	iconLable.initialize(tta, [text]);
+
+	let btn = new Button();
+	btn.uuid = uuid;
+	btn.addLabel(iconLable);
+	btn.initializeWithLable(colorLabel);
+	return btn;
+}
 	static createTextButton(width: number, height: number, idns: string, texAtlas: ICanvasTexAtlas, textParam: ITextParam, colors: IColor4[]): Button {
 	
 		let tp = textParam;

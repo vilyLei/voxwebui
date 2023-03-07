@@ -85,8 +85,20 @@ class T_Lib_VoxUI {
 	createSelectButtonGroup(): ISelectButtonGroup {
 		return Lib_VoxUI.createSelectButtonGroup();
 	}
-	createTextButton(width: number, height: number, idns: string, texAtlas: ICanvasTexAtlas, textParam: ITextParam, colors: IColor4[]): IButton {
-		return Lib_VoxUI.createTextButton(width, height, idns, texAtlas, textParam, colors);
+	createTextButton(width: number, height: number, uuid: string, texAtlas: ICanvasTexAtlas, textParam: ITextParam, colors: IColor4[]): IButton {
+		return Lib_VoxUI.createTextButton(width, height, uuid, texAtlas, textParam, colors);
+	}
+	/**
+	 * @param uuid button event uuid
+	 * @param text button text content
+	 * @param width button width, the defaule value is 90
+	 * @param height button height, the defaule value is 50
+	 * @param textColor button text color, the defaule value is null
+	 * @param fontSize button text font size, the defaule value is 30
+	 * @param fontName button text font name, the defaule value is ""
+	 */
+	createTextLabelButton(uuid: string, text: string, width?: number, height?: number, textColor?: IColor4, fontSize?: number, fontName?: string): IButton {
+		return Lib_VoxUI.createTextLabelButton(uuid, text, width, height, textColor, fontSize, fontName);
 	}
 
 	createUIPanel(): IUIPanel {

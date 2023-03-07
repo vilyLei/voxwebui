@@ -41,7 +41,16 @@ interface ILib_VoxUI {
 	createFlagButton(): IFlagButton;
 	createSelectButtonGroup(): ISelectButtonGroup;
 	createTextButton(width: number, height: number, idns: string, texAtlas: ICanvasTexAtlas, textParam: ITextParam, colors: IColor4[]): IButton;
-
+	/**
+	 * @param uuid button event uuid
+	 * @param text button text content
+	 * @param width button width, the defaule value is 90
+	 * @param height button height, the defaule value is 50
+	 * @param textColor button text color, the defaule value is null
+	 * @param fontSize button text font size, the defaule value is 30
+	 * @param fontName button text font name, the defaule value is ""
+	 */
+	createTextLabelButton(uuid: string, text: string, width?: number, height?: number, textColor?: IColor4, fontSize?: number, fontName?: string): IButton;
 	createUIPanel(): IUIPanel;
 	createPromptPanel(): IPromptPanel;
 	createParamCtrlPanel(): IParamCtrlPanel;
