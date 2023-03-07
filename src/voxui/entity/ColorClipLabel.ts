@@ -73,6 +73,9 @@ class ColorClipLabel extends UIEntityBase implements IColorClipLabel {
 			for(let i = 0; i < len; ++i) {
 				ls[i].copyFrom(colors[i]);
 			}
+			if(len == 3 && ls.length == 4) {
+				ls[3].copyFrom(colors[1]);
+			}
 			this.setClipIndex(this.m_index);
 		}
 	}
@@ -85,6 +88,9 @@ class ColorClipLabel extends UIEntityBase implements IColorClipLabel {
 			}
 			for(let i = 0; i < len; ++i) {
 				ls[i].setRGBUint24( colors[i] );
+			}
+			if(len == 3 && ls.length == 4) {
+				ls[3].setRGBUint24( colors[1] );
 			}
 			this.setClipIndex(this.m_index);
 		}

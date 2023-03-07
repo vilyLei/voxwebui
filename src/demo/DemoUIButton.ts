@@ -57,8 +57,8 @@ export class DemoUIButton {
 		// let texLabelBtn = this.createTextLabelButton("b01","Color");
 		let texLabelBtn = ButtonBuilder.createTextLabelButton(transparentTexAtlas, "b01","Color");
 		this.m_uiScene.addEntity(texLabelBtn);
-		let label = texLabelBtn.getLable() as IClipColorLabel;
 		// label.setColors();
+		this.applyColors(texLabelBtn);
 	}
 	
 	private applyColors(btn: IButton): void {
