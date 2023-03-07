@@ -1,8 +1,8 @@
 
 // import {DemoBase as Demo} from "./demo/DemoBase";
-import {DemoUIButton as Demo} from "./demo/DemoUIButton";
+// import {DemoUIButton as Demo} from "./demo/DemoUIButton";
 // import {DemoUIBase as Demo} from "./demo/DemoUIBase";
-// import {DemoComp as Demo} from "./demo/DemoComp";
+import {DemoComp as Demo} from "./demo/DemoComp";
 // import {DemoParamUI as Demo} from "./demo/DemoParamUI";
 // import {DemoParamPanel as Demo} from "./demo/DemoParamPanel";
 // import {DemoShaderMaterial as Demo} from "./demo/shaderExample/DemoShaderMaterial";
