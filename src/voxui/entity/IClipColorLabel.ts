@@ -9,9 +9,11 @@ interface IClipColorLabel extends IClipEntity {
 	initializeWithoutTex(width: number, height: number, colorsTotal: number): void;
 	initializeWithSize(width: number, height: number, atlas: ICanvasTexAtlas, idns: string, colorsTotal: number): void;
 	getColors(): IColor4[];
+	
 	getColorAt(i: number): IColor4;
 	setColorAt(i: number, color4: IColor4): void;
 	setColors(colors: IColor4[]): void;
+	setColorsWithHex(colors: number[]): void;
 
 }
 export { IClipColorLabel };

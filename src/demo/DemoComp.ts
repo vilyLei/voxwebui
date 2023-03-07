@@ -53,10 +53,12 @@ export class DemoComp {
 	private initUIScene(): void {
 		// let uisc = CoUI.createUIScene(); //new VoxUIScene();
 		console.log("create the VoxUIScene instance...");
+		
 		let uisc = new VoxUIScene();
 		uisc.texAtlasNearestFilter = true;
 		this.m_uiScene = uisc;
 		uisc.initialize(this.m_graph, 1024);
+
 		console.log("uisc: ", uisc);
 		console.log("uisc.rscene: ", uisc.rscene);
 

@@ -4,6 +4,8 @@ import IRawMesh from "../../vox/mesh/IRawMesh";
 import { ClipLabelBase } from "./ClipLabelBase";
 import IDefault3DMaterial from "../../vox/material/mcase/IDefault3DMaterial";
 
+import { ICoRScene } from "../../cospace/voxengine/ICoRScene";
+declare var CoRScene: ICoRScene;
 import { ICoMesh } from "../../cospace/voxmesh/ICoMesh";
 declare var CoMesh: ICoMesh;
 import { ICoMaterial } from "../../cospace/voxmaterial/ICoMaterial";
@@ -70,6 +72,7 @@ class ClipLabel extends ClipLabelBase implements IClipLabel {
 			this.m_vtCount = mesh.vtCount;
 			
 			this.m_material = this.createMaterial(obj.texture);
+			this.m_material.vtxInfo = CoRScene.createVtxDrawingInfo();
 
 			let et = CoEntity.createDisplayEntity();
 			et.setMaterial(this.m_material);
@@ -110,7 +113,7 @@ class ClipLabel extends ClipLabelBase implements IClipLabel {
 				this.m_vtCount = mesh.vtCount;
 				
 				this.m_material = this.createMaterial(tex);
-
+				this.m_material.vtxInfo = CoRScene.createVtxDrawingInfo();
 				let et = CoEntity.createDisplayEntity();
 				et.setMaterial(this.m_material);
 				et.setMesh(mesh);
@@ -146,10 +149,11 @@ class ClipLabel extends ClipLabelBase implements IClipLabel {
 	setClipIndex(i: number): void {
 		if (i >= 0 && i < this.m_total) {
 			this.m_index = i;
-
+			// console.log("setClipIndex(), i: ", i);
 			let ls = this.m_entities;
 			for (let k = 0; k < ls.length; ++k) {
-				ls[k].setIvsParam(i * this.m_step, this.m_step);
+				// ls[k].setIvsParam(i * this.m_step, this.m_step);
+				ls[k].getMaterial().vtxInfo.setIvsParam(i * this.m_step, this.m_step);
 			}
 
 			i = i << 1;
