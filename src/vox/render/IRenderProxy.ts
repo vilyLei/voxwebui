@@ -18,10 +18,11 @@ import IROVertexBufUpdater from '../../vox/render/IROVertexBufUpdater';
 import IROMaterialUpdater from '../../vox/render/IROMaterialUpdater';
 import { IShaderUniformContext } from "../../vox/material/IShaderUniformContext";
 
-import { IStencil } from "../../vox/render/rendering/IStencil";
+import { IRenderingStencil } from "../../vox/render/rendering/IRenderingStencil";
 import { IRenderingColorMask } from "./rendering/IRenderingColorMask";
 import { IRenderingState } from "./rendering/IRenderingState";
 import IRenderShader from "../../vox/render/IRenderShader";
+import IRODataBuilder from "../../vox/render/IRODataBuilder";
 
 import { IRPStatus } from "./status/IRPStatus";
 
@@ -51,11 +52,13 @@ export default interface IRenderProxy {
     readonly MaterialUpdater: IROMaterialUpdater;
     readonly uniformContext: IShaderUniformContext;
     readonly rshader: IRenderShader;
+    rdataBuilder: IRODataBuilder;
 
-    readonly stencil: IStencil;
+    readonly stencil: IRenderingStencil;
     readonly renderingState: IRenderingState;
     readonly colorMask: IRenderingColorMask;
     readonly status: IRPStatus;
+    readonly adapter: IRenderAdapter;
 
     /**
      * @returns return system gpu context

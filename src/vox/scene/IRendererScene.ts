@@ -40,11 +40,22 @@ interface IRendererScene {
      * @param renderProcessesTotal the default value is 3
      * @param createNewCamera the default value is true;
      */
-    initialize(rparam: IRendererParam, renderProcessesTotal?: number, createNewCamera?: boolean): void;
+    initialize(rparam: IRendererParam, renderProcessesTotal?: number, createNewCamera?: boolean): IRendererScene;
     setAccessor(accessor: IRendererSceneAccessor): void;
     prependRenderNode(node: IRenderNode): void;
     appendRenderNode(node: IRenderNode): void;
     removeRenderNode(node: IRenderNode): void;
+    /**
+     * @param index renderer process index in the renderer scene
+     * @param batchEnabled the value is true or false
+     * @param processFixedState the value is true or false 
+     */
+    setRendererProcessParam?(index: number, batchEnabled: boolean, processFixedState: boolean): void;
+    /**
+     * @param batchEnabled the default value true
+     * @param processFixedState the default value false
+     */
+    appendARendererProcess?(batchEnabled?: boolean, processFixedState?: boolean): void;
     /**
      * @param rparam IRendererParam instance, the default value is null
      * @param renderProcessesTotal the default value is 3
@@ -58,6 +69,11 @@ interface IRendererScene {
     createFBOInstance(): IFBOInstance;
     createMatrix4(): IMatrix4;
     createVector3(x?: number, y?: number, z?: number, w?: number): IVector3D;
+
+    setViewPort(px: number, py: number, pw: number, ph: number): void;
+    setViewPortFromCamera(camera: IRenderCamera): void;
+	// apply new view port rectangle area
+	reseizeViewPort(): void;
     /**
      * 是否启用鼠标或者touch交互功能
      * @param gpuTestEnabled the default value is true.
@@ -166,8 +182,11 @@ interface IRendererScene {
     getRendererStatus(): number;
     /**
      * run all renderer processes in the renderer instance
+     * @param autoCycle the default value is true
      */
     run(autoCycle?: boolean): void;
     destroy(): void;
+    setAutoRunning(auto: boolean): IRendererScene;
+    isAutoRunning(): boolean;
 }
 export default IRendererScene;

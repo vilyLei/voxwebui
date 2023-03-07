@@ -35,6 +35,7 @@ import { CoRendererState } from "./render/CoRendererState";
 import CoVtxBufConst from "./mesh/CoVtxBufConst";
 import IRendererSceneGraph from "../../vox/scene/IRendererSceneGraph";
 import IProgressDataEvent from "../../vox/event/IProgressDataEvent";
+import IVtxDrawingInfo from "../../vox/render/vtx/IVtxDrawingInfo";
 
 interface CoVec3 {
 
@@ -228,6 +229,7 @@ interface ICoRScene {
 	createMouseEvt3DDispatcher(): IEvtDispatcher;
 	createEventBaseDispatcher(): IEvtDispatcher;
 
+	createVtxDrawingInfo(): IVtxDrawingInfo;
 	/**
 	 * build default 3d entity rendering material
 	 * @param normalEnabled the default value is false
@@ -250,18 +252,17 @@ interface ICoRScene {
 	createRawMesh(): IRawMesh;
 	createBoundsMesh(): IBoundsMesh;
 	/**
-	 * @param model geometry model
-	 * @param pmaterial IRenderMaterial instance, the default is null.
-	 * @param vbWhole vtx buffer is whole data, or not, the default is false.
+	 * @param model geometry model data
+	 * @param material IRenderMaterial instance, the default value is null.
+	 * @param texEnabled the default value is false;
 	 */
-	createDataMeshFromModel(model: CoGeomDataType, pmaterial?: IRenderMaterial, vbWhole?: boolean): IDataMesh;
+	createDataMeshFromModel(model: CoGeomDataType, material?: IRenderMaterial, texEnabled?: boolean): IDataMesh;
 	/**
-	 * @param model geometry model
+	 * @param model geometry model data
 	 * @param pmaterial IRenderMaterial instance, the default is null.
-	 * @param texEnabled texture enabled in the material, the default is true.
-	 * @param vbWhole vtx buffer is whole data or not, the default is false.
+	 * @param texEnabled texture enabled in the material, the default is false.
 	 */
-	createDisplayEntityFromModel(model: CoGeomDataType, pmaterial?: IRenderMaterial, texEnabled?: boolean, vbWhole?: boolean): ITransformEntity;
+	createDisplayEntityFromModel(model: CoGeomDataType, pmaterial?: IRenderMaterial, texEnabled?: boolean): ITransformEntity;
 	/**
 	 * @param minV min position value
 	 * @param maxV max position value
@@ -282,10 +283,9 @@ interface ICoRScene {
 	/**
 	 * @param model IDataMesh instance
 	 * @param material IRenderMaterial instance.
-	 * @param texEnabled use texture yes or no.
-	 * @param vbWhole vtx buffer is whole data, or not, the default is false.
+	 * @param texEnabled use texture yes or no, the default value is false
 	 */
-	createDisplayEntityWithDataMesh(mesh: IDataMesh, material: IRenderMaterial, texEnabled?: boolean, vbWhole?: boolean): ITransformEntity;
+	createDisplayEntityWithDataMesh(mesh: IDataMesh, material: IRenderMaterial, texEnabled?: boolean): ITransformEntity;
 	/**
 	 * @param transform the default value is false
 	 */

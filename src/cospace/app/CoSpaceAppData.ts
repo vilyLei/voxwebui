@@ -1,10 +1,8 @@
+//IGeomModelData
+import IGeomModelData from "../../vox/mesh/IGeomModelData";
 
-interface CoGeomDataType {
-	uvsList: Float32Array[];
-	vertices: Float32Array;
-	normals: Float32Array;
-	indices: Uint16Array | Uint32Array;
-}
+type CoGeomDataType = IGeomModelData;
+
 enum CoModuleNS {
 	ctmParser = "ctmGeomParser",
 	objParser = "objGeomParser",
