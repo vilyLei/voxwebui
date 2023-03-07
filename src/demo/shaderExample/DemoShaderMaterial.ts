@@ -1,5 +1,4 @@
 import IRendererScene from "../../vox/scene/IRendererScene";
-import { IMouseInteraction } from "../../cospace/voxengine/ui/IMouseInteraction";
 import IRenderTexture from "../../vox/render/texture/IRenderTexture";
 import ITransformEntity from "../../vox/entity/ITransformEntity";
 import IDataMesh from "../../vox/mesh/IDataMesh";
@@ -27,7 +26,6 @@ export class DemoShaderMaterial {
 
 	private m_graph: IRendererSceneGraph = null;
 	private m_rscene: IRendererScene = null;
-	private m_mouseInteraction: IMouseInteraction = null;
 	private m_modelLoader = new CoGeomModelLoader();
 	private m_layouter = new CoEntityLayouter();
 	private m_entities: ITransformEntity[] = [];
@@ -218,18 +216,8 @@ export class DemoShaderMaterial {
 		ui.layoutItem();
 		ui.open();
 	}
-	isEngineEnabled(): boolean {
-		return VoxRScene.isEnabled();
-	}
 	private initUserInteract(): void {
-
-		let r = this.m_rscene;
-		if (r != null && this.m_mouseInteraction == null && VoxUIInteraction.isEnabled()) {
-
-			this.m_mouseInteraction = VoxUIInteraction.createMouseInteraction();
-			this.m_mouseInteraction.initialize(this.m_rscene, 0, true);
-			this.m_mouseInteraction.setSyncLookAtEnabled(true);
-		}
+		VoxUIInteraction.createMouseInteraction().initialize(this.m_rscene, 0, true).setAutoRunning(true);
 	}
 
 	private getTexByUrl(url: string = ""): IRenderTexture {
@@ -237,9 +225,7 @@ export class DemoShaderMaterial {
 
 		let tex = sc.textureBlock.createImageTex2D();
 		let img = new Image();
-		img.onload = (evt: any): void => {
-			tex.setDataFromImage(img);
-		};
+		img.onload = (evt: any): void => { tex.setDataFromImage(img); };
 		img.src = url;
 		return tex;
 	}
@@ -256,15 +242,7 @@ export class DemoShaderMaterial {
 			rparam.setCamProject(45, 20.0, 9000.0);
 			this.m_rscene = graph.createScene(rparam, 3);
 			this.m_rscene.setClearUint24Color(0x888888);
-		}
-	}
-	run(): void {
-		if (this.m_graph != null) {
-			if (this.m_mouseInteraction != null) {
-				this.m_mouseInteraction.setLookAtPosition(null);
-				this.m_mouseInteraction.run();
-			}
-			this.m_graph.run();
+			this.m_graph.setAutoRunning(true);
 		}
 	}
 }
