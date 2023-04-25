@@ -70,7 +70,7 @@ class ClipLabel extends ClipLabelBase implements IClipLabel {
 			let obj = atlas.getTexObjFromAtlas(idnsList[0]);
 			let mesh = this.createMesh(atlas, idnsList);
 			this.m_vtCount = mesh.vtCount;
-			
+
 			this.m_material = this.createMaterial(obj.texture);
 			this.m_material.vtxInfo = CoRScene.createVtxDrawingInfo();
 
@@ -111,13 +111,13 @@ class ClipLabel extends ClipLabelBase implements IClipLabel {
 				}
 
 				this.m_vtCount = mesh.vtCount;
-				
+
 				this.m_material = this.createMaterial(tex);
 				this.m_material.vtxInfo = CoRScene.createVtxDrawingInfo();
 				let et = CoEntity.createDisplayEntity();
 				et.setMaterial(this.m_material);
 				et.setMesh(mesh);
-				et.setIvsParam(0, this.m_step);
+				this.m_material.vtxInfo.setIvsParam(0, this.m_step);
 				this.m_entities.push(et);
 
 				this.applyRST( et );
