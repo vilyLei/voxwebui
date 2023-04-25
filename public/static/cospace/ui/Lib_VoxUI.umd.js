@@ -1647,9 +1647,13 @@ Object.defineProperty(exports, "__esModule", {
 const UIEntityBase_1 = __webpack_require__("0b77");
 
 class UIEntityContainer extends UIEntityBase_1.UIEntityBase {
-  constructor() {
+  constructor(init = false) {
     super();
     this.m_uientities = [];
+
+    if (init) {
+      this.init();
+    }
   }
 
   init() {
@@ -1777,6 +1781,7 @@ class PackedLoader {
 
   setUrlChecker(urlChecker = null) {
     this.m_urlChecker = urlChecker;
+    return this;
   }
 
   getUrlChecker() {
@@ -3343,6 +3348,8 @@ const VoxEntity_1 = __webpack_require__("9b53");
 
 const VoxMesh_1 = __webpack_require__("228b");
 
+const UIEntityContainer_1 = __webpack_require__("23ac");
+
 let __$$__init = true;
 
 function initialize() {
@@ -3420,6 +3427,12 @@ function createTextButton(width, height, idns, texAtlas, textParam, colors) {
 }
 
 exports.createTextButton = createTextButton;
+
+function createUIContainer() {
+  return new UIEntityContainer_1.UIEntityContainer(true);
+}
+
+exports.createUIContainer = createUIContainer;
 
 function createUIPanel() {
   return new UIPanel_1.UIPanel();
@@ -4592,6 +4605,16 @@ class T_CoEntity {
   createDisplayEntityFromModel(model, pmaterial, texEnabled) {
     return CoEntity.createDisplayEntityFromModel(model, pmaterial, texEnabled);
   }
+  /**
+   * @param beginV line begin position
+   * @param endV line begin position
+   * @param color line color, the default value is null
+   */
+
+
+  createLine(beginV, endV, color = null) {
+    return CoEntity.createLine(beginV, endV, color);
+  }
 
   createFreeAxis3DEntity(minV, maxV) {
     return CoEntity.createFreeAxis3DEntity(minV, maxV);
@@ -4701,8 +4724,8 @@ class T_CoEntity {
    */
 
 
-  createCylinder(radius, height, longitudeNumSegments = 20, material = null, texEnabled = false, alignYRatio = -0.5) {
-    return CoEntity.createCylinder(radius, height, longitudeNumSegments, material, texEnabled, alignYRatio);
+  createCylinder(radius, height, longitudeNumSegments = 20, material = null, texEnabled = false, uvType = 1, alignYRatio = -0.5) {
+    return CoEntity.createCylinder(radius, height, longitudeNumSegments, material, texEnabled, uvType, alignYRatio);
   }
   /**
    * @param radius tube radius
@@ -5398,6 +5421,24 @@ var EventBase = null;
 exports.EventBase = EventBase;
 var RendererState = null;
 exports.RendererState = RendererState;
+var TextureConst = null;
+exports.TextureConst = TextureConst;
+var RenderDrawMode = null;
+exports.RenderDrawMode = RenderDrawMode;
+var CullFaceMode = null;
+exports.CullFaceMode = CullFaceMode;
+var DepthTestMode = null;
+exports.DepthTestMode = DepthTestMode;
+var RenderBlendMode = null;
+exports.RenderBlendMode = RenderBlendMode;
+var GLStencilFunc = null;
+exports.GLStencilFunc = GLStencilFunc;
+var GLStencilOp = null;
+exports.GLStencilOp = GLStencilOp;
+var GLBlendMode = null;
+exports.GLBlendMode = GLBlendMode;
+var GLBlendEquation = null;
+exports.GLBlendEquation = GLBlendEquation;
 
 class T_CoRScene {
   constructor() {
@@ -5412,6 +5453,15 @@ class T_CoRScene {
       exports.EventBase = EventBase = CoRScene.EventBase;
       exports.MouseEvent = MouseEvent = CoRScene.MouseEvent;
       exports.RendererState = RendererState = CoRScene.RendererState;
+      exports.TextureConst = TextureConst = CoRScene.TextureConst;
+      exports.RenderDrawMode = RenderDrawMode = CoRenderer.RenderDrawMode;
+      exports.CullFaceMode = CullFaceMode = CoRenderer.CullFaceMode;
+      exports.DepthTestMode = DepthTestMode = CoRenderer.DepthTestMode;
+      exports.RenderBlendMode = RenderBlendMode = CoRenderer.RenderBlendMode;
+      exports.GLStencilFunc = GLStencilFunc = CoRenderer.GLStencilFunc;
+      exports.GLStencilOp = GLStencilOp = CoRenderer.GLStencilOp;
+      exports.GLBlendMode = GLBlendMode = CoRenderer.GLBlendMode;
+      exports.GLBlendEquation = GLBlendEquation = CoRenderer.GLBlendEquation;
     }
   }
 
@@ -7172,7 +7222,7 @@ class ClipLabel extends ClipLabelBase_1.ClipLabelBase {
         let et = CoEntity.createDisplayEntity();
         et.setMaterial(this.m_material);
         et.setMesh(mesh);
-        et.setIvsParam(0, this.m_step);
+        this.m_material.vtxInfo.setIvsParam(0, this.m_step);
         this.m_entities.push(et);
         this.applyRST(et);
       }
