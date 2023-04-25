@@ -9,8 +9,8 @@ import IEntityTransform from "../../vox/entity/IEntityTransform";
 
 import { IUserEditController } from "../base/IUserEditController";
 
-import { IDragMoveController } from "../../edit/move/IDragMoveController";
-import { DragMoveController } from "../../edit/move/DragMoveController";
+import { IDragMoveController } from "../move/IDragMoveController";
+import { DragMoveController } from "../move/DragMoveController";
 import { IDragScaleController } from "../scale/IDragScaleController";
 import { DragScaleController } from "../scale/DragScaleController";
 import { IDragRotationController } from "../rotate/IDragRotationController";
