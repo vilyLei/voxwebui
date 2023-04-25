@@ -178,6 +178,11 @@ class RSCGraph {
     return null;
   }
 
+  getMainRendererScene() {
+    if (this.m_nodes.length > 0) return this.m_nodes[0].getRScene();
+    return null;
+  }
+
   createRendererParam(div = null) {
     return new RendererParam_1.default(div);
   }
@@ -197,13 +202,16 @@ class RSCGraph {
 
 
   createScene(rparam = null, renderProcessesTotal = 3, createNewCamera = true) {
-    // let sc = new RendererScene();
-    let sc = this.createRScene();
-    sc.initialize(rparam, renderProcessesTotal, createNewCamera);
-    let node = new RendererSceneNode_1.default(sc);
-    this.m_nodes.push(node);
-    this.m_map.set(sc.getUid(), node);
-    return sc;
+    if (this.m_nodes.length < 1) {
+      let sc = this.createRScene();
+      sc.initialize(rparam, renderProcessesTotal, createNewCamera);
+      let node = new RendererSceneNode_1.default(sc);
+      this.m_nodes.push(node);
+      this.m_map.set(sc.getUid(), node);
+      return sc;
+    }
+
+    return this.m_nodes[0].getRScene();
   }
   /**
    * @param rparam IRendererParam instance, the default value is null
@@ -360,6 +368,50 @@ class RSCGraph {
 }
 
 exports.default = RSCGraph;
+
+/***/ }),
+
+/***/ "0188":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/***************************************************************************/
+
+/*                                                                         */
+
+/*  Copyright 2019-2022 by                                                 */
+
+/*  Vily(vily313@126.com)                                                  */
+
+/*                                                                         */
+
+/***************************************************************************/
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+const URLFilter_1 = __importDefault(__webpack_require__("75b9"));
+
+class VoxSystemVerify {
+  static isEnabled() {
+    if (typeof VoxVerify !== "undefined") {
+      return VoxVerify.isEnabled();
+    }
+
+    return URLFilter_1.default.isEnabled();
+  }
+
+}
+
+exports.default = VoxSystemVerify;
 
 /***/ }),
 
@@ -643,7 +695,7 @@ class RCExtension {
 
     if (webVer == 1) {
       //#extension OES_standard_derivatives : enable
-      selfT.OES_standard_derivatives = gl.getExtension('OES_standard_derivatives');
+      selfT.OES_standard_derivatives = gl.getExtension("OES_standard_derivatives");
       if (selfT.OES_standard_derivatives != null) console.log("Use OES_standard_derivatives Extension success!");else console.log("OES_standard_derivatives Extension can not support!"); //#extension GL_EXT_shader_texture_lod : enable, for example: textureCubeLodEXT(envMap, dir, mipLv)
       // vec4 texture2DLodEXT(sampler2D sampler, vec2 coord, float lod)
       // vec4 texture2DProjLodEXT(sampler2D sampler, vec3 coord, float lod)
@@ -654,69 +706,62 @@ class RCExtension {
       // vec4 texture2DProjGradEXT(sampler2D sampler, vec4 P, vec2 dPdx, vec2 dPdy)
       // vec4 textureCubeGradEXT(samplerCube sampler, vec3 P, vec3 dPdx, vec3 dPdy)
 
-      selfT.EXT_shader_texture_lod = gl.getExtension('EXT_shader_texture_lod');
+      selfT.EXT_shader_texture_lod = gl.getExtension("EXT_shader_texture_lod");
       if (selfT.EXT_shader_texture_lod != null) console.log("Use EXT_shader_texture_lod Extension success!");else console.log("EXT_shader_texture_lod Extension can not support!");
       /*
       <script type="x-shader/x-fragment">
       #extension GL_EXT_shader_texture_lod : enable
       #extension GL_OES_standard_derivatives : enable
-      
       uniform sampler2D myTexture;
       varying vec2 texcoord;
-      
       void main(){
-        gl_FragColor = texture2DGradEXT(myTexture, mod(texcoord, vec2(0.1, 0.5)),
-                                        dFdx(texcoord), dFdy(texcoord));
+      gl_FragColor = texture2DGradEXT(myTexture, mod(texcoord, vec2(0.1, 0.5)),
+                            dFdx(texcoord), dFdy(texcoord));
       }
       </script>
       */
 
-      selfT.WEBGL_draw_buffers = gl.getExtension('WEBGL_draw_buffers');
+      selfT.WEBGL_draw_buffers = gl.getExtension("WEBGL_draw_buffers");
       if (selfT.WEBGL_draw_buffers != null) console.log("Use WEBGL_draw_buffers Extension success!");else console.log("WEBGL_draw_buffers Extension can not support!"); //DivLog.ShowLog("selfT.WEBGL_draw_buffers != null: "+(selfT.WEBGL_draw_buffers != null));
 
-      selfT.OES_vertex_array_object = gl.getExtension('OES_vertex_array_object');
+      selfT.OES_vertex_array_object = gl.getExtension("OES_vertex_array_object");
       if (selfT.OES_vertex_array_object != null) console.log("Use OES_vertex_array_object Extension success!");else console.log("OES_vertex_array_object Extension can not support!");
-      selfT.ANGLE_instanced_arrays = gl.getExtension('ANGLE_instanced_arrays');
+      selfT.ANGLE_instanced_arrays = gl.getExtension("ANGLE_instanced_arrays");
       if (selfT.ANGLE_instanced_arrays != null) console.log("Use ANGLE_instanced_arrays Extension success!");else console.log("ANGLE_instanced_arrays Extension can not support!");
-      selfT.EXT_color_buffer_float = gl.getExtension('EXT_color_buffer_float');
+      selfT.EXT_color_buffer_float = gl.getExtension("EXT_color_buffer_float");
       if (selfT.EXT_color_buffer_float != null) console.log("Use EXT_color_buffer_float Extension success!");else console.log("EXT_color_buffer_float Extension can not support!");
-      selfT.EXT_color_buffer_half_float = gl.getExtension('EXT_color_buffer_half_float');
+      selfT.EXT_color_buffer_half_float = gl.getExtension("EXT_color_buffer_half_float");
       if (selfT.EXT_color_buffer_half_float != null) console.log("Use EXT_color_buffer_half_float Extension success!");else console.log("EXT_color_buffer_half_float Extension can not support!");
-      selfT.OES_texture_half_float = gl.getExtension('OES_texture_half_float');
+      selfT.OES_texture_half_float = gl.getExtension("OES_texture_half_float");
       if (selfT.OES_texture_half_float != null) console.log("Use OES_texture_half_float Extension success!");else console.log("OES_texture_half_float Extension can not support!");
-      selfT.OES_texture_half_float_linear = gl.getExtension('OES_texture_half_float_linear');
+      selfT.OES_texture_half_float_linear = gl.getExtension("OES_texture_half_float_linear");
       if (selfT.OES_texture_half_float_linear != null) console.log("Use OES_texture_half_float_linear Extension success!");else console.log("OES_texture_half_float_linear Extension can not support!");
-      selfT.OES_texture_float = gl.getExtension('OES_texture_float');
+      selfT.OES_texture_float = gl.getExtension("OES_texture_float");
       if (selfT.OES_texture_float != null) console.log("Use OES_texture_float Extension success!");else console.log("OES_texture_float Extension can not support!"); //
 
-      selfT.OES_element_index_uint = gl.getExtension('OES_element_index_uint');
+      selfT.OES_element_index_uint = gl.getExtension("OES_element_index_uint");
       if (selfT.OES_element_index_uint != null) console.log("Use OES_element_index_uint Extension success!");else console.log("OES_element_index_uint Extension can not support!"); //EXT_blend_minmax
 
-      selfT.EXT_blend_minmax = gl.getExtension('EXT_blend_minmax');
+      selfT.EXT_blend_minmax = gl.getExtension("EXT_blend_minmax");
       if (selfT.EXT_blend_minmax != null) console.log("Use EXT_blend_minmax Extension success!");else console.log("EXT_blend_minmax Extension can not support!");
     } else {
-      //  selfT.OES_standard_derivatives = gl.getExtension('OES_standard_derivatives');
-      //  if(selfT.OES_standard_derivatives != null)
-      //  console.log("Use OES_standard_derivatives Extension success!");
-      //  else
-      //  console.log("OES_standard_derivatives Extension can not support!");
-      selfT.EXT_shader_texture_lod = gl.getExtension('EXT_shader_texture_lod');
+      selfT.EXT_shader_texture_lod = gl.getExtension("EXT_shader_texture_lod");
       if (selfT.EXT_shader_texture_lod != null) console.log("Use EXT_shader_texture_lod Extension success!");else console.log("EXT_shader_texture_lod Extension can not support!");
-      selfT.EXT_color_buffer_half_float = gl.getExtension('EXT_color_buffer_half_float');
+      selfT.EXT_color_buffer_half_float = gl.getExtension("EXT_color_buffer_half_float");
       if (selfT.EXT_color_buffer_half_float != null) console.log("Use EXT_color_buffer_half_float Extension success!");else console.log("EXT_color_buffer_half_float Extension can not support!");
-      selfT.OES_texture_half_float_linear = gl.getExtension('OES_texture_half_float_linear');
+      selfT.OES_texture_half_float_linear = gl.getExtension("OES_texture_half_float_linear");
       if (selfT.OES_texture_half_float_linear != null) console.log("Use OES_texture_half_float_linear Extension success!");else console.log("OES_texture_half_float_linear Extension can not support!");
-      selfT.EXT_color_buffer_float = gl.getExtension('EXT_color_buffer_float');
+      selfT.EXT_color_buffer_float = gl.getExtension("EXT_color_buffer_float");
       if (selfT.EXT_color_buffer_float != null) console.log("Use EXT_color_buffer_float Extension success!");else console.log("EXT_color_buffer_float Extension can not support!");
     }
 
-    selfT.OES_texture_float_linear = gl.getExtension('OES_texture_float_linear');
+    selfT.OES_texture_float_linear = gl.getExtension("OES_texture_float_linear");
     if (selfT.OES_texture_float_linear != null) console.log("Use OES_texture_float_linear Extension success!");else console.log("OES_texture_float_linear Extension can not support!");
-    selfT.WEBGL_depth_texture = gl.getExtension('WEBGL_depth_texture');
+    selfT.WEBGL_depth_texture = gl.getExtension("WEBGL_depth_texture");
     if (selfT.WEBGL_depth_texture != null) console.log("Use WEBGL_depth_texture Extension success!");else console.log("WEBGL_depth_texture Extension can not support!");
-    selfT.WEBGL_debug_renderer_info = gl.getExtension('WEBGL_debug_renderer_info');
-    if (selfT.WEBGL_debug_renderer_info != null) console.log("Use WEBGL_debug_renderer_info Extension success!");else console.log("WEBGL_debug_renderer_info Extension can not support!"); //
-    //console.log("RCExtension.WEBGL_depth_texture: ",RCExtension.WEBGL_depth_texture);
+    selfT.WEBGL_debug_renderer_info = gl.getExtension("WEBGL_debug_renderer_info");
+    if (selfT.WEBGL_debug_renderer_info != null) console.log("Use WEBGL_debug_renderer_info Extension success!");else console.log("WEBGL_debug_renderer_info Extension can not support!");
+    console.log("RCExtension.Initialize(), gl: ", gl);
   }
 
 }
@@ -1040,6 +1085,7 @@ class TextureProxy {
     this.magFilter = TextureConst_1.default.LINEAR; // 用于记录自身变换的版本号，例如数据变换
 
     this.version = 0;
+    this.dataEnoughListener = null;
     this.m_slot = TextureResSlot_1.default.GetInstance();
     this.m_uid = this.m_slot.getFreeUid();
     if (texWidth < 1) texWidth = 128;
@@ -1065,7 +1111,7 @@ class TextureProxy {
   }
 
   __$setRenderProxy(rc) {
-    if (this.m_slot != null) {
+    if (this.m_slot) {
       this.m_renderProxy = rc;
     } else {
       // 这样处理可能有错误
@@ -1202,6 +1248,12 @@ class TextureProxy {
     return this.m_haveRData;
   }
 
+  testDataEnough() {
+    if (this.dataEnoughListener) {
+      this.dataEnoughListener();
+    }
+  }
+
   uploadFromFbo(texResource, fboWidth, fboHeight) {
     throw Error("Illegal operation !!!");
   }
@@ -1255,9 +1307,9 @@ class TextureProxy {
 
 
   updateDataToGpu(rc = null, deferred = true) {
-    if (rc != null) this.m_renderProxy = rc;
+    if (rc) this.m_renderProxy = rc;
 
-    if (this.m_renderProxy != null) {
+    if (this.m_renderProxy) {
       this.m_renderProxy.MaterialUpdater.updateTextureData(this, deferred);
     }
   }
@@ -1362,6 +1414,7 @@ class TextureProxy {
       this.m_slot = null;
       this.m_renderProxy = null;
       this.m_uid = -1;
+      this.dataEnoughListener = null;
     }
   }
 
@@ -1952,7 +2005,8 @@ class MaterialBase {
     this.m_sharedUniforms = null;
     this.m_shaderUniformData = null;
     this.m_pipeLine = null;
-    this.m_uniqueShaderName = ""; // sub rendering pass
+    this.m_uniqueShaderName = "";
+    this.uuid = ""; // sub rendering pass
 
     this.m_cases = null; // tex list unique hash value
 
@@ -1962,14 +2016,7 @@ class MaterialBase {
      * pipes type list for material pipeline
      */
 
-    this.pipeTypes = null; // renderState = 0;
-    // colorMask = 0;
-    // /**
-    //  * the default value is null
-    //  */
-    // stencil: Stencil = null;
-    // multiPass = false;
-
+    this.pipeTypes = null;
     /**
      * 如果是同样的 vtxInfo 内容，则一个material 实例可以对应多个entity即便是mesh不一样也可以
      * 如果 vtxInfo 内容 和 mesh 已经匹配，则附带这个vtxInfo只能用到对一个mesh的entity
@@ -2232,7 +2279,8 @@ class MaterialBase {
         }
       }
 
-      this.m_texDataEnabled = boo;
+      this.m_texDataEnabled = boo; // console.log("material tex test, texDataEnabled: ", boo, ", uuid: ", this.uuid);
+
       return boo;
     } else {
       if (this.m_shdData != null && this.m_shdData.getTexTotal() > 0) {
@@ -2566,12 +2614,7 @@ class RawCodeShaderBuffer extends ShaderCodeBuffer_1.default {
   }
 
   getUniqueShaderName() {
-    //console.log("H ########################### this.m_uniqueName: "+this.m_uniqueName);
     return this.m_uniqueName;
-  }
-
-  toString() {
-    return "[RawCodeShaderBuffer()]";
   }
 
 }
@@ -2642,6 +2685,21 @@ class ShaderMaterial extends MaterialBase_1.default {
 
   getUniformDataAt(uniform_name) {
     if (this.m_map.has(uniform_name)) return this.m_map.get(uniform_name);
+    return null;
+  }
+
+  getUniformDataByIndex(index) {
+    if (this.m_uniformData) {
+      const ls = this.m_uniformData.uniformNameList;
+
+      if (ls.length >= index && index < ls.length) {
+        return {
+          data: this.m_uniformData.dataList[index],
+          name: ls[index]
+        };
+      }
+    }
+
     return null;
   }
 
@@ -4678,7 +4736,6 @@ class RawMesh extends MeshBase_1.default {
       this.vtCount = this.m_ivs.length;
 
       if (this.autoBuilding) {
-        this.updateWireframeIvs();
         this.vtCount = this.m_ivs.length;
       }
     } else {
@@ -4994,7 +5051,7 @@ const VtxBufConst_1 = __importDefault(__webpack_require__("8a0a"));
 
 class ROIvsData {
   constructor() {
-    this.bufStep = 4;
+    this.unitBytes = 2;
     this.status = VtxBufConst_1.default.VTX_STATIC_DRAW;
     this.wireframe = false;
     this.shape = false;
@@ -5004,17 +5061,14 @@ class ROIvsData {
 
   setData(ivs, status = VtxBufConst_1.default.VTX_STATIC_DRAW) {
     if (ivs instanceof Uint16Array) {
-      this.bufStep = 2;
-
       if (ivs.length > 65536) {
         throw Error("ivs.length > 65536, but its type is not Uint32Array.");
       }
-    } else if (ivs instanceof Uint32Array) {
-      this.bufStep = 4;
-    } else {
+    } else if (!(ivs instanceof Uint32Array)) {
       throw Error("Error: ivs is not an Uint32Array or an Uint16Array bufferArray instance !!!!");
     }
 
+    this.unitBytes = ivs.BYTES_PER_ELEMENT;
     this.ivs = ivs;
 
     if (ivs != null) {
@@ -5033,6 +5087,136 @@ class ROIvsData {
 }
 
 exports.default = ROIvsData;
+
+/***/ }),
+
+/***/ "20d6":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+const EntityNodeQueue_1 = __importDefault(__webpack_require__("af68"));
+
+const Entity3DNodeLinker_1 = __importDefault(__webpack_require__("a80a"));
+
+class EntityFency {
+  constructor(rc) {
+    this.m_rc = null;
+    this.m_wlinker = null;
+    this.m_wq = null;
+    this.m_timeoutId = -1;
+    this.m_updating = false;
+    this.m_rc = rc;
+  }
+
+  addEntity(entity, processid) {
+    if (entity) {
+      // console.log("EntityFency::addEntity() entity: ", entity);
+      let et = entity; // wait queue
+
+      if (this.m_wlinker == null) {
+        this.m_wlinker = new Entity3DNodeLinker_1.default();
+        this.m_wq = new EntityNodeQueue_1.default();
+      }
+
+      let node = this.m_wq.addEntity(et);
+      node.rstatus = processid;
+      this.m_wlinker.addNode(node);
+
+      if (!this.m_updating) {
+        this.m_updating = true;
+        this.update();
+      }
+    }
+  }
+
+  removeEntity(entity) {
+    if (entity) {
+      if (this.m_wlinker) {
+        let re = entity;
+        let node = this.m_wq.getNodeByEntity(re);
+
+        if (node) {
+          re.getTransform().setUpdater(null);
+          this.m_wlinker.removeNode(node);
+          this.m_wq.removeEntity(re);
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
+
+  update() {
+    if (this.m_timeoutId < 0) {
+      console.log("启动 EntityFency::update() timer !!!");
+    }
+
+    if (this.m_timeoutId > -1) {
+      clearTimeout(this.m_timeoutId);
+      this.m_timeoutId = -1;
+    }
+
+    let flag = false;
+
+    if (this.m_wlinker != null) {
+      let nextNode = this.m_wlinker.getBegin();
+
+      if (nextNode != null) {
+        let pnode;
+        let status;
+
+        while (nextNode) {
+          // console.log("EntityFency::update(), nextNode.entity.hasMesh().");
+          const entity = nextNode.entity;
+          const retype = entity.getREType();
+
+          if (retype >= 12 || retype < 12 && entity.hasMesh()) {
+            pnode = nextNode;
+            nextNode = nextNode.next;
+            status = pnode.rstatus;
+            const entity = pnode.entity;
+            this.m_wlinker.removeNode(pnode);
+            this.m_wq.removeEntity(pnode.entity); // console.log("EntityFency::update(), ready a mesh data that was finished.");
+
+            this.m_rc.addEntity(entity, status);
+          } else {
+            flag = true;
+            nextNode = nextNode.next;
+          }
+        }
+      }
+    }
+
+    if (flag) {
+      this.m_timeoutId = setTimeout(this.update.bind(this), 100); // 10 fps
+    } else {
+      this.m_updating = false;
+      console.log("关闭 EntityFency::update() timer !!!");
+    }
+  }
+
+  destroy() {
+    if (this.m_rc) {
+      this.m_rc = null;
+    }
+  }
+
+}
+
+exports.default = EntityFency;
 
 /***/ }),
 
@@ -5166,12 +5350,12 @@ class ShdProgram {
         }
 
         if (RendererDevice_1.default.SHADERCODE_TRACE_ENABLED) {
-          console.log("ShdProgram(" + this.m_uid + ")::createLocations(), attri aLocationTypes: " + this.m_aLocationTypes);
-          console.log("ShdProgram(" + this.m_uid + ")::createLocations(), attri m_aLocations: " + this.m_aLocations);
-          console.log("ShdProgram(" + this.m_uid + ")::createLocations(), attriNSList: " + attriNSList);
-          console.log("ShdProgram(" + this.m_uid + ")::createLocations(), attribLIndexList: " + this.m_attribLIndexList);
-          console.log("ShdProgram(" + this.m_uid + ")::createLocations(), attribTypeSizeList: " + this.m_attribTypeSizeList);
-          console.log("ShdProgram(" + this.m_uid + ")::createLocations(), attriSizeList: " + this.m_attriSizeList);
+          console.log("ShdProgram(" + this.m_uid + ")::createLocations(), attri aLocationTypes: ", this.m_aLocationTypes);
+          console.log("ShdProgram(" + this.m_uid + ")::createLocations(), attri m_aLocations: ", this.m_aLocations);
+          console.log("ShdProgram(" + this.m_uid + ")::createLocations(), attriNSList: ", attriNSList);
+          console.log("ShdProgram(" + this.m_uid + ")::createLocations(), attribLIndexList: ", this.m_attribLIndexList);
+          console.log("ShdProgram(" + this.m_uid + ")::createLocations(), attribTypeSizeList: ", this.m_attribTypeSizeList);
+          console.log("ShdProgram(" + this.m_uid + ")::createLocations(), attriSizeList: ", this.m_attriSizeList);
         }
       }
     }
@@ -5191,7 +5375,7 @@ class ShdProgram {
             ul = this.m_gl.getUniformLocation(this.m_program, uns);
 
             if (RendererDevice_1.default.SHADERCODE_TRACE_ENABLED) {
-              console.log("ShdProgram::createLocations() uniform, ul " + ul + ", uninforms[" + i + "].name: " + uns);
+              console.log("ShdProgram::createLocations() uniform, ul ", ul, ", uninforms[" + i + "].name: ", uns);
             }
 
             if (ul != null) {
@@ -5437,7 +5621,7 @@ class ShdProgram {
       console.log("frag shader code: \n" + fshd_str);
     }
 
-    let fragShader = this.loadShader(gl.FRAGMENT_SHADER, fshd_str); // Create the shader program      
+    let fragShader = this.loadShader(gl.FRAGMENT_SHADER, fshd_str); // Create the shader program
 
     let shdProgram = gl.createProgram();
     gl.attachShader(shdProgram, fragShader);
@@ -5458,6 +5642,7 @@ class ShdProgram {
     gl.detachShader(shdProgram, fragShader);
     gl.deleteShader(vertShader);
     gl.deleteShader(fragShader);
+    shdProgram.glVersion = gl.version;
     return shdProgram;
   }
 
@@ -5492,7 +5677,7 @@ class ShdProgram {
       this.m_gl = gl;
       this.m_program = this.initShdProgram();
       this.m_program.uniqueName = this.m_shdUniqueName;
-      if (null != this.m_program) this.createLocations();
+      if (this.m_program) this.createLocations();
     }
   }
   /**
@@ -5506,10 +5691,6 @@ class ShdProgram {
 
   uniformBlockBinding(uniform_block_ns, bindingIndex) {
     this.m_gl.uniformBlockBinding(this.m_program, this.m_gl.getUniformBlockIndex(this.m_program, uniform_block_ns), bindingIndex);
-  }
-
-  toString() {
-    return "[ShdProgram(uniqueName = " + this.m_shdUniqueName + ")]";
   }
   /**
    * @returns return current gpu shader  program
@@ -5529,12 +5710,15 @@ class ShdProgram {
       this.m_texTotal = 0;
     }
 
-    if (this.m_program != null) {
-      this.m_gl.deleteShader(this.m_vertShader);
-      this.m_gl.deleteShader(this.m_fragShader);
+    if (this.m_program) {
+      if (!this.m_gl.isContextLost()) {
+        this.m_gl.deleteShader(this.m_vertShader);
+        this.m_gl.deleteShader(this.m_fragShader);
+        this.m_gl.deleteProgram(this.m_program);
+      }
+
       this.m_vertShader = null;
       this.m_fragShader = null;
-      this.m_gl.deleteProgram(this.m_program);
       this.m_program = null;
     }
 
@@ -6393,6 +6577,16 @@ class ShaderCodeUniform {
     this.m_uniqueNSKeys[11] = 1;
     this.m_uniqueNSKeyFlag = true;
   }
+  /**
+   * add Index of Refraction values map uniform code
+   */
+
+
+  addIORMap() {
+    this.m_codeBuilder.addTextureSample2D("VOX_IOR_MAP", true, true, false);
+    this.m_uniqueNSKeys[12] = 1;
+    this.m_uniqueNSKeyFlag = true;
+  }
 
   add2DMap(macroName = "", map2DEnabled = true, fragEnabled = true, vertEnabled = false) {
     this.m_codeBuilder.addTextureSample2D(macroName, map2DEnabled, fragEnabled, vertEnabled);
@@ -7117,6 +7311,14 @@ class Color4 {
     return new Color4(this.r, this.g, this.b, this.a);
   }
 
+  gammaCorrect() {
+    const f = 1.0 / 2.2;
+    this.r = Math.pow(this.r, f);
+    this.g = Math.pow(this.g, f);
+    this.b = Math.pow(this.b, f);
+    return this;
+  }
+
   fromArray4(arr, offset = 0) {
     this.r = arr[offset];
     this.g = arr[offset + 1];
@@ -7200,6 +7402,11 @@ class Color4 {
     return this;
   }
 
+  setAlpha(a) {
+    this.a = a;
+    return this;
+  }
+
   copyFrom(c) {
     this.r = c.r;
     this.g = c.g;
@@ -7264,6 +7471,15 @@ class Color4 {
       this.b = density * this.b / d;
     }
 
+    return this;
+  }
+
+  rgbSizeTo(size) {
+    let d = Math.sqrt(this.r * this.r + this.g * this.g + this.b * this.b);
+    d = size / d;
+    this.r *= d;
+    this.g *= d;
+    this.b *= d;
     return this;
   }
   /**
@@ -7355,6 +7571,11 @@ class RendererDevice {
 
   static SetLanguage(language) {
     RendererDevice.s_language = language;
+  }
+
+  static IsChineseLanguage() {
+    let lg = RendererDevice.GetLanguage();
+    return lg == "zh-CN";
   }
 
   static GetLanguage() {
@@ -7763,7 +7984,7 @@ function createRendererScene(rparam = null, renderProcessesTotal = 3, sceneBlock
   let rs = new CoRendererScene_1.default();
 
   if (rparam != null) {
-    rs.initialize(rparam, 3);
+    rs.initialize(rparam, renderProcessesTotal);
 
     if (sceneBlockEnabled) {
       applySceneBlock(rs);
@@ -8061,6 +8282,7 @@ class DisplayEntity {
     this.m_parent = null;
     this.m_renderProxy = null;
     this.m_pipeLine = null;
+    this.intoRendererListener = null;
     /**
      * renderer scene entity flag, be used by the renderer system
      * 第0位到第19位总共20位存放自身在space中的 index id(最小值为1, 最大值为1048575,默认值是0, 也就是最多只能展示1048575个entitys),
@@ -8076,12 +8298,11 @@ class DisplayEntity {
      * 可见性裁剪是否开启, 如果不开启，则摄像机和遮挡剔除都不会裁剪, 取值于 SpaceCullingMask, 默认只会有摄像机裁剪
      */
 
-    this.spaceCullMask = SpaceCullingMask_1.SpaceCullingMask.CAMERA;
-    /**
-     * recorde a draw status
-     */
+    this.spaceCullMask = SpaceCullingMask_1.SpaceCullingMask.CAMERA; // /**
+    //  * recorde a draw status
+    //  */
+    // drawEnabled = false;
 
-    this.drawEnabled = false;
     /**
      * mouse interaction enabled
      */
@@ -8097,6 +8318,7 @@ class DisplayEntity {
      */
 
     this.pipeTypes = null;
+    this.m_rendering = true;
     this.m_texChanged = false;
     this.m_meshChanged = false;
     this.m_lBoundsVS = null;
@@ -8128,9 +8350,11 @@ class DisplayEntity {
   }
 
   __$setParent(parent) {
-    if (this.m_parent == null) {}
-
     this.m_parent = parent;
+  }
+
+  hasParent() {
+    return this.m_parent != null;
   }
 
   __$getParent() {
@@ -8156,12 +8380,49 @@ class DisplayEntity {
     return RSEntityFlag_1.default.GetRendererUid(this.__$rseFlag);
   }
 
-  setMaterialPipeline(pipeline) {
+  setMaterialPipeline(pipeline, pipeTypes = null) {
     this.m_pipeLine = pipeline;
+    if (pipeTypes) this.pipeTypes = pipeTypes;
   }
 
   getMaterialPipeline() {
     return this.m_pipeLine;
+  }
+
+  isRendering() {
+    return this.m_rendering;
+  }
+
+  setRendering(rendering) {
+    this.m_rendering = rendering;
+    const d = this.m_display;
+
+    if (d) {
+      d.rendering = rendering;
+
+      if (d.__$$runit) {
+        d.__$$runit.rendering = rendering;
+      }
+    }
+  }
+
+  __$setDrawEnabled(boo) {
+    if (this.m_drawEnabled != boo) {
+      this.m_drawEnabled = boo;
+      const d = this.m_display;
+
+      if (d) {
+        d.visible = this.m_visible && boo;
+
+        if (d.__$$runit) {
+          d.__$$runit.setVisible(d.visible);
+        }
+      }
+    }
+  }
+
+  isDrawEnabled() {
+    return this.m_drawEnabled;
   }
   /**
    * @returns 自身是否未必任何渲染器相关的系统使用
@@ -8208,25 +8469,6 @@ class DisplayEntity {
     }
 
     return -1;
-  }
-
-  __$setDrawEnabled(boo) {
-    if (this.m_drawEnabled != boo) {
-      this.m_drawEnabled = boo;
-      const d = this.m_display;
-
-      if (d != null) {
-        d.visible = this.m_visible && boo;
-
-        if (d.__$$runit != null) {
-          d.__$$runit.setVisible(d.visible);
-        }
-      }
-    }
-  }
-
-  isDrawEnabled() {
-    return this.m_drawEnabled;
   }
   /**
    * users need to call this function manually
@@ -8450,36 +8692,6 @@ class DisplayEntity {
 
   getIvsCount() {
     return this.m_display.ivsCount;
-  }
-
-  setIvsParam(ivsIndex, ivsCount, updateBounds = false) {
-    if (this.m_display != null) {
-      this.m_display.ivsIndex = ivsIndex;
-      this.m_display.ivsCount = ivsCount;
-
-      if (this.m_display.__$ruid > -1) {
-        const mh = this.m_mesh;
-        let ut = this.m_display.__$$runit;
-        ut.setIvsParam(ivsIndex, ivsCount);
-
-        if (updateBounds && this.isPolyhedral()) {
-          if (this.m_localBounds == mh.bounds) {
-            this.m_localBounds = new AABB_1.default();
-            this.m_localBounds.copyFrom(mh.bounds);
-          }
-
-          this.m_transStatus = ROTransform_1.default.UPDATE_TRANSFORM;
-          this.m_localBounds.reset();
-          let ivs = mh.getIVS();
-          this.m_localBounds.addFloat32AndIndices(mh.getVS(), ivs.subarray(ivsIndex, ivsIndex + ivsCount), mh.getVSStride());
-          this.m_localBounds.update();
-
-          if (this.m_trw != null) {
-            this.m_trw.updateTo();
-          }
-        }
-      }
-    }
   }
 
   getMesh() {
@@ -8717,15 +8929,19 @@ class DisplayEntity {
   }
 
   localToGlobal(pv) {
-    if (this.m_trs != null) {
+    if (this.m_trs) {
       this.m_trs.localToGlobal(pv);
     }
+
+    return this;
   }
 
   globalToLocal(pv) {
-    if (this.m_trs != null) {
+    if (this.m_trs) {
       this.m_trs.globalToLocal(pv);
     }
+
+    return this;
   }
   /**
    * 表示没有加入任何渲染场景或者渲染器
@@ -8757,7 +8973,7 @@ class DisplayEntity {
 
 
   isRenderEnabled() {
-    return this.drawEnabled && this.m_visible && this.m_display != null && this.m_display.__$ruid > -1;
+    return this.m_rendering && this.m_visible && this.m_display != null && this.m_display.__$ruid > -1;
   }
 
   updateBounds() {
@@ -8820,13 +9036,14 @@ class DisplayEntity {
     if (this.m_transStatus > ROTransform_1.default.UPDATE_POSITION || this.m_localBuondsVer != bounds.version) {
       let st = this.m_trs.updateStatus;
       this.m_trs.update();
+      const mat = this.m_trs.getMatrix();
 
       if (this.m_localBuondsVer != bounds.version || st != this.m_trs.updateStatus) {
         this.m_localBuondsVer = bounds.version;
         this.updateLocalBoundsVS(bounds);
         let in_vs = this.m_lBoundsVS;
         let out_vs = DE.s_boundsOutVS;
-        this.m_trs.getMatrix().transformVectors(in_vs, 24, out_vs);
+        mat.transformVectors(in_vs, 24, out_vs);
         this.m_globalBounds.reset();
         this.m_globalBounds.addFloat32Arr(out_vs);
         this.m_globalBounds.update();
@@ -8905,10 +9122,8 @@ class DisplayEntity {
       this.m_trw.destroy();
       this.m_trw = null;
     }
-  }
 
-  toString() {
-    return "DisplayEntity(uuid=" + this.uuid + ",uid = " + this.m_uid + ", rseFlag = " + this.__$rseFlag + ")";
+    this.intoRendererListener = null;
   }
 
 }
@@ -9053,8 +9268,9 @@ class ShaderCodeBuilder {
     this.vertMatrixInverseEnabled = false;
     this.vtxUVTransfromEnabled = false;
     this.fragMatrixInverseEnabled = false;
-    let self = this;
-    self.uniform = uniform;
+    this.uns = "";
+    let selfT = this;
+    selfT.uniform = uniform;
   }
 
   getUniqueNSKeyID() {
@@ -9069,7 +9285,8 @@ class ShaderCodeBuilder {
     return this.uniform.getUniqueNSKeyString() + ns;
   }
 
-  reset() {
+  reset(flag = true) {
+    this.uns = "";
     this.m_vertObjMat = true;
     this.m_vertViewMat = true;
     this.m_vertProjMat = true;
@@ -9117,7 +9334,13 @@ class ShaderCodeBuilder {
     this.vertMatrixInverseEnabled = false;
     this.fragMatrixInverseEnabled = false;
     this.vtxUVTransfromEnabled = false;
-    this.m_preCompileInfo = null;
+
+    if (flag) {
+      this.m_preCompileInfo = new ShaderCompileInfo_1.default();
+    } else {
+      this.m_preCompileInfo = null;
+    }
+
     this.uniform.reset();
   }
 
@@ -9397,7 +9620,11 @@ class ShaderCodeBuilder {
       this.autoBuildHeadCode();
     }
 
+    const scp = this.m_preCompileInfo;
+    scp.fragOutputTotal = this.m_fragOutputNames.length;
+
     if (this.m_fragOutputNames.length < 1) {
+      scp.fragOutputTotal = 1;
       this.addFragOutput("vec4", "FragColor0");
     }
 
@@ -9411,9 +9638,9 @@ class ShaderCodeBuilder {
 
     if (RendererDevice_1.default.IsWebGL2()) {
       code += this.m_versionDeclare;
-    }
+    } // this.m_preCompileInfo = new ShaderCompileInfo();
 
-    this.m_preCompileInfo = new ShaderCompileInfo_1.default();
+
     this.m_preCompileInfo.info = "\n//##COMPILE_INFO_BEGIN"; // complie info, for example: uniform info
 
     this.m_preCompileInfo.info += "\n//##COMPILE_INFO_END";
@@ -10184,8 +10411,11 @@ class DataMesh extends MeshBase_1.default {
     super(bufDataUsage);
     this.m_boundsChanged = true;
     this.m_ils = new Array(1);
+    this.m_iverls = new Array(1);
+    this.m_iver1ls = new Array(1);
     this.m_ists = new Array(1);
     this.m_ls = new Array(10);
+    this.m_verls = new Array(10);
     this.m_rayTester = null;
     this.m_boundsVersion = -2;
     this.autoBuilding = true; // v,u,n,c,t, v2,u2,n2,c2,t2
@@ -10193,7 +10423,10 @@ class DataMesh extends MeshBase_1.default {
     this.m_strides = new Uint8Array([3, 2, 3, 3, 3, 3, 2, 3, 3, 3]);
     this.m_ls.fill(null);
     this.m_ils.fill(null);
+    this.m_iverls.fill(0);
+    this.m_iver1ls.fill(0);
     this.m_ists.fill([true, false]);
+    this.m_verls.fill(0);
   }
 
   setRayTester(rayTester) {
@@ -10208,6 +10441,7 @@ class DataMesh extends MeshBase_1.default {
   setVS(vs, stride = 3) {
     this.m_ls[0] = vs;
     this.m_strides[0] = stride;
+    this.m_verls[0]++;
     this.m_boundsChanged = true;
     return this;
   }
@@ -10220,6 +10454,7 @@ class DataMesh extends MeshBase_1.default {
   setVS2(vs, stride = 3) {
     this.m_ls[5] = vs;
     this.m_strides[5] = stride;
+    this.m_verls[5]++;
     this.m_boundsChanged = true;
     return this;
   }
@@ -10248,6 +10483,7 @@ class DataMesh extends MeshBase_1.default {
   setUVS(uvs, stride = 2) {
     this.m_ls[1] = uvs;
     this.m_strides[1] = stride;
+    this.m_verls[1]++;
     return this;
   }
   /**
@@ -10259,6 +10495,7 @@ class DataMesh extends MeshBase_1.default {
   setUVS2(uvs, stride = 2) {
     this.m_ls[6] = uvs;
     this.m_strides[6] = stride;
+    this.m_verls[6]++;
     return this;
   }
   /**
@@ -10286,6 +10523,7 @@ class DataMesh extends MeshBase_1.default {
   setNVS(nvs, stride = 3) {
     this.m_ls[2] = nvs;
     this.m_strides[2] = stride;
+    this.m_verls[2]++;
     return this;
   }
   /**
@@ -10305,6 +10543,7 @@ class DataMesh extends MeshBase_1.default {
   setCVS(cvs, stride = 3) {
     this.m_ls[3] = cvs;
     this.m_strides[3] = stride;
+    this.m_verls[3]++;
     return this;
   }
   /**
@@ -10324,6 +10563,7 @@ class DataMesh extends MeshBase_1.default {
   setTVS(tvs, stride = 3) {
     this.m_ls[4] = tvs;
     this.m_strides[4] = stride;
+    this.m_verls[4]++;
     return this;
   }
   /**
@@ -10343,14 +10583,15 @@ class DataMesh extends MeshBase_1.default {
     this.setTVS(geom.getTVS());
     this.setIVSAt(geom.getIVS());
     this.m_boundsChanged = true;
-    this.initialize();
+    return this.initialize();
   }
 
-  addFloat32Data(data, type, stride, info = "") {
+  addFloat32Data(data, type, stride, ver, info = "") {
     let free = this.getBufSortFormat() < 1;
-    free = this.isVBufEnabledAt(type) || free && data != null; // console.log("DataMesh::addFloat32Data(), info: ", info, ", free: ", free, ", data: ", data);
+    free = this.isVBufEnabledAt(type) || free && data != null; // console.log("DataMesh::addFloat32Data(), info: ", info, ", free: ", free, ", ver: ", ver);
 
     if (free) {
+      ROVertexBuffer_1.default.AddFloat32DataVer(ver);
       ROVertexBuffer_1.default.AddFloat32Data(data, stride);
     }
   }
@@ -10358,6 +10599,7 @@ class DataMesh extends MeshBase_1.default {
   setIVS(ivs) {
     this.m_ivs = ivs;
     this.m_ils[0] = ivs;
+    this.m_iverls[0] += 1;
     return this;
   }
   /**
@@ -10376,12 +10618,15 @@ class DataMesh extends MeshBase_1.default {
 
     if (index < this.m_ils.length) {
       this.m_ils[index] = ivs;
+      this.m_iverls[index] += 1;
       let ls = this.m_ists[index];
       ls[0] = shape;
       ls[1] = wireframe;
     } else if (index == this.m_ils.length) {
       this.m_ils.push(ivs);
       this.m_ists.push([shape, wireframe]);
+      this.m_iverls.push(1);
+      this.m_iver1ls.push(0);
     }
 
     return this;
@@ -10414,15 +10659,17 @@ class DataMesh extends MeshBase_1.default {
 
       this.m_boundsVersion = this.bounds.version;
       this.m_boundsChanged = false;
-      let ils = this.m_ils;
-      let ivs = ils[0];
+      const ils = this.m_ils;
+      const ivs = ils[0];
+      const verls = this.m_verls;
       const rvb = ROVertexBuffer_1.default;
       ROVertexBuffer_1.default.Reset(); // console.log("XXXXXX vsStride: ", vsStride, ", vs: ", vs);
 
+      rvb.AddFloat32DataVer(verls[0]);
       rvb.AddFloat32Data(vs, vsStride);
       const vc = VtxBufConst_1.default;
       const vcf = this.addFloat32Data.bind(this);
-      vcf(ls[1], vc.VBUF_UVS_INDEX, ds[1]);
+      vcf(ls[1], vc.VBUF_UVS_INDEX, ds[1], verls[1]);
       let nvsIndex = 2;
       let nvs = ls[nvsIndex];
       let free = this.getBufSortFormat() < 1;
@@ -10436,25 +10683,17 @@ class DataMesh extends MeshBase_1.default {
         } // console.log("XXXXXX vsStride: ", ds[nvsIndex], ", nvs: ", nvs);
 
 
+        rvb.AddFloat32DataVer(verls[nvsIndex]);
         rvb.AddFloat32Data(nvs, ds[nvsIndex]);
       }
 
-      vcf(ls[3], vc.VBUF_CVS_INDEX, ds[3]);
-      vcf(ls[4], vc.VBUF_TVS_INDEX, ds[4]);
-      vcf(ls[5], vc.VBUF_VS2_INDEX, ds[5]);
-      vcf(ls[6], vc.VBUF_UVS2_INDEX, ds[6]);
+      vcf(ls[3], vc.VBUF_CVS_INDEX, ds[3], verls[3]);
+      vcf(ls[4], vc.VBUF_TVS_INDEX, ds[4], verls[4]);
+      vcf(ls[5], vc.VBUF_VS2_INDEX, ds[5], verls[5]);
+      vcf(ls[6], vc.VBUF_UVS2_INDEX, ds[6], verls[6]);
       rvb.vbWholeDataEnabled = this.vbWholeDataEnabled;
       this.vtCount = ivs.length;
-
-      if (this.autoBuilding) {
-        this.vtxTotal = vs.length / vsStride; // this.toElementsLines();
-        // let pivs = this.updateWireframeIvs(ivs);
-        // if(this.wireframe && pivs != null) {
-        // 	console.log("pivs: ",pivs);
-        // 	ivs = pivs;
-        // }
-      }
-
+      this.vtxTotal = vs.length / vsStride;
       this.vtCount = ivs.length;
       this.trisNumber = this.vtCount / 3;
 
@@ -10463,7 +10702,6 @@ class DataMesh extends MeshBase_1.default {
       } else {
         let u = this.getBufDataUsage();
         let f = this.getBufSortFormat();
-        this.m_vbuf = rvb.CreateBySaveData(u, f);
 
         if (this.vbWholeDataEnabled) {
           this.m_vbuf = rvb.CreateBySaveData(u, f);
@@ -10478,17 +10716,30 @@ class DataMesh extends MeshBase_1.default {
       bls[1] = this.wireframe;
 
       for (let i = 0; i < ils.length; ++i) {
-        let ird = this.crateROIvsData();
-        bls = sts[i];
-        ird.shape = bls[0];
-        ird.wireframe = bls[1];
-        ird.setData(ils[i]); // console.log("vbuf.setIVSDataAt(), i: ", i, ", ivs: ", ivs);
+        let ird = this.m_vbuf.getIvsDataAt(i);
+        let flag = true;
 
-        this.m_vbuf.setIVSDataAt(ird, i);
+        if (ird == null) {
+          ird = this.crateROIvsData();
+          bls = sts[i];
+          ird.shape = bls[0];
+          ird.wireframe = bls[1];
+        } else {
+          flag = this.m_iver1ls[i] != this.m_iverls[i];
+        }
+
+        this.m_iver1ls[i] = this.m_iverls[i];
+
+        if (flag) {
+          ird.setData(ils[i]);
+          this.m_vbuf.setIVSDataAt(ird, i);
+        }
       }
 
       this.buildEnd();
     }
+
+    return this;
   }
   /**
    * 射线和自身的相交检测(多面体或几何函数(例如球体))
@@ -10517,6 +10768,8 @@ class DataMesh extends MeshBase_1.default {
         this.m_rayTester = null;
       }
 
+      this.m_iverls = [];
+      this.m_iver1ls = [];
       this.m_ls = [];
       this.m_ils = [];
 
@@ -11156,11 +11409,11 @@ class TextureBlock {
     return this.m_rttStore;
   }
 
-  createWrapperTex(pw, ph, powerof2Boo = false) {
+  createWrapperTex(pw = 128, ph = 128, powerof2Boo = false) {
     return this.m_rttStore.createWrapperTex(pw, ph, powerof2Boo);
   }
 
-  createRTTTex2D(pw, ph, powerof2Boo = false) {
+  createRTTTex2D(pw = 128, ph = 128, powerof2Boo = false) {
     let tex = this.m_rttStore.createRTTTex2D(pw, ph, powerof2Boo);
 
     tex.__$setRenderProxy(this.m_renderProxy);
@@ -11511,7 +11764,7 @@ class ImageTextureProxy extends TextureProxy_1.default {
 
 
   setDataFromImage(img, miplevel = 0, offsetx = 0, offsety = 0, rebuild = false) {
-    if (img != null && img.width > 0 && img.height > 0) {
+    if (img && img.width > 0 && img.height > 0) {
       this.m_haveRData = true;
       if (miplevel < 0) miplevel = 0;
       if (miplevel > 15) miplevel = 15;
@@ -11567,6 +11820,7 @@ class ImageTextureProxy extends TextureProxy_1.default {
       }
 
       this.version++;
+      this.testDataEnough();
     }
   }
 
@@ -11616,10 +11870,6 @@ class ImageTextureProxy extends TextureProxy_1.default {
 
       super.__$destroy();
     }
-  }
-
-  toString() {
-    return "[ImageTextureProxy(name:" + this.name + ",uid=" + this.getUid() + ",width=" + this.getWidth() + ",height=" + this.getHeight() + ")]";
   }
 
 }
@@ -12856,6 +13106,112 @@ exports.DisplayRenderSign = DisplayRenderSign;
 
 /***/ }),
 
+/***/ "75b9":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+class URLFilter {
+  static isEnabled() {
+    let hostUrl = window.location.href;
+    return hostUrl.indexOf(".artvily.com") > 0;
+  }
+
+  static filterUrl(url) {
+    if (url.indexOf("blob:") < 0) {
+      console.log("use common tex url");
+      let hostUrl = window.location.href;
+
+      if (hostUrl.indexOf(".artvily.") > 0) {
+        hostUrl = "http://www.artvily.com:9090/";
+        url = hostUrl + url;
+      }
+    }
+
+    return url;
+  }
+
+  static getFileName(url, lowerCase = false) {
+    if (url.indexOf("blob:") < 0) {
+      let i = url.lastIndexOf("/");
+
+      if (i < 0) {
+        return "";
+      }
+
+      let j = url.indexOf(".", i);
+
+      if (j < 0) {
+        return "";
+      }
+
+      if (i + 2 < j) {
+        let str = url.slice(i + 1, j);
+
+        if (lowerCase) {
+          return str.toLocaleLowerCase();
+        }
+
+        return str;
+      }
+    }
+
+    return "";
+  }
+
+  static getFileNameAndSuffixName(url, lowerCase = false) {
+    if (url.indexOf("blob:") < 0) {
+      let i = url.lastIndexOf("/");
+      let j = url.indexOf(".", i);
+
+      if (j < 0) {
+        return "";
+      }
+
+      let str = url.slice(i + 1);
+
+      if (lowerCase) {
+        return str.toLocaleLowerCase();
+      }
+
+      return str;
+    }
+
+    return "";
+  }
+
+  static getFileSuffixName(url, lowerCase = false) {
+    if (url.indexOf("blob:") < 0) {
+      let i = url.lastIndexOf("/");
+      let j = url.indexOf(".", i);
+
+      if (j < 0) {
+        return "";
+      }
+
+      let str = url.slice(j + 1);
+
+      if (lowerCase) {
+        return str.toLocaleLowerCase();
+      }
+
+      return str;
+    }
+
+    return "";
+  }
+
+}
+
+exports.default = URLFilter;
+
+/***/ }),
+
 /***/ "765c":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -13557,16 +13913,13 @@ const VtxBufID_1 = __importDefault(__webpack_require__("f044"));
 class VtxSeparatedBuf {
   constructor() {
     this.m_uid = -1;
-    this.m_total = 0;
-    this.layoutBit = 0x0;
-    this.m_fOffsetList = null; //private m_pOffsetList:number[] = null;
-
-    this.m_f32List = null;
-    this.m_f32SizeList = null; //private m_f32PreSizeList: number[] = null;
-
-    this.m_f32ChangedList = null;
+    this.m_ofList = null;
+    this.m_list = null;
+    this.m_dirtyList = null;
+    this.m_verList = null;
     this.m_f32Bufs = null;
     this.m_bufersTotal = 0;
+    this.layoutBit = 0x0;
     this.m_uid = VtxBufID_1.default.CreateNewID();
   }
 
@@ -13576,8 +13929,7 @@ class VtxSeparatedBuf {
 
   getType() {
     return 1;
-  } // private m_stepFloatsTotal: number = 0;
-
+  }
 
   getBuffersTotal() {
     return this.m_bufersTotal;
@@ -13588,63 +13940,74 @@ class VtxSeparatedBuf {
   }
 
   getF32DataAt(index) {
-    return this.m_f32List[index];
+    // console.log("VtxSeparatedBuf::getF32DataAt(), VVV index: ",index, ", this.m_list[index]: ", this.m_list[index]);
+    return this.m_list[index];
   }
 
   setF32DataAt(index, float32Arr, stepFloatsTotal, setpOffsets) {
     if (index < 1) this.m_bufersTotal = 1;else this.m_bufersTotal = index + 1;
 
-    if (this.m_f32List == null) {
-      this.m_f32List = [null, null, null, null, null, null, null, null];
-      this.m_f32ChangedList = [false, false, false, false, false, false, false, false];
-      this.m_f32SizeList = [0, 0, 0, 0, 0, 0, 0, 0]; //this.m_f32PreSizeList = [0, 0, 0, 0, 0, 0, 0, 0];
+    if (this.m_list == null) {
+      this.m_list = new Array(8);
+      this.m_list.fill(null);
+      this.m_dirtyList = new Array(8);
+      this.m_dirtyList.fill(false);
+      this.m_verList = new Array(8);
+      this.m_verList.fill(0);
     }
 
-    this.m_f32List[index] = float32Arr;
+    this.m_list[index] = float32Arr;
 
     if (this.m_f32Bufs != null && float32Arr != null) {
-      this.m_f32ChangedList[index] = true;
+      this.m_dirtyList[index] = true;
     }
 
-    if (setpOffsets != null) this.m_fOffsetList = setpOffsets; // console.log("VtxSeparatedBuf::setF32DataAt(), this.m_bufersTotal: ",this.m_bufersTotal);
+    if (setpOffsets != null) this.m_ofList = setpOffsets; // console.log("VtxSeparatedBuf::setF32DataAt(), this.m_bufersTotal: ",this.m_bufersTotal, setpOffsets);
+    // if (float32Arr != null) {
+    //     this.m_sizeList[index] = float32Arr.length;
+    // }
+  }
 
-    if (float32Arr != null) {
-      this.m_f32SizeList[index] = float32Arr.length;
-    }
+  getF32DataVerAt(index) {
+    // console.log("VtxSeparatedBuf::getF32DataVerAt(), VVV index: ",index, ", ver: ", this.m_verList[index]);
+    return this.m_verList[index];
+  }
+
+  setF32DataVerAt(index, ver) {
+    // console.log("VtxSeparatedBuf::setF32DataVerAt(), VVV index: ",index, ", ver: ", ver);
+    this.m_verList[index] = ver;
   }
 
   setData4fAt(vertexI, attribI, px, py, pz, pw) {
-    vertexI *= this.m_fOffsetList[attribI];
-    this.m_f32List[attribI][vertexI++] = px;
-    this.m_f32List[attribI][vertexI++] = py;
-    this.m_f32List[attribI][vertexI++] = pz;
-    this.m_f32List[attribI][vertexI++] = pw;
+    vertexI *= this.m_ofList[attribI];
+    const vs = this.m_list[attribI];
+    vs[vertexI++] = px;
+    vs[vertexI++] = py;
+    vs[vertexI++] = pz;
+    vs[vertexI++] = pw;
   }
 
   setData3fAt(vertexI, attribI, px, py, pz) {
-    vertexI *= this.m_fOffsetList[attribI];
-    this.m_f32List[attribI][vertexI++] = px;
-    this.m_f32List[attribI][vertexI++] = py;
-    this.m_f32List[attribI][vertexI++] = pz;
+    vertexI *= this.m_ofList[attribI];
+    const vs = this.m_list[attribI];
+    vs[vertexI++] = px;
+    vs[vertexI++] = py;
+    vs[vertexI++] = pz;
   }
 
   setData2fAt(vertexI, attribI, px, py) {
-    vertexI *= this.m_fOffsetList[attribI];
-    this.m_f32List[attribI][vertexI++] = px;
-    this.m_f32List[attribI][vertexI++] = py;
+    vertexI *= this.m_ofList[attribI];
+    const vs = this.m_list[attribI];
+    vs[vertexI++] = px;
+    vs[vertexI++] = py;
   }
 
   destroy() {
-    this.m_f32List = null;
-    this.m_f32ChangedList = null;
-    this.m_f32SizeList = null; //this.m_f32PreSizeList = null;
+    this.m_list = null;
+    this.m_dirtyList = null; // this.m_sizeList = null;
+    // //this.m_f32PreSizeList = null;
 
-    console.log("VtxSeparatedBuf::__$destroy()... ", this);
-    this.m_f32List = null;
-  }
-
-  toString() {
-    return "VtxSeparatedBuf(uid = " + this.m_uid + ")";
+    this.m_list = null;
   }
 
 }
@@ -13697,7 +14060,7 @@ class Entity3DNode {
     this.entity = null;
     this.bounds = null;
     this.rayTestState = 0;
-    this.rpoNode = null;
+    this.runit = null;
     this.spaceId = -1; // 记录上一次摄像机裁剪自身的状态
 
     this.camVisiSt = 0; // 记录摄像机可见状态,大于0表示不可见
@@ -13715,9 +14078,14 @@ class Entity3DNode {
     this.next = null;
     this.entity = null;
     this.bounds = null;
-    this.rpoNode = null;
+    this.runit = null;
     this.spaceId = -1;
     this.camVisi = 0;
+  }
+
+  isVisible() {
+    // console.log(this.runit.rendering, ",", this.runit.drawing);
+    return this.runit.drawing && this.entity.isDrawEnabled(); // return this.runit.rendering && this.runit.drawing;
   }
 
   static GetFreeId() {
@@ -14597,6 +14965,35 @@ exports.SpecularMode = SpecularMode;
 
 /***/ }),
 
+/***/ "8414":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/***************************************************************************/
+
+/*                                                                         */
+
+/*  Copyright 2018-2022 by                                                 */
+
+/*  Vily(vily313@126.com)                                                  */
+
+/*                                                                         */
+
+/***************************************************************************/
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+class VtxNormalType {}
+
+VtxNormalType.FLAT = 210;
+VtxNormalType.GOURAND = 310;
+exports.default = VtxNormalType;
+
+/***/ }),
+
 /***/ "85b6":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -14905,6 +15302,10 @@ Object.defineProperty(exports, "__esModule", {
 
 const BitConst_1 = __importDefault(__webpack_require__("ca6c"));
 
+const VtxNormalType_1 = __importDefault(__webpack_require__("8414"));
+
+exports.VtxNormalType = VtxNormalType_1.default;
+
 class VtxBufConst {
   static ToGL(gl, param) {
     const vbc = VtxBufConst;
@@ -15109,12 +15510,6 @@ VtxBufConst.VBUF_CVS_NS = "a_cvs";
 VtxBufConst.VBUF_CVS2_NS = "a_cvs2";
 VtxBufConst.VBUF_TVS_NS = "a_tvs";
 VtxBufConst.VBUF_TVS2_NS = "a_tvs2";
-
-class VtxNormalType {}
-
-VtxNormalType.FLAT = 210;
-VtxNormalType.GOURAND = 310;
-exports.VtxNormalType = VtxNormalType;
 exports.default = VtxBufConst;
 
 /***/ }),
@@ -15373,6 +15768,13 @@ class Vector3D {
 
   clone() {
     return new Vector3D(this.x, this.y, this.z, this.w);
+  }
+
+  abs() {
+    this.x = Math.abs(this.x);
+    this.y = Math.abs(this.y);
+    this.z = Math.abs(this.z);
+    return this;
   }
 
   setTo(px, py, pz, pw = 1.0) {
@@ -16096,7 +16498,7 @@ class RayGpuSelector {
       }
 
       this.m_selectedNode = null;
-      let i = 0;
+      let i = 0; // 需要支持容器操作，也相当于是容器可控制渲染
 
       if (total > 0) {
         let invpv = this.m_invpv;
@@ -16226,6 +16628,9 @@ class RayGpuSelector {
   gpuPick(total) {
     let rcontext = this.m_renderer.getRendererContext();
     let proxy = this.m_renderer.getRenderProxy();
+    let adp = proxy.adapter;
+    let syncBgColor = adp.getSyncBgColor();
+    adp.setSyncBgColor(false);
     let pmx = proxy.getStage3D().mouseX; //let pmy:number = proxy.getStage3D().stageHeight - proxy.getStage3D().mouseY;
 
     let pmy = proxy.getStage3D().mouseY;
@@ -16299,6 +16704,7 @@ class RayGpuSelector {
     RendererState_1.default.UnlockDepthTestMode();
     const c = this.m_initColor;
     rcontext.setClearRGBAColor4f(c.r, c.g, c.b, c.a);
+    adp.setSyncBgColor(syncBgColor);
     rcontext.resetState();
   }
 
@@ -16308,9 +16714,9 @@ class RayGpuSelector {
 
 
   getWorldPosByRayDistance(cameraDistance, tv, camPv, resultV) {
-    resultV.x = tv.x * cameraDistance + camPv.x;
-    resultV.y = tv.y * cameraDistance + camPv.y;
-    resultV.z = tv.z * cameraDistance + camPv.z;
+    resultV.copyFrom(tv).scaleBy(cameraDistance).addBy(camPv); // resultV.x = tv.x * cameraDistance + camPv.x;
+    // resultV.y = tv.y * cameraDistance + camPv.y;
+    // resultV.z = tv.z * cameraDistance + camPv.z;
   }
 
 }
@@ -16792,7 +17198,6 @@ class ShaderProgramBuilder {
   constructor(rcuid) {
     this.m_shdDict = new Map();
     this.m_shdList = [];
-    this.m_shdListLen = 0;
     this.m_sharedUniformList = [];
     this.m_rcuid = -1;
     this.m_rcuid = rcuid;
@@ -16810,23 +17215,22 @@ class ShaderProgramBuilder {
    */
 
 
-  create(shdData) {
-    // console.log("this.Create() begin...");
+  create(shdData, rc) {
     let uns = shdData.getUniqueShaderName();
 
     if (this.m_shdDict.has(uns)) {
       return this.m_shdDict.get(uns);
     }
 
-    let p = new ShdProgram_1.default(this.m_shdListLen);
+    let p = new ShdProgram_1.default(this.m_shdList.length);
     p.setShdData(shdData);
     this.m_shdList[p.getUid()] = p;
     this.m_sharedUniformList[p.getUid()] = null;
-    ++this.m_shdListLen;
+    ++this.m_shdList.length;
     this.m_shdDict.set(uns, p);
 
     if (RendererDevice_1.default.SHADERCODE_TRACE_ENABLED) {
-      console.log("this.Create() a new ShdProgram: ", p.toString());
+      console.log("this.Create() a new ShdProgram, uns: ", uns, ", p: ", p);
     }
 
     return p;
@@ -16859,11 +17263,22 @@ class ShaderProgramBuilder {
   }
 
   getTotal() {
-    return this.m_shdListLen;
+    return this.m_shdList.length;
   }
 
   containsUid(uid) {
-    return uid > -1 && uid < this.m_shdListLen;
+    return uid > -1 && uid < this.m_shdList.length;
+  }
+
+  clear() {
+    let map = this.m_shdDict;
+    this.m_shdList = [];
+
+    for (var [k, v] of map.entries()) {
+      v.destroy();
+    }
+
+    map.clear();
   }
 
 }
@@ -16928,7 +17343,7 @@ class RendererSpace {
     this.m_renderer = null;
     this.m_camera = null;
     this.m_stage3d = null;
-    this.m_emptyRPONode = null;
+    this.m_emptyRPOUnit = null;
     this.m_rpoNodeBuilder = null;
     this.m_nodeQueue = new EntityNodeQueue_1.default();
     this.m_nodeWLinker = new Entity3DNodeLinker_1.default();
@@ -16951,7 +17366,7 @@ class RendererSpace {
       this.m_stage3d = renderer.getStage3D();
       this.m_camera = camera;
       this.m_rpoNodeBuilder = renderer.getRPONodeBuilder();
-      this.m_emptyRPONode = this.m_rpoNodeBuilder.createRPONode();
+      this.m_emptyRPOUnit = this.m_rpoNodeBuilder.createRPOUnit();
     }
   }
 
@@ -16985,43 +17400,54 @@ class RendererSpace {
   }
 
   getPOVNumber() {
-    return this.m_cullingor != null ? this.m_cullingor.getPOVNumber() : 0;
+    return this.m_cullingor ? this.m_cullingor.getPOVNumber() : 0;
   } // 可以添加真正被渲染的实体也可以添加只是为了做检测的实体(不允许有material)
 
 
-  addEntity(entity) {
+  addEntity(et) {
     const SCM = SpaceCullingMask_1.SpaceCullingMask;
 
-    if (entity.getGlobalBounds() != null && entity.spaceCullMask > SCM.NONE) {
-      if (RSEntityFlag_1.default.TestSpaceEnabled(entity.__$rseFlag)) {
-        entity.update();
+    if (et.getGlobalBounds() != null && et.spaceCullMask > SCM.NONE) {
+      if (RSEntityFlag_1.default.TestSpaceEnabled(et.__$rseFlag)) {
+        et.update();
         ++this.m_entitysTotal;
-        let node = this.m_nodeQueue.addEntity(entity);
-        node.bounds = entity.getGlobalBounds();
-        node.pcoEnabled = (entity.spaceCullMask & SCM.POV) == SCM.POV;
-        let boo = entity.isInRendererProcess() || entity.getMaterial() == null;
+        let node = this.m_nodeQueue.addEntity(et);
+        node.bounds = et.getGlobalBounds();
+        node.pcoEnabled = (et.spaceCullMask & SCM.POV) == SCM.POV;
 
-        if (boo && (entity.spaceCullMask & SCM.POV) == SCM.POV) {
-          node.rstatus = 1;
+        if (et.getREType() < 12) {
+          const entity = et; // let boo = entity.isInRendererProcess() || entity.getMaterial() == null;
 
-          if (entity.getMaterial() == null) {
-            node.rpoNode = this.m_emptyRPONode;
-          }
+          let boo = entity.isInRendererProcess() || !entity.isPolyhedral();
 
-          if (node.rpoNode == null) {
-            node.rpoNode = this.m_rpoNodeBuilder.getNodeByUid(entity.getDisplay().__$rpuid);
-          }
+          if (boo && (entity.spaceCullMask & SCM.POV) == SCM.POV) {
+            node.rstatus = 1; // if (entity.getMaterial() == null) {
 
-          this.m_nodeSLinker.addNode(node);
-        } else {
-          if (entity.getMaterial() == null) {
-            node.rstatus = 1;
-            node.rpoNode = this.m_emptyRPONode;
+            if (!entity.isPolyhedral()) {
+              node.runit = this.m_emptyRPOUnit;
+            }
+
+            if (node.runit == null) {
+              node.runit = entity.getDisplay().__$$runit;
+            }
+
             this.m_nodeSLinker.addNode(node);
           } else {
-            node.rstatus = 0;
-            this.m_nodeWLinker.addNode(node);
+            // if (entity.getMaterial() == null) {
+            if (!entity.isPolyhedral()) {
+              node.rstatus = 1;
+              node.runit = this.m_emptyRPOUnit;
+              this.m_nodeSLinker.addNode(node);
+            } else {
+              node.rstatus = 0;
+              this.m_nodeWLinker.addNode(node);
+            }
           }
+        } else {
+          console.log("add a container into the renderer space.");
+          node.rstatus = 1;
+          node.runit = this.m_emptyRPOUnit;
+          this.m_nodeSLinker.addNode(node);
         }
       }
     }
@@ -17045,16 +17471,6 @@ class RendererSpace {
     }
   }
 
-  updateEntity(entity) {//  if(RSEntityFlag.TestSpaceContains( entity.__$rseFlag ))
-    //  {
-    //      let node:Entity3DNode = this.m_nodeQueue.getNodeByEntity(entity);
-    //      //  if(node != null)
-    //      //  {
-    //      //      node.distanceFlag = RSEntityFlag.TestSortEnabled(entity.__$rseFlag);
-    //      //  }
-    //  }
-  }
-
   update() {}
 
   runBegin() {}
@@ -17062,19 +17478,27 @@ class RendererSpace {
   run() {
     let nextNode = this.m_nodeWLinker.getBegin();
 
-    if (nextNode != null) {
+    if (nextNode) {
       let pnode = null;
 
-      while (nextNode != null) {
-        if (nextNode.entity.isInRendererProcess()) {
-          pnode = nextNode;
-          pnode.rstatus = 1;
-          nextNode = nextNode.next;
-          this.m_nodeWLinker.removeNode(pnode);
-          this.m_nodeSLinker.addNode(pnode);
+      while (nextNode) {
+        const entity = nextNode.entity;
 
-          if (pnode.rpoNode == null) {
-            pnode.rpoNode = this.m_rpoNodeBuilder.getNodeByUid(pnode.entity.getDisplay().__$rpuid);
+        if (entity.getREType() < 12) {
+          const rentity = entity;
+
+          if (rentity.isInRendererProcess()) {
+            pnode = nextNode;
+            pnode.rstatus = 1;
+            nextNode = nextNode.next;
+            this.m_nodeWLinker.removeNode(pnode);
+            this.m_nodeSLinker.addNode(pnode);
+
+            if (pnode.runit == null) {
+              pnode.runit = rentity.getDisplay().__$$runit;
+            }
+          } else {
+            nextNode = nextNode.next;
           }
         } else {
           nextNode = nextNode.next;
@@ -17083,39 +17507,63 @@ class RendererSpace {
     }
 
     nextNode = this.m_nodeSLinker.getBegin();
+    const cam = this.m_camera;
 
-    if (nextNode != null) {
+    if (nextNode) {
       let total = 0;
+      const cor = this.m_cullingor;
 
-      if (this.m_cullingor != null) {
-        this.m_cullingor.setCamera(this.m_camera);
-        this.m_cullingor.setCullingNodeHead(nextNode);
-        this.m_cullingor.run();
+      if (cor) {
+        cor.setCamera(this.m_camera);
+        cor.setCullingNodeHead(nextNode);
+        cor.run();
         total = this.m_cullingor.total;
       } else {
         let ab = null;
-        let cam = this.m_camera; //let camPos:IVector3D = cam.getPosition();
+        let vboo = false;
+        let entity = nextNode.entity;
+        let ty = entity.getREType();
 
-        while (nextNode != null) {
-          if (nextNode.rpoNode.isVsible() && nextNode.entity.isDrawEnabled()) {
+        while (nextNode) {
+          vboo = false;
+          entity = nextNode.entity;
+          ty = entity.getREType();
+
+          if (nextNode.isVisible()) {
             ab = nextNode.bounds;
-            const boo = cam.visiTestSphere2(ab.center, ab.radius);
-            nextNode.drawEnabled = boo;
-            nextNode.entity.drawEnabled = boo;
-            nextNode.rpoNode.drawEnabled = boo;
-            total += boo ? 1 : 0; //  if(nextNode.drawEnabled && nextNode.distanceFlag)
-            //  {
-            //      nextNode.rpoNode.setValue(-IVector3D.DistanceSquared(camPos,ab.center));
-            //      //console.log((nextNode.entity as any).name,",a runit.value: ",nextNode.rpoNode.unit.value);
-            //  }
-          } else {
-            nextNode.drawEnabled = false;
-            nextNode.entity.drawEnabled = false;
-            nextNode.rpoNode.drawEnabled = false;
-          } // if(DebugFlag.Flag_0 > 0) console.log("nextNode.rpoNode.isVsible(): ",nextNode.rpoNode.isVsible(), nextNode.entity.isDrawEnabled(), nextNode.drawEnabled);
+            vboo = cam.visiTestSphere2(ab.center, ab.radius); // if (vboo) {
+            // 	total += 1;
+            // 	if (ty >= 12) {
+            // 		const c = entity as IDisplayEntityContainer;
+            // 		c.__$setRendering(vboo);
+            // 		this.camVisiContainer(c, cam);
+            // 	}
+            // } else {
+            // 	entity.setRendering(vboo);
+            // }
+          }
 
+          nextNode.drawEnabled = vboo; // if (ty < 12) {
+          // 	entity.setRendering(vboo);
+          // }
 
           nextNode = nextNode.next;
+
+          if (vboo) {
+            total += 1;
+
+            if (ty >= 12) {
+              const c = entity;
+
+              c.__$setRendering(vboo);
+
+              this.camVisiContainer(c, cam);
+            } else {
+              entity.setRendering(vboo);
+            }
+          } else {
+            entity.setRendering(vboo);
+          }
         }
       }
 
@@ -17125,15 +17573,49 @@ class RendererSpace {
         etset.reset(total);
         nextNode = this.m_nodeSLinker.getBegin();
 
-        while (nextNode != null) {
+        while (nextNode) {
           if (nextNode.drawEnabled) {
-            etset.addEntity(nextNode.entity);
+            const entity = nextNode.entity;
+
+            if (entity.getREType() < 12) {
+              etset.addEntity(entity);
+            }
           }
 
           nextNode = nextNode.next;
         }
       } else {
         etset.clear();
+      }
+    }
+  }
+
+  camVisiContainer(c, cam) {
+    const etotal = c.getEntitiesTotal();
+    const ets = c.getEntities();
+
+    for (let i = 0; i < etotal; ++i) {
+      const et = ets[i];
+      const ab = et.getGlobalBounds(); // const vboo = ab ? cam.visiTestSphere2(ab.center, ab.radius) : true;
+
+      const vboo = cam.visiTestSphere2(ab.center, ab.radius);
+      et.setRendering(vboo);
+    }
+
+    const ctotal = c.getChildrenTotal();
+    const ecs = c.getContainers();
+
+    for (let i = 0; i < ctotal; ++i) {
+      const ec = ecs[i];
+      const ab = ec.getGlobalBounds();
+      const vboo = cam.visiTestSphere2(ab.center, ab.radius);
+
+      if (vboo) {
+        ec.__$setRendering(vboo);
+
+        this.camVisiContainer(ec, cam);
+      } else {
+        ec.setRendering(vboo);
       }
     }
   }
@@ -17151,10 +17633,6 @@ class RendererSpace {
 
   getCullingNodeHead() {
     return this.m_nodeSLinker.getBegin();
-  }
-
-  toString() {
-    return "[RendererSpace(uid = " + this.m_uid + ")]";
   }
 
 }
@@ -17365,10 +17843,6 @@ const CameraBase_1 = __importDefault(__webpack_require__("c51d"));
 
 const RendererParam_1 = __importDefault(__webpack_require__("c497"));
 
-const EntityNodeQueue_1 = __importDefault(__webpack_require__("af68"));
-
-const Entity3DNodeLinker_1 = __importDefault(__webpack_require__("a80a"));
-
 const RunnableQueue_1 = __importDefault(__webpack_require__("9c4d"));
 
 const TextureBlock_1 = __webpack_require__("5d04");
@@ -17393,6 +17867,10 @@ const Matrix4_1 = __importDefault(__webpack_require__("18c7"));
 
 const EntityTransUpdater_1 = __importDefault(__webpack_require__("7c36"));
 
+const EntityFence_1 = __importDefault(__webpack_require__("20d6"));
+
+const VoxSystemVerify_1 = __importDefault(__webpack_require__("0188"));
+
 class RendererSceneBase {
   constructor(uidBase = 0) {
     this.___$$$$$$$Author = "VilyLei(vily313@126.com)";
@@ -17403,6 +17881,7 @@ class RendererSceneBase {
     this.m_rcontext = null;
     this.m_renderer = null;
     this.m_processids = new Uint8Array(128);
+    this.m_penableds = new Array(128);
     this.m_processidsLen = 0;
     this.m_rspace = null;
     this.m_mouse_rltv = new Vector3D_1.default();
@@ -17418,8 +17897,6 @@ class RendererSceneBase {
     this.m_viewH = 800.0;
     this.m_camera = null;
     this.m_currCamera = null;
-    this.m_nodeWaitLinker = null;
-    this.m_nodeWaitQueue = null;
     this.m_camDisSorter = null;
     this.m_subscListLen = 0;
     this.m_localRunning = false;
@@ -17431,9 +17908,7 @@ class RendererSceneBase {
     this.m_enabled = true;
     this.m_rparam = null;
     this.m_currStage3D = null;
-    this.m_stage3D = null; // protected m_clearColor = new Color4();
-    // protected m_clearColorFlag = false;
-
+    this.m_stage3D = null;
     this.runnableQueue = null;
     this.textureBlock = null;
     this.stage3D = null;
@@ -17446,6 +17921,8 @@ class RendererSceneBase {
     this.m_prependNodes = null;
     this.m_appendNodes = null;
     this.m_uid = uidBase + RendererSceneBase.s_uid++;
+    this.m_penableds.fill(true);
+    this.m_entityFence = new EntityFence_1.default(this);
   }
 
   createRendererParam() {
@@ -17584,7 +18061,7 @@ class RendererSceneBase {
   }
 
   createFBOInstance() {
-    return new FBOInstance_1.default(this, this.textureBlock.getRTTStrore());
+    return new FBOInstance_1.default(this);
   }
 
   createMatrix4() {
@@ -17596,24 +18073,19 @@ class RendererSceneBase {
   }
 
   setClearUint24Color(colorUint24, alpha = 1.0) {
-    this.m_rproxy.setClearUint24Color(colorUint24, alpha); // this.m_clearColorFlag = true;
-    // this.m_clearColor.setRGBUint24(colorUint24);
-    // this.m_clearColor.a = alpha;
+    if (this.m_rproxy) this.m_rproxy.setClearUint24Color(colorUint24, alpha);
   }
 
   setClearRGBColor3f(pr, pg, pb) {
-    this.m_rproxy.setClearRGBColor3f(pr, pg, pb); // this.m_clearColorFlag = true;
-    // this.m_clearColor.setRGB3f(pr, pg, pb);
+    if (this.m_rproxy) this.m_rproxy.setClearRGBColor3f(pr, pg, pb);
   }
 
   setClearRGBAColor4f(pr, pg, pb, pa) {
-    this.m_rproxy.setClearRGBAColor4f(pr, pg, pb, pa); // this.m_clearColorFlag = true;
-    // this.m_clearColor.setRGBA4f(pr, pg, pb, pa);
+    if (this.m_rproxy) this.m_rproxy.setClearRGBAColor4f(pr, pg, pb, pa);
   }
 
   setClearColor(color) {
-    this.m_rproxy.setClearRGBAColor4f(color.r, color.g, color.b, color.a); // this.m_clearColorFlag = true;
-    // if (color) this.m_clearColor.copyFrom(color);
+    if (this.m_rproxy) this.m_rproxy.setClearRGBAColor4f(color.r, color.g, color.b, color.a);
   }
 
   setRenderToBackBuffer() {
@@ -17624,9 +18096,13 @@ class RendererSceneBase {
     let srcCanvas = this.getCanvas();
     dstCanvasCtx.drawImage(srcCanvas, px, py, width, height);
   }
+  /**
+   * @param sync the default value is true
+   */
 
-  updateRenderBufferSize() {
-    this.m_adapter.updateRenderBufferSize();
+
+  updateRenderBufferSize(sync = true) {
+    this.m_adapter.updateRenderBufferSize(sync);
   }
 
   setEvt3DController(evt3DCtr) {
@@ -17643,7 +18119,7 @@ class RendererSceneBase {
   }
 
   enableMouseEvent(gpuTestEnabled = true) {
-    if (this.m_evt3DCtr == null) {
+    if (this.m_evt3DCtr == null && this.m_rspace) {
       if (gpuTestEnabled) {
         this.m_rspace.setRaySelector(new RayGpuSelector_1.default());
       } else {
@@ -17673,11 +18149,11 @@ class RendererSceneBase {
   }
 
   addEventListener(type, target, func, captureEnabled = true, bubbleEnabled = false) {
-    this.m_currStage3D.addEventListener(type, target, func, captureEnabled, bubbleEnabled);
+    if (this.m_currStage3D) this.m_currStage3D.addEventListener(type, target, func, captureEnabled, bubbleEnabled);
   }
 
   removeEventListener(type, target, func) {
-    this.m_currStage3D.removeEventListener(type, target, func);
+    if (this.m_currStage3D) this.m_currStage3D.removeEventListener(type, target, func);
   }
 
   setAccessor(accessor) {
@@ -17696,8 +18172,16 @@ class RendererSceneBase {
   initThis() {// this.tickUpdate();
   }
 
+  setCanvas(canvas) {
+    return false;
+  }
+
   initialize(rparam = null, renderProcessesTotal = 3, createNewCamera = true) {
     if (this.m_renderer == null) {
+      if (!VoxSystemVerify_1.default.isEnabled()) {
+        return;
+      }
+
       if (rparam == null) rparam = new RendererParam_1.default();
       this.m_rparam = rparam;
       let selfT = this;
@@ -17778,17 +18262,21 @@ class RendererSceneBase {
   }
   /**
    * get the renderer process by process index
-   * @param processIndex IRenderProcess instance index in renderer scene instance
+   * @param processid IRenderProcess instance index in renderer scene instance
    */
 
 
-  getRenderProcessAt(processIndex) {
-    return this.m_renderer.getProcessAt(this.m_processids[processIndex]);
+  getRenderProcessAt(processid) {
+    return this.m_renderer.getProcessAt(this.m_processids[processid]);
   }
 
-  addContainer(container, processIndex = 0) {
-    if (processIndex < 0) {
-      processIndex = 0;
+  addContainer(container, processid = 0) {
+    if (container.getREType() < 12) {
+      throw Error("illegal operation !!!");
+    }
+
+    if (processid < 0) {
+      processid = 0;
     }
 
     if (container != null && container.__$wuid < 0 && container.__$contId < 1) {
@@ -17796,18 +18284,26 @@ class RendererSceneBase {
 
       for (; i < this.m_containersTotal; ++i) {
         if (this.m_containers[i] == container) {
-          return;
+          break;
         }
       }
 
       if (i >= this.m_containersTotal) {
         container.__$wuid = this.m_uid;
-        container.wprocuid = processIndex;
+        container.__$wprocuid = processid;
 
         container.__$setRenderer(this);
 
         this.m_containers.push(container);
         this.m_containersTotal++;
+
+        if (container.isSpaceEnabled()) {
+          this.m_rspace.addEntity(container);
+        }
+
+        if (container.getREType() >= 20) {
+          this.m_renderer.addContainer(container, this.m_processids[processid]);
+        }
       }
     }
   }
@@ -17819,13 +18315,20 @@ class RendererSceneBase {
 
       for (; i < this.m_containersTotal; ++i) {
         if (this.m_containers[i] == container) {
-          container.__$wuid = -1;
-          container.wprocuid = -1;
+          const wprocuid = container.__$wprocuid;
+          this.m_rspace.removeEntity(container);
 
           container.__$setRenderer(null);
 
+          container.__$wuid = -1;
+          container.__$wprocuid = -1;
           this.m_containers.splice(i, 1);
           --this.m_containersTotal;
+
+          if (container.getREType() >= 20) {
+            this.m_renderer.removeContainer(container, wprocuid);
+          }
+
           break;
         }
       }
@@ -17847,7 +18350,8 @@ class RendererSceneBase {
       let process = this.m_renderer.getProcessAt(processIndex);
       sorter = sorter != null ? sorter : this.m_camDisSorter;
 
-      if (process != null) {// process.setSorter(sorter);
+      if (process != null) {
+        process.setSorter(sorter);
       }
     }
   }
@@ -17880,6 +18384,31 @@ class RendererSceneBase {
   drawEntity(entity, useGlobalUniform = false, forceUpdateUniform = true) {
     this.m_renderer.drawEntity(entity, useGlobalUniform, forceUpdateUniform);
   }
+
+  addEntityToSpace(re) {
+    const sp = this.m_rspace;
+
+    if (sp) {
+      let flag = true;
+
+      let parent = re.__$getParent(); // console.log("parent: ", parent);
+
+
+      while (parent) {
+        // console.log("parent.isSpaceEnabled(): ", parent.isSpaceEnabled());
+        if (!parent.hasParent() && parent.isSpaceEnabled()) {
+          flag = false;
+        }
+
+        parent = parent.getParent();
+      } // console.log("addEntityToSpace(), flag: ", flag);
+
+
+      if (flag) {
+        sp.addEntity(re);
+      }
+    }
+  }
   /**
    * add an entity to the renderer process of the renderer instance
    * @param entity IRenderEntityBase instance(for example: DisplayEntity class instance)
@@ -17889,42 +18418,34 @@ class RendererSceneBase {
 
 
   addEntity(entity, processid = 0, deferred = true) {
-    if (entity.getREType() < 12) {
-      let re = entity;
+    if (entity) {
+      // console.log("add entity into the renderer scene A0.");
+      if (entity.getREType() < 12) {
+        let re = entity;
 
-      if (re != null && re.__$testSpaceEnabled()) {
-        if (re.isPolyhedral()) {
-          if (re.hasMesh()) {
-            re.getTransform().setUpdater(this.m_transUpdater);
-            this.m_renderer.addEntity(re, this.m_processids[processid], deferred);
-
-            if (this.m_rspace != null) {
-              this.m_rspace.addEntity(re);
+        if (re != null && re.__$testSpaceEnabled()) {
+          // console.log("add entity into the renderer scene A1.");
+          if (re.isPolyhedral()) {
+            // console.log("add entity into the renderer scene A2.");
+            if (re.hasMesh()) {
+              // console.log("add entity into the renderer scene.");
+              re.getTransform().setUpdater(this.m_transUpdater);
+              this.m_renderer.addEntity(re, this.m_processids[processid], deferred);
+              this.addEntityToSpace(re);
+            } else {
+              this.m_entityFence.addEntity(re, processid);
             }
           } else {
-            // 这里的等待队列可能会和加入容器的操作冲突
-            // wait queue
-            if (this.m_nodeWaitLinker == null) {
-              this.m_nodeWaitLinker = new Entity3DNodeLinker_1.default();
-              this.m_nodeWaitQueue = new EntityNodeQueue_1.default();
-            }
-
-            let node = this.m_nodeWaitQueue.addEntity(re);
-            node.rstatus = processid;
-            this.m_nodeWaitLinker.addNode(node);
-          }
-        } else {
-          re.getTransform().setUpdater(this.m_transUpdater);
-          this.m_renderer.addEntity(re, this.m_processids[processid], deferred);
-
-          if (this.m_rspace != null) {
-            this.m_rspace.addEntity(re);
+            // console.log("add entity into the renderer scene A3.");
+            re.getTransform().setUpdater(this.m_transUpdater);
+            this.m_renderer.addEntity(re, this.m_processids[processid], deferred);
+            this.addEntityToSpace(re);
           }
         }
+      } else {
+        let re = entity;
+        this.addContainer(re, processid);
       }
-    } else {
-      let re = entity;
-      this.addContainer(re, processid);
     }
   }
   /**
@@ -17934,23 +18455,12 @@ class RendererSceneBase {
 
 
   removeEntity(entity) {
-    if (entity.getREType() < 12) {
-      let re = entity;
+    if (entity) {
+      if (entity.getREType() < 12) {
+        let re = entity;
+        const flag = this.m_entityFence.removeEntity(re); // console.log("removeEntity(), flag: ", flag);
 
-      if (entity != null) {
-        let node = null;
-
-        if (this.m_nodeWaitLinker != null) {
-          let node = this.m_nodeWaitQueue.getNodeByEntity(re);
-
-          if (node != null) {
-            re.getTransform().setUpdater(null);
-            this.m_nodeWaitLinker.removeNode(node);
-            this.m_nodeWaitQueue.removeEntity(re);
-          }
-        }
-
-        if (node == null) {
+        if (!flag) {
           this.m_renderer.removeEntity(re);
           re.getTransform().setUpdater(null);
 
@@ -17958,10 +18468,10 @@ class RendererSceneBase {
             this.m_rspace.removeEntity(re);
           }
         }
+      } else {
+        let re = entity;
+        this.removeContainer(re);
       }
-    } else {
-      let re = entity;
-      this.removeContainer(re);
     }
   }
 
@@ -18057,9 +18567,6 @@ class RendererSceneBase {
     this.m_shader.renderBegin();
 
     if (contextBeginEnabled) {
-      // if(this.m_clearColorFlag) {
-      //     ry.setClearColor(this.m_clearColor);  
-      // }
       this.m_rcontext.renderBegin(this.m_currCamera == null);
     }
 
@@ -18072,6 +18579,8 @@ class RendererSceneBase {
   /**
    * the function resets the renderer scene status.
    * you should use it on the frame starting time.
+   * @param autoCycle the default value is true
+   * @param contextBeginEnabled the default value is true
    */
 
 
@@ -18112,9 +18621,6 @@ class RendererSceneBase {
     if (this.m_evt3DCtr != null && this.m_mouseEvtEnabled) {
       if (this.m_rayTestFlag && this.m_evt3DCtr.getEvtType() > 0) {
         // 是否对已经获得的拾取列表做进一步的gpu拾取
-        // if (this.m_uid > 1000) {
-        //     console.log("sub sc runMouseTest...", this.m_rayTestFlag, this.m_evt3DCtr.getEvtType());
-        // }
         let selector = this.m_rspace.getRaySelector();
 
         if (selector) {
@@ -18157,10 +18663,6 @@ class RendererSceneBase {
 
 
   update(autoCycle = true, mouseEventEnabled = true) {
-    // if (this.m_runner) {
-    //     this.m_runner();
-    // }
-    // this.stage3D.enterFrame();
     const st = this.m_currStage3D;
 
     if (st != null) {
@@ -18176,32 +18678,7 @@ class RendererSceneBase {
 
     this.m_mouseTestBoo = true;
     this.m_cullingTestBoo = true;
-    this.m_rayTestFlag = true; // wait mesh data ready to finish
-
-    if (this.m_nodeWaitLinker != null) {
-      let nextNode = this.m_nodeWaitLinker.getBegin();
-
-      if (nextNode != null) {
-        let pnode;
-        let status;
-
-        while (nextNode) {
-          if (nextNode.entity.hasMesh()) {
-            pnode = nextNode;
-            nextNode = nextNode.next;
-            const entity = pnode.entity;
-            status = pnode.rstatus;
-            this.m_nodeWaitLinker.removeNode(pnode);
-            this.m_nodeWaitQueue.removeEntity(pnode.entity); //console.log("RenderScene::update(), ready a mesh data that was finished.");
-
-            this.addEntity(entity, status);
-          } else {
-            nextNode = nextNode.next;
-          }
-        }
-      }
-    }
-
+    this.m_rayTestFlag = true;
     this.m_transUpdater.update();
     let i = 0;
 
@@ -18240,6 +18717,8 @@ class RendererSceneBase {
         this.m_evt3DCtr.mouseOutEventTarget();
       }
     }
+
+    this.runnableQueue.run();
   } // 运行渲染可见性裁剪测试，射线检测等空间管理机制
 
 
@@ -18290,7 +18769,7 @@ class RendererSceneBase {
   appendRenderNode(node) {
     if (node != null && node != this) {
       if (this.m_appendNodes == null) this.m_appendNodes = [];
-      let ls = this.m_appendNodes;
+      const ls = this.m_appendNodes;
 
       for (let i = 0; i < ls.length; ++i) {
         if (node == ls[i]) {
@@ -18304,7 +18783,7 @@ class RendererSceneBase {
 
   removeRenderNode(node) {
     if (node != null) {
-      let ls = this.m_prependNodes;
+      const ls = this.m_prependNodes;
 
       if (ls != null) {
         for (let i = 0; i < ls.length; ++i) {
@@ -18316,6 +18795,14 @@ class RendererSceneBase {
       }
     }
   }
+
+  setProcessEnabledAt(i, enabled) {
+    if (i >= 0 && i < this.m_processids.length) {
+      // console.log("rbase this.m_processids[i], enabled: ", i, this.m_processids[i], enabled);
+      this.m_renderer.setProcessEnabledAt(this.m_processids[i], enabled);
+      this.m_penableds[i] = enabled;
+    }
+  }
   /**
    * run all renderer processes in the renderer instance
    * @param autoCycle the default value is true
@@ -18324,20 +18811,31 @@ class RendererSceneBase {
 
   run(autoCycle = true) {
     if (this.m_enabled) {
+      let runFlag = autoCycle;
+
       if (autoCycle && this.m_autoRunEnabled) {
-        if (this.m_runFlag != 1) this.update();
+        if (this.m_runFlag != 1) {
+          this.update();
+          runFlag = false;
+        }
+
         this.m_runFlag = 2;
       }
 
-      this.runnableQueue.run();
+      if (runFlag) {
+        this.runnableQueue.run();
+      }
+
       this.runRenderNodes(this.m_prependNodes);
 
-      if (this.m_localRunning) {
-        for (let i = 0; i < this.m_processidsLen; ++i) {
+      if (this.m_adapter.isFBORunning()) {
+        this.setRenderToBackBuffer();
+      }
+
+      for (let i = 0; i < this.m_processidsLen; ++i) {
+        if (this.m_penableds[i]) {
           this.m_renderer.runAt(this.m_processids[i]);
         }
-      } else {
-        this.m_renderer.run();
       }
 
       this.runRenderNodes(this.m_appendNodes);
@@ -18750,10 +19248,6 @@ class DepthTextureProxy extends RTTTextureProxy_1.default {
     gl.texImage2D(this.m_sampler, 0, TextureFormat_1.default.ToGL(gl, this.internalFormat), this.m_texWidth, this.m_texHeight, 0, TextureFormat_1.default.ToGL(gl, this.srcFormat), TextureDataType_1.default.ToGL(gl, this.dataType), null);
   }
 
-  toString() {
-    return "[DepthTextureProxy(name:" + this.name + ",uid=" + this.getUid() + ",width=" + this.getWidth() + ",height=" + this.getHeight() + ")]";
-  }
-
 }
 
 exports.default = DepthTextureProxy;
@@ -18863,12 +19357,16 @@ class ShaderData {
         vshdsrc = GLSLConverter_1.default.Es3VtxShaderToES2(vshdsrc);
         fshdSrc = GLSLConverter_1.default.Es3FragShaderToES2(fshdSrc);
       }
-    } // 直接使用 preCompileInfo 中的 uniform / attribute 等等关键信息
+    }
 
+    this.parseCode(vshdsrc, fshdSrc); // 直接使用 preCompileInfo 中的 uniform / attribute 等等关键信息
 
-    if (this.preCompileInfo != null) {}
+    const scp = this.preCompileInfo;
 
-    this.parseCode(vshdsrc, fshdSrc);
+    if (scp && !this.adaptationShaderVersion) {
+      if (scp.fragOutputTotal > 0) this.m_fragOutputTotal = scp.fragOutputTotal; // console.log("shd unique_ns: ", unique_ns, ", fragOutputTotal: ", this.m_fragOutputTotal);
+    }
+
     let pattributes = ShaderData.s_codeParser.attributes;
     let i = 0;
     let len = pattributes.length;
@@ -19098,10 +19596,14 @@ const AABB_1 = __importDefault(__webpack_require__("fecb"));
 
 const Matrix4Pool_1 = __importDefault(__webpack_require__("2139"));
 
+const SpaceCullingMask_1 = __webpack_require__("cc48");
+
 class DisplayEntityContainer {
-  constructor(boundsEnabled = true) {
-    this.m_uid = 0;
+  constructor(boundsEnabled = true, spaceEnabled = false, renderingFlow = false) {
+    this.m_uid = DisplayEntityContainer.s_uid++;
     this.m_eventDispatcher = null;
+    this.m_spaceEnabled = false;
+    this.m_renderingFlow = false;
     this.m_transformStatus = 0;
     this.m_rotateBoo = false; // It is a flag that need inverted mat yes or no
 
@@ -19112,7 +19614,14 @@ class DisplayEntityContainer {
     this.m_visible = true;
     this.m_parentVisible = true;
     this.m_globalBounds = null;
-    this.m_gboundsStatus = -1;
+    this.m_gboundsStatus = -1; // 父级, 不允许外面其他代码调用
+
+    this.__$parent = null;
+    this.__$renderer = null;
+    this.m_entities = [];
+    this.m_entitiesTotal = 0;
+    this.m_children = [];
+    this.m_childrenTotal = 0;
     /**
      * entity global bounds version list
      */
@@ -19123,25 +19632,41 @@ class DisplayEntityContainer {
      */
 
     this.m_cbvers = null;
-    this.m_$updateBounds = true; // 自身所在的world的唯一id, 通过这个id可以找到对应的world
+    this.m_$updateBounds = true;
+    /**
+     * renderer scene entity flag, be used by the renderer system
+     * 第0位到第19位总共20位存放自身在space中的 index id(最小值为1, 最大值为1048575,默认值是0, 也就是最多只能展示1048575个entitys),
+     * 第20位开始到26位为总共7位止存放在renderer中的状态数据(renderer unique id and others)
+     * 第27位存放是否在container里面
+     * 第28位开始到29位总共二位存放renderer 载入状态 的相关信息
+     * 第30位位存放是否渲染运行时排序
+     */
 
-    this.__$wuid = -1; // render process uid
+    this.__$rseFlag = RSEntityFlag_1.default.DEFAULT; // 自身所在的world的唯一id, 通过这个id可以找到对应的world
 
-    this.wprocuid = -1; // 自身在world中被分配的唯一id, 通过这个id就能在world中快速找到自己所在的数组位置
+    this.__$wuid = -1;
+    /**
+     * render process uid
+     */
+
+    this.__$wprocuid = -1; // 自身在world中被分配的唯一id, 通过这个id就能在world中快速找到自己所在的数组位置
 
     this.__$weid = -1; // 记录自身是否再容器中(取值为0和1), 不允许外外面其他代码调用
 
-    this.__$contId = 0; // 父级, 不允许外面其他代码调用
+    this.__$contId = 0;
+    this.uuid = "";
+    /**
+     * 可见性裁剪是否开启, 如果不开启，则摄像机和遮挡剔除都不会裁剪, 取值于 SpaceCullingMask, 默认只会有摄像机裁剪
+     */
 
-    this.__$parent = null;
-    this.__$renderer = null;
-    this.uuid = ""; // mouse interaction enabled
+    this.spaceCullMask = SpaceCullingMask_1.SpaceCullingMask.CAMERA;
+    /**
+     * mouse interaction enabled
+     */
 
     this.mouseEnabled = false;
-    this.m_entities = [];
-    this.m_entitiesTotal = 0;
-    this.m_children = [];
-    this.m_childrenTotal = 0;
+    this.m_rendering = true;
+    this.m_rst = 0;
     this.m_rx = 0;
     this.m_ry = 0;
     this.m_rz = 0;
@@ -19161,13 +19686,14 @@ class DisplayEntityContainer {
       this.createBounds();
     }
 
-    this.m_uid = DisplayEntityContainer.s_uid++;
+    this.m_spaceEnabled = spaceEnabled;
+    this.m_renderingFlow = renderingFlow;
   }
 
   __$setRenderer(renderer) {
     let i = 0;
 
-    if (this.__$renderer != null) {
+    if (this.__$renderer) {
       if (renderer == null) {
         // remove all entities from renderer with container
         for (; i < this.m_entitiesTotal; ++i) {
@@ -19179,20 +19705,21 @@ class DisplayEntityContainer {
     } else {
       this.__$renderer = renderer;
 
-      if (renderer != null) {
+      if (renderer) {
         // add all entities into renderer
         for (; i < this.m_entitiesTotal; ++i) {
-          this.m_entities[i].__$rseFlag = RSEntityFlag_1.default.RemoveContainerFlag(this.m_entities[i].__$rseFlag);
+          const et = this.m_entities[i];
+          et.__$rseFlag = RSEntityFlag_1.default.RemoveContainerFlag(et.__$rseFlag);
 
-          this.__$renderer.addEntity(this.m_entities[i], this.wprocuid, false);
+          this.__$renderer.addEntity(et, this.__$wprocuid, false);
 
-          this.m_entities[i].__$rseFlag = RSEntityFlag_1.default.AddContainerFlag(this.m_entities[i].__$rseFlag);
+          et.__$rseFlag = RSEntityFlag_1.default.AddContainerFlag(et.__$rseFlag);
         }
       }
     }
 
     for (i = 0; i < this.m_childrenTotal; ++i) {
-      this.m_children[i].wprocuid = this.wprocuid;
+      this.m_children[i].__$wprocuid = this.__$wprocuid;
 
       this.m_children[i].__$setRenderer(renderer);
     }
@@ -19204,7 +19731,7 @@ class DisplayEntityContainer {
       this.__$parent = parent;
 
       if (parent != null) {
-        this.wprocuid = parent.wprocuid;
+        this.__$wprocuid = parent.__$wprocuid;
         this.m_parentVisible = parent.__$getParentVisible() && parent.getVisible();
 
         this.__$setRenderer(parent.__$renderer);
@@ -19214,6 +19741,14 @@ class DisplayEntityContainer {
 
       this.__$setParentMatrix(parent);
     }
+  }
+
+  isInRenderer() {
+    return this.__$wprocuid >= 0;
+  }
+
+  hasParent() {
+    return this.__$parent != null;
   }
 
   getRenderer() {
@@ -19226,6 +19761,35 @@ class DisplayEntityContainer {
 
   getTransform() {
     return null;
+  }
+  /**
+   * @returns 是否用于空间管理系统
+   */
+
+
+  isSpaceEnabled() {
+    return this.m_spaceEnabled;
+  }
+
+  isRendering() {
+    return this.m_rendering;
+  }
+
+  __$setRendering(r) {
+    this.m_rendering = r;
+  }
+
+  setRendering(rendering) {
+    // console.log("rendering: ", rendering);
+    this.m_rendering = rendering;
+
+    for (let i = 0; i < this.m_entitiesTotal; ++i) {
+      this.m_entities[i].setRendering(rendering);
+    }
+
+    for (let i = 0; i < this.m_childrenTotal; ++i) {
+      this.m_children[i].setRendering(rendering);
+    }
   }
 
   dispatchEvt(evt) {
@@ -19253,6 +19817,14 @@ class DisplayEntityContainer {
       this.m_cbvers = [];
     }
   }
+  /**
+   * @return 返回true表示当前entity能被用于渲染
+   */
+
+
+  isDrawEnabled() {
+    return true;
+  }
 
   getGlobalBounds() {
     return this.m_globalBounds;
@@ -19268,6 +19840,14 @@ class DisplayEntityContainer {
     }
 
     return -1;
+  }
+
+  getEntities() {
+    return this.m_entities;
+  }
+
+  getContainers() {
+    return this.m_children;
   }
 
   addChild(et) {
@@ -19289,12 +19869,28 @@ class DisplayEntityContainer {
         }
 
         if (i >= this.m_childrenTotal) {
+          let flag = false;
+          let parent = this;
+
+          while (parent) {
+            if (parent.isSpaceEnabled()) {
+              flag = true;
+            }
+
+            parent = parent.getParent();
+          }
+
+          if (flag != child.isSpaceEnabled()) {
+            throw Error("flag != child.isSpaceEnabled(), illegal operation !!!");
+          }
+
           if (this.m_cbvers != null) {
             this.m_cbvers.push(-1);
           }
 
+          child.spaceCullMask |= this.spaceCullMask;
           child.__$contId = 1;
-          child.wprocuid = this.wprocuid;
+          child.__$wprocuid = this.__$wprocuid;
 
           child.__$setParent(this);
 
@@ -19318,7 +19914,7 @@ class DisplayEntityContainer {
         for (let i = 0; i < this.m_childrenTotal; ++i) {
           if (this.m_children[i] == child) {
             child.__$contId = 0;
-            child.wprocuid = -1;
+            child.__$wprocuid = -1;
 
             child.__$setParent(null);
 
@@ -19409,18 +20005,18 @@ class DisplayEntityContainer {
           }
 
           entity.getTransform().setParentMatrix(this.getMatrix());
-
-          if (this.__$renderer != null) {
-            //entity.__$contId = 0;
-            entity.__$rseFlag = RSEntityFlag_1.default.RemoveContainerFlag(entity.__$rseFlag);
-
-            this.__$renderer.addEntity(this.m_entities[i], this.wprocuid, false);
-          }
-
-          entity.__$rseFlag = RSEntityFlag_1.default.AddContainerFlag(entity.__$rseFlag);
+          entity.spaceCullMask |= this.spaceCullMask;
 
           entity.__$setParent(this);
 
+          if (this.__$renderer) {
+            //entity.__$contId = 0;
+            entity.__$rseFlag = RSEntityFlag_1.default.RemoveContainerFlag(entity.__$rseFlag);
+
+            this.__$renderer.addEntity(this.m_entities[i], this.__$wprocuid, false);
+          }
+
+          entity.__$rseFlag = RSEntityFlag_1.default.AddContainerFlag(entity.__$rseFlag);
           entity.update();
         }
       }
@@ -19495,7 +20091,7 @@ class DisplayEntityContainer {
     return null;
   }
 
-  getEntities() {
+  getAllEntities() {
     let entities = null;
 
     if (this.m_entities != null) {
@@ -19503,7 +20099,7 @@ class DisplayEntityContainer {
     }
 
     for (let i = 0; i < this.m_children.length; ++i) {
-      let list = this.m_children[i].getEntities();
+      let list = this.m_children[i].getAllEntities();
 
       if (list != null) {
         entities = entities.concat(list);
@@ -19525,12 +20121,28 @@ class DisplayEntityContainer {
     return null;
   }
 
-  getEntitysTotal() {
+  getEntitiesTotal() {
     return this.m_entitiesTotal;
   }
 
   sphereIntersect(centerV, radius) {
     return false;
+  }
+
+  setRenderState(rst) {
+    this.m_rst = rst;
+
+    for (let i = 0; i < this.m_entities.length; ++i) {
+      this.m_entities[i].setRenderState(rst);
+    }
+
+    for (let i = 0; i < this.m_children.length; ++i) {
+      this.m_children[i].setRenderState(rst);
+    }
+  }
+
+  getRenderState() {
+    return this.m_rst;
   }
 
   __$getParentVisible() {
@@ -19572,7 +20184,15 @@ class DisplayEntityContainer {
   }
 
   getREType() {
-    return 12;
+    return this.m_renderingFlow ? 20 : 12;
+  }
+  /**
+   * @returns 自身是否未必任何渲染器相关的系统使用
+   */
+
+
+  isFree() {
+    return this.__$rseFlag == RSEntityFlag_1.default.DEFAULT;
   }
 
   getUid() {
@@ -19762,10 +20382,12 @@ class DisplayEntityContainer {
 
   localToGlobal(pv) {
     this.getMatrix().transformVectorSelf(pv);
+    return this;
   }
 
   globalToLocal(pv) {
     this.getInvMatrix().transformVectorSelf(pv);
+    return this;
   }
 
   getInvMatrix() {
@@ -19869,7 +20491,9 @@ class DisplayEntityContainer {
   }
 
   updateBounds() {
-    if (this.m_globalBounds != null && this.m_gboundsStatus > 0) {
+    const gb = this.m_globalBounds;
+
+    if (gb && this.m_gboundsStatus > 0) {
       let i = 0;
 
       if (this.m_gboundsStatus < 2) {
@@ -19879,15 +20503,16 @@ class DisplayEntityContainer {
         }
       }
 
-      this.m_globalBounds.reset();
+      gb.reset();
       i = 0;
       let bounds = null;
 
       for (; i < this.m_entitiesTotal; ++i) {
+        // this.m_entities[i].update();
         bounds = this.m_entities[i].getGlobalBounds();
 
         if (bounds != null) {
-          this.m_globalBounds.union(bounds);
+          gb.union(bounds);
         }
 
         this.m_ebvers[i] = this.m_entities[i].getGlobalBoundsVer();
@@ -19897,13 +20522,13 @@ class DisplayEntityContainer {
         bounds = this.m_children[i].getGlobalBounds();
 
         if (bounds != null) {
-          this.m_globalBounds.union(bounds);
+          gb.union(bounds);
         }
 
         this.m_cbvers[i] = this.m_children[i].getGlobalBoundsVer();
       }
 
-      this.m_globalBounds.update();
+      gb.update();
 
       if (this.__$parent != null) {
         // 只需要父级执行bounds尺寸范围的调节
@@ -20002,7 +20627,7 @@ class DisplayEntityContainer {
 
   destroy() {
     // 当自身被完全移出RenderWorld之后才能执行自身的destroy
-    if (this.__$wuid < 0) {
+    if (this.__$wuid < 0 && this.isFree()) {
       if (this.m_eventDispatcher != null) {
         this.m_eventDispatcher.destroy();
         this.m_eventDispatcher = null;
@@ -20018,10 +20643,6 @@ class DisplayEntityContainer {
       this.m_parentMat = null;
       this.m_omat = null;
     }
-  }
-
-  toString() {
-    return "[DisplayEntityContainer(uid = " + this.m_uid + ", __$wuid = " + this.__$wuid + ", __$weid = " + this.__$weid + ")]";
   }
 
 }
@@ -20075,7 +20696,7 @@ const FrameBufferType_1 = __importDefault(__webpack_require__("baae"));
 const RendererState_1 = __importDefault(__webpack_require__("29ef"));
 
 class FBOInstance {
-  constructor(renderer, texStroe) {
+  constructor(renderer) {
     this.m_backBufferColor = new Color4_1.default();
     this.m_adapter = null;
     this.m_rproxy = null;
@@ -20093,6 +20714,7 @@ class FBOInstance {
     this.m_gMateiral = null;
     this.m_gRState = -1;
     this.m_gRColorMask = -1;
+    this.m_processShared = true;
     this.m_rindexs = [];
     this.m_texs = [null, null, null, null, null, null, null, null];
     this.m_texStore = null;
@@ -20111,8 +20733,15 @@ class FBOInstance {
      */
 
     this.uns = "FBOInstance";
+    this.runBeginCall = null;
+    this.runEndCall = null;
+    this.m_lockRenderState = false;
+    this.m_lockMaterial = false;
+    this.m_autoEnd = true;
+    this.m_autoRunBegin = true;
+    this.m_autoRRun = false;
     this.m_renderer = renderer;
-    this.m_texStore = texStroe;
+    this.m_texStore = renderer.textureBlock.getRTTStrore();
     this.m_rproxy = renderer.getRenderProxy();
     this.m_adapter = this.m_rproxy.getRenderAdapter();
     this.m_rcontext = renderer.getRendererContext();
@@ -20127,16 +20756,26 @@ class FBOInstance {
   }
   /**
    * 设置当前 FBO控制的渲染过程中所需要的 renderer process 序号(id)列表
+   * @param processIDlist 当前渲染器场景中渲染process的序号列表
+   * @param processShared 是否共享process，默认值为true，则表示fbo和renderer scene都会绘制调用
    */
 
 
-  setRProcessIDList(processIDlist) {
+  setRProcessIDList(processIDlist, processShared = true) {
+    this.m_processShared = processShared;
+
     if (processIDlist != null) {
       if (processIDlist.length < 1) {
         throw Error("processIDlist.length < 1, but it must: processIDlist.length >= 1");
       }
 
       this.m_rindexs = processIDlist.slice(0);
+
+      if (!processShared) {
+        for (let i = 0; i < this.m_rindexs.length; ++i) {
+          this.m_renderer.setProcessEnabledAt(i, processShared);
+        }
+      }
     }
   }
   /**
@@ -20358,13 +20997,13 @@ class FBOInstance {
    * @param fboIndex FBO 对象的序号
    * @param width FBO 对象的viewport width, if width < 1, viewport width is stage width;
    * @param height FBO 对象的viewport height, if height < 1, viewport width is stage height;
-   * @param enableDepth FBO 对象的depth读写是否开启
-   * @param enableStencil FBO 对象的stencil读写是否开启
-   * @param multisampleLevel FBO 对象的multisample level
+   * @param enableDepth FBO 对象的depth读写是否开启, the default value is true
+   * @param enableStencil FBO 对象的stencil读写是否开启, the default value is false
+   * @param multisampleLevel FBO 对象的multisample level, the default value is 0
    */
 
 
-  createFBOAt(fboIndex, width, height, enableDepth = false, enableStencil = false, multisampleLevel = 0) {
+  createFBOAt(fboIndex, width, height, enableDepth = true, enableStencil = false, multisampleLevel = 0) {
     if (fboIndex >= 0 && this.m_fboIndex < 0) {
       this.m_fboType = FrameBufferType_1.default.FRAMEBUFFER;
       this.m_initW = width;
@@ -20381,9 +21020,9 @@ class FBOInstance {
    * @param fboIndex FBO 对象的序号
    * @param width FBO 对象的viewport width, if width < 1, viewport width is stage width;
    * @param height FBO 对象的viewport height, if height < 1, viewport width is stage height;
-   * @param enableDepth FBO 对象的depth读写是否开启
-   * @param enableStencil FBO 对象的stencil读写是否开启
-   * @param multisampleLevel FBO 对象的multisample level
+   * @param enableDepth FBO 对象的depth读写是否开启, the default value is true
+   * @param enableStencil FBO 对象的stencil读写是否开启, the default value is false
+   * @param multisampleLevel FBO 对象的multisample level, the default value is 0
    */
 
 
@@ -20404,9 +21043,9 @@ class FBOInstance {
    * @param fboIndex FBO 对象的序号
    * @param width FBO 对象的viewport width, if width < 1, viewport width is stage width;
    * @param height FBO 对象的viewport height, if height < 1, viewport width is stage height;
-   * @param enableDepth FBO 对象的depth读写是否开启
-   * @param enableStencil FBO 对象的stencil读写是否开启
-   * @param multisampleLevel FBO 对象的multisample level
+   * @param enableDepth FBO 对象的depth读写是否开启, the default value is true
+   * @param enableStencil FBO 对象的stencil读写是否开启, the default value is false
+   * @param multisampleLevel FBO 对象的multisample level, the default value is 0
    */
 
 
@@ -20437,6 +21076,14 @@ class FBOInstance {
   getRTTAt(i) {
     return this.m_texs[i];
   }
+  /**
+   * @returns 当前fbo正在使用的额rtt数量
+   */
+
+
+  getRTTTotal() {
+    return this.m_texsTot;
+  }
 
   enableMipmapRTTAt(i) {
     this.m_texs[i].enableMipmap();
@@ -20465,12 +21112,24 @@ class FBOInstance {
   /**
    * 设置渲染到纹理的目标纹理对象(普通 RTT 纹理类型的目标纹理)和framebuffer output attachment index
    * @param systemRTTTexIndex 作为渲染到目标的目标纹理对象在系统普通rtt 纹理中的序号(0 -> 15)
-   * @param outputIndex framebuffer output attachment index
+   * @param outputIndex framebuffer output attachment index, the default value is 0
    */
 
 
   setRenderToRTTTextureAt(systemRTTTexIndex, outputIndex = 0) {
     this.setRenderToTexture(this.m_texStore.getRTTTextureAt(systemRTTTexIndex), outputIndex);
+  }
+  /**
+   * 设置渲染到纹理的目标纹理对象(cube RTT 纹理类型的目标纹理)和framebuffer output attachment index
+   * @param systemCubeRTTTexIndex 作为渲染到目标的目标纹理对象在系统cube rtt 纹理中的序号(0 -> 15)
+   * @param outputIndex framebuffer output attachment index, the default value is 0
+   */
+
+
+  setRenderToCubeRTTTextureAt(systemCubeRTTTexIndex, outputIndex = 0) {
+    this.asynFBOSizeWithViewport();
+    const cubeMap = this.m_texStore.getCubeRTTTextureAt(systemCubeRTTTexIndex);
+    this.setRenderToTexture(cubeMap, outputIndex);
   }
   /**
    * 设置渲染到纹理的目标纹理对象(Float RTT 纹理类型的目标纹理)和framebuffer output attachment index
@@ -20614,7 +21273,7 @@ class FBOInstance {
   }
 
   setClearRGBAColor4f(pr, pg, pb, pa) {
-    this.m_bgColor.setRGBA4f(pr, pb, pg, pa);
+    this.m_bgColor.setRGBA4f(pr, pg, pb, pa);
   }
   /**
    * @param			clearType, it is IRenderProxy.COLOR or IRenderProxy.DEPTH or IRenderProxy.STENCIL or IRenderProxy.DEPTH_STENCIL
@@ -20717,12 +21376,20 @@ class FBOInstance {
 
       if (this.m_rindexs != null) {
         // rendering running
-        for (let i = 0, len = this.m_rindexs.length; i < len; ++i) {
-          this.m_renderer.runAt(this.m_rindexs[i]);
+        if (this.m_processShared) {
+          for (let i = 0, len = this.m_rindexs.length; i < len; ++i) {
+            this.m_renderer.runAt(this.m_rindexs[i]);
+          }
+        } else {
+          for (let i = 0, len = this.m_rindexs.length; i < len; ++i) {
+            const proc = this.m_renderer.getRenderProcessAt(this.m_rindexs[i]);
+            proc.setEnabled(true);
+            this.m_renderer.runAt(this.m_rindexs[i]);
+            proc.setEnabled(false);
+          }
         }
       }
-    } // this.m_runFlag = true;
-
+    }
 
     if (lockRenderState) this.unlockRenderState();
 
@@ -20762,6 +21429,12 @@ class FBOInstance {
 
   runBegin() {
     if (this.m_fboIndex >= 0 && this.m_rindexs != null) {
+      if (this.runBeginCall) {
+        let cf = this.runBeginCall;
+        this.runBeginCall = null;
+        cf();
+      }
+
       this.m_runFlag = true;
       this.runBeginDo();
     }
@@ -20773,6 +21446,12 @@ class FBOInstance {
 
     if (this.m_viewportLock) {
       this.m_adapter.unlockViewport();
+    }
+
+    if (this.runEndCall) {
+      let cf = this.runEndCall;
+      this.runEndCall = null;
+      cf();
     }
   }
 
@@ -20799,7 +21478,7 @@ class FBOInstance {
   }
 
   clone() {
-    let ins = new FBOInstance(this.m_renderer, this.m_texStore);
+    let ins = new FBOInstance(this.m_renderer);
     ins.m_fboSizeFactor = this.m_fboSizeFactor;
     ins.m_bgColor.copyFrom(this.m_bgColor);
     ins.m_fboIndex = this.m_fboIndex;
@@ -20809,6 +21488,7 @@ class FBOInstance {
     ins.m_enableDepth = this.m_enableDepth;
     ins.m_enableStencil = this.m_enableStencil;
     ins.m_synFBOSizeWithViewport = this.m_synFBOSizeWithViewport;
+    ins.m_processShared = this.m_processShared;
     ins.m_initW = this.m_initW;
     ins.m_initH = this.m_initH;
     ins.m_multisampleLevel = this.m_multisampleLevel;
@@ -20830,6 +21510,53 @@ class FBOInstance {
     }
 
     return ins;
+  }
+
+  setRenderingState(lockRenderState = false, lockMaterial = false, autoEnd = true, autoRunBegin = true) {
+    this.m_lockRenderState = lockRenderState;
+    this.m_lockMaterial = lockMaterial;
+    this.m_autoEnd = autoEnd;
+    this.m_autoRunBegin = autoRunBegin;
+  }
+
+  render() {
+    if (!this.m_lockRenderState) {
+      this.unlockRenderState();
+    }
+
+    if (!this.m_lockMaterial) {
+      this.unlockMaterial();
+    }
+
+    this.run(this.m_lockRenderState, this.m_lockMaterial, this.m_autoEnd, this.m_autoRunBegin);
+  }
+  /**
+   * @param auto enable auto runnning this instance, the default value is true
+   * @param prepend perpend this into the renderer rendering process or append, the default value is true
+   * @returns instance self
+   */
+
+
+  setAutoRunning(auto = true, prepend = true) {
+    if (auto != this.m_autoRRun) {
+      this.m_autoRRun = auto;
+
+      if (auto) {
+        if (prepend) {
+          this.m_renderer.prependRenderNode(this);
+        } else {
+          this.m_renderer.appendRenderNode(this);
+        }
+      } else {
+        this.m_renderer.removeRenderNode(this);
+      }
+    }
+
+    return this;
+  }
+
+  isAutoRunning() {
+    return this.m_autoRRun;
   }
 
 }
@@ -21990,13 +22717,28 @@ class RendererParam {
     this.m_polygonOffsetEnabled = false;
     this.m_ditherEnabled = false;
     this.divW = 800;
-    this.divH = 600; // display 3d view buf size auto sync window size
+    this.divH = 600;
+    this.autoAttachingHtmlDoc = true;
+    /**
+     * the default value is false
+     */
+
+    this.offscreenRenderEnabled = false; // display 3d view buf size auto sync window size
 
     this.autoSyncRenderBufferAndWindowSize = true;
     this.maxWebGLVersion = 2;
-    this.cameraPerspectiveEnabled = true; // event flow control enable
+    this.cameraPerspectiveEnabled = true;
+    /**
+     * event flow control enable
+     * the default value is false
+     */
 
     this.evtFlowEnabled = false;
+    /**
+     * receiving sys events flag
+     */
+
+    this.sysEvtReceived = true;
     /**
      * x: fov, y: near, z: far
      */
@@ -22008,7 +22750,18 @@ class RendererParam {
     this.syncBgColor = true;
     this.batchEnabled = true;
     this.processFixedState = false;
+    this.m_scissorTestEanbled = false;
     this.m_mainDiv = div;
+
+    if (div) {
+      let str = div.style.width;
+      str = str.slice(0, str.indexOf("px"));
+      this.divW = parseInt(str);
+      str = div.style.height;
+      str = str.slice(0, str.indexOf("px"));
+      this.divH = parseInt(str);
+    }
+
     this.autoSyncRenderBufferAndWindowSize = div == null;
   }
   /**
@@ -22033,9 +22786,18 @@ class RendererParam {
     return this.m_polygonOffsetEnabled;
   }
 
-  setDitherEanbled(ditherEnabled) {
-    this.m_ditherEnabled = ditherEnabled;
+  setScissorTestEanbled(enabled) {
+    this.m_scissorTestEanbled = enabled;
   }
+
+  getScissorTestEanbled() {
+    return this.m_scissorTestEanbled;
+  }
+
+  setDitherEanbled(enabled) {
+    this.m_ditherEnabled = enabled;
+  } //SCISSOR_TEST
+
 
   getDitherEanbled() {
     return this.m_ditherEnabled;
@@ -22059,6 +22821,10 @@ class RendererParam {
 
   setAttriAlpha(boo) {
     this.m_renderContextAttri.alpha = boo;
+  }
+
+  getAttriAlpha() {
+    return this.m_renderContextAttri.alpha;
   }
 
   setAttriPremultipliedAlpha(boo) {
@@ -22170,20 +22936,20 @@ const Plane_1 = __importDefault(__webpack_require__("e214"));
 
 const AABB_1 = __importDefault(__webpack_require__("fecb"));
 
+const pmin = MathConst_1.default.MATH_MIN_POSITIVE;
+
 class CameraBase {
   constructor() {
     this.version = 0;
     this.matUProbe = null;
     this.ufrustumProbe = null;
     this.uniformEnabled = false;
-    this.name = "Camera"; //
-
+    this.name = "Camera";
     this.m_tempV = new Vector3D_1.default();
     this.m_tempV1 = new Vector3D_1.default();
     this.m_initRV = new Vector3D_1.default();
     this.m_initUP = new Vector3D_1.default();
-    this.m_lookRHEnabled = true; //
-
+    this.m_lookRHEnabled = true;
     this.m_matrix = new Matrix4_1.default();
     this.m_viewMat = new Matrix4_1.default();
     this.m_viewInvertMat = new Matrix4_1.default();
@@ -22194,11 +22960,9 @@ class CameraBase {
     this.m_lookAtPos = new Vector3D_1.default();
     this.m_up = new Vector3D_1.default();
     this.m_lookDirectNV = new Vector3D_1.default();
-    this.m_lookAtDirec = new Vector3D_1.default(); //
-
+    this.m_lookAtDirec = new Vector3D_1.default();
     this.m_nearPlaneWidth = 1.0;
-    this.m_nearPlaneHeight = 1.0; //
-
+    this.m_nearPlaneHeight = 1.0;
     this.m_viewX = 0.0;
     this.m_viewY = 0.0;
     this.m_viewW = 800.0;
@@ -22235,13 +22999,13 @@ class CameraBase {
     this.m_nearPlaneHalfH = 0.5;
     this.m_nearWCV = new Vector3D_1.default();
     this.m_farWCV = new Vector3D_1.default();
-    this.m_wNV = new Vector3D_1.default(); // 4 far point, 4 near point 
+    this.m_wNV = new Vector3D_1.default(); // 4 far point, 4 near point
 
-    this.m_wFrustumVtxArr = [new Vector3D_1.default(), new Vector3D_1.default(), new Vector3D_1.default(), new Vector3D_1.default(), new Vector3D_1.default(), new Vector3D_1.default(), new Vector3D_1.default(), new Vector3D_1.default(), null, null, null]; // world space front,back ->(view space -z,z), world space left,right ->(view space -x,x),world space top,bottm ->(view space y,-y)
+    this.m_wFrustumVS = [new Vector3D_1.default(), new Vector3D_1.default(), new Vector3D_1.default(), new Vector3D_1.default(), new Vector3D_1.default(), new Vector3D_1.default(), new Vector3D_1.default(), new Vector3D_1.default(), null, null, null]; // world space front,back ->(view space -z,z), world space left,right ->(view space -x,x),world space top,bottm ->(view space y,-y)
 
-    this.m_wFruPlaneList = [new Plane_1.default(), new Plane_1.default(), new Plane_1.default(), new Plane_1.default(), new Plane_1.default(), new Plane_1.default()];
-    this.m_fpNVArr = [new Vector3D_1.default(), new Vector3D_1.default(), new Vector3D_1.default(), new Vector3D_1.default(), new Vector3D_1.default(), new Vector3D_1.default()];
-    this.m_fpDisArr = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
+    this.m_wFruPlanes = [new Plane_1.default(), new Plane_1.default(), new Plane_1.default(), new Plane_1.default(), new Plane_1.default(), new Plane_1.default()];
+    this.m_fpns = [new Vector3D_1.default(), new Vector3D_1.default(), new Vector3D_1.default(), new Vector3D_1.default(), new Vector3D_1.default(), new Vector3D_1.default()];
+    this.m_fpds = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
     this.m_viewMatrix = null;
   } // 不允许外界修改camera数据
 
@@ -22259,10 +23023,11 @@ class CameraBase {
     if (this.m_unlock) {
       this.m_camPos.copyFrom(camPos);
       this.m_lookAtPos.copyFrom(lookAtPos);
-      this.m_up.copyFrom(up);
-      this.m_lookAtDirec.x = this.m_lookAtPos.x - this.m_camPos.x;
-      this.m_lookAtDirec.y = this.m_lookAtPos.y - this.m_camPos.y;
-      this.m_lookAtDirec.z = this.m_lookAtPos.z - this.m_camPos.z;
+      this.m_up.copyFrom(up); // this.m_lookAtDirec.x = this.m_lookAtPos.x - this.m_camPos.x;
+      // this.m_lookAtDirec.y = this.m_lookAtPos.y - this.m_camPos.y;
+      // this.m_lookAtDirec.z = this.m_lookAtPos.z - this.m_camPos.z;
+
+      this.m_lookAtDirec.subVecsTo(this.m_lookAtPos, this.m_camPos);
       this.m_lookRHEnabled = false;
       this.m_lookDirectNV.copyFrom(this.m_lookAtDirec);
       this.m_lookDirectNV.normalize();
@@ -22277,10 +23042,11 @@ class CameraBase {
   lookAtRH(camPos, lookAtPos, up) {
     if (this.m_unlock) {
       this.m_camPos.copyFrom(camPos);
-      this.m_lookAtPos.copyFrom(lookAtPos);
-      this.m_lookAtDirec.x = this.m_lookAtPos.x - this.m_camPos.x;
-      this.m_lookAtDirec.y = this.m_lookAtPos.y - this.m_camPos.y;
-      this.m_lookAtDirec.z = this.m_lookAtPos.z - this.m_camPos.z;
+      this.m_lookAtPos.copyFrom(lookAtPos); // this.m_lookAtDirec.x = this.m_lookAtPos.x - this.m_camPos.x;
+      // this.m_lookAtDirec.y = this.m_lookAtPos.y - this.m_camPos.y;
+      // this.m_lookAtDirec.z = this.m_lookAtPos.z - this.m_camPos.z;
+
+      this.m_lookAtDirec.subVecsTo(this.m_lookAtPos, this.m_camPos);
       this.m_lookRHEnabled = true;
       this.m_lookDirectNV.copyFrom(this.m_lookAtDirec);
       this.m_lookDirectNV.normalize();
@@ -22454,10 +23220,11 @@ class CameraBase {
 
   translation(v3) {
     if (this.m_unlock) {
-      this.m_camPos.copyFrom(v3);
-      this.m_lookAtPos.x = v3.x + this.m_lookAtDirec.x;
-      this.m_lookAtPos.y = v3.y + this.m_lookAtDirec.y;
-      this.m_lookAtPos.z = v3.z + this.m_lookAtDirec.z;
+      this.m_camPos.copyFrom(v3); // this.m_lookAtPos.x = v3.x + this.m_lookAtDirec.x;
+      // this.m_lookAtPos.y = v3.y + this.m_lookAtDirec.y;
+      // this.m_lookAtPos.z = v3.z + this.m_lookAtDirec.z;
+
+      this.m_lookAtPos.addVecsTo(v3, this.m_lookAtDirec);
       this.m_changed = true;
     }
   }
@@ -22478,10 +23245,11 @@ class CameraBase {
     if (this.m_unlock) {
       this.m_camPos.x += this.m_lookDirectNV.x * dis;
       this.m_camPos.y += this.m_lookDirectNV.y * dis;
-      this.m_camPos.z += this.m_lookDirectNV.z * dis;
-      this.m_lookAtPos.x = this.m_camPos.x + this.m_lookAtDirec.x;
-      this.m_lookAtPos.y = this.m_camPos.y + this.m_lookAtDirec.y;
-      this.m_lookAtPos.z = this.m_camPos.z + this.m_lookAtDirec.z;
+      this.m_camPos.z += this.m_lookDirectNV.z * dis; // this.m_lookAtPos.x = this.m_camPos.x + this.m_lookAtDirec.x;
+      // this.m_lookAtPos.y = this.m_camPos.y + this.m_lookAtDirec.y;
+      // this.m_lookAtPos.z = this.m_camPos.z + this.m_lookAtDirec.z;
+
+      this.m_lookAtPos.addVecsTo(this.m_camPos, this.m_lookAtDirec);
       this.m_changed = true;
     }
   }
@@ -22511,12 +23279,14 @@ class CameraBase {
 
   forwardFixPos(dis, pos) {
     if (this.m_unlock) {
-      this.m_camPos.x = pos.x + this.m_lookDirectNV.x * dis;
-      this.m_camPos.y = pos.y + this.m_lookDirectNV.y * dis;
-      this.m_camPos.z = pos.z + this.m_lookDirectNV.z * dis;
-      this.m_lookAtPos.x = this.m_camPos.x + this.m_lookAtDirec.x;
-      this.m_lookAtPos.y = this.m_camPos.y + this.m_lookAtDirec.y;
-      this.m_lookAtPos.z = this.m_camPos.z + this.m_lookAtDirec.z;
+      this.m_camPos.copyFrom(this.m_lookDirectNV).scaleBy(dis).addBy(pos); // this.m_camPos.x = pos.x + this.m_lookDirectNV.x * dis;
+      // this.m_camPos.y = pos.y + this.m_lookDirectNV.y * dis;
+      // this.m_camPos.z = pos.z + this.m_lookDirectNV.z * dis;
+      // this.m_lookAtPos.x = this.m_camPos.x + this.m_lookAtDirec.x;
+      // this.m_lookAtPos.y = this.m_camPos.y + this.m_lookAtDirec.y;
+      // this.m_lookAtPos.z = this.m_camPos.z + this.m_lookAtDirec.z;
+
+      this.m_lookAtPos.addVecsTo(this.m_camPos, this.m_lookAtDirec);
       this.m_changed = true;
     }
   }
@@ -22529,18 +23299,21 @@ class CameraBase {
         this.m_tempMat.appendRotation(rad * MathConst_1.default.MATH_PI_OVER_180, axis);
       } else {
         this.m_tempMat.appendRotation(rad * MathConst_1.default.MATH_PI_OVER_180, Vector3D_1.default.Y_AXIS);
-      }
+      } // this.m_lookAtDirec.x = this.m_camPos.x - this.m_lookAtPos.x;
+      // this.m_lookAtDirec.y = this.m_camPos.y - this.m_lookAtPos.y;
+      // this.m_lookAtDirec.z = this.m_camPos.z - this.m_lookAtPos.z;
 
-      this.m_lookAtDirec.x = this.m_camPos.x - this.m_lookAtPos.x;
-      this.m_lookAtDirec.y = this.m_camPos.y - this.m_lookAtPos.y;
-      this.m_lookAtDirec.z = this.m_camPos.z - this.m_lookAtPos.z;
-      this.m_tempMat.transformVectorSelf(this.m_lookAtDirec);
-      this.m_camPos.x = this.m_lookAtDirec.x + this.m_lookAtPos.x;
-      this.m_camPos.y = this.m_lookAtDirec.y + this.m_lookAtPos.y;
-      this.m_camPos.z = this.m_lookAtDirec.z + this.m_lookAtPos.z;
-      this.m_lookAtDirec.x = this.m_lookAtPos.x - this.m_camPos.x;
-      this.m_lookAtDirec.y = this.m_lookAtPos.y - this.m_camPos.y;
-      this.m_lookAtDirec.z = this.m_lookAtPos.z - this.m_camPos.z;
+
+      this.m_lookAtDirec.subVecsTo(this.m_camPos, this.m_lookAtPos);
+      this.m_tempMat.transformVectorSelf(this.m_lookAtDirec); // this.m_camPos.x = this.m_lookAtDirec.x + this.m_lookAtPos.x;
+      // this.m_camPos.y = this.m_lookAtDirec.y + this.m_lookAtPos.y;
+      // this.m_camPos.z = this.m_lookAtDirec.z + this.m_lookAtPos.z;
+
+      this.m_camPos.addVecsTo(this.m_lookAtDirec, this.m_lookAtPos); // this.m_lookAtDirec.x = this.m_lookAtPos.x - this.m_camPos.x;
+      // this.m_lookAtDirec.y = this.m_lookAtPos.y - this.m_camPos.y;
+      // this.m_lookAtDirec.z = this.m_lookAtPos.z - this.m_camPos.z;
+
+      this.m_lookAtDirec.subVecsTo(this.m_lookAtPos, this.m_camPos);
       this.m_lookRHEnabled = true;
       this.m_lookDirectNV.copyFrom(this.m_lookAtDirec);
       this.m_lookDirectNV.normalize(); //
@@ -22557,21 +23330,23 @@ class CameraBase {
   swingHorizontal(degree) {
     if (this.m_unlock) {
       this.m_tempMat.identity();
-      this.m_tempMat.appendRotation(degree * MathConst_1.default.MATH_PI_OVER_180, this.m_up);
-      this.m_lookAtDirec.x = this.m_camPos.x - this.m_lookAtPos.x;
-      this.m_lookAtDirec.y = this.m_camPos.y - this.m_lookAtPos.y;
-      this.m_lookAtDirec.z = this.m_camPos.z - this.m_lookAtPos.z;
-      this.m_tempMat.transformVectorSelf(this.m_lookAtDirec);
-      this.m_camPos.x = this.m_lookAtDirec.x + this.m_lookAtPos.x;
-      this.m_camPos.y = this.m_lookAtDirec.y + this.m_lookAtPos.y;
-      this.m_camPos.z = this.m_lookAtDirec.z + this.m_lookAtPos.z;
-      this.m_lookAtDirec.x = this.m_lookAtPos.x - this.m_camPos.x;
-      this.m_lookAtDirec.y = this.m_lookAtPos.y - this.m_camPos.y;
-      this.m_lookAtDirec.z = this.m_lookAtPos.z - this.m_camPos.z;
+      this.m_tempMat.appendRotation(degree * MathConst_1.default.MATH_PI_OVER_180, this.m_up); // this.m_lookAtDirec.x = this.m_camPos.x - this.m_lookAtPos.x;
+      // this.m_lookAtDirec.y = this.m_camPos.y - this.m_lookAtPos.y;
+      // this.m_lookAtDirec.z = this.m_camPos.z - this.m_lookAtPos.z;
+
+      this.m_lookAtDirec.subVecsTo(this.m_camPos, this.m_lookAtPos);
+      this.m_tempMat.transformVectorSelf(this.m_lookAtDirec); // this.m_camPos.x = this.m_lookAtDirec.x + this.m_lookAtPos.x;
+      // this.m_camPos.y = this.m_lookAtDirec.y + this.m_lookAtPos.y;
+      // this.m_camPos.z = this.m_lookAtDirec.z + this.m_lookAtPos.z;
+
+      this.m_camPos.addVecsTo(this.m_lookAtDirec, this.m_lookAtPos); // this.m_lookAtDirec.x = this.m_lookAtPos.x - this.m_camPos.x;
+      // this.m_lookAtDirec.y = this.m_lookAtPos.y - this.m_camPos.y;
+      // this.m_lookAtDirec.z = this.m_lookAtPos.z - this.m_camPos.z;
+
+      this.m_lookAtDirec.subVecsTo(this.m_lookAtPos, this.m_camPos);
       this.m_lookRHEnabled = true;
       this.m_lookDirectNV.copyFrom(this.m_lookAtDirec);
-      this.m_lookDirectNV.normalize(); //
-
+      this.m_lookDirectNV.normalize();
       Vector3D_1.default.Cross(this.m_lookAtDirec, this.m_up, this.m_initRV);
       this.m_initRV.normalize();
       this.m_changed = true;
@@ -22581,21 +23356,23 @@ class CameraBase {
   swingVertical(degree) {
     if (this.m_unlock) {
       this.m_tempMat.identity();
-      this.m_tempMat.appendRotation(degree * MathConst_1.default.MATH_PI_OVER_180, this.m_initRV);
-      this.m_lookAtDirec.x = this.m_camPos.x - this.m_lookAtPos.x;
-      this.m_lookAtDirec.y = this.m_camPos.y - this.m_lookAtPos.y;
-      this.m_lookAtDirec.z = this.m_camPos.z - this.m_lookAtPos.z;
-      this.m_tempMat.transformVectorSelf(this.m_lookAtDirec);
-      this.m_camPos.x = this.m_lookAtDirec.x + this.m_lookAtPos.x;
-      this.m_camPos.y = this.m_lookAtDirec.y + this.m_lookAtPos.y;
-      this.m_camPos.z = this.m_lookAtDirec.z + this.m_lookAtPos.z;
-      this.m_lookAtDirec.x = this.m_lookAtPos.x - this.m_camPos.x;
-      this.m_lookAtDirec.y = this.m_lookAtPos.y - this.m_camPos.y;
-      this.m_lookAtDirec.z = this.m_lookAtPos.z - this.m_camPos.z;
+      this.m_tempMat.appendRotation(degree * MathConst_1.default.MATH_PI_OVER_180, this.m_initRV); // this.m_lookAtDirec.x = this.m_camPos.x - this.m_lookAtPos.x;
+      // this.m_lookAtDirec.y = this.m_camPos.y - this.m_lookAtPos.y;
+      // this.m_lookAtDirec.z = this.m_camPos.z - this.m_lookAtPos.z;
+
+      this.m_lookAtDirec.subVecsTo(this.m_camPos, this.m_lookAtPos);
+      this.m_tempMat.transformVectorSelf(this.m_lookAtDirec); // this.m_camPos.x = this.m_lookAtDirec.x + this.m_lookAtPos.x;
+      // this.m_camPos.y = this.m_lookAtDirec.y + this.m_lookAtPos.y;
+      // this.m_camPos.z = this.m_lookAtDirec.z + this.m_lookAtPos.z;
+
+      this.m_camPos.addVecsTo(this.m_lookAtDirec, this.m_lookAtPos); // this.m_lookAtDirec.x = this.m_lookAtPos.x - this.m_camPos.x;
+      // this.m_lookAtDirec.y = this.m_lookAtPos.y - this.m_camPos.y;
+      // this.m_lookAtDirec.z = this.m_lookAtPos.z - this.m_camPos.z;
+
+      this.m_lookAtDirec.subVecsTo(this.m_lookAtPos, this.m_camPos);
       this.m_lookRHEnabled = true;
       this.m_lookDirectNV.copyFrom(this.m_lookAtDirec);
-      this.m_lookDirectNV.normalize(); //
-
+      this.m_lookDirectNV.normalize();
       Vector3D_1.default.Cross(this.m_initRV, this.m_lookAtDirec, this.m_up);
       this.m_up.normalize();
       this.m_initUP.copyFrom(this.m_up);
@@ -22609,15 +23386,14 @@ class CameraBase {
       let dot = this.m_tempV.dot(this.m_initUP);
       this.m_tempV1.copyFrom(this.m_initUP);
       this.m_tempV1.scaleBy(dot);
-      this.m_tempV.subtractBy(this.m_tempV1); //m_tempV.y = 0;
+      this.m_tempV.subtractBy(this.m_tempV1);
+      this.m_camPos.copyFrom(v3); // this.m_lookAtDirec.x = this.m_lookAtPos.x - this.m_camPos.x;
+      // this.m_lookAtDirec.y = this.m_lookAtPos.y - this.m_camPos.y;
+      // this.m_lookAtDirec.z = this.m_lookAtPos.z - this.m_camPos.z;
 
-      this.m_camPos.copyFrom(v3);
-      this.m_lookAtDirec.x = this.m_lookAtPos.x - this.m_camPos.x;
-      this.m_lookAtDirec.y = this.m_lookAtPos.y - this.m_camPos.y;
-      this.m_lookAtDirec.z = this.m_lookAtPos.z - this.m_camPos.z;
+      this.m_lookAtDirec.subVecsTo(this.m_lookAtPos, this.m_camPos);
       this.m_lookDirectNV.copyFrom(this.m_lookAtDirec);
-      this.m_lookDirectNV.normalize(); //
-
+      this.m_lookDirectNV.normalize();
       Vector3D_1.default.Cross(this.m_tempV, this.m_lookAtDirec, this.m_up);
       this.m_up.normalize();
       this.m_changed = true;
@@ -22631,13 +23407,13 @@ class CameraBase {
       this.m_tempV1.copyFrom(this.m_initUP);
       this.m_tempV1.scaleBy(dot);
       this.m_tempV.subtractBy(this.m_tempV1);
-      this.m_camPos.setTo(px, py, pz);
-      this.m_lookAtDirec.x = this.m_lookAtPos.x - this.m_camPos.x;
-      this.m_lookAtDirec.y = this.m_lookAtPos.y - this.m_camPos.y;
-      this.m_lookAtDirec.z = this.m_lookAtPos.z - this.m_camPos.z;
-      this.m_lookDirectNV.copyFrom(this.m_lookAtDirec);
-      this.m_lookDirectNV.normalize(); //
+      this.m_camPos.setTo(px, py, pz); // this.m_lookAtDirec.x = this.m_lookAtPos.x - this.m_camPos.x;
+      // this.m_lookAtDirec.y = this.m_lookAtPos.y - this.m_camPos.y;
+      // this.m_lookAtDirec.z = this.m_lookAtPos.z - this.m_camPos.z;
 
+      this.m_lookAtDirec.subVecsTo(this.m_lookAtPos, this.m_camPos);
+      this.m_lookDirectNV.copyFrom(this.m_lookAtDirec);
+      this.m_lookDirectNV.normalize();
       Vector3D_1.default.Cross(this.m_tempV, this.m_lookAtDirec, this.m_up);
       this.m_up.normalize();
       this.m_changed = true;
@@ -22646,14 +23422,14 @@ class CameraBase {
 
   setLookPosXYZFixUp(px, py, pz) {
     if (this.m_unlock) {
-      this.m_lookAtPos.setTo(px, py, pz);
-      this.m_lookAtDirec.x = this.m_lookAtPos.x - this.m_camPos.x;
-      this.m_lookAtDirec.y = this.m_lookAtPos.y - this.m_camPos.y;
-      this.m_lookAtDirec.z = this.m_lookAtPos.z - this.m_camPos.z;
+      this.m_lookAtPos.setTo(px, py, pz); // this.m_lookAtDirec.x = this.m_lookAtPos.x - this.m_camPos.x;
+      // this.m_lookAtDirec.y = this.m_lookAtPos.y - this.m_camPos.y;
+      // this.m_lookAtDirec.z = this.m_lookAtPos.z - this.m_camPos.z;
+
+      this.m_lookAtDirec.subVecsTo(this.m_lookAtPos, this.m_camPos);
       this.m_lookRHEnabled = true;
       this.m_lookDirectNV.copyFrom(this.m_lookAtDirec);
-      this.m_lookDirectNV.normalize(); //
-
+      this.m_lookDirectNV.normalize();
       Vector3D_1.default.Cross(this.m_lookAtDirec, this.m_up, this.m_initRV);
       this.m_initRV.normalize();
       this.m_changed = true;
@@ -22662,14 +23438,14 @@ class CameraBase {
 
   setPositionXYZFixUp(px, py, pz) {
     if (this.m_unlock) {
-      this.m_camPos.setTo(px, py, pz);
-      this.m_lookAtDirec.x = this.m_lookAtPos.x - this.m_camPos.x;
-      this.m_lookAtDirec.y = this.m_lookAtPos.y - this.m_camPos.y;
-      this.m_lookAtDirec.z = this.m_lookAtPos.z - this.m_camPos.z;
+      this.m_camPos.setTo(px, py, pz); // this.m_lookAtDirec.x = this.m_lookAtPos.x - this.m_camPos.x;
+      // this.m_lookAtDirec.y = this.m_lookAtPos.y - this.m_camPos.y;
+      // this.m_lookAtDirec.z = this.m_lookAtPos.z - this.m_camPos.z;
+
+      this.m_lookAtDirec.subVecsTo(this.m_lookAtPos, this.m_camPos);
       this.m_lookRHEnabled = true;
       this.m_lookDirectNV.copyFrom(this.m_lookAtDirec);
-      this.m_lookDirectNV.normalize(); //
-
+      this.m_lookDirectNV.normalize();
       Vector3D_1.default.Cross(this.m_lookAtDirec, this.m_up, this.m_initRV);
       this.m_initRV.normalize();
       this.m_changed = true;
@@ -22678,10 +23454,11 @@ class CameraBase {
 
   setPositionFixUp(v3) {
     if (this.m_unlock) {
-      this.m_camPos.copyFrom(v3);
-      this.m_lookAtDirec.x = this.m_lookAtPos.x - this.m_camPos.x;
-      this.m_lookAtDirec.y = this.m_lookAtPos.y - this.m_camPos.y;
-      this.m_lookAtDirec.z = this.m_lookAtPos.z - this.m_camPos.z;
+      this.m_camPos.copyFrom(v3); // this.m_lookAtDirec.x = this.m_lookAtPos.x - this.m_camPos.x;
+      // this.m_lookAtDirec.y = this.m_lookAtPos.y - this.m_camPos.y;
+      // this.m_lookAtDirec.z = this.m_lookAtPos.z - this.m_camPos.z;
+
+      this.m_lookAtDirec.subVecsTo(this.m_lookAtPos, this.m_camPos);
       this.m_lookRHEnabled = true;
       this.m_lookDirectNV.copyFrom(this.m_lookAtDirec);
       this.m_lookDirectNV.normalize();
@@ -22734,10 +23511,11 @@ class CameraBase {
 
   setLookAtPosition(pv) {
     if (this.m_unlock) {
-      this.m_lookAtPos.copyFrom(pv);
-      this.m_lookAtDirec.x = this.m_lookAtPos.x - this.m_camPos.x;
-      this.m_lookAtDirec.y = this.m_lookAtPos.y - this.m_camPos.y;
-      this.m_lookAtDirec.z = this.m_lookAtPos.z - this.m_camPos.z;
+      this.m_lookAtPos.copyFrom(pv); // this.m_lookAtDirec.x = this.m_lookAtPos.x - this.m_camPos.x;
+      // this.m_lookAtDirec.y = this.m_lookAtPos.y - this.m_camPos.y;
+      // this.m_lookAtDirec.z = this.m_lookAtPos.z - this.m_camPos.z;
+
+      this.m_lookAtDirec.subVecsTo(this.m_lookAtPos, this.m_camPos);
       this.m_lookDirectNV.copyFrom(this.m_lookAtDirec);
       this.m_lookDirectNV.normalize();
       this.m_changed = true;
@@ -22746,10 +23524,11 @@ class CameraBase {
 
   setLookAtXYZ(px, py, pz) {
     if (this.m_unlock) {
-      this.m_lookAtPos.setTo(px, py, pz);
-      this.m_lookAtDirec.x = this.m_lookAtPos.x - this.m_camPos.x;
-      this.m_lookAtDirec.y = this.m_lookAtPos.y - this.m_camPos.y;
-      this.m_lookAtDirec.z = this.m_lookAtPos.z - this.m_camPos.z;
+      this.m_lookAtPos.setTo(px, py, pz); // this.m_lookAtDirec.x = this.m_lookAtPos.x - this.m_camPos.x;
+      // this.m_lookAtDirec.y = this.m_lookAtPos.y - this.m_camPos.y;
+      // this.m_lookAtDirec.z = this.m_lookAtPos.z - this.m_camPos.z;
+
+      this.m_lookAtDirec.subVecsTo(this.m_lookAtPos, this.m_camPos);
       this.m_lookDirectNV.copyFrom(this.m_lookAtDirec);
       this.m_lookDirectNV.normalize();
       this.m_changed = true;
@@ -22925,6 +23704,10 @@ class CameraBase {
     outV.w = outV.w - outV.y;
   }
 
+  getFrustumWorldPlantAt(i) {
+    return this.m_wFruPlanes[i];
+  }
+
   getInvertViewMatrix() {
     return this.m_invViewMat;
   }
@@ -22966,11 +23749,9 @@ class CameraBase {
   }
 
   __calcTestParam() {
-    if (this.m_invViewMat == null) this.m_invViewMat = new Matrix4_1.default(); //Matrix4Pool.GetMatrix();
-
+    if (this.m_invViewMat == null) this.m_invViewMat = new Matrix4_1.default();
     this.m_invViewMat.copyFrom(this.m_viewMat);
-    this.m_invViewMat.invert(); //
-
+    this.m_invViewMat.invert();
     let plane = null;
     let halfMinH = this.m_viewHalfH;
     let halfMinW = this.m_viewHalfW;
@@ -22978,148 +23759,117 @@ class CameraBase {
     let halfMaxW = this.m_viewHalfW;
 
     if (this.m_perspectiveEnabled) {
-      let tanv = Math.tan(this.m_fovRadian * 0.5);
+      const tanv = Math.tan(this.m_fovRadian * 0.5);
       halfMinH = this.m_zNear * tanv;
       halfMinW = halfMinH * this.m_aspect;
       halfMaxH = this.m_zFar * tanv;
       halfMaxW = halfMaxH * this.m_aspect;
-    } //console.log("CameraBase::__calcTestParam(), (halfMinW, halfMinH): "+halfMinW+", "+halfMinH);
+    }
 
+    const wfva = this.m_wFrustumVS;
+    const wfpa = this.m_wFruPlanes; //console.log("CameraBase::__calcTestParam(), (halfMinW, halfMinH): "+halfMinW+", "+halfMinH);
 
     this.m_nearPlaneHalfW = halfMinW;
     this.m_nearPlaneHalfH = halfMinH; // inner view space
 
-    this.m_nearWCV.setTo(0, 0, -this.m_zNear);
-    this.m_farWCV.setTo(0, 0, -this.m_zFar);
+    this.m_nearWCV.setXYZ(0, 0, -this.m_zNear);
+    this.m_farWCV.setXYZ(0, 0, -this.m_zFar);
     this.m_invViewMat.transformVectorSelf(this.m_nearWCV);
     this.m_invViewMat.transformVectorSelf(this.m_farWCV);
-    this.m_wNV.x = this.m_farWCV.x - this.m_nearWCV.x;
-    this.m_wNV.y = this.m_farWCV.y - this.m_nearWCV.y;
-    this.m_wNV.z = this.m_farWCV.z - this.m_nearWCV.z;
-    this.m_wNV.normalize(); // front face
+    this.m_wNV.subVecsTo(this.m_farWCV, this.m_nearWCV);
+    this.m_wNV.normalize(); // front face, far plane
 
-    plane = this.m_wFruPlaneList[0];
+    plane = wfpa[0];
     plane.nv.copyFrom(this.m_wNV);
     plane.distance = plane.nv.dot(this.m_farWCV);
-    plane.position.copyFrom(this.m_farWCV); // back face
+    plane.position.copyFrom(this.m_farWCV); // back face, near face
 
-    plane = this.m_wFruPlaneList[1];
-    plane.nv.copyFrom(this.m_wFruPlaneList[0].nv);
+    plane = wfpa[1];
+    plane.nv.copyFrom(wfpa[0].nv);
     plane.distance = plane.nv.dot(this.m_nearWCV);
-    plane.position.copyFrom(this.m_nearWCV); //
+    plane.position.copyFrom(this.m_nearWCV);
+    wfva[8] = this.m_nearWCV;
+    wfva[9] = this.m_farWCV;
+    wfva[11] = this.m_wNV; // far face
 
-    this.m_wFrustumVtxArr[8] = this.m_nearWCV;
-    this.m_wFrustumVtxArr[9] = this.m_farWCV;
-    this.m_wFrustumVtxArr[11] = this.m_wNV; // far face
+    wfva[0].setXYZ(-halfMaxW, -halfMaxH, -this.m_zFar);
+    wfva[1].setXYZ(halfMaxW, -halfMaxH, -this.m_zFar);
+    wfva[2].setXYZ(halfMaxW, halfMaxH, -this.m_zFar);
+    wfva[3].setXYZ(-halfMaxW, halfMaxH, -this.m_zFar); // near face
 
-    this.m_wFrustumVtxArr[0].setTo(-halfMaxW, -halfMaxH, -this.m_zFar);
-    this.m_wFrustumVtxArr[1].setTo(halfMaxW, -halfMaxH, -this.m_zFar);
-    this.m_wFrustumVtxArr[2].setTo(halfMaxW, halfMaxH, -this.m_zFar);
-    this.m_wFrustumVtxArr[3].setTo(-halfMaxW, halfMaxH, -this.m_zFar); // near face
-
-    this.m_wFrustumVtxArr[4].setTo(-halfMinW, -halfMinH, -this.m_zNear);
-    this.m_wFrustumVtxArr[5].setTo(halfMinW, -halfMinH, -this.m_zNear);
-    this.m_wFrustumVtxArr[6].setTo(halfMinW, halfMinH, -this.m_zNear);
-    this.m_wFrustumVtxArr[7].setTo(-halfMinW, halfMinH, -this.m_zNear); //
-
-    this.m_invViewMat.transformVectorSelf(this.m_wFrustumVtxArr[0]);
-    this.m_invViewMat.transformVectorSelf(this.m_wFrustumVtxArr[1]);
-    this.m_invViewMat.transformVectorSelf(this.m_wFrustumVtxArr[2]);
-    this.m_invViewMat.transformVectorSelf(this.m_wFrustumVtxArr[3]);
-    this.m_invViewMat.transformVectorSelf(this.m_wFrustumVtxArr[4]);
-    this.m_invViewMat.transformVectorSelf(this.m_wFrustumVtxArr[5]);
-    this.m_invViewMat.transformVectorSelf(this.m_wFrustumVtxArr[6]);
-    this.m_invViewMat.transformVectorSelf(this.m_wFrustumVtxArr[7]); //
-
-    this.m_frustumWAABB.max.setTo(-9999999, -9999999, -9999999);
-    this.m_frustumWAABB.min.setTo(9999999, 9999999, 9999999);
+    wfva[4].setXYZ(-halfMinW, -halfMinH, -this.m_zNear);
+    wfva[5].setXYZ(halfMinW, -halfMinH, -this.m_zNear);
+    wfva[6].setXYZ(halfMinW, halfMinH, -this.m_zNear);
+    wfva[7].setXYZ(-halfMinW, halfMinH, -this.m_zNear);
+    const invM = this.m_invViewMat;
+    invM.transformVectorSelf(wfva[0]);
+    invM.transformVectorSelf(wfva[1]);
+    invM.transformVectorSelf(wfva[2]);
+    invM.transformVectorSelf(wfva[3]);
+    invM.transformVectorSelf(wfva[4]);
+    invM.transformVectorSelf(wfva[5]);
+    invM.transformVectorSelf(wfva[6]);
+    invM.transformVectorSelf(wfva[7]);
+    this.m_frustumWAABB.reset();
 
     for (let i = 0; i < 8; ++i) {
-      this.m_frustumWAABB.addPosition(this.m_wFrustumVtxArr[i]);
+      this.m_frustumWAABB.addPosition(wfva[i]);
     }
 
-    this.m_frustumWAABB.updateFast(); //let abCV = m_frustumWAABB.getCenter();
-    // bottom
+    this.m_frustumWAABB.updateFast(); // bottom
 
-    let v0 = this.m_wFrustumVtxArr[0];
-    let v1 = this.m_wFrustumVtxArr[4];
-    this.m_tempV.x = v0.x - v1.x;
-    this.m_tempV.y = v0.y - v1.y;
-    this.m_tempV.z = v0.z - v1.z;
-    v0 = this.m_wFrustumVtxArr[1];
-    v1 = this.m_wFrustumVtxArr[5];
-    this.m_tempV1.x = v0.x - v1.x;
-    this.m_tempV1.y = v0.y - v1.y;
-    this.m_tempV1.z = v0.z - v1.z;
-    plane = this.m_wFruPlaneList[3];
+    this.m_tempV.subVecsTo(wfva[0], wfva[4]);
+    let v0 = wfva[1];
+    this.m_tempV1.subVecsTo(wfva[1], wfva[5]);
+    plane = wfpa[3];
     Vector3D_1.default.Cross(this.m_tempV1, this.m_tempV, plane.nv);
     plane.nv.normalize();
     plane.distance = plane.nv.dot(v0);
     plane.position.copyFrom(v0); // top
 
-    v0 = this.m_wFrustumVtxArr[3];
-    v1 = this.m_wFrustumVtxArr[7];
-    this.m_tempV.x = v0.x - v1.x;
-    this.m_tempV.y = v0.y - v1.y;
-    this.m_tempV.z = v0.z - v1.z;
-    v0 = this.m_wFrustumVtxArr[2];
-    v1 = this.m_wFrustumVtxArr[6];
-    this.m_tempV1.x = v0.x - v1.x;
-    this.m_tempV1.y = v0.y - v1.y;
-    this.m_tempV1.z = v0.z - v1.z;
-    plane = this.m_wFruPlaneList[2];
+    this.m_tempV.subVecsTo(wfva[3], wfva[7]);
+    v0 = wfva[2];
+    this.m_tempV1.subVecsTo(wfva[2], wfva[6]);
+    plane = wfpa[2];
     Vector3D_1.default.Cross(this.m_tempV1, this.m_tempV, plane.nv);
     plane.nv.normalize();
     plane.distance = plane.nv.dot(v0);
     plane.position.copyFrom(v0); // left
 
-    v0 = this.m_wFrustumVtxArr[0];
-    v1 = this.m_wFrustumVtxArr[4];
-    this.m_tempV.x = v0.x - v1.x;
-    this.m_tempV.y = v0.y - v1.y;
-    this.m_tempV.z = v0.z - v1.z;
-    v0 = this.m_wFrustumVtxArr[3];
-    v1 = this.m_wFrustumVtxArr[7];
-    this.m_tempV1.x = v0.x - v1.x;
-    this.m_tempV1.y = v0.y - v1.y;
-    this.m_tempV1.z = v0.z - v1.z;
-    plane = this.m_wFruPlaneList[4];
+    this.m_tempV.subVecsTo(wfva[0], wfva[4]);
+    v0 = wfva[3];
+    this.m_tempV1.subVecsTo(wfva[3], wfva[7]);
+    plane = wfpa[4];
     Vector3D_1.default.Cross(this.m_tempV, this.m_tempV1, plane.nv);
     plane.nv.normalize();
     plane.distance = plane.nv.dot(v0);
     plane.position.copyFrom(v0); // right
 
-    v0 = this.m_wFrustumVtxArr[1];
-    v1 = this.m_wFrustumVtxArr[5];
-    this.m_tempV.x = v0.x - v1.x;
-    this.m_tempV.y = v0.y - v1.y;
-    this.m_tempV.z = v0.z - v1.z;
-    v0 = this.m_wFrustumVtxArr[2];
-    v1 = this.m_wFrustumVtxArr[6];
-    this.m_tempV1.x = v0.x - v1.x;
-    this.m_tempV1.y = v0.y - v1.y;
-    this.m_tempV1.z = v0.z - v1.z;
-    plane = this.m_wFruPlaneList[5];
+    this.m_tempV.subVecsTo(wfva[1], wfva[5]);
+    v0 = wfva[2];
+    this.m_tempV1.subVecsTo(wfva[2], wfva[6]);
+    plane = wfpa[5];
     Vector3D_1.default.Cross(this.m_tempV, this.m_tempV1, plane.nv);
     plane.nv.normalize();
     plane.distance = plane.nv.dot(v0);
     plane.position.copyFrom(v0);
-    this.m_fpNVArr[0].copyFrom(this.m_wFruPlaneList[0].nv);
-    this.m_fpNVArr[1].copyFrom(this.m_wFruPlaneList[1].nv);
-    this.m_fpNVArr[1].scaleBy(-1.0);
-    this.m_fpNVArr[2].copyFrom(this.m_wFruPlaneList[2].nv);
-    this.m_fpNVArr[3].copyFrom(this.m_wFruPlaneList[3].nv);
-    this.m_fpNVArr[3].scaleBy(-1.0);
-    this.m_fpNVArr[4].copyFrom(this.m_wFruPlaneList[4].nv);
-    this.m_fpNVArr[4].scaleBy(-1.0);
-    this.m_fpNVArr[5].copyFrom(this.m_wFruPlaneList[5].nv); //
-
-    this.m_fpDisArr[0] = this.m_wFruPlaneList[0].distance;
-    this.m_fpDisArr[1] = -this.m_wFruPlaneList[1].distance;
-    this.m_fpDisArr[2] = this.m_wFruPlaneList[2].distance;
-    this.m_fpDisArr[3] = -this.m_wFruPlaneList[3].distance;
-    this.m_fpDisArr[4] = -this.m_wFruPlaneList[4].distance;
-    this.m_fpDisArr[5] = this.m_wFruPlaneList[5].distance;
+    const fpna = this.m_fpns;
+    fpna[0].copyFrom(wfpa[0].nv);
+    fpna[1].copyFrom(wfpa[1].nv);
+    fpna[1].scaleBy(-1.0);
+    fpna[2].copyFrom(wfpa[2].nv);
+    fpna[3].copyFrom(wfpa[3].nv);
+    fpna[3].scaleBy(-1.0);
+    fpna[4].copyFrom(wfpa[4].nv);
+    fpna[4].scaleBy(-1.0);
+    fpna[5].copyFrom(wfpa[5].nv);
+    const fpda = this.m_fpds;
+    fpda[0] = wfpa[0].distance;
+    fpda[1] = -wfpa[1].distance;
+    fpda[2] = wfpa[2].distance;
+    fpda[3] = -wfpa[3].distance;
+    fpda[4] = -wfpa[4].distance;
+    fpda[5] = wfpa[5].distance;
   }
 
   getWordFrustumWAABB() {
@@ -23131,109 +23881,128 @@ class CameraBase {
   }
 
   getWordFrustumVtxArr() {
-    return this.m_wFrustumVtxArr;
+    return this.m_wFrustumVS;
   }
 
   getWordFrustumPlaneArr() {
-    return this.m_wFruPlaneList;
+    return this.m_wFruPlanes;
+  }
+  /**
+   * @param w_cv 世界坐标位置
+   * @param radius 球体半径
+   * @returns 0表示完全不会再近平面内, 1表示完全在近平面内, 2表示和近平面相交
+   */
+
+
+  visiTestNearPlaneWithSphere(w_cv, radius) {
+    const v = this.m_fpns[1].dot(w_cv) - this.m_fpds[1]; // - radius;
+
+    if (v - radius > pmin) {
+      // 表示完全在近平面之外，也就是前面
+      return 0;
+    } else if (v + radius < MathConst_1.default.MATH_MAX_NEGATIVE) {
+      // 表示完全在近平面内, 也就是后面
+      return 1;
+    } // 表示和近平面相交
+
+
+    return 2;
   }
 
   visiTestSphere2(w_cv, radius) {
-    let boo = this.m_fpNVArr[0].dot(w_cv) - this.m_fpDisArr[0] - radius > MathConst_1.default.MATH_MIN_POSITIVE;
+    let boo = this.m_fpns[0].dot(w_cv) - this.m_fpds[0] - radius > pmin;
     if (boo) return false;
-    boo = this.m_fpNVArr[1].dot(w_cv) - this.m_fpDisArr[1] - radius > MathConst_1.default.MATH_MIN_POSITIVE;
+    boo = this.m_fpns[1].dot(w_cv) - this.m_fpds[1] - radius > pmin;
     if (boo) return false;
-    boo = this.m_fpNVArr[2].dot(w_cv) - this.m_fpDisArr[2] - radius > MathConst_1.default.MATH_MIN_POSITIVE;
+    boo = this.m_fpns[2].dot(w_cv) - this.m_fpds[2] - radius > pmin;
     if (boo) return false;
-    boo = this.m_fpNVArr[3].dot(w_cv) - this.m_fpDisArr[3] - radius > MathConst_1.default.MATH_MIN_POSITIVE;
+    boo = this.m_fpns[3].dot(w_cv) - this.m_fpds[3] - radius > pmin;
     if (boo) return false;
-    boo = this.m_fpNVArr[4].dot(w_cv) - this.m_fpDisArr[4] - radius > MathConst_1.default.MATH_MIN_POSITIVE;
+    boo = this.m_fpns[4].dot(w_cv) - this.m_fpds[4] - radius > pmin;
     if (boo) return false;
-    boo = this.m_fpNVArr[5].dot(w_cv) - this.m_fpDisArr[5] - radius > MathConst_1.default.MATH_MIN_POSITIVE;
+    boo = this.m_fpns[5].dot(w_cv) - this.m_fpds[5] - radius > pmin;
     if (boo) return false;
     return true;
   }
 
   visiTestSphere3(w_cv, radius, farROffset) {
-    let boo = this.m_fpNVArr[0].dot(w_cv) - this.m_fpDisArr[0] + farROffset - radius > MathConst_1.default.MATH_MIN_POSITIVE;
+    let boo = this.m_fpns[0].dot(w_cv) - this.m_fpds[0] + farROffset - radius > pmin;
     if (boo) return false;
-    boo = this.m_fpNVArr[1].dot(w_cv) - this.m_fpDisArr[1] - radius > MathConst_1.default.MATH_MIN_POSITIVE;
+    boo = this.m_fpns[1].dot(w_cv) - this.m_fpds[1] - radius > pmin;
     if (boo) return false;
-    boo = this.m_fpNVArr[2].dot(w_cv) - this.m_fpDisArr[2] - radius > MathConst_1.default.MATH_MIN_POSITIVE;
+    boo = this.m_fpns[2].dot(w_cv) - this.m_fpds[2] - radius > pmin;
     if (boo) return false;
-    boo = this.m_fpNVArr[3].dot(w_cv) - this.m_fpDisArr[3] - radius > MathConst_1.default.MATH_MIN_POSITIVE;
+    boo = this.m_fpns[3].dot(w_cv) - this.m_fpds[3] - radius > pmin;
     if (boo) return false;
-    boo = this.m_fpNVArr[4].dot(w_cv) - this.m_fpDisArr[4] - radius > MathConst_1.default.MATH_MIN_POSITIVE;
+    boo = this.m_fpns[4].dot(w_cv) - this.m_fpds[4] - radius > pmin;
     if (boo) return false;
-    boo = this.m_fpNVArr[5].dot(w_cv) - this.m_fpDisArr[5] - radius > MathConst_1.default.MATH_MIN_POSITIVE;
+    boo = this.m_fpns[5].dot(w_cv) - this.m_fpds[5] - radius > pmin;
     if (boo) return false;
     return true;
   }
 
   visiTestPosition(pv) {
-    let boo = this.m_fpNVArr[0].dot(pv) - this.m_fpDisArr[0] > MathConst_1.default.MATH_MIN_POSITIVE;
+    let boo = this.m_fpns[0].dot(pv) - this.m_fpds[0] > pmin;
     if (boo) return false;
-    boo = this.m_fpNVArr[1].dot(pv) - this.m_fpDisArr[1] > MathConst_1.default.MATH_MIN_POSITIVE;
+    boo = this.m_fpns[1].dot(pv) - this.m_fpds[1] > pmin;
     if (boo) return false;
-    boo = this.m_fpNVArr[2].dot(pv) - this.m_fpDisArr[2] > MathConst_1.default.MATH_MIN_POSITIVE;
+    boo = this.m_fpns[2].dot(pv) - this.m_fpds[2] > pmin;
     if (boo) return false;
-    boo = this.m_fpNVArr[3].dot(pv) - this.m_fpDisArr[3] > MathConst_1.default.MATH_MIN_POSITIVE;
+    boo = this.m_fpns[3].dot(pv) - this.m_fpds[3] > pmin;
     if (boo) return false;
-    boo = this.m_fpNVArr[4].dot(pv) - this.m_fpDisArr[4] > MathConst_1.default.MATH_MIN_POSITIVE;
+    boo = this.m_fpns[4].dot(pv) - this.m_fpds[4] > pmin;
     if (boo) return false;
-    boo = this.m_fpNVArr[5].dot(pv) - this.m_fpDisArr[5] > MathConst_1.default.MATH_MIN_POSITIVE;
+    boo = this.m_fpns[5].dot(pv) - this.m_fpds[5] > pmin;
     if (boo) return false;
     return true;
   }
 
   visiTestPlane(nv, distance) {
-    let f0 = nv.dot(this.m_wFruPlaneList[0].position) - distance;
-    let f1 = f0 * (nv.dot(this.m_wFruPlaneList[1].position) - distance);
-    if (f1 < MathConst_1.default.MATH_MIN_POSITIVE) return true;
-    f1 = f0 * (nv.dot(this.m_wFruPlaneList[2].position) - distance);
-    if (f1 < MathConst_1.default.MATH_MIN_POSITIVE) return true;
-    f1 = f0 * (nv.dot(this.m_wFruPlaneList[3].position) - distance);
-    if (f1 < MathConst_1.default.MATH_MIN_POSITIVE) return true;
-    f1 = f0 * (nv.dot(this.m_wFruPlaneList[4].position) - distance);
-    if (f1 < MathConst_1.default.MATH_MIN_POSITIVE) return true;
-    f1 = f0 * (nv.dot(this.m_wFruPlaneList[5].position) - distance);
-    if (f1 < MathConst_1.default.MATH_MIN_POSITIVE) return true;
+    const ls = this.m_wFruPlanes;
+    let f0 = nv.dot(ls[0].position) - distance;
+    let f1 = f0 * (nv.dot(ls[1].position) - distance);
+    if (f1 < pmin) return true;
+    f1 = f0 * (nv.dot(ls[2].position) - distance);
+    if (f1 < pmin) return true;
+    f1 = f0 * (nv.dot(ls[3].position) - distance);
+    if (f1 < pmin) return true;
+    f1 = f0 * (nv.dot(ls[4].position) - distance);
+    if (f1 < pmin) return true;
+    f1 = f0 * (nv.dot(ls[5].position) - distance);
+    if (f1 < pmin) return true;
     return false;
-  } //this.m_wFruPlaneList
+  } //this.m_wFruPlanes
   // frustum intersect sphere in wrod space
 
 
   visiTestSphere(w_cv, radius) {
-    let boo = this.m_frustumWAABB.sphereIntersect(w_cv, radius); //
+    const ls = this.m_wFruPlanes;
+    let boo = this.m_frustumWAABB.sphereIntersect(w_cv, radius);
 
     if (boo) {
-      let pf0 = this.m_wFruPlaneList[0].intersectSphere(w_cv, radius);
-      let pf1 = this.m_wFruPlaneList[1].intersectSphere(w_cv, radius); //trace("0 pf0,pf1: "+pf0+","+pf1);
+      let pf0 = ls[0].intersectSphere(w_cv, radius);
+      let pf1 = ls[1].intersectSphere(w_cv, radius);
 
       if (pf0 * pf1 >= 0) {
-        //this.intersectBoo
-        //trace("TT A0");
-        if (this.m_wFruPlaneList[0].intersectBoo || this.m_wFruPlaneList[1].intersectBoo) {} else {
+        if (ls[0].intersectBoo || ls[1].intersectBoo) {} else {
           return false;
         }
       }
 
-      pf0 = this.m_wFruPlaneList[2].intersectSphere(w_cv, radius);
-      pf1 = this.m_wFruPlaneList[3].intersectSphere(w_cv, radius); //trace("1 pf0,pf1: "+pf0+","+pf1);
+      pf0 = ls[2].intersectSphere(w_cv, radius);
+      pf1 = ls[3].intersectSphere(w_cv, radius);
 
       if (pf0 * pf1 >= 0) {
-        //trace("TT A1");
-        if (this.m_wFruPlaneList[2].intersectBoo || this.m_wFruPlaneList[3].intersectBoo) {} else {
+        if (ls[2].intersectBoo || ls[3].intersectBoo) {} else {
           return false;
         }
       }
 
-      pf0 = this.m_wFruPlaneList[4].intersectSphere(w_cv, radius);
-      pf1 = this.m_wFruPlaneList[5].intersectSphere(w_cv, radius);
+      pf0 = ls[4].intersectSphere(w_cv, radius);
+      pf1 = ls[5].intersectSphere(w_cv, radius);
 
       if (pf0 * pf1 >= 0) {
-        //trace("TT A2");
-        if (this.m_wFruPlaneList[4].intersectBoo || this.m_wFruPlaneList[5].intersectBoo) {} else {
+        if (ls[4].intersectBoo || ls[5].intersectBoo) {} else {
           return false;
         }
       }
@@ -23252,32 +24021,33 @@ class CameraBase {
     //return m_frustumWAABB.sphereIntersectFast(ro.bounds.getCenter(),ro.bounds.getRadius());
     let w_cv = ab.center;
     let radius = ab.radius;
-    let boo = this.m_frustumWAABB.sphereIntersect(w_cv, radius); //
+    let boo = this.m_frustumWAABB.sphereIntersect(w_cv, radius);
+    const ls = this.m_wFruPlanes;
 
     if (boo) {
-      let pf0 = this.m_wFruPlaneList[0].intersectSphere(w_cv, radius);
-      let pf1 = this.m_wFruPlaneList[1].intersectSphere(w_cv, radius);
+      let pf0 = ls[0].intersectSphere(w_cv, radius);
+      let pf1 = ls[1].intersectSphere(w_cv, radius);
 
       if (pf0 * pf1 >= 0) {
-        if (this.m_wFruPlaneList[0].intersectBoo || this.m_wFruPlaneList[1].intersectBoo) {} else {
+        if (ls[0].intersectBoo || ls[1].intersectBoo) {} else {
           return false;
         }
       }
 
-      pf0 = this.m_wFruPlaneList[2].intersectSphere(w_cv, radius);
-      pf1 = this.m_wFruPlaneList[3].intersectSphere(w_cv, radius);
+      pf0 = ls[2].intersectSphere(w_cv, radius);
+      pf1 = ls[3].intersectSphere(w_cv, radius);
 
       if (pf0 * pf1 >= 0) {
-        if (this.m_wFruPlaneList[2].intersectBoo || this.m_wFruPlaneList[3].intersectBoo) {} else {
+        if (ls[2].intersectBoo || ls[3].intersectBoo) {} else {
           return false;
         }
       }
 
-      pf0 = this.m_wFruPlaneList[4].intersectSphere(w_cv, radius);
-      pf1 = this.m_wFruPlaneList[5].intersectSphere(w_cv, radius);
+      pf0 = ls[4].intersectSphere(w_cv, radius);
+      pf1 = ls[5].intersectSphere(w_cv, radius);
 
       if (pf0 * pf1 >= 0) {
-        if (this.m_wFruPlaneList[4].intersectBoo || this.m_wFruPlaneList[5].intersectBoo) {} else {
+        if (ls[4].intersectBoo || ls[5].intersectBoo) {} else {
           return false;
         }
       }
@@ -23440,8 +24210,6 @@ class QueryUnit {
 
 class RaySelector {
   constructor() {
-    this.m_renderer = null;
-    this.m_camera = null;
     this.m_rsn = null; // 最多检测256个对象
 
     this.m_hitList = new Uint8Array(256);
@@ -23466,9 +24234,7 @@ class RaySelector {
     }
   }
 
-  setRenderer(renderer) {
-    this.m_renderer = renderer;
-  }
+  setRenderer(renderer) {}
 
   setRayTestMode(testMode) {
     this.m_testMode = testMode;
@@ -23484,9 +24250,7 @@ class RaySelector {
     out_rltv.copyFrom(this.m_rltv);
   }
 
-  setCamera(cam) {
-    this.m_camera = cam;
-  }
+  setCamera(cam) {}
 
   getSelectedNode() {
     return this.m_selectedNode;
@@ -23744,36 +24508,58 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+function downloadBinFile(binData, fns, suffix = "bin") {
+  const downloadURL = function (data, pfns) {
+    const a = document.createElement('a');
+    a.href = data;
+    a.download = pfns;
+    document.body.appendChild(a);
+    a.style = 'display: none';
+    a.click();
+    a.remove();
+  }; //console.log("downloadBinFile, binData: ", binData);
+
+
+  const downloadBlob = function (data, bfns, mimeType) {
+    const blob = new Blob([data], {
+      type: mimeType
+    });
+    const url = window.URL.createObjectURL(blob);
+    downloadURL(url, bfns);
+    setTimeout(function () {
+      return window.URL.revokeObjectURL(url);
+    }, 1000);
+  };
+
+  downloadBlob(binData, fns + '.' + suffix, 'application/octet-stream');
+}
+
 class FileIO {
   constructor() {}
 
-  downloadBinFile(binData, file_name, suffix = "vrd") {
-    var downloadBlob, downloadURL; //console.log("downloadBinFile, binData: ", binData);
-
-    downloadBlob = function (data, fileName, mimeType) {
-      var blob, url;
-      blob = new Blob([data], {
-        type: mimeType
-      });
-      url = window.URL.createObjectURL(blob);
-      downloadURL(url, fileName);
-      setTimeout(function () {
-        return window.URL.revokeObjectURL(url);
-      }, 1000);
-    };
-
-    downloadURL = function (data, fileName) {
-      var a;
-      a = document.createElement('a');
+  downloadBinFile(binData, fns, suffix = "vrd") {
+    const downloadURL = function (data, pfns) {
+      const a = document.createElement('a');
       a.href = data;
-      a.download = fileName;
+      a.download = pfns;
       document.body.appendChild(a);
       a.style = 'display: none';
       a.click();
       a.remove();
     };
 
-    downloadBlob(binData, file_name + '.' + suffix, 'application/octet-stream');
+    const downloadBlob = function (data, bfns, mimeType) {
+      const blob = new Blob([data], {
+        type: mimeType
+      });
+      const url = window.URL.createObjectURL(blob);
+      downloadURL(url, bfns);
+      setTimeout(function () {
+        return window.URL.revokeObjectURL(url);
+      }, 1000);
+    };
+
+    downloadBlob(binData, fns + '.' + suffix, 'application/octet-stream');
   }
 
 }
@@ -24025,54 +24811,6 @@ class MeshBase {
     return arr.length > 65536 ? new Uint32Array(arr) : new Uint16Array(arr);
   }
 
-  createWireframeIvs(ivs = null) {
-    if (ivs == null) ivs = this.m_ivs;
-
-    if (ivs !== null) {
-      const len = ivs.length * 2;
-      const wivs = len <= 65536 ? new Uint16Array(len) : new Uint32Array(len);
-      let a;
-      let b;
-      let c;
-      let k = 0;
-
-      for (let i = 0, l = ivs.length; i < l; i += 3) {
-        a = ivs[i + 0];
-        b = ivs[i + 1];
-        c = ivs[i + 2];
-        wivs[k] = a;
-        wivs[k + 1] = b;
-        wivs[k + 2] = b;
-        wivs[k + 3] = c;
-        wivs[k + 4] = c;
-        wivs[k + 5] = a;
-        k += 6;
-      }
-
-      return wivs;
-    }
-
-    return null;
-  }
-
-  updateWireframeIvs(ivs = null) {
-    return ivs;
-    this.toElementsTriangles();
-    let wivs = null;
-
-    if (this.wireframe) {
-      wivs = this.createWireframeIvs(ivs);
-
-      if (wivs != null) {
-        this.m_ivs = this.createWireframeIvs();
-      }
-
-      this.toElementsLines();
-    }
-
-    return wivs;
-  }
-
   buildEnd() {
     this.m_vbuf.setBufTypeList(this.m_bufTypeList);
     this.m_vbuf.setBufSizeList(this.m_bufSizeList);
@@ -24117,7 +24855,8 @@ class MeshBase {
   }
 
   crateROIvsData() {
-    const ird = new ROIvsData_1.default();
+    const ird = new ROIvsData_1.default(); // console.log(this, ", crateROIvsData, (), this.wireframe: ", this.wireframe);
+
     ird.wireframe = this.wireframe;
     ird.shape = this.shape;
     return ird;
@@ -24340,10 +25079,6 @@ class MeshBase {
     }
   }
 
-  toString() {
-    return "[MeshBase()]";
-  }
-
 }
 
 exports.default = MeshBase;
@@ -24477,8 +25212,6 @@ const RTTTextureProxy_1 = __importDefault(__webpack_require__("cfaf"));
 const DepthTextureProxy_1 = __importDefault(__webpack_require__("acaa"));
 
 const WrapperTextureProxy_1 = __importDefault(__webpack_require__("85b6"));
-
-const RendererDevice_1 = __importDefault(__webpack_require__("3b73"));
 /**
  * 本类作为所有RTT纹理对象的管理类
  */
@@ -24486,17 +25219,21 @@ const RendererDevice_1 = __importDefault(__webpack_require__("3b73"));
 
 class RTTTextureStore {
   constructor(renderProxy) {
-    this.m_renderProxy = null; // reusable rtt texture resources for one renderer context
+    this.m_rp = null; // reusable rtt texture resources for one renderer context
 
-    this.m_rttTexs = [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null];
-    this.m_rttCubeTexs = [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null];
-    this.m_rttFloatTexs = [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null];
-    this.m_rttDepthTexs = [null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null];
-    this.m_renderProxy = renderProxy;
+    this.m_rttTexs = new Array(16);
+    this.m_rttCubeTexs = new Array(16);
+    this.m_rttFloatTexs = new Array(16);
+    this.m_rttDepthTexs = new Array(16);
+    this.m_rp = renderProxy;
+    this.m_rttTexs.fill(null);
+    this.m_rttCubeTexs.fill(null);
+    this.m_rttFloatTexs.fill(null);
+    this.m_rttDepthTexs.fill(null);
   }
 
   getRenderProxy() {
-    return this.m_renderProxy;
+    return this.m_rp;
   }
 
   createWrapperTex(pw, ph, powerof2Boo = false) {
@@ -24514,157 +25251,87 @@ class RTTTextureStore {
     return tex;
   }
 
-  getCubeRTTTextureAt(i) {
+  getCubeRTTTextureAt(i, pw = 64, ph = 64) {
     if (this.m_rttCubeTexs[i] != null) {
-      this.m_rttCubeTexs[i].__$setRenderProxy(this.m_renderProxy);
+      this.m_rttCubeTexs[i].__$setRenderProxy(this.m_rp);
 
       return this.m_rttCubeTexs[i];
     }
 
-    this.m_rttCubeTexs[i] = this.createRTTTex2D(32, 32);
-    this.m_rttCubeTexs[i].toCubeTexture();
-    this.m_rttCubeTexs[i].name = "sys_cube_rttTex_" + i;
-    this.m_rttCubeTexs[i].minFilter = TextureConst_1.default.LINEAR;
-    this.m_rttCubeTexs[i].magFilter = TextureConst_1.default.LINEAR;
-
-    this.m_rttCubeTexs[i].__$setRenderProxy(this.m_renderProxy);
-
-    return this.m_rttCubeTexs[i];
-  }
-
-  createCubeRTTTextureAt(i, pw, ph) {
     pw = pw > 1 ? pw : 1;
     ph = ph > 1 ? ph : 1;
-
-    if (this.m_rttCubeTexs[i] != null) {
-      this.m_rttCubeTexs[i].__$setRenderProxy(this.m_renderProxy);
-
-      return this.m_rttCubeTexs[i];
-    }
-
     this.m_rttCubeTexs[i] = this.createRTTTex2D(pw, ph);
     this.m_rttCubeTexs[i].toCubeTexture();
     this.m_rttCubeTexs[i].name = "sys_cube_rttTex_" + i;
     this.m_rttCubeTexs[i].minFilter = TextureConst_1.default.LINEAR;
     this.m_rttCubeTexs[i].magFilter = TextureConst_1.default.LINEAR;
 
-    this.m_rttCubeTexs[i].__$setRenderProxy(this.m_renderProxy);
+    this.m_rttCubeTexs[i].__$setRenderProxy(this.m_rp);
 
     return this.m_rttCubeTexs[i];
   }
 
-  getRTTTextureAt(i) {
-    if (this.m_rttTexs[i] != null) {
-      this.m_rttTexs[i].__$setRenderProxy(this.m_renderProxy);
-
-      return this.m_rttTexs[i];
-    }
-
-    this.m_rttTexs[i] = this.createRTTTex2D(32, 32);
-    this.m_rttTexs[i].to2DTexture();
-    this.m_rttTexs[i].name = "sys_rttTex_" + i;
-    this.m_rttTexs[i].minFilter = TextureConst_1.default.LINEAR;
-    this.m_rttTexs[i].magFilter = TextureConst_1.default.LINEAR;
-
-    this.m_rttTexs[i].__$setRenderProxy(this.m_renderProxy);
-
-    return this.m_rttTexs[i];
+  createCubeRTTTextureAt(i, pw, ph) {
+    return this.getCubeRTTTextureAt(i, pw, ph);
   }
 
-  createRTTTextureAt(i, pw, ph) {
-    pw = pw > 1 ? pw : 1;
-    ph = ph > 1 ? ph : 1;
-
+  getRTTTextureAt(i, pw = 64, ph = 64) {
     if (this.m_rttTexs[i] != null) {
-      this.m_rttTexs[i].__$setRenderProxy(this.m_renderProxy);
+      this.m_rttTexs[i].__$setRenderProxy(this.m_rp);
 
       return this.m_rttTexs[i];
     }
 
+    pw = pw > 1 ? pw : 1;
+    ph = ph > 1 ? ph : 1;
     this.m_rttTexs[i] = this.createRTTTex2D(pw, ph);
     this.m_rttTexs[i].to2DTexture();
     this.m_rttTexs[i].name = "sys_rttTex_" + i;
     this.m_rttTexs[i].minFilter = TextureConst_1.default.LINEAR;
     this.m_rttTexs[i].magFilter = TextureConst_1.default.LINEAR;
 
-    this.m_rttTexs[i].__$setRenderProxy(this.m_renderProxy);
+    this.m_rttTexs[i].__$setRenderProxy(this.m_rp);
 
     return this.m_rttTexs[i];
   }
 
-  getDepthTextureAt(i) {
+  createRTTTextureAt(i, pw, ph) {
+    return this.getRTTTextureAt(i, pw, ph);
+  }
+
+  getDepthTextureAt(i, pw = 64, ph = 64) {
     if (this.m_rttDepthTexs[i] != null) {
-      this.m_rttDepthTexs[i].__$setRenderProxy(this.m_renderProxy);
+      this.m_rttDepthTexs[i].__$setRenderProxy(this.m_rp);
 
       return this.m_rttDepthTexs[i];
     }
 
-    this.m_rttDepthTexs[i] = this.createDepthTex2D(64, 64);
+    pw = pw > 1 ? pw : 1;
+    ph = ph > 1 ? ph : 1;
+    this.m_rttDepthTexs[i] = this.createDepthTex2D(pw, ph);
     this.m_rttDepthTexs[i].to2DTexture();
     this.m_rttDepthTexs[i].name = "sys_depthTex_" + i;
     this.m_rttDepthTexs[i].minFilter = TextureConst_1.default.NEAREST;
     this.m_rttDepthTexs[i].magFilter = TextureConst_1.default.NEAREST;
 
-    this.m_rttDepthTexs[i].__$setRenderProxy(this.m_renderProxy);
+    this.m_rttDepthTexs[i].__$setRenderProxy(this.m_rp);
 
     return this.m_rttDepthTexs[i];
   }
 
   createDepthTextureAt(i, pw, ph) {
-    pw = pw > 1 ? pw : 1;
-    ph = ph > 1 ? ph : 1;
-
-    if (this.m_rttDepthTexs[i] != null) {
-      this.m_rttDepthTexs[i].__$setRenderProxy(this.m_renderProxy);
-
-      return this.m_rttDepthTexs[i];
-    }
-
-    this.m_rttDepthTexs[i] = this.createDepthTex2D(pw, ph);
-    this.m_rttDepthTexs[i].to2DTexture();
-    this.m_rttDepthTexs[i].name = "sys_depthTex_" + i;
-
-    this.m_rttDepthTexs[i].__$setRenderProxy(this.m_renderProxy);
-
-    return this.m_rttDepthTexs[i];
+    return this.getDepthTextureAt(i, pw, ph);
   }
 
-  getRTTFloatTextureAt(i) {
+  getRTTFloatTextureAt(i, pw = 64, ph = 64) {
     if (this.m_rttFloatTexs[i] != null) {
-      this.m_rttFloatTexs[i].__$setRenderProxy(this.m_renderProxy);
+      this.m_rttFloatTexs[i].__$setRenderProxy(this.m_rp);
 
       return this.m_rttFloatTexs[i];
     }
 
-    let tex = this.createRTTTex2D(64, 64);
-    tex.to2DTexture();
-    this.m_rttFloatTexs[i] = tex;
-    this.m_rttFloatTexs[i].name = "sys_rttFloatTex_" + i;
-    tex.internalFormat = TextureFormat_1.default.RGBA16F;
-    tex.srcFormat = TextureFormat_1.default.RGBA;
-    tex.dataType = TextureDataType_1.default.FLOAT;
-    tex.minFilter = TextureConst_1.default.NEAREST;
-    tex.magFilter = TextureConst_1.default.NEAREST;
-
-    if (RendererDevice_1.default.IsWebGL1()) {
-      tex.dataType = TextureDataType_1.default.HALF_FLOAT_OES;
-    }
-
-    this.m_rttFloatTexs[i].__$setRenderProxy(this.m_renderProxy);
-
-    return tex;
-  }
-
-  createRTTFloatTextureAt(i, pw, ph) {
     pw = pw > 1 ? pw : 1;
     ph = ph > 1 ? ph : 1;
-
-    if (this.m_rttFloatTexs[i] != null) {
-      this.m_rttFloatTexs[i].__$setRenderProxy(this.m_renderProxy);
-
-      return this.m_rttFloatTexs[i];
-    }
-
     let tex = this.createRTTTex2D(pw, ph);
     tex.to2DTexture();
     this.m_rttFloatTexs[i] = tex;
@@ -24675,13 +25342,17 @@ class RTTTextureStore {
     tex.minFilter = TextureConst_1.default.NEAREST;
     tex.magFilter = TextureConst_1.default.NEAREST;
 
-    if (RendererDevice_1.default.IsWebGL1()) {
+    if (this.m_rp.isWebGL1()) {
       tex.dataType = TextureDataType_1.default.HALF_FLOAT_OES;
     }
 
-    this.m_rttFloatTexs[i].__$setRenderProxy(this.m_renderProxy);
+    this.m_rttFloatTexs[i].__$setRenderProxy(this.m_rp);
 
     return tex;
+  }
+
+  createRTTFloatTextureAt(i, pw, ph) {
+    return this.getRTTFloatTextureAt(i, pw, ph);
   }
 
 }
@@ -24737,6 +25408,18 @@ class RTTTextureProxy extends TextureProxy_1.default {
     this.magFilter = TextureConst_1.default.NEAREST;
   }
 
+  toRedFormat() {
+    this.srcFormat = TextureFormat_1.default.RED;
+
+    if (this.dataType == TextureDataType_1.default.FLOAT) {
+      this.internalFormat = TextureFormat_1.default.R16F; // this.internalFormat = TextureFormat.R32F;
+    } else {
+      this.internalFormat = TextureFormat_1.default.RED;
+    } // this.srcFormat = TextureFormat.RED;
+    // this.internalFormat = TextureFormat.R16F;
+
+  }
+
   to2DTexture() {
     this.m_texTarget = TextureTarget_1.default.TEXTURE_2D;
   }
@@ -24776,26 +25459,31 @@ class RTTTextureProxy extends TextureProxy_1.default {
       this.m_texWidth = fboWidth;
       this.m_texHeight = fboHeight;
 
-      this.__$buildParam(gl);
+      this.__$buildParam(gl); // console.log(">>>>>>>>>>>>> uploadFromFbo() A ...");
+
     } else if (this.getBufWidth() != fboWidth || this.getBufHeight() != fboHeight) {
       texResource.bindToGpu(this.getResUid());
       this.bindTexture(gl, fboWidth, fboHeight);
       this.m_texWidth = fboWidth;
       this.m_texHeight = fboHeight;
 
-      this.__$buildParam(gl);
+      this.__$buildParam(gl); // console.log(">>>>>>>>>>>>> uploadFromFbo() B ...");
+
     }
 
     this.mipmapEnabled = mEnabled;
+    this.testDataEnough();
   }
 
   bindTexture(rgl, fboWidth, fboHeight) {
-    let interType = TextureFormat_1.default.ToGL(rgl, this.internalFormat);
-    let format = TextureFormat_1.default.ToGL(rgl, this.srcFormat);
-    let type = TextureDataType_1.default.ToGL(rgl, this.dataType); //console.log(this,", fboWidth, fboHeight: ",fboWidth, fboHeight, interType,format);
+    const interType = TextureFormat_1.default.ToGL(rgl, this.internalFormat);
+    const format = TextureFormat_1.default.ToGL(rgl, this.srcFormat);
+    const type = TextureDataType_1.default.ToGL(rgl, this.dataType);
+    console.log("RTT Tex, fboWidth, fboHeight: ", fboWidth, fboHeight, interType, format);
 
     switch (this.m_texTarget) {
       case TextureTarget_1.default.TEXTURE_2D:
+        console.log("RTT tex 2d, fboWidth, fboHeight: ", fboWidth, fboHeight, interType, format, type);
         rgl.texImage2D(rgl.TEXTURE_2D, 0, interType, fboWidth, fboHeight, 0, format, type, null);
         break;
 
@@ -24813,10 +25501,6 @@ class RTTTextureProxy extends TextureProxy_1.default {
       default:
         break;
     }
-  }
-
-  toString() {
-    return "[RTTTextureProxy(name:" + this.name + ",uid=" + this.getUid() + ",width=" + this.getWidth() + ",height=" + this.getHeight() + ")]";
   }
 
 }
@@ -24847,24 +25531,18 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 class VtxDrawingInfo {
-  // rdp: IROIvsRDP = null;
   constructor() {
     this.m_uid = VtxDrawingInfo.s_uid++;
     this.m_ivsIndex = -1;
     this.m_ivsCount = -1;
     this.m_wireframe = false;
-    this.m_ver = 0; // private m_sts = new Uint8Array([0, 0, 0, 0]);
-
+    this.m_ver = 0;
     this.m_unlock = true;
     this.m_ivsDataIndex = 0;
     this.m_insCount = 0;
   }
 
-  destroy() {// if (this.rdp != null) {
-    //     this.rdp.clear();
-    //     this.rdp = null;
-    // }
-  }
+  destroy() {}
 
   lock() {
     this.m_unlock = false;
@@ -24881,21 +25559,20 @@ class VtxDrawingInfo {
   setInstanceCount(insCount) {
     if (this.m_unlock && this.m_insCount != insCount) {
       this.m_insCount = insCount;
-      this.m_ver++; // this.m_sts[2] = 1;
+      this.m_ver++;
     }
   }
 
   setWireframe(wireframe) {
     if (this.m_unlock && this.m_wireframe != wireframe) {
       this.m_wireframe = wireframe;
-      this.m_ver++; // this.m_sts[2] = 1;
+      this.m_ver++;
     }
   }
 
   applyIvsDataAt(index) {
     if (index >= 0 && this.m_ivsDataIndex != index) {
-      this.m_ver++; // this.m_sts[3] = 1;
-
+      this.m_ver++;
       this.m_ivsDataIndex = index;
     }
   }
@@ -24904,19 +25581,17 @@ class VtxDrawingInfo {
     if (this.m_unlock) {
       if (ivsIndex >= 0 && this.m_ivsIndex != ivsIndex) {
         this.m_ivsIndex = ivsIndex;
-        this.m_ver++; // this.m_sts[1] = 1;
+        this.m_ver++;
       }
 
       if (ivsCount >= 0 && this.m_ivsCount != ivsCount) {
         this.m_ivsCount = ivsCount;
-        this.m_ver++; // this.m_sts[1] = 1;
+        this.m_ver++;
       }
     }
   }
 
-  reset() {
-    this.m_ver = 0;
-  }
+  reset() {}
 
   __$$copyToRDP(rdp) {
     // console.log("__$$copyToRDP() ...rdp.getUid(): ", rdp.getUid());
@@ -24929,6 +25604,7 @@ class VtxDrawingInfo {
         if (rdp.ver != ver) {
           rdp.ver = ver; // console.log("__$$copyToRDP() ...rdp.getUid(): ", rdp.getUid(), ", this.m_uid: ", this.m_uid);
 
+          rdp.setInsCount(this.m_insCount);
           rdp.setIvsParam(this.m_ivsIndex, this.m_ivsCount);
 
           if (this.m_wireframe) {
@@ -24937,24 +25613,7 @@ class VtxDrawingInfo {
             rdp.toCommon();
           }
 
-          rdp.applyRDPAt(this.m_ivsDataIndex); // if (this.m_sts[1] > 0) {
-          //     this.m_sts[1] = 0;
-          //     // console.log("__$$copyToRDP() ...rdp.setIvsParam(): ", this.m_ivsIndex, this.m_ivsCount);
-          //     rdp.setIvsParam(this.m_ivsIndex, this.m_ivsCount);
-          // }
-          // if (this.m_sts[2] > 0) {
-          //     this.m_sts[2] = 0;
-          //     if (this.m_wireframe) {
-          //         rdp.toWireframe();
-          //     } else {
-          //         rdp.toCommon();
-          //     }
-          // }
-          // if (this.m_sts[3] > 0) {
-          //     this.m_sts[3] = 0;
-          //     rdp.applyRDPAt(this.m_ivsDataIndex);
-          // }
-          // this.reset();
+          rdp.applyRDPAt(this.m_ivsDataIndex);
         }
       }
 
@@ -25080,6 +25739,7 @@ class ImageCubeTextureProxy extends TextureProxy_1.default {
           miplevel: miplevel
         };
         this.m_haveRData = this.m_imgDataList[index] != null;
+        this.testDataEnough();
       }
     }
   }
@@ -25092,10 +25752,6 @@ class ImageCubeTextureProxy extends TextureProxy_1.default {
       imo = this.m_imgDataList[i];
       gl.texImage2D(gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, this.m_miplevel, TextureFormat_1.default.ToGL(gl, this.internalFormat), TextureFormat_1.default.ToGL(gl, this.srcFormat), TextureDataType_1.default.ToGL(gl, this.dataType), imo.imgData);
     }
-  }
-
-  toString() {
-    return "[ImageCubeTextureProxy(name:" + this.name + ",uid=" + this.getUid() + ",width=" + this.getWidth() + ",height=" + this.getHeight() + ")]";
   }
 
   __$destroy() {
@@ -25364,7 +26020,8 @@ class RODisplay {
     this.insCount = 0;
     this.drawMode = RenderConst_1.RenderDrawMode.ELEMENTS_TRIANGLES;
     this.vbuf = null;
-    this.ivbuf = null; // record render state: shadowMode(one byte) + depthTestMode(one byte) + blendMode(one byte) + cullFaceMode(one byte)
+    this.ivbuf = null;
+    this.rendering = true; // record render state: shadowMode(one byte) + depthTestMode(one byte) + blendMode(one byte) + cullFaceMode(one byte)
     // its value come from: RendererState.CreateRenderState("default", CullFaceMode.BACK,RenderBlendMode.NORMAL,DepthTestMode.OPAQUE);
 
     this.renderState = RendererState_1.default.NORMAL_STATE;
@@ -25496,6 +26153,7 @@ class RODisplay {
     this.ivsCount = 0;
     this.m_partGroup = null;
     this.__$$runit = null;
+    this.rendering = true;
   }
 
   static GetFreeId() {
@@ -26618,6 +27276,7 @@ class PixelPickIndexShaderBuffer extends ShaderCodeBuffer_1.default {
   constructor() {
     super();
     this.m_uniqueName = "";
+    this.codeBuilderEnabled = false;
   }
 
   initialize(texEnabled) {
@@ -26798,8 +27457,8 @@ class ROVertexBuffer extends ROIVertexBuffer_1.default {
     return this.m_bufSizeList;
   }
 
-  getIBufStep() {
-    return this.m_ibufStep;
+  getIvsUnitBytes() {
+    return this.m_ivsUnitBytes;
   }
 
   getBufDataUsage() {
@@ -26814,31 +27473,46 @@ class ROVertexBuffer extends ROIVertexBuffer_1.default {
     return this.m_vtxBuf.getAttribsTotal();
   }
 
+  getF32DataVerAt(index) {
+    return this.m_vtxBuf.getF32DataVerAt(index);
+  }
+
+  setF32DataVerAt(index, ver) {
+    this.m_vtxBuf.setF32DataVerAt(index, ver);
+  }
+
+  updateF32DataVerAt(index) {
+    let ver = this.m_vtxBuf.getF32DataVerAt(index) + 1;
+    this.m_vtxBuf.setF32DataVerAt(index, ver);
+    this.vertexVer++;
+  }
+
   getF32DataAt(index) {
     return this.m_vtxBuf.getF32DataAt(index);
   }
 
   setF32DataAt(index, float32Arr, stepFloatsTotal, setpOffsets) {
+    // console.log("setF32DataAt(), ",index, ", float32Arr: ", float32Arr);
     this.m_vtxBuf.setF32DataAt(index, float32Arr, stepFloatsTotal, setpOffsets);
     this.vertexVer++;
   }
 
   setData4fAt(vertexI, attribI, px, py, pz, pw) {
-    if (this.m_vtxBuf != null) {
+    if (this.m_vtxBuf) {
       this.m_vtxBuf.setData4fAt(vertexI, attribI, px, py, pz, pw);
       this.vertexVer++;
     }
   }
 
   setData3fAt(vertexI, attribI, px, py, pz) {
-    if (this.m_vtxBuf != null) {
+    if (this.m_vtxBuf) {
       this.m_vtxBuf.setData3fAt(vertexI, attribI, px, py, pz);
       this.vertexVer++;
     }
   }
 
   setData2fAt(vertexI, attribI, px, py) {
-    if (this.m_vtxBuf != null) {
+    if (this.m_vtxBuf) {
       this.m_vtxBuf.setData2fAt(vertexI, attribI, px, py);
       this.vertexVer++;
     }
@@ -26883,35 +27557,38 @@ class ROVertexBuffer extends ROIVertexBuffer_1.default {
   }
 
   static Create(bufDataUsage = VtxBufConst_1.default.VTX_STATIC_DRAW) {
+    const rvb = ROVertexBuffer;
     let unit = null;
-    let index = ROVertexBuffer.GetFreeId();
+    let index = rvb.GetFreeId();
 
     if (index >= 0) {
-      unit = ROVertexBuffer.s_unitList[index];
+      unit = rvb.s_unitList[index];
       unit.setBufDataUsage(bufDataUsage);
-      ROVertexBuffer.s_unitFlagList[index] = ROVertexBuffer.s_FLAG_BUSY;
+      rvb.s_unitFlagList[index] = rvb.s_FLAG_BUSY;
     } else {
       unit = new ROVertexBuffer(bufDataUsage);
-      ROVertexBuffer.s_unitList.push(unit);
-      ROVertexBuffer.s_unitFlagList.push(ROVertexBuffer.s_FLAG_BUSY);
-      ROVertexBuffer.s_unitListLen++;
+      rvb.s_unitList.push(unit);
+      rvb.s_unitFlagList.push(rvb.s_FLAG_BUSY);
+      rvb.s_unitListLen++;
     }
 
     unit.vertexVer = 0;
     unit.indicesVer = 0;
     unit.version++; //console.log("ROVertexBuffer::Create(), ROVertexBuffer.s_unitList.length: "+ROVertexBuffer.s_unitList.length+", new buf: "+unit);
 
-    ROVertexBuffer.s_vtxStore.__$attachAt(unit.getUid());
+    rvb.s_vtxStore.__$attachAt(unit.getUid());
 
     return unit;
   }
 
   static __$Restore(pobj) {
-    if (pobj != null && ROVertexBuffer.s_unitFlagList[pobj.getUid()] == ROVertexBuffer.s_FLAG_BUSY) {
+    const rvb = ROVertexBuffer;
+
+    if (pobj != null && rvb.s_unitFlagList[pobj.getUid()] == rvb.s_FLAG_BUSY) {
       //console.log("ROVertexBuffer::__$Restore, pobj: "+pobj);
-      let uid = pobj.getUid();
-      ROVertexBuffer.s_freeIdList.push(uid);
-      ROVertexBuffer.s_unitFlagList[uid] = ROVertexBuffer.s_FLAG_FREE;
+      const uid = pobj.getUid();
+      rvb.s_freeIdList.push(uid);
+      rvb.s_unitFlagList[uid] = rvb.s_FLAG_FREE;
 
       pobj.__$destroy();
     }
@@ -26926,36 +27603,44 @@ class ROVertexBuffer extends ROIVertexBuffer_1.default {
   }
 
   static Reset() {
-    ROVertexBuffer.BufDataList = [];
-    ROVertexBuffer.s_stride = 0;
-    ROVertexBuffer.BufStatusList = [];
-    ROVertexBuffer.BufDataStepList = [];
-    ROVertexBuffer.vtxFS32 = null;
-    ROVertexBuffer.vbWholeDataEnabled = false;
-    ROVertexBuffer.dynBufSegEnabled = false;
-    ROVertexBuffer.useBufByIndexEnabled = false;
+    const rvb = ROVertexBuffer;
+    rvb.BufDataList = [];
+    rvb.s_stride = 0;
+    rvb.BufStatusList = [];
+    rvb.BufDataStepList = [];
+    rvb.BufVerList = [];
+    rvb.vtxFS32 = null;
+    rvb.vbWholeDataEnabled = false;
+    rvb.dynBufSegEnabled = false;
+    rvb.useBufByIndexEnabled = false;
+  }
+
+  static AddFloat32DataVer(ver) {
+    ROVertexBuffer.BufVerList.push(ver);
   }
 
   static AddFloat32Data(float32Arr, step, status = VtxBufConst_1.default.VTX_STATIC_DRAW) {
-    ROVertexBuffer.BufDataList.push(float32Arr);
-    ROVertexBuffer.BufDataStepList.push(step);
-    ROVertexBuffer.BufStatusList.push(status);
-    ROVertexBuffer.s_stride += step;
+    const rvb = ROVertexBuffer;
+    rvb.BufDataList.push(float32Arr);
+    rvb.BufDataStepList.push(step);
+    rvb.BufStatusList.push(status);
+    rvb.s_stride += step;
   }
 
   static CreateBySaveData(bufDataUsage = VtxBufConst_1.default.VTX_STATIC_DRAW, layoutBit = 0x0) {
+    const rvb = ROVertexBuffer;
     let i = 0;
     let k = 0;
     let stride = 0;
-    let bufTot = ROVertexBuffer.BufDataStepList.length;
+    let bufTot = rvb.BufDataStepList.length;
     let offsetList = [];
 
     for (; i < bufTot; i++) {
       offsetList.push(stride);
-      stride += ROVertexBuffer.BufDataStepList[i];
+      stride += rvb.BufDataStepList[i];
     }
 
-    let tot = ROVertexBuffer.BufDataList[0].length / ROVertexBuffer.BufDataStepList[0];
+    let tot = rvb.BufDataList[0].length / rvb.BufDataStepList[0];
     let vtxfs32 = new Float32Array(stride * tot);
     let j = 0;
     let segLen = 0;
@@ -26966,19 +27651,19 @@ class ROVertexBuffer extends ROIVertexBuffer_1.default {
       k = i * stride;
 
       for (j = 0; j < bufTot; ++j) {
-        segLen = ROVertexBuffer.BufDataStepList[j];
-        parrf32 = ROVertexBuffer.BufDataList[j];
+        segLen = rvb.BufDataStepList[j];
+        parrf32 = rvb.BufDataList[j];
         subArr = parrf32.subarray(i * segLen, (i + 1) * segLen);
         vtxfs32.set(subArr, k);
         k += segLen;
       }
     }
 
-    let vb = ROVertexBuffer.Create(bufDataUsage);
+    let vb = rvb.Create(bufDataUsage);
     vb.layoutBit = layoutBit;
 
-    if (ROVertexBuffer.s_combinedBufs.length > 0) {
-      let vtx = ROVertexBuffer.s_combinedBufs.pop();
+    if (rvb.s_combinedBufs.length > 0) {
+      let vtx = rvb.s_combinedBufs.pop();
       vb.setVtxBuf(vtx);
     } else {
       vb.setVtxBuf(new VtxCombinedBuf_1.default(vb.getBufDataUsage()));
@@ -26999,40 +27684,48 @@ class ROVertexBuffer extends ROIVertexBuffer_1.default {
       stride += bufDataStepList[i];
     }
 
-    let vb = ROVertexBuffer.Create(bufDataUsage);
+    const rvb = ROVertexBuffer;
+    let vb = rvb.Create(bufDataUsage);
     vb.layoutBit = layoutBit;
 
-    if (ROVertexBuffer.s_combinedBufs.length > 0) {
-      let vtx = ROVertexBuffer.s_combinedBufs.pop();
+    if (rvb.s_combinedBufs.length > 0) {
+      let vtx = rvb.s_combinedBufs.pop();
       vb.setVtxBuf(vtx);
     } else {
       vb.setVtxBuf(new VtxCombinedBuf_1.default(vb.getBufDataUsage()));
     }
 
     vb.setF32DataAt(0, vtxfs32, stride, offsetList);
+    const vls = rvb.BufVerList;
+
+    if (vls.length > 0) {
+      vb.setF32DataVerAt(0, vls[0]);
+    }
+
     return vb;
   }
 
   static UpdateCombinedBufData(vb) {
+    const rvb = ROVertexBuffer;
     let i = 0;
     let k = 0;
     let stride = 0;
-    let bufTot = ROVertexBuffer.BufDataStepList.length;
-    let tot = ROVertexBuffer.BufDataList[0].length / ROVertexBuffer.BufDataStepList[0];
+    let bufTot = rvb.BufDataStepList.length;
+    let tot = rvb.BufDataList[0].length / rvb.BufDataStepList[0];
     let vtxfs32 = vb.getF32DataAt(0);
-    let newBoo = ROVertexBuffer.s_stride * tot != vtxfs32.length;
+    let newBoo = rvb.s_stride * tot != vtxfs32.length;
     let offsetList = null;
 
     if (newBoo) {
       offsetList = [];
-      vtxfs32 = new Float32Array(ROVertexBuffer.s_stride * tot);
+      vtxfs32 = new Float32Array(rvb.s_stride * tot);
 
       for (; i < bufTot; i++) {
         offsetList.push(stride);
-        stride += ROVertexBuffer.BufDataStepList[i];
+        stride += rvb.BufDataStepList[i];
       }
     } else {
-      stride = ROVertexBuffer.s_stride;
+      stride = rvb.s_stride;
     }
 
     let j = 0;
@@ -27044,8 +27737,8 @@ class ROVertexBuffer extends ROIVertexBuffer_1.default {
       k = i * stride;
 
       for (j = 0; j < bufTot; ++j) {
-        segLen = ROVertexBuffer.BufDataStepList[j];
-        parrf32 = ROVertexBuffer.BufDataList[j];
+        segLen = rvb.BufDataStepList[j];
+        parrf32 = rvb.BufDataList[j];
         subArr = parrf32.subarray(i * segLen, (i + 1) * segLen);
         vtxfs32.set(subArr, k);
         k += segLen;
@@ -27056,6 +27749,12 @@ class ROVertexBuffer extends ROIVertexBuffer_1.default {
       vb.setF32DataAt(0, vtxfs32, stride, offsetList);
     } else {
       vb.setF32DataAt(0, vtxfs32, stride, null);
+    }
+
+    const vls = rvb.BufVerList;
+
+    if (vls.length > 0) {
+      vb.setF32DataVerAt(0, vls[0]);
     }
   }
 
@@ -27073,11 +27772,12 @@ class ROVertexBuffer extends ROIVertexBuffer_1.default {
     let bufTot = bufData.getAttributesTotal();
     let offsetList = new Array(bufTot);
     offsetList.fill(0);
-    let vb = ROVertexBuffer.Create(bufDataUsage);
+    const rvb = ROVertexBuffer;
+    let vb = rvb.Create(bufDataUsage);
     vb.layoutBit = layoutBit;
 
-    if (ROVertexBuffer.s_separatedBufs.length > 0) {
-      let vtx = ROVertexBuffer.s_separatedBufs.pop();
+    if (rvb.s_separatedBufs.length > 0) {
+      let vtx = rvb.s_separatedBufs.pop();
       vb.setVtxBuf(vtx);
     } else {
       vb.setVtxBuf(new VtxSeparatedBuf_1.default());
@@ -27089,36 +27789,71 @@ class ROVertexBuffer extends ROIVertexBuffer_1.default {
 
     vb.setIVSDataAt(bufData.getIndexDataAt(0));
     vb.bufData = bufData;
+    const vls = rvb.BufVerList;
+
+    if (vls.length > 0) {
+      for (i = 0; i < bufTot; i++) {
+        vb.setF32DataVerAt(i, vls[i]);
+      }
+    }
+
     return vb;
   }
 
   static CreateBySaveDataSeparate(bufDataUsage = VtxBufConst_1.default.VTX_STATIC_DRAW) {
+    const rvb = ROVertexBuffer;
     let i = 0;
     let stride = 0;
-    let bufTot = ROVertexBuffer.BufDataStepList.length;
+    let bufTot = rvb.BufDataStepList.length;
     let offsetList = new Array(bufTot);
-    let vb = ROVertexBuffer.Create(bufDataUsage);
+    let vb = rvb.Create(bufDataUsage);
 
-    if (ROVertexBuffer.s_separatedBufs.length > 0) {
-      let vtx = ROVertexBuffer.s_separatedBufs.pop();
+    if (rvb.s_separatedBufs.length > 0) {
+      let vtx = rvb.s_separatedBufs.pop();
       vb.setVtxBuf(vtx);
     } else {
       vb.setVtxBuf(new VtxSeparatedBuf_1.default());
     }
 
     for (i = 0; i < bufTot; i++) {
-      vb.setF32DataAt(i, ROVertexBuffer.BufDataList[i], stride, offsetList);
+      offsetList[i] = rvb.BufDataStepList[i];
+    }
+
+    for (i = 0; i < bufTot; i++) {
+      vb.setF32DataAt(i, rvb.BufDataList[i], stride, offsetList);
+    }
+
+    const vls = rvb.BufVerList;
+
+    if (vls.length > 0) {
+      for (i = 0; i < bufTot; i++) {
+        vb.setF32DataVerAt(i, vls[i]);
+      }
     }
 
     return vb;
   }
 
   static UpdateSeparatedBufData(vb) {
-    let bufTot = ROVertexBuffer.BufDataStepList.length;
-    let offsetList = new Array(bufTot); // console.log("ROVertexBuffer::CreateBySaveDataSeparate(), bufTot: "+bufTot);
+    const rvb = ROVertexBuffer;
+    let bufTot = rvb.BufDataStepList.length;
+    let offsetList = new Array(bufTot);
 
     for (let i = 0; i < bufTot; i++) {
-      vb.setF32DataAt(i, ROVertexBuffer.BufDataList[i], 0, offsetList);
+      offsetList[i] = rvb.BufDataStepList[i];
+    } // console.log("ROVertexBuffer::CreateBySaveDataSeparate(), bufTot: "+bufTot);
+
+
+    for (let i = 0; i < bufTot; i++) {
+      vb.setF32DataAt(i, rvb.BufDataList[i], 0, offsetList);
+    }
+
+    const vls = rvb.BufVerList;
+
+    if (vls.length > 0) {
+      for (let i = 0; i < bufTot; i++) {
+        vb.setF32DataVerAt(i, vls[i]);
+      }
     }
 
     return vb;
@@ -27183,6 +27918,7 @@ ROVertexBuffer.s_stride = 0;
 ROVertexBuffer.BufDataList = null;
 ROVertexBuffer.BufDataStepList = null;
 ROVertexBuffer.BufStatusList = null;
+ROVertexBuffer.BufVerList = null;
 ROVertexBuffer.vtxDataFS32 = null;
 ROVertexBuffer.vbWholeDataEnabled = false;
 ROVertexBuffer.dynBufSegEnabled = false;
@@ -27941,6 +28677,7 @@ class VtxCombinedBuf {
   constructor(bufDataUsage) {
     this.m_uid = -1;
     this.m_total = 0;
+    this.m_ver = 0;
     this.layoutBit = 0x0;
     this.m_offsetList = null;
     this.m_f32 = null;
@@ -27964,13 +28701,21 @@ class VtxCombinedBuf {
     return this.m_offsetList.length;
   }
 
+  getF32DataVerAt(index) {
+    // console.log("VtxCombinedBuf::getF32DataVerAt(), index: ",index, ", ver: ", this.m_ver);
+    return this.m_ver;
+  }
+
+  setF32DataVerAt(index, ver) {}
+
   getF32DataAt(index) {
     return this.m_f32;
   }
 
   setF32DataAt(index, float32Arr, stepFloatsTotal, setpOffsets) {
     if (setpOffsets != null) this.m_offsetList = setpOffsets;
-    this.m_f32Stride = stepFloatsTotal; //console.log("VtxCombinedBuf::setF32DataAt(),"+this+" m_f32.length: "+float32Arr.length+", this.m_f32PreSize: "+this.m_f32PreSize);
+    this.m_f32Stride = stepFloatsTotal;
+    this.m_ver++; //console.log("VtxCombinedBuf::setF32DataAt(),"+this+" m_f32.length: "+float32Arr.length+", this.m_f32PreSize: "+this.m_f32PreSize);
 
     this.m_f32 = float32Arr;
   }
@@ -28034,6 +28779,7 @@ Object.defineProperty(exports, "__esModule", {
 class ShaderCompileInfo {
   constructor() {
     this.info = "";
+    this.fragOutputTotal = 0;
   }
 
 }
@@ -28258,12 +29004,9 @@ function createImageCanvas(img, pw, ph) {
 }
 
 function createImageCanvasAlphaOffset(img, pw, ph) {
-  var canvas = document.createElement('canvas'); //document.body.appendChild(canvas);
-
+  var canvas = document.createElement('canvas');
   canvas.width = pw;
-  canvas.height = ph; //console.log("createImageCanvasAlphaOffset(). size: "+canvas.width+","+canvas.height);
-  //canvas.style.visibility = "hidden";
-
+  canvas.height = ph;
   canvas.style.backgroundColor = "transparent";
   canvas.style.display = "block";
   canvas.style.left = '0px';
@@ -28605,14 +29348,7 @@ class ImageTextureLoader {
     }
 
     return null;
-  } // addCallbackByUrl(purl:string, callback: () => void): void {
-  //     if(callback != null) {
-  //         let t = this.m_resMap.get(purl);
-  //         if (t != null) {
-  //         }
-  //     }
-  // }
-
+  }
 
   getImageTexByUrl(purl, mipLevel = 0, offsetTexEnabled = false, powerOf2Fix = false) {
     if (purl == "") {
@@ -28804,31 +29540,66 @@ class Default3DShaderCodeBuffer extends ShaderCodeBuffer_1.default {
     this.normalEnabled = false;
     this.vtxMatrixTransform = true;
     this.tns = "";
+    this.fragBodyTailCode = "\n";
+    this.fragHeadTailCode = "\n";
+    this.alignScreen = false;
+    this.fixAlignScreen = false;
+    this.mapLodEnabled = false;
+    this.fragUniformData = null;
   }
 
   initialize(texEnabled) {
     super.initialize(texEnabled);
     this.m_uniqueName = "VOX_Default3DShd";
-    if (this.m_texEnabled) this.m_uniqueName += "_tex";
-    if (this.vertColorEnabled) this.m_uniqueName += "_vtxColor";
-    if (this.premultiplyAlpha) this.m_uniqueName += "_preMulAlpha";
+    if (this.m_texEnabled) this.m_uniqueName += "Tex";
+    if (this.vertColorEnabled) this.m_uniqueName += "VtxColor";
+    if (this.premultiplyAlpha) this.m_uniqueName += "PreMulAlpha";
     this.adaptationShaderVersion = false;
+
+    if (this.fixAlignScreen) {
+      this.m_uniqueName += "FixAlScr";
+    } else if (this.alignScreen) {
+      this.m_uniqueName += "AlScr";
+    }
+
+    if (this.mapLodEnabled) {
+      this.m_uniqueName += "TLod";
+    }
+
+    if (this.fragUniformData) {
+      this.m_uniqueName += "FUDL" + this.fragUniformData.length;
+    }
   }
 
   buildShader() {
     let coder = this.m_coder;
     coder.addVertLayout("vec3", "a_vs");
-    coder.addFragUniform("vec4", "u_color");
+    coder.addFragUniform("vec4", "u_fragParams", 3);
+    coder.useVertSpaceMats(false, false, false);
+
+    if (this.fixAlignScreen) {
+      this.vtxMatrixTransform = false;
+      coder.addDefine("VOX_FIX_ALIGN_SCREEN");
+    } else if (this.alignScreen) {
+      this.vtxMatrixTransform = false;
+      coder.useVertSpaceMats(true, false, false);
+      coder.addDefine("VOX_ALIGN_SCREEN");
+    }
 
     if (this.vtxMatrixTransform) {
       coder.addDefine("VOX_VTX_MAT_TRANSFORM");
       coder.useVertSpaceMats(true, true, true);
-    } else {
-      coder.useVertSpaceMats(false, false, false);
     }
+
+    if (this.fragUniformData) {
+      coder.addFragUniform("vec4", "u_fragDatas", Math.floor(this.fragUniformData.length / 4));
+    }
+
+    coder.mapLodEnabled = false;
 
     if (this.m_texEnabled) {
       this.m_uniform.addDiffuseMap();
+      coder.mapLodEnabled = this.mapLodEnabled;
       coder.addVertLayout("vec2", "a_uvs");
       coder.addVarying("vec2", "v_uv");
       coder.addVertUniform("vec4", "u_uvTrans");
@@ -28840,6 +29611,7 @@ class Default3DShaderCodeBuffer extends ShaderCodeBuffer_1.default {
     /*
     coder.addVertHeadCode(
     `
+    //  FragColor0 *= VOX_Texture2D(VOX_DIFFUSE_MAP, vec2(v_uv[0],v_uv[1]));
     float calcValue(float px) {
     if(px > 1.0) {
     float t = fract(px);
@@ -28867,26 +29639,35 @@ class Default3DShaderCodeBuffer extends ShaderCodeBuffer_1.default {
     }
 
     coder.addFragOutput("vec4", "FragColor0");
+    coder.addFragHeadCode(this.fragHeadTailCode);
     coder.addFragMainCode(`
     FragColor0 = vec4(1.0);
     #ifdef VOX_USE_2D_MAP
-        //  FragColor0 *= VOX_Texture2D(VOX_DIFFUSE_MAP, vec2(v_uv[0],v_uv[1]));
-        FragColor0 *= VOX_Texture2D(VOX_DIFFUSE_MAP, v_uv.xy);
+        #ifdef VOX_Texture2DLod
+            vec4 color4 = VOX_Texture2DLod(VOX_DIFFUSE_MAP, v_uv, u_param[2].w);
+        #else
+            FragColor0 *= VOX_Texture2D(VOX_DIFFUSE_MAP, v_uv.xy);
+        #endif
     #endif
     #ifdef VOX_USE_VTX_COLOR
         FragColor0.xyz *= v_cv.xyz;
     #endif
+    vec4 param = u_fragParams[0];
+    vec4 offsetParam = u_fragParams[1];
     #ifdef VOX_PREMULTIPLY_ALPHA
-        FragColor0.rgb *= u_color.xyz;
-        FragColor0.a *= u_color.w;
-        FragColor0.rgb *= u_color.aaa;
+        FragColor0 *= param;
+        FragColor0.xyz += offsetParam.xyz;
+        param.w += offsetParam.w;
+        FragColor0.xyz *= param.www;
     #else
-        FragColor0 *= u_color;
+        FragColor0 *= param;
+        FragColor0 += offsetParam;
     #endif
     #ifdef VOX_USE_NORMAL
         float nDotL = max(dot(v_worldNormal.xyz, direc), 0.0);
         FragColor0.xyz = FragColor0.xyz * 0.7 + 0.3 * FragColor0.xyz * vec3(nDotL);
     #endif
+	${this.fragBodyTailCode}
 `);
     coder.addVertMainCode(`
     localPosition = vec4(a_vs.xyz,1.0);
@@ -28899,7 +29680,11 @@ class Default3DShaderCodeBuffer extends ShaderCodeBuffer_1.default {
             v_worldNormal = normalize( a_nvs.xyz * inverse(mat3(u_objMat)) );
         #endif
     #else
-        gl_Position = localPosition;
+        #ifdef VOX_ALIGN_SCREEN
+            gl_Position = u_objMat * localPosition;
+        #else
+            gl_Position = localPosition;
+        #endif
         #ifdef VOX_USE_NORMAL
             v_worldNormal = normalize( a_nvs.xyz );
         #endif
@@ -28923,14 +29708,20 @@ class Default3DShaderCodeBuffer extends ShaderCodeBuffer_1.default {
 class Default3DMaterial extends MaterialBase_1.default {
   constructor() {
     super();
-    this.m_data = new Float32Array([1.0, 1.0, 1.0, 1.0]);
+    this.m_data = new Float32Array([1.0, 1.0, 1.0, 1.0, 0, 0, 0, 0, 0, 0, 0, 0]);
     this.m_uvTrans = new Float32Array([0.0, 0.0, 1.0, 1.0]);
     this.name = "";
+    this.fragBodyTailCode = "";
+    this.fragHeadTailCode = "";
     this.vertColorEnabled = false;
     this.premultiplyAlpha = false;
     this.normalEnabled = false;
     this.shadowReceiveEnabled = false;
     this.vtxMatrixTransform = true;
+    this.alignScreen = false;
+    this.fixAlignScreen = false;
+    this.mapLodEnabled = false;
+    this.fragUniformData = null;
 
     if (Default3DMaterial.s_shdCodeBuffer == null) {
       Default3DMaterial.s_shdCodeBuffer = new Default3DShaderCodeBuffer();
@@ -28940,12 +29731,18 @@ class Default3DMaterial extends MaterialBase_1.default {
   buildBuf() {
     let buf = Default3DMaterial.s_shdCodeBuffer;
     buf.tns = this.name;
+    buf.fragBodyTailCode = this.fragBodyTailCode;
+    buf.fragHeadTailCode = this.fragHeadTailCode;
     buf.getShaderCodeBuilder().normalEnabled = this.normalEnabled;
     buf.vertColorEnabled = this.vertColorEnabled;
     buf.premultiplyAlpha = this.premultiplyAlpha;
     buf.normalEnabled = this.normalEnabled;
     buf.shadowReceiveEnabled = this.shadowReceiveEnabled;
     buf.vtxMatrixTransform = this.vtxMatrixTransform;
+    buf.alignScreen = this.alignScreen;
+    buf.fixAlignScreen = this.fixAlignScreen;
+    buf.mapLodEnabled = this.mapLodEnabled;
+    buf.fragUniformData = this.fragUniformData;
   }
   /**
    * get a shader code buf instance, for sub class override
@@ -29005,10 +29802,34 @@ class Default3DMaterial extends MaterialBase_1.default {
     color.fromArray4(this.m_data);
   }
 
+  setOffsetRGB3f(pr, pg, pb) {
+    this.m_data[4] = pr;
+    this.m_data[5] = pg;
+    this.m_data[6] = pb;
+  }
+
+  setOffsetRGBA4f(pr, pg, pb, pa) {
+    this.m_data[4] = pr;
+    this.m_data[5] = pg;
+    this.m_data[6] = pb;
+    this.m_data[7] = pa;
+  }
+
+  setTextureLodLevel(lodLv) {
+    this.m_data[11] = lodLv;
+  }
+
   createSelfUniformData() {
     let oum = new ShaderUniformData_1.default();
-    oum.uniformNameList = ["u_color", "u_uvTrans"];
-    oum.dataList = [this.m_data, this.m_uvTrans];
+
+    if (this.fragUniformData) {
+      oum.uniformNameList = ["u_fragParams", "u_uvTrans", "u_fragDatas"];
+      oum.dataList = [this.m_data, this.m_uvTrans, this.fragUniformData];
+    } else {
+      oum.uniformNameList = ["u_fragParams", "u_uvTrans"];
+      oum.dataList = [this.m_data, this.m_uvTrans];
+    }
+
     return oum;
   }
 
@@ -29178,6 +29999,7 @@ class ShaderCodeBuffer {
      */
 
     this.adaptationShaderVersion = true;
+    this.codeBuilderEnabled = true;
 
     if (ShaderCodeBuffer.s_coder == null) {
       ShaderCodeBuffer.s_uniform = new ShaderCodeUniform_1.ShaderCodeUniform();
@@ -29193,8 +30015,13 @@ class ShaderCodeBuffer {
     this.m_coder = ShaderCodeBuffer.s_coder;
     this.m_uniform = ShaderCodeBuffer.s_uniform;
     this.m_texBuilder = ShaderCodeBuffer.s_texBulder;
-    this.m_texture = this.m_uniform;
-    this.m_coder.reset();
+    this.m_texture = this.m_uniform; // console.log(">>>>>>>>> this.codeBuilderEnabled: ", this.codeBuilderEnabled);
+    // this.m_coder.
+    // if(this.codeBuilderEnabled) {
+    // 	this.m_coder.reset();
+    // }
+
+    this.m_coder.reset(this.codeBuilderEnabled);
     this.m_texList = null;
     this.pipeTypes = null;
     this.gamma = false;
@@ -29331,10 +30158,6 @@ class ShaderCodeBuffer {
     //if (ShaderCodeBuffer.__$s_csBuf != this) return ShaderCodeBuffer.__$s_csBuf.getUniqueShaderName();
     throw Error("Illgel operation !!!");
     return "";
-  }
-
-  toString() {
-    return "[ShaderCodeBuffer()]";
   }
 
 }
@@ -29685,10 +30508,6 @@ class BytesTextureProxy extends RawDataTextureProxy_1.default {
     super.getPixels(px, py, pw, ph, outBytes);
   }
 
-  toString() {
-    return "[BytesTextureProxy(width=" + this.getWidth() + ",height=" + this.getHeight() + ")]";
-  }
-
 }
 
 exports.default = BytesTextureProxy;
@@ -29733,7 +30552,7 @@ class ROIVertexBuffer {
     this.m_irdTotal = 0;
     this.m_irds = new Array(1);
     this.m_bufDataUsage = 0;
-    this.m_ibufStep = 2;
+    this.m_ivsUnitBytes = 2;
     this.layoutBit = 0x0;
     this.vertexVer = 0;
     this.indicesVer = 0;
@@ -29759,17 +30578,14 @@ class ROIVertexBuffer {
 
   getBufSortFormat() {
     return this.m_layoutBit;
-  } // getIBufStep(): number {
-  //     return this.m_ibufStep;
-  // }
-
+  }
 
   getBufDataUsage() {
     return this.m_bufDataUsage;
   }
 
   getIvsDataAt(index = 0) {
-    // console.log("FFFFFFFFFF 0 getIvsDataAt(), index: ", index);
+    // console.log("FFFFFFFFFF 0 getIvsDataAt(), index: ", index, ", this.m_irdTotal: ", this.m_irdTotal, this.m_irds);
     if (index >= 0 && index < this.m_irdTotal) {
       // console.log("FFFFFFFFFF 0 this.m_irds["+index+"]: ", this.m_irds[index]);
       return this.m_irds[index];
@@ -29781,11 +30597,14 @@ class ROIVertexBuffer {
   setIVSDataAt(data, index = 0) {
     // console.log("A index: ", index, ", XXXXX this.m_irds.length: ", this.m_irds.length);
     if (index < this.m_irds.length) {
-      if (this.m_irds[index]) {
-        this.m_irds[index].destroy();
-      }
+      if (this.m_irds[index] != data) {
+        if (this.m_irds[index]) {
+          this.m_irds[index].destroy();
+        }
 
-      this.m_irds[index] = data;
+        this.m_irds[index] = data;
+      } // console.log("A1 index: ", index, ", XXXXX  this.m_irds: ",  this.m_irds);
+
     } else {
       this.m_irds.push(data);
     }
@@ -29857,12 +30676,12 @@ class AABB {
     this.m_halfWidth = 50.0;
     this.m_halfHeight = 50.0;
     this.m_tempV = new Vector3D_1.default();
-    this.min = new Vector3D_1.default();
-    this.max = new Vector3D_1.default();
     this.version = -1;
     this.radius = 50;
     this.radius2 = 2500;
-    this.center = new Vector3D_1.default(0.0, 0.0, 0.0);
+    this.min = new Vector3D_1.default();
+    this.max = new Vector3D_1.default();
+    this.center = new Vector3D_1.default();
     this.reset();
   }
 
@@ -29879,12 +30698,10 @@ class AABB {
   }
 
   reset() {
-    const min = this.min;
-    const max = this.max;
-    let v = min;
-    v.x = v.y = v.z = MathConst_1.default.MATH_MAX_POSITIVE;
-    v = max;
-    v.x = v.y = v.z = MathConst_1.default.MATH_MIN_NEGATIVE;
+    const v0 = this.min;
+    const v1 = this.max;
+    v0.x = v0.y = v0.z = MathConst_1.default.MATH_MAX_POSITIVE;
+    v1.x = v1.y = v1.z = MathConst_1.default.MATH_MIN_NEGATIVE;
   }
 
   equals(ab) {
@@ -30166,6 +30983,14 @@ class TextureFormat {
         return gl.R8;
         break;
 
+      case tf.R16F:
+        return gl.R16F;
+        break;
+
+      case tf.R32F:
+        return gl.R32F;
+        break;
+
       case tf.RGB:
         return gl.RGB;
         break;
@@ -30230,6 +31055,8 @@ class TextureFormat {
 }
 
 TextureFormat.R8 = 101;
+TextureFormat.R16F = 102;
+TextureFormat.R32F = 102;
 TextureFormat.RGB = 110;
 TextureFormat.RED = 111;
 TextureFormat.RGBA = 121;

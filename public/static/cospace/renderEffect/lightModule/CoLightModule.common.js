@@ -269,6 +269,14 @@ class Color4 {
     return new Color4(this.r, this.g, this.b, this.a);
   }
 
+  gammaCorrect() {
+    const f = 1.0 / 2.2;
+    this.r = Math.pow(this.r, f);
+    this.g = Math.pow(this.g, f);
+    this.b = Math.pow(this.b, f);
+    return this;
+  }
+
   fromArray4(arr, offset = 0) {
     this.r = arr[offset];
     this.g = arr[offset + 1];
@@ -352,6 +360,11 @@ class Color4 {
     return this;
   }
 
+  setAlpha(a) {
+    this.a = a;
+    return this;
+  }
+
   copyFrom(c) {
     this.r = c.r;
     this.g = c.g;
@@ -382,12 +395,9 @@ class Color4 {
   }
 
   randomRGB(density = 1.0, bias = 0.0) {
-    this.r = Math.random() * density;
-    this.g = Math.random() * density;
-    this.b = Math.random() * density;
-    this.r += bias;
-    this.g += bias;
-    this.b += bias;
+    this.r = Math.random() * density + bias;
+    this.g = Math.random() * density + bias;
+    this.b = Math.random() * density + bias;
     return this;
   }
 
@@ -419,6 +429,15 @@ class Color4 {
       this.b = density * this.b / d;
     }
 
+    return this;
+  }
+
+  rgbSizeTo(size) {
+    let d = Math.sqrt(this.r * this.r + this.g * this.g + this.b * this.b);
+    d = size / d;
+    this.r *= d;
+    this.g *= d;
+    this.b *= d;
     return this;
   }
   /**
@@ -482,17 +501,6 @@ exports.default = Color4;
 
 "use strict";
 
-/***************************************************************************/
-
-/*                                                                         */
-
-/*  Copyright 2018-2022 by                                                 */
-
-/*  Vily(vily313@126.com)                                                  */
-
-/*                                                                         */
-
-/***************************************************************************/
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -836,6 +844,13 @@ class Vector3D {
 
   clone() {
     return new Vector3D(this.x, this.y, this.z, this.w);
+  }
+
+  abs() {
+    this.x = Math.abs(this.x);
+    this.y = Math.abs(this.y);
+    this.z = Math.abs(this.z);
+    return this;
   }
 
   setTo(px, py, pz, pw = 1.0) {

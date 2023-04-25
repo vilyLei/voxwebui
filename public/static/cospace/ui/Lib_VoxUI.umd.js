@@ -1647,13 +1647,9 @@ Object.defineProperty(exports, "__esModule", {
 const UIEntityBase_1 = __webpack_require__("0b77");
 
 class UIEntityContainer extends UIEntityBase_1.UIEntityBase {
-  constructor(init = false) {
+  constructor() {
     super();
     this.m_uientities = [];
-
-    if (init) {
-      this.init();
-    }
   }
 
   init() {
@@ -3347,8 +3343,6 @@ const VoxEntity_1 = __webpack_require__("9b53");
 
 const VoxMesh_1 = __webpack_require__("228b");
 
-const UIEntityContainer_1 = __webpack_require__("23ac");
-
 let __$$__init = true;
 
 function initialize() {
@@ -3426,12 +3420,6 @@ function createTextButton(width, height, idns, texAtlas, textParam, colors) {
 }
 
 exports.createTextButton = createTextButton;
-
-function createUIContainer() {
-  return new UIEntityContainer_1.UIEntityContainer(true);
-}
-
-exports.createUIContainer = createUIContainer;
 
 function createUIPanel() {
   return new UIPanel_1.UIPanel();

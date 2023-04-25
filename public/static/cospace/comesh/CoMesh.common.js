@@ -500,7 +500,6 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 class MeshVertex {
-  //
   constructor(px = 0, py = 0, pz = 0, pindex = 0) {
     // pos
     this.x = 0.0;
@@ -513,7 +512,8 @@ class MeshVertex {
     this.nx = 0.0;
     this.ny = 0.0;
     this.nz = 0.0;
-    this.index = 0; // pos
+    this.index = 0;
+    this.f = 0; // pos
 
     this.x = px;
     this.y = py;
@@ -528,6 +528,7 @@ class MeshVertex {
     vtx.nz = this.nz;
     vtx.u = this.u;
     vtx.v = this.v;
+    vtx.f = this.f;
     return vtx;
   }
 
@@ -541,6 +542,7 @@ class MeshVertex {
     this.ny = pv.ny;
     this.nz = pv.nz;
     this.index = pv.index;
+    this.f = pv.f;
   }
 
 }
@@ -2044,16 +2046,16 @@ class PlaneMeshBuilder extends MeshBuilder_1.MeshBuilder {
     return mesh;
   }
   /**
-   * @param px the default value is -1.0
-   * @param py the default value is -1.0
-   * @param pw the default value is 2.0
-   * @param ph the default value is 2.0
-   * @returns IRawMesh instance
+   * @param minX the default value is -1.0
+   * @param minY the default value is -1.0
+   * @param width the default value is 2.0
+   * @param height the default value is 2.0
+   * @returns a fix screen xoy plane mesh
    */
 
 
-  createFixScreen(px = -1.0, py = -1.0, pw = 2.0, ph = 2.0) {
-    return this.createXOY(-1.0, -1.0, 2.0, 2.0);
+  createFixScreen(minX = -1.0, minY = -1.0, width = 2.0, height = 2.0) {
+    return this.createXOY(minX, minY, width, height);
   }
   /**
    * create a rectangle plane ,and it parallel the 3d space XOY plane

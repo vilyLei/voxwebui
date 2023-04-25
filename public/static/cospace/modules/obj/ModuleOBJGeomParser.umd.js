@@ -234,8 +234,11 @@ class ModuleOBJGeomParser extends BaseTaskInThread_1.BaseTaskInThread {
       let len = objMeshes.length;
 
       for (let i = 0; i < len; ++i) {
-        const geom = objMeshes[i].geometry;
+        const mesh = objMeshes[i];
+        const geom = mesh.geometry; // console.log("objMeshes["+i+"]: ", objMeshes[i]);
+
         const model = this.createModel(geom);
+        model.uuid = mesh.name;
 
         if (model.vertices != null) {
           transfers.push(model.indices);

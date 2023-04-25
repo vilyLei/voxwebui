@@ -124,7 +124,7 @@ class RCExtension {
 
     if (webVer == 1) {
       //#extension OES_standard_derivatives : enable
-      selfT.OES_standard_derivatives = gl.getExtension('OES_standard_derivatives');
+      selfT.OES_standard_derivatives = gl.getExtension("OES_standard_derivatives");
       if (selfT.OES_standard_derivatives != null) console.log("Use OES_standard_derivatives Extension success!");else console.log("OES_standard_derivatives Extension can not support!"); //#extension GL_EXT_shader_texture_lod : enable, for example: textureCubeLodEXT(envMap, dir, mipLv)
       // vec4 texture2DLodEXT(sampler2D sampler, vec2 coord, float lod)
       // vec4 texture2DProjLodEXT(sampler2D sampler, vec3 coord, float lod)
@@ -135,69 +135,62 @@ class RCExtension {
       // vec4 texture2DProjGradEXT(sampler2D sampler, vec4 P, vec2 dPdx, vec2 dPdy)
       // vec4 textureCubeGradEXT(samplerCube sampler, vec3 P, vec3 dPdx, vec3 dPdy)
 
-      selfT.EXT_shader_texture_lod = gl.getExtension('EXT_shader_texture_lod');
+      selfT.EXT_shader_texture_lod = gl.getExtension("EXT_shader_texture_lod");
       if (selfT.EXT_shader_texture_lod != null) console.log("Use EXT_shader_texture_lod Extension success!");else console.log("EXT_shader_texture_lod Extension can not support!");
       /*
       <script type="x-shader/x-fragment">
       #extension GL_EXT_shader_texture_lod : enable
       #extension GL_OES_standard_derivatives : enable
-      
       uniform sampler2D myTexture;
       varying vec2 texcoord;
-      
       void main(){
-        gl_FragColor = texture2DGradEXT(myTexture, mod(texcoord, vec2(0.1, 0.5)),
-                                        dFdx(texcoord), dFdy(texcoord));
+      gl_FragColor = texture2DGradEXT(myTexture, mod(texcoord, vec2(0.1, 0.5)),
+                            dFdx(texcoord), dFdy(texcoord));
       }
       </script>
       */
 
-      selfT.WEBGL_draw_buffers = gl.getExtension('WEBGL_draw_buffers');
+      selfT.WEBGL_draw_buffers = gl.getExtension("WEBGL_draw_buffers");
       if (selfT.WEBGL_draw_buffers != null) console.log("Use WEBGL_draw_buffers Extension success!");else console.log("WEBGL_draw_buffers Extension can not support!"); //DivLog.ShowLog("selfT.WEBGL_draw_buffers != null: "+(selfT.WEBGL_draw_buffers != null));
 
-      selfT.OES_vertex_array_object = gl.getExtension('OES_vertex_array_object');
+      selfT.OES_vertex_array_object = gl.getExtension("OES_vertex_array_object");
       if (selfT.OES_vertex_array_object != null) console.log("Use OES_vertex_array_object Extension success!");else console.log("OES_vertex_array_object Extension can not support!");
-      selfT.ANGLE_instanced_arrays = gl.getExtension('ANGLE_instanced_arrays');
+      selfT.ANGLE_instanced_arrays = gl.getExtension("ANGLE_instanced_arrays");
       if (selfT.ANGLE_instanced_arrays != null) console.log("Use ANGLE_instanced_arrays Extension success!");else console.log("ANGLE_instanced_arrays Extension can not support!");
-      selfT.EXT_color_buffer_float = gl.getExtension('EXT_color_buffer_float');
+      selfT.EXT_color_buffer_float = gl.getExtension("EXT_color_buffer_float");
       if (selfT.EXT_color_buffer_float != null) console.log("Use EXT_color_buffer_float Extension success!");else console.log("EXT_color_buffer_float Extension can not support!");
-      selfT.EXT_color_buffer_half_float = gl.getExtension('EXT_color_buffer_half_float');
+      selfT.EXT_color_buffer_half_float = gl.getExtension("EXT_color_buffer_half_float");
       if (selfT.EXT_color_buffer_half_float != null) console.log("Use EXT_color_buffer_half_float Extension success!");else console.log("EXT_color_buffer_half_float Extension can not support!");
-      selfT.OES_texture_half_float = gl.getExtension('OES_texture_half_float');
+      selfT.OES_texture_half_float = gl.getExtension("OES_texture_half_float");
       if (selfT.OES_texture_half_float != null) console.log("Use OES_texture_half_float Extension success!");else console.log("OES_texture_half_float Extension can not support!");
-      selfT.OES_texture_half_float_linear = gl.getExtension('OES_texture_half_float_linear');
+      selfT.OES_texture_half_float_linear = gl.getExtension("OES_texture_half_float_linear");
       if (selfT.OES_texture_half_float_linear != null) console.log("Use OES_texture_half_float_linear Extension success!");else console.log("OES_texture_half_float_linear Extension can not support!");
-      selfT.OES_texture_float = gl.getExtension('OES_texture_float');
+      selfT.OES_texture_float = gl.getExtension("OES_texture_float");
       if (selfT.OES_texture_float != null) console.log("Use OES_texture_float Extension success!");else console.log("OES_texture_float Extension can not support!"); //
 
-      selfT.OES_element_index_uint = gl.getExtension('OES_element_index_uint');
+      selfT.OES_element_index_uint = gl.getExtension("OES_element_index_uint");
       if (selfT.OES_element_index_uint != null) console.log("Use OES_element_index_uint Extension success!");else console.log("OES_element_index_uint Extension can not support!"); //EXT_blend_minmax
 
-      selfT.EXT_blend_minmax = gl.getExtension('EXT_blend_minmax');
+      selfT.EXT_blend_minmax = gl.getExtension("EXT_blend_minmax");
       if (selfT.EXT_blend_minmax != null) console.log("Use EXT_blend_minmax Extension success!");else console.log("EXT_blend_minmax Extension can not support!");
     } else {
-      //  selfT.OES_standard_derivatives = gl.getExtension('OES_standard_derivatives');
-      //  if(selfT.OES_standard_derivatives != null)
-      //  console.log("Use OES_standard_derivatives Extension success!");
-      //  else
-      //  console.log("OES_standard_derivatives Extension can not support!");
-      selfT.EXT_shader_texture_lod = gl.getExtension('EXT_shader_texture_lod');
+      selfT.EXT_shader_texture_lod = gl.getExtension("EXT_shader_texture_lod");
       if (selfT.EXT_shader_texture_lod != null) console.log("Use EXT_shader_texture_lod Extension success!");else console.log("EXT_shader_texture_lod Extension can not support!");
-      selfT.EXT_color_buffer_half_float = gl.getExtension('EXT_color_buffer_half_float');
+      selfT.EXT_color_buffer_half_float = gl.getExtension("EXT_color_buffer_half_float");
       if (selfT.EXT_color_buffer_half_float != null) console.log("Use EXT_color_buffer_half_float Extension success!");else console.log("EXT_color_buffer_half_float Extension can not support!");
-      selfT.OES_texture_half_float_linear = gl.getExtension('OES_texture_half_float_linear');
+      selfT.OES_texture_half_float_linear = gl.getExtension("OES_texture_half_float_linear");
       if (selfT.OES_texture_half_float_linear != null) console.log("Use OES_texture_half_float_linear Extension success!");else console.log("OES_texture_half_float_linear Extension can not support!");
-      selfT.EXT_color_buffer_float = gl.getExtension('EXT_color_buffer_float');
+      selfT.EXT_color_buffer_float = gl.getExtension("EXT_color_buffer_float");
       if (selfT.EXT_color_buffer_float != null) console.log("Use EXT_color_buffer_float Extension success!");else console.log("EXT_color_buffer_float Extension can not support!");
     }
 
-    selfT.OES_texture_float_linear = gl.getExtension('OES_texture_float_linear');
+    selfT.OES_texture_float_linear = gl.getExtension("OES_texture_float_linear");
     if (selfT.OES_texture_float_linear != null) console.log("Use OES_texture_float_linear Extension success!");else console.log("OES_texture_float_linear Extension can not support!");
-    selfT.WEBGL_depth_texture = gl.getExtension('WEBGL_depth_texture');
+    selfT.WEBGL_depth_texture = gl.getExtension("WEBGL_depth_texture");
     if (selfT.WEBGL_depth_texture != null) console.log("Use WEBGL_depth_texture Extension success!");else console.log("WEBGL_depth_texture Extension can not support!");
-    selfT.WEBGL_debug_renderer_info = gl.getExtension('WEBGL_debug_renderer_info');
-    if (selfT.WEBGL_debug_renderer_info != null) console.log("Use WEBGL_debug_renderer_info Extension success!");else console.log("WEBGL_debug_renderer_info Extension can not support!"); //
-    //console.log("RCExtension.WEBGL_depth_texture: ",RCExtension.WEBGL_depth_texture);
+    selfT.WEBGL_debug_renderer_info = gl.getExtension("WEBGL_debug_renderer_info");
+    if (selfT.WEBGL_debug_renderer_info != null) console.log("Use WEBGL_debug_renderer_info Extension success!");else console.log("WEBGL_debug_renderer_info Extension can not support!");
+    console.log("RCExtension.Initialize(), gl: ", gl);
   }
 
 }
@@ -404,7 +397,7 @@ const AABB2D_1 = __importDefault(__webpack_require__("e2fe"));
 
 class RAdapterContext {
   constructor() {
-    this.m_mouseEvtDisplather = new ContextMouseEvtDispatcher_1.default();
+    this.m_sysEvt = new ContextMouseEvtDispatcher_1.default();
     this.m_div = null;
     this.m_canvas = null;
     this.m_scissorEnabled = false;
@@ -416,14 +409,17 @@ class RAdapterContext {
     this.m_viewPortRect = new AABB2D_1.default(0, 0, 800, 600);
     this.m_maxWebGLVersion = 2;
     this.m_webGLVersion = 2;
-    this.m_devicePixelRatio = 1.0;
+    this.m_dpr = 1.0;
     this.m_viewEle = new RViewElement_1.default(); // display 3d view buf size auto sync window size
 
     this.autoSyncRenderBufferAndWindowSize = true;
     this.offscreenRenderEnabled = false;
     this.bodyBgColor = "";
+    this.m_ctxAttri = null;
+    this.m_glVersion = 0;
+    this.m_param = null;
     this.m_resizeFlag = true;
-    this.m_WEBGL_lose_context = null;
+    this.m_glLoseCtx = null;
     this.m_displayWidth = 0;
     this.m_displayHeight = 0;
     this.m_rcanvasWidth = 0;
@@ -442,12 +438,7 @@ class RAdapterContext {
   }
 
   syncHtmlBodyColor(r, g, b) {
-    // if(document) {
-    this.bodyBgColor = this.m_viewEle.getCSSHEXRGB(r, g, b); // let value = this.m_viewEle.getCSSHEXRGB(r, g, b);
-    // const body = document.body;
-    // body.style.background = value;
-    // console.log("syncHtmlBodyColor(), this.bodyBgColor: ", this.bodyBgColor);
-    // }
+    this.bodyBgColor = this.m_viewEle.getCSSHEXRGB(r, g, b);
   }
 
   setWebGLMaxVersion(webgl_ver) {
@@ -464,16 +455,16 @@ class RAdapterContext {
     return this.m_div;
   }
 
+  getCanvas() {
+    return this.m_offcanvas ? this.m_offcanvas : this.m_canvas;
+  }
+
   setDivStyleLeftAndTop(px, py) {
     this.m_viewEle.setDivStyleLeftAndTop(px, py);
   }
 
   setDivStyleSize(pw, ph) {
     this.m_viewEle.setDivStyleSize(pw, ph);
-  }
-
-  getCanvas() {
-    return this.m_canvas;
   }
 
   isDepthTestEnabled() {
@@ -484,13 +475,66 @@ class RAdapterContext {
     return this.m_stencilTestEnabled;
   }
 
+  buildGLCtx(canvas, attr) {
+    this.m_gl = null;
+    let offscreen = null;
+
+    if (this.offscreenRenderEnabled) {
+      if (!(canvas instanceof OffscreenCanvas)) {
+        offscreen = canvas.transferControlToOffscreen();
+        canvas = offscreen;
+      }
+    }
+
+    this.m_offcanvas = offscreen = canvas;
+
+    if (this.m_maxWebGLVersion == 2) {
+      this.m_gl = offscreen == null ? canvas.getContext('webgl2', attr) : offscreen.getContext('webgl2', attr);
+
+      if (this.m_gl) {
+        console.log("Use WebGL2 success!");
+        this.m_webGLVersion = 2;
+      } else {
+        console.log("WebGL2 can not support!");
+      }
+    }
+
+    if (this.m_gl == null) {
+      if (offscreen == null) {
+        this.m_gl = canvas.getContext('webgl', attr) || canvas.getContext("experimental-webgl", attr);
+      } else {
+        this.m_gl = offscreen.getContext('webgl', attr) || offscreen.getContext("experimental-webgl", attr);
+      }
+
+      if (this.m_gl != null) {
+        console.log("Use WebGL1 success!");
+        this.m_webGLVersion = 1;
+      } else {
+        console.log("WebGL1 can not support!");
+      }
+    }
+
+    if (!this.m_gl) {
+      this.m_webGLVersion = -1;
+      alert('Unable to initialize WebGL. Your browser or machine may not support it.');
+      throw Error("WebGL initialization failure.");
+    }
+
+    this.m_gl.version = this.m_glVersion;
+    canvas.version = this.m_glVersion;
+    this.m_glVersion++;
+    canvas.addEventListener('webglcontextrestored', this.contextrestoredHandler, false);
+    canvas.addEventListener('webglcontextlost', this.contextlostHandler, false);
+    RCExtension_1.default.Initialize(this.m_webGLVersion, this.m_gl);
+  }
+
   initialize(rcuid, stage, param) {
     this.m_stage = stage;
     var pdocument = null;
     var pwindow = null;
 
     try {
-      if (document != undefined) {
+      if (document) {
         pdocument = document;
         pwindow = window;
       }
@@ -498,17 +542,19 @@ class RAdapterContext {
       console.log("RAdapterContext::initialize(), document is undefined.");
     }
 
+    this.m_param = param;
+
     if (pdocument != null) {
+      this.m_dpr = window.devicePixelRatio;
       let div = param.getDiv();
-      const rattr = param.getRenderContextAttri();
-      this.m_devicePixelRatio = window.devicePixelRatio;
-      RendererDevice_1.default.SetDevicePixelRatio(this.m_devicePixelRatio);
+      RendererDevice_1.default.SetDevicePixelRatio(this.m_dpr);
       this.m_viewEle.setDiv(div);
-      this.m_viewEle.createViewEle(pdocument, this.autoSyncRenderBufferAndWindowSize, param.divW, param.divH);
+      this.m_viewEle.createViewEle(pdocument, this.autoSyncRenderBufferAndWindowSize, param.divW, param.divH, param.autoAttachingHtmlDoc, this.offscreenRenderEnabled);
       this.m_div = div = this.m_viewEle.getDiv();
       let canvas = this.m_canvas = this.m_viewEle.getCanvas();
-      this.m_devicePixelRatio = window.devicePixelRatio;
-      this.m_mouseEvtDisplather.dpr = this.m_devicePixelRatio;
+      this.m_dpr = window.devicePixelRatio;
+      this.m_sysEvt.dpr = this.m_dpr;
+      const rattr = param.getRenderContextAttri();
       let attr = rattr;
 
       if (rattr == null) {
@@ -526,52 +572,14 @@ class RAdapterContext {
         this.m_stencilTestEnabled = attr.stencil;
       }
 
-      console.log("this.m_devicePixelRatio: ", this.m_devicePixelRatio, ",rattr == null: ", rattr == null);
+      this.m_ctxAttri = attr;
+      console.log("offscreenRenderEnabled: ", this.offscreenRenderEnabled);
+      console.log("this.m_dpr: ", this.m_dpr, ",rattr == null: ", rattr == null);
       console.log("depthTestEnabled: ", attr.depth);
       console.log("stencilTestEnabled: ", attr.stencil);
       console.log("antialiasEnabled: ", attr.antialias);
       console.log("alphaEnabled: ", attr.alpha);
-      let offscreen = null;
-
-      if (this.offscreenRenderEnabled) {
-        offscreen = canvas.transferControlToOffscreen();
-      }
-
-      this.m_offcanvas = offscreen;
-
-      if (this.m_maxWebGLVersion == 2) {
-        this.m_gl = offscreen == null ? canvas.getContext('webgl2', attr) : offscreen.getContext('webgl2', attr);
-
-        if (this.m_gl != null) {
-          console.log("Use WebGL2 success!");
-          this.m_webGLVersion = 2;
-        } else {
-          console.log("WebGL2 can not support!");
-        }
-      }
-
-      if (this.m_gl == null) {
-        if (offscreen == null) {
-          this.m_gl = canvas.getContext('webgl', attr) || canvas.getContext("experimental-webgl", attr);
-        } else {
-          this.m_gl = offscreen.getContext('webgl', attr) || offscreen.getContext("experimental-webgl", attr);
-        }
-
-        if (this.m_gl != null) {
-          console.log("Use WebGL1 success!");
-          this.m_webGLVersion = 1;
-        } else {
-          console.log("WebGL1 can not support!");
-        }
-      }
-
-      if (!this.m_gl) {
-        this.m_webGLVersion = -1;
-        alert('Unable to initialize WebGL. Your browser or machine may not support it.');
-        throw Error("WebGL initialization failure.");
-        return;
-      }
-
+      this.buildGLCtx(canvas, attr);
       let gl = this.m_gl;
       gl.rcuid = rcuid;
       let glStencilFunc = RenderConst_1.GLStencilFunc;
@@ -618,10 +626,8 @@ class RAdapterContext {
       let viewPortIMS = this.m_gl.getParameter(this.m_gl.MAX_VIEWPORT_DIMS);
       device.MAX_VIEWPORT_WIDTH = viewPortIMS[0];
       device.MAX_VIEWPORT_HEIGHT = viewPortIMS[1];
-      RCExtension_1.default.Initialize(this.m_webGLVersion, this.m_gl);
       RendererDevice_1.default.Initialize([this.m_webGLVersion]);
-      console.log("RadapterContext stage: ", stage);
-      if (stage != null) this.m_mouseEvtDisplather.initialize(canvas, div, stage); //  console.log("viewPortIMS: ",viewPortIMS);
+      console.log("RadapterContext stage: ", stage); //  console.log("viewPortIMS: ",viewPortIMS);
 
       console.log("MAX_TEXTURE_SIZE: ", RendererDevice_1.default.MAX_TEXTURE_SIZE);
       console.log("IsMobileWeb: ", RendererDevice_1.default.IsMobileWeb());
@@ -640,9 +646,9 @@ class RAdapterContext {
 
       let debugInfo = RCExtension_1.default.WEBGL_debug_renderer_info;
 
-      if (debugInfo != null) {
-        let webgl_vendor = this.m_gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
-        let webgl_renderer = this.m_gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+      if (debugInfo) {
+        let webgl_vendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
+        let webgl_renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
         device.GPU_VENDOR = webgl_vendor;
         device.GPU_RENDERER = webgl_renderer;
         console.log("webgl_vendor: ", webgl_vendor);
@@ -655,28 +661,48 @@ class RAdapterContext {
 
       }
 
-      pwindow.onresize = evt => {
-        if (this.autoSyncRenderBufferAndWindowSize) {
-          this.m_resizeFlag = true;
-          this.updateRenderBufferSize();
-        }
-      };
-
-      canvas.addEventListener('webglcontextrestored', this.contextrestoredHandler, false);
-      canvas.addEventListener('webglcontextlost', this.contextlostHandler, false);
+      this.initEvt();
       this.updateRenderBufferSize();
     } else {
       console.log("initialize WebGL failure!");
     }
   }
 
-  loseContext() {
-    if (this.m_WEBGL_lose_context == null) {
-      this.m_WEBGL_lose_context = this.m_gl.getExtension('WEBGL_lose_context');
+  setCanvas(canvas) {
+    let c0 = this.m_canvas;
+    this.m_viewEle.setCanvas(canvas);
+    let c1 = this.m_viewEle.getCanvas();
+
+    if (c0 != c1) {
+      this.m_offcanvas = null;
+      this.m_canvas = c1;
+      this.buildGLCtx(c1, this.m_ctxAttri);
+      this.m_glLoseCtx = null;
+      this.initEvt();
     }
 
-    if (this.m_WEBGL_lose_context == null) {
-      this.m_WEBGL_lose_context.loseContext();
+    return c0 != c1;
+  }
+
+  initEvt() {
+    if (this.m_param.sysEvtReceived) {
+      this.m_sysEvt.initialize(this.m_canvas, this.m_div, this.m_stage);
+
+      let winOnresize = evt => {
+        if (this.autoSyncRenderBufferAndWindowSize) {
+          this.m_resizeFlag = true;
+          this.updateRenderBufferSize();
+        }
+      };
+
+      this.m_sysEvt.sysEvt.addWindowResizeEvt(this, winOnresize);
+    }
+  }
+
+  loseContext() {
+    if (!this.m_glLoseCtx) {
+      this.m_glLoseCtx = this.m_gl.getExtension('WEBGL_lose_context');
+      this.m_glLoseCtx.loseContext();
     }
   }
   /**
@@ -711,7 +737,7 @@ class RAdapterContext {
   }
 
   setScissorRect(px, py, pw, ph) {
-    //this.m_gl.scissor(Math.floor(px*this.m_devicePixelRatio),Math.floor(py*this.m_devicePixelRatio), pw,ph);
+    //this.m_gl.scissor(Math.floor(px*this.m_dpr),Math.floor(py*this.m_dpr), pw,ph);
     this.m_gl.scissor(px, py, pw, ph);
   }
 
@@ -720,25 +746,43 @@ class RAdapterContext {
   }
 
   getDevicePixelRatio() {
-    return this.m_devicePixelRatio;
+    return this.m_dpr;
   }
+  /**
+   * @param pw buffer div width
+   * @param ph buffer div height
+   * @param sync the default value is true
+   */
 
-  resizeBufferSize(pw, ph) {
-    pw = Math.floor(pw);
-    ph = Math.floor(ph);
-    let k = window.devicePixelRatio;
-    let dprChanged = Math.abs(k - this.m_devicePixelRatio) > 0.01 || this.m_resizeFlag;
-    this.m_devicePixelRatio = k;
-    this.m_mouseEvtDisplather.dpr = k;
-    RendererDevice_1.default.SetDevicePixelRatio(this.m_devicePixelRatio); // console.log("this.m_devicePixelRatio: "+this.m_devicePixelRatio);
 
+  resizeBufferSize(pw, ph, sync = true) {
+    if (sync) {
+      pw = Math.round(pw * 0.5) * 2;
+      ph = Math.round(ph * 0.5) * 2;
+    } else {
+      pw = Math.round(pw);
+      ph = Math.round(ph);
+    }
+
+    let k = sync ? window.devicePixelRatio : 1.0;
+    let dprChanged = Math.abs(k - this.m_dpr) > 0.01 || this.m_resizeFlag;
+    this.m_dpr = k;
+    this.m_sysEvt.dpr = k;
+    RendererDevice_1.default.SetDevicePixelRatio(this.m_dpr);
+    console.log("window.devicePixelRatio: ", this.m_dpr, ", sync: ", sync, ", this.m_dpr: ", this.m_dpr);
     this.m_resizeFlag = false;
 
     if (this.m_displayWidth != pw || this.m_displayHeight != ph || dprChanged) {
       this.m_displayWidth = pw;
       this.m_displayHeight = ph;
-      this.m_rcanvasWidth = Math.floor(pw * k);
-      this.m_rcanvasHeight = Math.floor(ph * k);
+
+      if (sync) {
+        this.m_rcanvasWidth = Math.round(pw * k * 0.5) * 2;
+        this.m_rcanvasHeight = Math.round(ph * k * 0.5) * 2;
+      } else {
+        this.m_rcanvasWidth = Math.round(pw * k);
+        this.m_rcanvasHeight = Math.round(ph * k);
+      }
 
       if (this.m_offcanvas == null) {
         this.m_canvas.width = this.m_rcanvasWidth;
@@ -750,25 +794,26 @@ class RAdapterContext {
 
       this.m_canvas.style.width = this.m_displayWidth + 'px';
       this.m_canvas.style.height = this.m_displayHeight + 'px';
+      const st = this.m_stage;
 
-      if (this.m_stage != null) {
-        this.m_stage.stageWidth = this.m_rcanvasWidth;
-        this.m_stage.stageHeight = this.m_rcanvasHeight;
-        this.m_stage.viewWidth = this.m_displayWidth;
-        this.m_stage.viewHeight = this.m_displayHeight;
-        this.m_stage.pixelRatio = k;
-        console.log("size to stage size: ", this.m_stage.stageWidth, this.m_stage.stageHeight);
-        console.log("size to view size: ", this.m_stage.viewWidth, this.m_stage.viewHeight); //  DivLog.ShowLogOnce("stageSize: "+this.m_stage.stageWidth+","+this.m_stage.stageHeight);
+      if (st) {
+        st.stageWidth = this.m_rcanvasWidth;
+        st.stageHeight = this.m_rcanvasHeight;
+        st.viewWidth = this.m_displayWidth;
+        st.viewHeight = this.m_displayHeight;
+        st.pixelRatio = k;
+        console.log("size to stage size: ", st.stageWidth, st.stageHeight);
+        console.log("size to view size: ", st.viewWidth, st.viewHeight); //  DivLog.ShowLogOnce("stageSize: "+this.m_stage.stageWidth+","+this.m_stage.stageHeight);
         //  DivLog.ShowLog("canvasSize: "+this.m_canvas.width+","+this.m_canvas.height);
         //  DivLog.ShowLog("dispSize: "+this.m_displayWidth+","+this.m_displayHeight);
-        //  DivLog.ShowLog("pixelRatio:"+this.m_devicePixelRatio);
+        //  DivLog.ShowLog("pixelRatio:"+this.m_dpr);
         //  console.log("display size: "+this.m_displayWidth+","+this.m_displayHeight);
         //  console.log("RAdapterContext::resize(), canvas.width:"+this.m_canvas.width+", canvas.height:"+this.m_canvas.height);
         //  console.log("RAdapterContext::resize(), stageWidth:"+this.m_stage.stageWidth+", stageHeight:"+this.m_stage.stageHeight);
         //  console.log("RAdapterContext::resize(), m_rcanvasWidth:"+this.m_rcanvasWidth+", m_rcanvasHeight:"+this.m_rcanvasHeight);
         //  console.log("RAdapterContext::resize(), stw:"+this.m_stage.stageWidth+", sth:"+this.m_stage.stageHeight);
 
-        this.m_stage.update();
+        st.update();
       }
 
       if (this.m_resizeCallback != null) {
@@ -844,14 +889,25 @@ class RAdapterContext {
   getRCanvasHeight() {
     return this.m_rcanvasHeight;
   }
+  /**
+   * @param sync the default value is true
+   */
 
-  updateRenderBufferSize() {
-    let rect = this.m_div.getBoundingClientRect();
-    console.log("updateRenderBufferSize() rect.width, rect.height: ", rect.width, rect.height);
-    this.m_canvas.style.width = Math.floor(rect.width) + 'px';
-    this.m_canvas.style.height = Math.floor(rect.height) + 'px';
-    rect = this.m_div.getBoundingClientRect();
-    this.resizeBufferSize(rect.width, rect.height);
+
+  updateRenderBufferSize(sync = true) {
+    const div = this.m_div;
+
+    if (div.parentElement) {
+      let rect = div.getBoundingClientRect(); // console.log("updateRenderBufferSize() rect.width, rect.height: ", rect.width, rect.height);
+      // this.m_canvas.style.width = Math.floor(rect.width) + 'px';
+      // this.m_canvas.style.height = Math.floor(rect.height) + 'px';
+
+      rect = div.getBoundingClientRect();
+      this.resizeBufferSize(rect.width, rect.height);
+    } else {
+      const canvas = this.m_offcanvas ? this.m_offcanvas : this.m_canvas;
+      this.resizeBufferSize(canvas.width, canvas.height, false);
+    }
   }
 
 }
@@ -889,27 +945,124 @@ Object.defineProperty(exports, "__esModule", {
 
 const RendererDevice_1 = __importDefault(__webpack_require__("3b73"));
 
+class SysEvtNode {
+  constructor() {
+    this.ls = [];
+    this.funcs = [];
+  }
+
+  add(l, func) {
+    let i = 0;
+    let ls = this.ls;
+
+    for (; i < this.ls.length; ++i) {
+      if (l == ls[i]) {
+        break;
+      }
+    }
+
+    if (i >= this.ls.length) {
+      ls.push(l);
+      this.funcs.push(func);
+    }
+  }
+
+  remove(l) {
+    let ls = this.ls;
+
+    for (let i = 0; i < this.ls.length; ++i) {
+      if (l == ls[i]) {
+        ls.splice(i, 1);
+        this.funcs.splice(i, 1);
+        break;
+      }
+    }
+  }
+
+  run(evt) {
+    for (let i = 0; i < this.ls.length; ++i) {
+      this.funcs[i](evt);
+    }
+  }
+
+}
+
+class SysEvtMana {
+  constructor() {
+    this.evts = null;
+  }
+
+  init() {
+    if (this.evts == null) {
+      this.evts = [];
+
+      for (let i = 0; i < 2; ++i) {
+        this.evts.push(new SysEvtNode()); // [new SysEvtNode(), new SysEvtNode()]
+      }
+    }
+
+    var pdocument = null;
+    var pwindow = null;
+
+    if (document) {
+      pdocument = document;
+      pwindow = window;
+
+      pdocument.onmouseup = evt => {
+        this.evts[1].run(evt);
+      };
+    }
+
+    if (pwindow) {
+      pwindow.onresize = evt => {
+        this.evts[0].run(evt);
+      };
+    }
+  }
+
+  addWindowResizeEvt(l, func) {
+    this.evts[0].add(l, func);
+  }
+
+  removeWindowResizeEvt(l) {
+    this.evts[0].remove(l);
+  }
+
+  addDocMouUpEvt(l, func) {
+    this.evts[1].add(l, func);
+  }
+
+  removeDocMouUpEvt(l) {
+    this.evts[1].remove(l);
+  }
+
+}
+
 class ContextMouseEvtDispatcher {
   constructor() {
     this.m_singleDown = false;
     this.m_mouseX = 0;
     this.m_mouseY = 0;
     this.m_mouseClickTime = 0;
+    this.sysEvt = null;
     this.dpr = 1.0;
+    this.m_canvas = null;
+    this.sysEvt = ContextMouseEvtDispatcher.s_sevt;
+    this.sysEvt.init();
   }
 
   initMobile(canvas, div, stage) {
     var pdocument = null;
 
     try {
-      if (document != undefined) {
+      if (document) {
         pdocument = document;
       }
     } catch (err) {
       console.log("ContextMouseEvtDispatcher::initMobile(), document is undefined.");
     }
 
-    if (pdocument != null) {
+    if (pdocument) {
       let selfT = this;
       div.addEventListener('touchstart', evt => {
         /*
@@ -1050,6 +1203,16 @@ class ContextMouseEvtDispatcher {
   initPC(canvas, div, stage) {
     var pdocument = null;
 
+    if (this.m_canvas != null) {
+      let pcanvas = this.m_canvas;
+      pcanvas.onmousewheel = null;
+      pcanvas.onmousedown = null;
+      pcanvas.onmouseup = null;
+      pcanvas.onmousemove = null;
+      pcanvas.onclick = null;
+      pcanvas.canvas = null;
+    }
+
     try {
       if (document != undefined) {
         pdocument = document;
@@ -1059,6 +1222,8 @@ class ContextMouseEvtDispatcher {
     }
 
     if (pdocument != null) {
+      this.m_canvas = canvas;
+
       if (canvas.onmousewheel == undefined && canvas.addEventListener != undefined) {
         //use firefox browser mousewheel evt
         let func = function (evt) {
@@ -1110,9 +1275,20 @@ class ContextMouseEvtDispatcher {
         } else if (evt.button == 2) {
           stage.mouseRightUp(1);
         }
-      };
+      }; // document.onmouseup = (evt: any): void => {
+      //     if (evt.button == 0) {
+      //         stage.mouseWindowUp(1);
+      //     }
+      //     else if (evt.button == 1) {
+      //         // stage.mouseMiddleUp();
+      //     }
+      //     else if (evt.button == 2) {
+      //         stage.mouseWindowRightUp(1);
+      //     }
+      // }
 
-      document.onmouseup = evt => {
+
+      let docOnmouseup = evt => {
         if (evt.button == 0) {
           stage.mouseWindowUp(1);
         } else if (evt.button == 1) {// stage.mouseMiddleUp();
@@ -1120,6 +1296,8 @@ class ContextMouseEvtDispatcher {
           stage.mouseWindowRightUp(1);
         }
       };
+
+      this.sysEvt.addDocMouUpEvt(this, docOnmouseup);
 
       canvas.onmousemove = evt => {
         // console.log("ContextMouseEvtDispatcher::onmouseMove"+evt.pageX+","+evt.pageY);
@@ -1174,6 +1352,7 @@ class ContextMouseEvtDispatcher {
 
 }
 
+ContextMouseEvtDispatcher.s_sevt = new SysEvtMana();
 exports.default = ContextMouseEvtDispatcher;
 
 /***/ }),
@@ -1476,7 +1655,7 @@ class RendererInstanceContext {
   }
 
   setRenderToBackBuffer() {
-    if (this.m_adapter != null) {
+    if (this.m_adapter) {
       this.m_adapter.setRenderToBackBuffer(FrameBufferType_1.default.FRAMEBUFFER);
       this.m_renderProxy.rshader.resetRenderState();
       this.m_materialProxy.renderBegin();
@@ -1871,11 +2050,20 @@ class RenderAdapter {
     this.m_bodyBgColor = "";
     this.bgColor = new Float32Array([0, 0, 0, 1]);
     this.uViewProbe = null;
+    this.m_param = null;
     this.m_devPRatio = 1.0;
     this.m_viewportUnlock = true;
     this.m_synFBOSizeWithViewport = false;
     this.m_texResource = texResource;
     this.m_rcuid = rcuid;
+  }
+
+  setSyncBgColor(boo) {
+    this.m_syncBgColor = boo;
+  }
+
+  getSyncBgColor() {
+    return this.m_syncBgColor;
   }
 
   syncHtmlBodyColor() {
@@ -1885,29 +2073,45 @@ class RenderAdapter {
     }
   }
 
+  initGLCtx(context, param) {
+    if (param.getScissorTestEanbled()) {
+      this.m_gl.enable(this.m_gl.SCISSOR_TEST);
+    } else {
+      this.m_gl.disable(this.m_gl.SCISSOR_TEST);
+    }
+
+    if (context.isDepthTestEnabled()) this.m_gl.enable(this.m_gl.DEPTH_TEST);else this.m_gl.disable(this.m_gl.DEPTH_TEST);
+
+    if (context.isStencilTestEnabled()) {
+      this.m_gl.enable(this.m_gl.STENCIL_TEST);
+    } else {
+      console.warn("STENCIL_TEST disable !!!");
+      this.m_gl.disable(this.m_gl.STENCIL_TEST);
+    }
+
+    if (param.getPolygonOffsetEanbled()) this.enabledPolygonOffset();else this.disabledPolygonOffset();
+    this.m_gl.enable(this.m_gl.CULL_FACE);
+    this.m_gl.cullFace(this.m_gl.BACK);
+    this.m_gl.enable(this.m_gl.BLEND);
+    this.m_gl.enable(this.m_gl.BLEND);
+    if (param.getDitherEanbled()) this.m_gl.enable(this.m_gl.DITHER);else this.m_gl.disable(this.m_gl.DITHER);
+    this.m_gl.frontFace(this.m_gl.CCW);
+  }
+
+  updateGLCtx() {
+    this.m_gl = this.m_rtx.getRC();
+    this.initGLCtx(this.m_rtx, this.m_param);
+  }
+
   initialize(context, param, rState, uViewProbe) {
     if (this.m_rtx == null) {
       this.m_syncBgColor = param.syncBgColor;
       this.m_webglVer = context.getWebGLVersion();
       this.m_rState = rState;
       this.m_rtx = context;
+      this.m_param = param;
       this.m_gl = context.getRC();
-      this.m_gl.disable(this.m_gl.SCISSOR_TEST);
-      if (context.isDepthTestEnabled()) this.m_gl.enable(this.m_gl.DEPTH_TEST);else this.m_gl.disable(this.m_gl.DEPTH_TEST);
-
-      if (context.isStencilTestEnabled()) {
-        this.m_gl.enable(this.m_gl.STENCIL_TEST);
-      } else {
-        console.warn("STENCIL_TEST disable !!!");
-        this.m_gl.disable(this.m_gl.STENCIL_TEST);
-      }
-
-      if (param.getPolygonOffsetEanbled()) this.enabledPolygonOffset();else this.disabledPolygonOffset();
-      this.m_gl.enable(this.m_gl.CULL_FACE);
-      this.m_gl.cullFace(this.m_gl.BACK);
-      this.m_gl.enable(this.m_gl.BLEND);
-      if (param.getDitherEanbled()) this.m_gl.enable(this.m_gl.DITHER);else this.m_gl.disable(this.m_gl.DITHER);
-      this.m_gl.frontFace(this.m_gl.CCW); //m_gl.hint(m_gl.PERSPECTIVE_CORRECTION_HINT, m_gl.NICEST);	// Really Nice Perspective Calculations
+      this.initGLCtx(context, param); //m_gl.hint(m_gl.PERSPECTIVE_CORRECTION_HINT, m_gl.NICEST);	// Really Nice Perspective Calculations
 
       this.m_clearMask = this.m_gl.COLOR_BUFFER_BIT | this.m_gl.DEPTH_BUFFER_BIT | this.m_gl.STENCIL_BUFFER_BIT; //
       //this.m_rState = context.getRenderState();
@@ -2094,7 +2298,9 @@ class RenderAdapter {
     this.m_rtx.syncHtmlBodyColor(color.r, color.g, color.b);
     this.syncHtmlColor();
     this.m_gl.clearColor(color.r, color.g, color.b, color.a);
-    this.m_gl.clear(this.m_gl.COLOR_BUFFER_BIT);
+    this.m_gl.clear(this.m_gl.COLOR_BUFFER_BIT); // if (DebugFlag.Flag_0 > 0) {
+    // 	console.log("clearColor >>>>>>>");
+    // }
   }
 
   syncHtmlColor() {
@@ -2122,8 +2328,12 @@ class RenderAdapter {
     }
 
     this.syncHtmlColor();
-    const cvs = this.bgColor; // if(DebugFlag.Flag_0 > 0) {
-    // 	console.log("color cvs: ", cvs);
+    const cvs = this.bgColor; // if (DebugFlag.Flag_0 > 0) {
+    // 	console.log("clear >>>>>>>");
+    // }
+    // if(DebugFlag.Flag_0 > 0) {
+    // 	console.log("RenderAdapter::clear(), this.m_gl: ", this.m_gl);
+    // 	console.log("RenderAdapter::clear(), color cvs: ", cvs);
     // }
 
     this.m_gl.clearColor(cvs[0], cvs[1], cvs[2], cvs[3]);
@@ -2160,8 +2370,8 @@ class RenderAdapter {
   updateViewPort() {
     let size = this.m_viewPortRect;
     this.uViewProbe.setVec4Data(size.x, size.y, size.width, size.height);
-    this.uViewProbe.update(); //DivLog.ShowLog("reseizeFBOViewPort: " + this.m_viewX + "," + this.m_viewY + "," + this.m_viewWidth + "," + this.m_viewHeight);
-    //console.log("reseizeFBOViewPort: "+this.m_viewX+","+this.m_viewY+","+this.m_viewWidth+","+this.m_viewHeight);
+    this.uViewProbe.update(); // DivLog.ShowLog("reseizeFBOViewPort: " + this.m_viewX + "," + this.m_viewY + "," + this.m_viewWidth + "," + this.m_viewHeight);
+    // console.log("reseizeFBOViewPort(), size: ", size.clone());
 
     this.m_gl.viewport(size.x, size.y, size.width, size.height);
   }
@@ -2207,9 +2417,13 @@ class RenderAdapter {
   renderEnd() {}
 
   update() {}
+  /**
+   * @param sync the default value is true
+   */
 
-  updateRenderBufferSize() {
-    this.m_rtx.updateRenderBufferSize();
+
+  updateRenderBufferSize(sync = true) {
+    this.m_rtx.updateRenderBufferSize(sync);
   }
 
   destroy() {
@@ -2298,7 +2512,7 @@ class RenderAdapter {
 
   asynFBOSizeWithViewport() {
     this.m_synFBOSizeWithViewport = false;
-  } // 
+  } //
 
   /**
    * if synFBOSizeWithViewport is true, fbo size = factor * view port size;
@@ -2355,6 +2569,11 @@ class RenderAdapter {
     }
 
     return 0;
+  } // private m_fboRunning = false;
+
+
+  isFBORunning() {
+    return FrameBufferObject_1.default.IsFBORunning(this.m_rcuid);
   }
   /**
    * bind a texture to fbo attachment by attachment index
@@ -2407,7 +2626,8 @@ class RenderAdapter {
         }
       }
 
-      if (this.m_fboBuf != null) {
+      if (this.m_fboBuf) {
+        // this.m_fboRunning = true;
         this.m_fboBuf.renderToTexAt(this.m_gl, texProxy, attachmentIndex); //console.log("RenderProxy::setRenderToTexture(), fbo: ",this.m_fboBuf.getFBO());
       }
 
@@ -2451,8 +2671,26 @@ class RenderAdapter {
         }
 
         if (this.m_webglVer == 1) {
-          // m_gl.colorMask(m_colorMask.mr,m_colorMask.mg,m_colorMask.mb,m_colorMask.ma);
-          this.m_gl.clear(this.m_clearMask);
+          // // m_gl.colorMask(m_colorMask.mr,m_colorMask.mg,m_colorMask.mb,m_colorMask.ma);
+          // this.m_gl.clear(this.m_clearMask);
+          const gl = this.m_gl;
+          let mask = 0x0;
+
+          if (clearColorBoo) {
+            mask |= gl.COLOR_BUFFER_BIT;
+          }
+
+          if (clearDepthBoo) {
+            mask |= gl.DEPTH_BUFFER_BIT;
+          }
+
+          if (clearStencilBoo) {
+            mask |= gl.STENCIL_BUFFER_BIT;
+          }
+
+          if (mask > 0) {
+            gl.clear(mask);
+          }
         }
 
         let size = this.m_viewPortRect;
@@ -2484,8 +2722,9 @@ class RenderAdapter {
   }
 
   setRenderToBackBuffer(frameBufferType = FrameBufferType_1.default.FRAMEBUFFER) {
+    // this.m_fboRunning = false;
     this.m_activeAttachmentTotal = 1;
-    FrameBufferObject_1.default.BindToBackbuffer(this.m_gl, frameBufferType);
+    FrameBufferObject_1.default.BindToBackbuffer(this.m_gl, frameBufferType, this.m_rcuid);
     this.reseizeViewPort();
   }
 
@@ -2531,13 +2770,13 @@ class RenderAdapter {
     if (readFBOIndex >= 0 && this.m_fboBufList[readFBOIndex] != null) {
       this.m_fboBufList[readFBOIndex].bind(FrameBufferType_1.default.READ_FRAMEBUFFER);
     } else {
-      FrameBufferObject_1.default.BindToBackbuffer(this.m_gl, FrameBufferType_1.default.READ_FRAMEBUFFER);
+      FrameBufferObject_1.default.BindToBackbuffer(this.m_gl, FrameBufferType_1.default.READ_FRAMEBUFFER, this.m_rcuid);
     }
 
     if (writeFBOIndex >= 0 && this.m_fboBufList[writeFBOIndex] != null) {
       this.m_fboBufList[writeFBOIndex].bind(FrameBufferType_1.default.DRAW_FRAMEBUFFER);
     } else {
-      FrameBufferObject_1.default.BindToBackbuffer(this.m_gl, FrameBufferType_1.default.DRAW_FRAMEBUFFER);
+      FrameBufferObject_1.default.BindToBackbuffer(this.m_gl, FrameBufferType_1.default.DRAW_FRAMEBUFFER, this.m_rcuid);
     }
 
     if (clearType > 0) {
@@ -2635,35 +2874,55 @@ class DispEntity3DManager {
     let display = entity.getDisplay();
 
     if (display != null && display.__$$runit != null) {
+      const re = display.__$$runit.rentity;
+
+      let parent = re.__$getParent();
+
+      let flag = 0;
+
+      while (parent) {
+        if (!parent.hasParent() && parent.getREType() >= 20) {
+          console.log("DispEntity3DManager::removeEntity(), 容器内驱动渲染，不需要从渲染 process 中 移除, parent.__$wprocuid: ", parent.__$wprocuid);
+          const rprocess = this.m_processBuider.getNodeByUid(parent.__$wprocuid);
+          rprocess.forceRemoveDisp(display);
+          flag = 1;
+          break;
+        }
+
+        parent = parent.getParent();
+      }
+
       let puid = display.__$ruid;
       let po = this.m_rpoUnitBuilder.getRCRPObj(puid);
 
-      if (po != null) {
-        if (po.count > 0) {
-          if (po.count < 2) {
-            if (po.rprocessUid > -1) {
-              this.m_rprocess = this.m_processBuider.getNodeByUid(po.rprocessUid);
-              this.m_rprocess.removeDisp(display);
-              po.rprocessUid = -1;
-            }
-          } else {
-            let len = RPOUnitBuilder_1.RCRPObj.RenerProcessMaxTotal;
-
-            for (let i = 0; i < len; ++i) {
-              if ((po.idsFlag & 1 << i) > 0) {
-                // the value of list[i] is the uid of a node;
-                this.m_rprocess = this.m_processBuider.getNodeByUid(i);
+      if (flag < 1) {
+        if (po) {
+          if (po.count > 0) {
+            if (po.count < 2) {
+              if (po.rprocessUid > -1) {
+                this.m_rprocess = this.m_processBuider.getNodeByUid(po.rprocessUid);
                 this.m_rprocess.removeDisp(display);
+                po.rprocessUid = -1;
+              }
+            } else {
+              let len = RPOUnitBuilder_1.RCRPObj.RenerProcessMaxTotal;
+
+              for (let i = 0; i < len; ++i) {
+                if ((po.idsFlag & 1 << i) > 0) {
+                  // the value of list[i] is the uid of a node;
+                  this.m_rprocess = this.m_processBuider.getNodeByUid(i);
+                  this.m_rprocess.removeDisp(display);
+                }
               }
             }
           }
+        } else {
+          this.m_rprocess = this.m_processBuider.getNodeByUid(display.__$$runit.getRPROUid());
+          this.m_rprocess.removeDisp(display);
         }
-      } else {
-        this.m_rprocess = this.m_processBuider.getNodeByUid(display.__$$runit.getRPROUid());
-        this.m_rprocess.removeDisp(display);
       }
 
-      if (po.count == 0) {
+      if (flag > 0 || po.count == 0) {
         //console.log("DispEntity3DManager::removeEntity(), remove a entity from all processes.");
         if (display.__$$rsign != RenderConst_1.DisplayRenderSign.LIVE_IN_RENDERER) {
           // error!!!
@@ -2684,14 +2943,14 @@ class DispEntity3DManager {
     entity.__$rseFlag = RSEntityFlag_1.default.RemoveRendererLoad(entity.__$rseFlag);
     entity.__$rseFlag = RSEntityFlag_1.default.RemoveSortEnabled(entity.__$rseFlag);
 
-    if (this.m_entityManaListener != null) {
+    if (this.m_entityManaListener) {
       this.m_entityManaListener.removeFromRenderer(entity, this.m_rendererUid, -1);
     }
   }
 
   addEntity(entity, processUid, deferred = false) {
     if (entity != null) {
-      //console.log("add entity into entity 3d manager.");
+      // console.log("add entity into entity 3d manager B.");
       let disp = entity.getDisplay();
 
       if (disp != null) {
@@ -2738,15 +2997,27 @@ class DispEntity3DManager {
   }
 
   testValidData(entity) {
-    if (entity.getMaterial() != null && entity.hasMesh()) {
-      if (entity.getMaterial().hasShaderData()) {
+    let mt = entity.getMaterial();
+
+    if (mt != null && entity.hasMesh()) {
+      if (mt.hasShaderData()) {
         return true;
-      } else if (entity.getMaterial().getCodeBuf() != null) {
+      } else if (mt.getCodeBuf() != null) {
         entity.activeDisplay();
       }
     }
 
     return false;
+  }
+
+  addContainer(container, processUid) {
+    const rprocess = this.m_processBuider.getNodeByUid(processUid);
+    rprocess.addContainer(container);
+  }
+
+  removeContainer(container, processUid) {
+    const rprocess = this.m_processBuider.getNodeByUid(processUid);
+    rprocess.removeContainer(container);
   }
 
   ensureAdd(entity, disp, processUid) {
@@ -2776,9 +3047,11 @@ class DispEntity3DManager {
       this.m_entityManaListener.addToRenderer(entity, this.m_rendererUid, processUid);
     }
 
-    if (entity.getGlobalBounds() != null) {
-      disp.__$$runit.bounds = entity.getGlobalBounds();
-      disp.__$$runit.pos = disp.__$$runit.bounds.center;
+    const b = entity.getGlobalBounds();
+
+    if (b) {
+      disp.__$$runit.bounds = b;
+      disp.__$$runit.pos = b.center;
     }
 
     this.version++;
@@ -2926,24 +3199,12 @@ class ROVtxBuilder {
     this.m_rcuid = 0;
     this.m_glVer = 2;
     this.m_rc = null;
-    this.RGBA = 0;
-    this.UNSIGNED_BYTE = 0;
-    this.TRIANGLE_STRIP = 0;
-    this.TRIANGLE_FAN = 0;
-    this.TRIANGLES = 0;
-    this.LINES = 0;
-    this.LINE_STRIP = 0;
-    this.UNSIGNED_SHORT = 0;
-    this.UNSIGNED_INT = 0;
-    this.COLOR = 0;
-    this.DEPTH = 0;
-    this.STENCIL = 0;
-    this.DEPTH_STENCIL = 0;
-    this.MAX = 0;
-    this.MIN = 0;
-    this.RContext = null;
     this.vroUid = 0;
     this.rioUid = 0;
+  }
+
+  setGLCtx(gl) {
+    this.m_rc = gl;
   }
   /**
    * @returns return system gpu context
@@ -3075,7 +3336,7 @@ class ROVtxBuilder {
     selfT.TRIANGLE_STRIP = gl.TRIANGLE_STRIP;
     selfT.TRIANGLE_FAN = gl.TRIANGLE_FAN;
     selfT.TRIANGLES = gl.TRIANGLES;
-    selfT.LINES = this.m_rc.LINES;
+    selfT.LINES = gl.LINES;
     selfT.LINE_STRIP = gl.LINE_STRIP;
     selfT.UNSIGNED_SHORT = gl.UNSIGNED_SHORT;
     selfT.UNSIGNED_INT = gl.UNSIGNED_INT;
@@ -3083,16 +3344,7 @@ class ROVtxBuilder {
     selfT.DEPTH = gl.DEPTH;
     selfT.STENCIL = gl.STENCIL;
     selfT.DEPTH_STENCIL = gl.DEPTH_STENCIL;
-
-    if (this.m_glVer > 1) {
-      selfT.MIN = gl.MIN;
-      selfT.MAX = gl.MAX;
-    } else {
-      selfT.MIN = RCExtension_1.default.EXT_blend_minmax.MIN_EXT;
-      selfT.MAX = RCExtension_1.default.EXT_blend_minmax.MAX_EXT;
-    }
-
-    selfT.RContext = gl;
+    this.setGLCtx(gl);
   }
 
   renderBegin() {
@@ -3341,34 +3593,45 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+const RPONode_1 = __importDefault(__webpack_require__("265e"));
+
+const RPOBlock_1 = __importDefault(__webpack_require__("5f3c"));
+
 const PassProcess_1 = __importDefault(__webpack_require__("34cd"));
 
-class RenderSortBlock {
+const RPOUnitCont_1 = __importDefault(__webpack_require__("e39a"));
+
+class NodeCont {
+  destroy() {
+    this.container = null;
+    this.node.unit.reset();
+    this.node.reset();
+    this.node = null;
+  }
+
+}
+
+class RenderSortBlock extends RPOBlock_1.default {
   constructor(shader) {
+    // this.m_shader = shader;
+    super(shader);
     this.m_begin = null;
     this.m_end = null;
     this.m_next = null;
-    this.m_node = null;
-    this.m_nodes = [];
-    this.m_nodesTotal = 0;
-    this.m_shader = null;
+    this.m_unit = null;
+    this.m_units = [];
+    this.m_unitsTotal = 0;
     this.m_renderTotal = 0;
-    this.m_sorter = null;
-    this.sortEnabled = true;
+    this.m_nodeConts = [];
     this.m_passProc = new PassProcess_1.default();
     this.m_shdUpdate = false;
-    this.m_shader = shader;
-  }
-
-  setSorter(sorter) {
-    this.m_sorter = sorter;
   }
 
   showInfo() {
     let info = "";
     let next = this.m_begin;
 
-    while (next != null) {
+    while (next) {
       //info += "("+next.unit.value+","+next.uid+"),";
       info += next.unit.value + ",";
       next = next.next;
@@ -3378,8 +3641,8 @@ class RenderSortBlock {
   }
 
   clear() {
-    if (this.m_shader != null) {
-      if (this.m_nodes.length > 0) this.m_nodes = [];
+    if (this.m_shader) {
+      if (this.m_units.length > 0) this.m_units = [];
       let next = this.m_begin;
       let curr = null;
 
@@ -3391,7 +3654,7 @@ class RenderSortBlock {
       }
 
       this.m_begin = this.m_end = null;
-      this.m_nodesTotal = 0;
+      this.m_unitsTotal = 0;
       this.m_renderTotal = 0;
       this.sortEnabled = true;
       this.m_shader = null;
@@ -3406,75 +3669,154 @@ class RenderSortBlock {
     }
   }
 
+  addContainer(container) {
+    let i = 0;
+    const ls = this.m_nodeConts;
+
+    for (; i < ls.length; ++i) {
+      if (ls[i].container == container) {
+        break;
+      }
+    }
+
+    if (i >= ls.length) {
+      let unit = new RPOUnitCont_1.default();
+      unit.shader = this.m_shader;
+      unit.rentity = container;
+      unit.retype = container.getREType();
+      unit.bounds = container.getGlobalBounds();
+      unit.pos = unit.bounds.center;
+      let node = new RPONode_1.default();
+      node.unit = unit;
+      this.addNode(node);
+      let nc = new NodeCont();
+      nc.container = container;
+      nc.node = node;
+      ls.push(nc);
+      console.log("RenderSortBlock::addContainer() ...unit: ", unit);
+      return true;
+    }
+
+    return false;
+  }
+
+  removeContainer(container) {
+    let i = 0;
+    const ls = this.m_nodeConts;
+
+    for (; i < ls.length; ++i) {
+      if (ls[i].container == container) {
+        const node = ls[i].node;
+        this.removeNode(node);
+        ls[i].destroy();
+        ls.splice(i, 1);
+        console.log("RenderSortBlock::removeContainer() ...");
+        break;
+      }
+    }
+
+    if (i >= ls.length) {
+      let unit = new RPOUnitCont_1.default();
+      unit.shader = this.m_shader;
+      unit.rentity = container;
+      unit.retype = container.getREType();
+      let node = new RPONode_1.default();
+      node.unit = unit;
+      this.removeNode(node);
+      return true;
+    }
+
+    return false;
+  }
+
   run(rc) {
     this.m_shader.resetUniform();
     let unit = null;
-    let nodes = this.m_nodes;
-    this.m_shdUpdate = false; // let info = "";
-    // console.log("sortBlock..");
+    let uints = this.m_units;
+    this.m_shdUpdate = false;
+    const proc = this.m_passProc;
+    proc.shader = this.m_shader;
 
     for (let i = 0; i < this.m_renderTotal; ++i) {
-      unit = nodes[i];
-      this.m_shader.bindToGpu(unit.shdUid);
-      unit.updateVtx();
+      unit = uints[i];
 
-      if (unit.drawEnabled) {
-        if (unit.rgraph && unit.rgraph.isEnabled()) {
-          const proc = this.m_passProc;
-          proc.units = [unit];
-          proc.rc = rc;
-          proc.vtxFlag = true;
-          proc.texFlag = true;
-          unit.rgraph.run(proc);
-          this.m_shdUpdate = true;
-        } else {
-          if (this.m_shdUpdate) {
-            unit.applyShader(true);
-            this.m_shdUpdate = false;
+      if (unit.retype < 12) {
+        if (unit.rendering) {
+          this.m_shader.bindToGpu(unit.shdUid);
+          unit.updateVtx();
+
+          if (unit.drawing) {
+            if (unit.rgraph && unit.rgraph.isEnabled()) {
+              proc.units = [unit];
+              proc.rc = rc;
+              proc.vtxFlag = true;
+              proc.texFlag = true;
+              unit.rgraph.run(proc);
+              this.m_shdUpdate = true;
+            } else {
+              if (this.m_shdUpdate) {
+                unit.applyShader(true);
+                this.m_shdUpdate = false;
+              }
+
+              unit.run(rc);
+              unit.draw(rc);
+            }
           }
-
-          unit.run(rc);
-          unit.draw(rc);
         }
-      } // info += unit.value+",";
-
-    } //console.log(info);
-
+      } else {
+        unit.run(rc);
+      }
+    }
   }
 
   runLockMaterial(rc) {
     this.m_shader.resetUniform();
     let unit = null;
-    let nodes = this.m_nodes;
+    let units = this.m_units;
 
     for (let i = 0; i < this.m_renderTotal; ++i) {
-      unit = nodes[i];
-      this.m_shader.bindToGpu(unit.shdUid);
-      unit.updateVtx();
+      unit = units[i];
 
-      if (unit.drawEnabled) {
-        unit.vro.run();
+      if (unit.retype < 12) {
+        if (unit.rendering) {
+          this.m_shader.bindToGpu(unit.shdUid);
+          unit.updateVtx();
+
+          if (unit.drawing) {
+            unit.vro.run();
+            unit.runLockMaterial2(null);
+            unit.draw(rc);
+          }
+        }
+      } else {
         unit.runLockMaterial2(null);
-        unit.draw(rc);
       }
     }
   }
 
   sort() {
-    if (this.m_nodesTotal > 0) {
+    if (this.m_unitsTotal > 0) {
       // 整个sort执行过程放在渲染运行时渲染执行阶段是不妥的,但是目前还没有好办法
       // 理想的情况是运行时不会被复杂计算打断，复杂计算应该再渲染执行之前完成
       let next = this.m_begin;
 
-      if (this.m_nodes.length < this.m_nodesTotal) {
-        this.m_nodes = new Array(Math.round(this.m_nodesTotal * 1.1) + 1);
+      if (this.m_units.length < this.m_unitsTotal) {
+        this.m_units = new Array(Math.round(this.m_unitsTotal * 1.1) + 1);
       }
 
       let i = 0;
 
       while (next != null) {
-        if (next.drawEnabled && next.unit.drawEnabled) {
-          this.m_nodes[i] = next.unit;
+        const unit = next.unit;
+
+        if (unit.retype < 12) {
+          if (unit.rendering && unit.drawing) {
+            this.m_units[i] = unit;
+            ++i;
+          }
+        } else {
+          this.m_units[i] = unit;
           ++i;
         }
 
@@ -3483,9 +3825,10 @@ class RenderSortBlock {
 
       this.m_renderTotal = i;
       let flat = 0;
+      const st = this.m_sorter;
 
-      if (this.m_sorter != null) {
-        flat = this.m_sorter.sortRODisplay(this.m_nodes, i);
+      if (st) {
+        flat = st.sortRODisplay(this.m_units, i);
       }
 
       if (flat < 1) {
@@ -3495,9 +3838,9 @@ class RenderSortBlock {
   }
 
   sorting(low, high) {
-    let arr = this.m_nodes;
-    this.m_node = arr[low];
-    let pvalue = this.m_node.value;
+    let arr = this.m_units;
+    this.m_unit = arr[low];
+    let pvalue = this.m_unit.value;
 
     while (low < high) {
       while (low < high && arr[high].value >= pvalue) {
@@ -3513,7 +3856,7 @@ class RenderSortBlock {
       arr[high] = arr[low];
     }
 
-    arr[low] = this.m_node;
+    arr[low] = this.m_unit;
     return low;
   }
 
@@ -3526,7 +3869,7 @@ class RenderSortBlock {
   }
 
   getNodesTotal() {
-    return this.m_nodesTotal;
+    return this.m_unitsTotal;
   }
 
   getBegin() {
@@ -3543,11 +3886,12 @@ class RenderSortBlock {
   }
 
   isEmpty() {
-    return this.m_nodesTotal < 1; // return this.m_begin == null;
+    return this.m_unitsTotal < 1;
   }
 
   addNode(node) {
-    //console.log("sort add node: ",node);
+    console.log("sort add node: ", node);
+
     if (node.prev == null && node.next == null) {
       if (this.m_begin == null) {
         this.m_end = this.m_begin = node;
@@ -3564,7 +3908,8 @@ class RenderSortBlock {
       }
 
       this.m_end.next = null;
-      this.m_nodesTotal++; //console.log("sort add node,this.m_nodesTotal: ",this.m_nodesTotal);
+      this.m_unitsTotal++;
+      console.log("sort add node,this.m_unitsTotal: ", this.m_unitsTotal);
     }
   }
 
@@ -3588,7 +3933,8 @@ class RenderSortBlock {
 
       node.prev = null;
       node.next = null;
-      this.m_nodesTotal--; //console.log("sort remove node,this.m_nodesTotal: ",this.m_nodesTotal);
+      this.m_unitsTotal--;
+      console.log("sort remove node,this.m_unitsTotal: ", this.m_unitsTotal);
     }
   }
 
@@ -3623,13 +3969,14 @@ Object.defineProperty(exports, "__esModule", {
 class RPONode {
   constructor() {
     this.__$ruid = -1;
-    this.drawEnabled = true;
     this.uid = -1;
     this.index = -1;
     this.shdUid = -1;
     this.vtxUid = -1;
     this.texMid = -1;
-    this.rtokey = -1;
+    this.rtokey = -1; // it the value is less 12, it is a renderable entity, or not is a entity container
+    // reType = 1;
+
     this.prev = null;
     this.next = null;
     this.unit = null;
@@ -3639,17 +3986,8 @@ class RPONode {
     this.rtroI = -1;
   }
 
-  setValue(value) {
-    this.unit.value = value;
-  }
-
-  isVsible() {
-    return this.unit == null || this.unit.drawEnabled;
-  }
-
   updateData() {
-    let p = this.unit; // this.insCount = p.insCount;
-
+    const p = this.unit;
     this.vtxUid = p.vtxUid;
     this.vro = p.vro; // material info etc.
 
@@ -3659,10 +3997,9 @@ class RPONode {
   }
 
   reset() {
-    this.drawEnabled = true;
+    // this.reType = 1;
     this.uid = -1;
-    this.index = -1; // this.insCount = 0;
-
+    this.index = -1;
     this.shdUid = -1;
     this.vtxUid = -1;
     this.texMid = -1;
@@ -3798,6 +4135,14 @@ class PoolNodeBuilder {
 
   restoreUid(uid) {}
 
+  getFreeTotal() {
+    return this.m_freeIdList.length;
+  }
+
+  hasFreeNode() {
+    return this.m_freeIdList.length > 0;
+  }
+
   getFreeId() {
     if (this.m_freeIdList.length > 0) {
       return this.m_freeIdList.pop();
@@ -3808,6 +4153,10 @@ class PoolNodeBuilder {
 
   getNodeByUid(uid) {
     return this.m_nodes[uid];
+  }
+
+  getNodes() {
+    return this.m_nodes;
   }
 
   create() {
@@ -3852,6 +4201,13 @@ class PoolNodeBuilder {
     }
 
     return false;
+  }
+
+  destroy() {
+    this.m_nodes = [];
+    this.m_freeIdList = [];
+    this.m_flags = [];
+    this.m_nodesTotal = 0;
   }
 
 }
@@ -4109,6 +4465,411 @@ exports.default = ShaderUniformProbe;
 
 /***/ }),
 
+/***/ "3420":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/***************************************************************************/
+
+/*                                                                         */
+
+/*  Copyright 2018-2022 by                                                 */
+
+/*  Vily(vily313@126.com)                                                  */
+
+/*                                                                         */
+
+/***************************************************************************/
+// 用于对 MaterialRPOBlock 进行必要的组织, 例如 合批或者按照 shader不同来分类, 以及依据其他机制分类等等
+// 目前一个block内的所有node 所使用的shader program 是相同的
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+const RendererDevice_1 = __importDefault(__webpack_require__("3b73"));
+
+const RPONodeLinker_1 = __importDefault(__webpack_require__("df9d"));
+
+const RenderColorMask_1 = __webpack_require__("070b");
+
+const RenderStateObject_1 = __webpack_require__("a5ba");
+
+const RPOBlock_1 = __importDefault(__webpack_require__("5f3c"));
+
+const PassProcess_1 = __importDefault(__webpack_require__("34cd"));
+
+class MaterialRPOBlock extends RPOBlock_1.default {
+  constructor(shader) {
+    super(shader);
+    this.m_nodeLinker = new RPONodeLinker_1.default();
+    this.m_runs = new Array(5);
+    this.m_passProc = new PassProcess_1.default();
+    this.m_shdUpdate = false;
+    const ls = this.m_runs;
+    ls.fill(null);
+    ls[0] = this.run0.bind(this);
+    ls[1] = this.run1.bind(this);
+    ls[2] = this.run2.bind(this);
+  }
+
+  showInfo() {
+    this.m_nodeLinker.showInfo();
+  }
+
+  addNode(node) {
+    this.m_nodeLinker.addNodeAndSort(node);
+  }
+
+  rejoinNode(node) {
+    if (this.m_nodeLinker.containsNode(node)) {
+      this.m_nodeLinker.removeNodeAndSort(node);
+      this.m_nodeLinker.addNodeAndSort(node);
+    }
+  }
+
+  removeNode(node) {
+    this.m_nodeLinker.removeNodeAndSort(node);
+  }
+
+  isEmpty() {
+    return this.m_nodeLinker.getBegin() == null;
+  }
+
+  run(rc) {
+    this.m_runs[this.runMode](rc);
+  }
+
+  run0(rc) {
+    let nextNode = this.m_nodeLinker.getBegin();
+
+    if (nextNode != null) {
+      this.m_shader.bindToGpu(this.shdUid);
+      this.m_shader.resetUniform();
+      let unit = null;
+      this.m_shdUpdate = false;
+      const proc = this.m_passProc;
+      proc.shader = this.m_shader;
+
+      while (nextNode) {
+        unit = nextNode.unit;
+
+        if (unit.rendering) {
+          unit.updateVtx();
+
+          if (unit.drawing) {
+            if (unit.rgraph && unit.rgraph.isEnabled()) {
+              proc.units = [unit];
+              proc.rc = rc;
+              proc.vtxFlag = true;
+              proc.texFlag = true;
+              unit.rgraph.run(proc);
+              this.m_shdUpdate = true;
+            } else {
+              if (this.m_shdUpdate) {
+                unit.applyShader(true);
+                this.m_shdUpdate = false;
+              }
+
+              unit.run(rc);
+              unit.draw(rc);
+            }
+          }
+        }
+
+        nextNode = nextNode.next;
+      }
+    }
+  }
+
+  run1(rc) {
+    let nextNode = this.m_nodeLinker.getBegin();
+
+    if (nextNode != null) {
+      this.m_shader.bindToGpu(this.shdUid);
+      this.m_shader.resetUniform();
+      const proc = this.m_passProc;
+      proc.shader = this.m_shader;
+      let linker = this.m_nodeLinker;
+      let unit = null;
+      let vtxTotal = linker.getVtxTotalAt(nextNode.rvroI);
+      let texTotal = linker.getTexTotalAt(nextNode.rtroI);
+      let vtxFlag = vtxTotal > 0;
+      let texFlag = texTotal > 0;
+      this.m_shdUpdate = false; // console.log("run1", vtxFlag, texFlag, this.procuid);
+
+      while (nextNode != null) {
+        if (vtxTotal < 1) {
+          vtxTotal = linker.getVtxTotalAt(nextNode.rvroI);
+          vtxFlag = true;
+        }
+
+        vtxTotal--;
+
+        if (texTotal < 1) {
+          texTotal = linker.getTexTotalAt(nextNode.rtroI);
+          texFlag = true;
+        }
+
+        texTotal--; // if(DebugFlag.Flag_0 > 0) console.log("nextNode.drawEnabled: ",nextNode.drawEnabled);
+
+        unit = nextNode.unit;
+
+        if (unit.rendering) {
+          // if(DebugFlag.Flag_0 > 0) console.log("unit.drawEnabled: ",unit.drawEnabled);
+          // console.log("unit.rdp.getUid(): ", unit.rdp.getUid(), unit.vdrInfo.rdp.getUid());
+          vtxFlag = unit.updateVtx() || vtxFlag;
+
+          if (unit.drawing) {
+            if (unit.rgraph && unit.rgraph.isEnabled()) {
+              proc.units = [unit];
+              proc.rc = rc;
+              proc.vtxFlag = vtxFlag;
+              proc.texFlag = texFlag;
+              unit.rgraph.run(proc);
+              this.m_shdUpdate = true;
+            } else {
+              this.draw1(rc, unit, vtxFlag, texFlag);
+            }
+
+            vtxFlag = false;
+            texFlag = false;
+          }
+        }
+
+        nextNode = nextNode.next;
+      }
+    }
+  }
+
+  draw1(rc, unit, vtxFlag, texFlag) {
+    if (this.m_shdUpdate) {
+      unit.applyShader(true);
+      this.m_shdUpdate = false;
+    }
+
+    if (vtxFlag) {
+      unit.vro.run();
+      vtxFlag = false;
+    }
+
+    if (texFlag) {
+      unit.tro.run();
+      texFlag = false;
+    }
+
+    unit.run2(rc);
+    unit.draw(rc);
+  }
+
+  run2(rc) {
+    let nextNode = this.m_nodeLinker.getBegin();
+
+    if (nextNode != null) {
+      const shader = this.m_shader;
+      shader.bindToGpu(this.shdUid);
+      shader.resetUniform();
+      let unit = null;
+      RenderStateObject_1.RenderStateObject.UseRenderState(nextNode.unit.renderState);
+      RenderColorMask_1.RenderColorMask.UseRenderState(nextNode.unit.rcolorMask);
+      let vtxTotal = this.m_nodeLinker.getVtxTotalAt(nextNode.rvroI);
+      let texTotal = this.m_nodeLinker.getTexTotalAt(nextNode.rtroI);
+      let vtxFlag = vtxTotal > 0;
+      let texFlag = texTotal > 0;
+
+      while (nextNode) {
+        if (vtxTotal < 0) {
+          vtxTotal = this.m_nodeLinker.getVtxTotalAt(nextNode.rvroI);
+          vtxFlag = true;
+        }
+
+        vtxTotal--;
+
+        if (texTotal < 0) {
+          texTotal = this.m_nodeLinker.getTexTotalAt(nextNode.rtroI);
+          texFlag = true;
+        }
+
+        texTotal--;
+        unit = nextNode.unit;
+
+        if (unit.rendering) {
+          vtxFlag = unit.updateVtx() || vtxFlag;
+
+          if (unit.drawing) {
+            if (vtxFlag) {
+              unit.vro.run();
+              vtxFlag = false;
+            }
+
+            if (texFlag) {
+              unit.tro.run();
+              texFlag = false;
+            }
+
+            if (unit.ubo != null) {
+              unit.ubo.run(rc);
+            }
+
+            shader.useTransUniform(unit.transUniform);
+            shader.useUniform(unit.uniform);
+            unit.draw(rc);
+          }
+        }
+
+        nextNode = nextNode.next;
+      }
+    }
+  }
+
+  runLockMaterial(rc) {
+    let nextNode = this.m_nodeLinker.getBegin();
+
+    if (nextNode) {
+      this.m_shader.bindToGpu(this.shdUid);
+      this.m_shader.resetUniform();
+      let texUnlock = this.m_shader.isTextureUnLocked();
+      rc.Texture.unlocked = texUnlock;
+      let unit = null;
+
+      if (this.batchEnabled) {
+        let vtxTotal = this.m_nodeLinker.getVtxTotalAt(nextNode.rvroI);
+        let vtxFlag = vtxTotal > 0;
+
+        while (nextNode != null) {
+          if (vtxTotal < 1) {
+            vtxTotal = this.m_nodeLinker.getVtxTotalAt(nextNode.rvroI);
+            vtxFlag = true;
+          }
+
+          vtxTotal--;
+          unit = nextNode.unit;
+
+          if (unit.rendering) {
+            vtxFlag = unit.updateVtx() || vtxFlag;
+
+            if (unit.drawing) {
+              if (vtxFlag) {
+                unit.vro.run();
+                vtxFlag = false;
+              }
+
+              if (texUnlock) {
+                unit.tro.run();
+              }
+
+              unit.runLockMaterial2(null);
+              unit.draw(rc);
+            }
+          }
+
+          nextNode = nextNode.next;
+        }
+      } else {
+        while (nextNode != null) {
+          unit = nextNode.unit;
+
+          if (unit.rendering) {
+            unit.updateVtx();
+
+            if (unit.drawing) {
+              unit.runLockMaterial();
+
+              if (texUnlock) {
+                nextNode.tro.run();
+              }
+
+              unit.draw(rc);
+            }
+          }
+
+          nextNode = nextNode.next;
+        }
+      }
+
+      rc.Texture.unlocked = false;
+    }
+  } // 在锁定material的时候,直接绘制单个unit
+
+
+  drawUnit(rc, unit, disp) {
+    unit.updateVtx();
+
+    if (unit.drawing) {
+      this.m_shader.bindToGpu(unit.shdUid);
+      unit.updateVtx();
+      unit.run(rc);
+      unit.draw(rc);
+    }
+  } // 在锁定material的时候,直接绘制单个unit
+
+
+  drawLockMaterialByUnit(rc, unit, disp, useGlobalUniform, forceUpdateUniform) {
+    unit.updateVtx();
+
+    if (unit.drawing) {
+      if (forceUpdateUniform) {
+        this.m_shader.resetUniform();
+      } // console.log("****** drawLockMaterialByUnit(), unit: ",unit);
+
+
+      let vro = unit.vro;
+
+      if (RendererDevice_1.default.IsMobileWeb()) {
+        // 如果不这么做，vro和shader attributes没有完全匹配的时候可能在某些设备上会有问题(例如ip6s上无法正常绘制)
+        // 注意临时产生的 vro 对象的回收问题
+        // let vro: IVertexRenderObj = this.vtxResource.getVROByResUid(disp.vbuf.getUid(), this.m_shader.getCurrentShd(), true);
+        vro = this.vtxResource.getVROByResUid(disp.getVtxResUid(), this.m_shader.getCurrentShd(), true);
+      }
+
+      vro.run();
+      unit.runLockMaterial2(useGlobalUniform ? this.m_shader.__$globalUniform : null);
+      unit.draw(rc);
+    }
+  }
+
+  reset() {
+    let nextNode = this.m_nodeLinker.getBegin();
+    let node = null;
+
+    if (nextNode != null) {
+      let runit;
+
+      while (nextNode != null) {
+        node = nextNode;
+        nextNode = nextNode.next;
+        this.rpoUnitBuilder.setRPNodeParam(node.__$ruid, this.procuid, -1);
+        node.reset();
+        runit = node.unit;
+
+        if (this.rpoNodeBuilder.restore(node)) {
+          this.rpoUnitBuilder.restore(runit);
+        }
+      }
+    }
+
+    this.m_nodeLinker.clear();
+    this.m_runs.fill(null);
+    super.reset();
+  }
+
+  destroy() {
+    super.destroy();
+  }
+
+}
+
+exports.default = MaterialRPOBlock;
+
+/***/ }),
+
 /***/ "34cd":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -4145,6 +4906,14 @@ class PassProcess {
     this.texFlag = false;
     this.units = null;
     this.materials = null;
+  }
+
+  resetUniform() {
+    this.shader.resetUniform();
+  }
+
+  resetTransUniform() {
+    this.shader.resetTransUniform();
   }
 
   createMaterialWrapper(m, hostRUnit) {
@@ -4284,7 +5053,8 @@ class RODataBuilder {
     this.m_deferredTROs = [];
     this.m_deferredTextures = [];
     this.m_haveDeferredUpdate = false;
-    this.m_shdpBuilder = null; // build vtx gpu data
+    this.m_shdpBuilder = null;
+    this.transPool = new ROTransPool_1.default(); // build vtx gpu data
 
     this.m_emptyVDRInfo = new EmptyVDRInfo_1.default();
     this.m_shdpBuilder = shdProgramBuilder;
@@ -4305,6 +5075,11 @@ class RODataBuilder {
       this.m_shdUniformTool = new ShdUniformTool_1.default();
       this.m_shdUniformTool.initialize();
     }
+  }
+
+  setGLCtx(gl) {
+    this.transPool.clear();
+    TextureRenderObj_1.TextureRenderObj.Clear(this.m_rc.getRCUid());
   }
 
   getRenderProxy() {
@@ -4424,7 +5199,7 @@ class RODataBuilder {
         material.initializeByCodeBuf(texEnabled);
       }
 
-      shdp = this.m_shdpBuilder.create(material.getShaderData());
+      shdp = this.m_shdpBuilder.create(material.getShaderData(), rc);
       shdp.upload(rc.RContext, rc.getUid());
       runit.shdUid = shdp.getUid();
       let tro = null;
@@ -4481,7 +5256,7 @@ class RODataBuilder {
       if (hasTrans) {
         if (dispFlag && disp.getTransform() != null) {
           //console.log("disp.getTransform().getUid(): "+disp.getTransform().getUid());
-          runit.transUniform = ROTransPool_1.default.GetTransUniform(disp.getTransform(), shdp); //console.log("RODataBuilder::updateDispMaterial(), get runit.transUniform: ",runit.transUniform);
+          runit.transUniform = this.transPool.getTransUniform(disp.getTransform(), shdp); //console.log("RODataBuilder::updateDispMaterial(), get runit.transUniform: ",runit.transUniform);
         }
       } // console.log("RODataBuilder::updateDispMaterial(), runit: ",runit);
       // console.log("RODataBuilder::updateDispMaterial(), runit.uid: ",runit.getUid());
@@ -4491,7 +5266,7 @@ class RODataBuilder {
       if (dispFlag) {
         if (runit.transUniform == null) {
           runit.transUniform = this.m_shdUniformTool.buildLocalFromTransformV(hasTrans ? disp.getMatrixFS32() : null, shdp);
-          ROTransPool_1.default.SetTransUniform(disp.getTransform(), runit.transUniform, shdp);
+          this.transPool.setTransUniform(disp.getTransform(), runit.transUniform, shdp);
         } else {
           runit.transUniform = this.m_shdUniformTool.updateLocalFromTransformV(runit.transUniform, hasTrans ? disp.getMatrixFS32() : null, shdp);
         }
@@ -4622,8 +5397,11 @@ class RODataBuilder {
         disp.__$$rsign = RenderConst_1.DisplayRenderSign.LIVE_IN_RENDERER;
         let runit = this.m_rpoUnitBuilder.create();
         runit.rentity = rentity;
+        runit.retype = rentity.getREType();
         disp.__$ruid = runit.uid;
         disp.__$$runit = runit;
+        runit.rendering = disp.rendering;
+        runit.shader = this.m_shader;
         const group = disp.getPartGroup();
 
         if (group) {
@@ -4651,6 +5429,10 @@ class RODataBuilder {
         } else {
           console.error("Error RODataBuilder::buildGpuDisp(), disp is unavailable !!!");
           this.buildVtxRes(disp, runit, null);
+        }
+
+        if (rentity && rentity.intoRendererListener) {
+          rentity.intoRendererListener();
         }
 
         return true;
@@ -4748,7 +5530,7 @@ class RODataBuilder {
         texList = material.getTextureList();
       }
 
-      shdp = this.m_shdpBuilder.create(material.getShaderData());
+      shdp = this.m_shdpBuilder.create(material.getShaderData(), rc);
       shdp.upload(rc.RContext, rc.getUid());
       let texTotal = shdp.getTexTotal();
 
@@ -4829,6 +5611,11 @@ class RendererDevice {
 
   static SetLanguage(language) {
     RendererDevice.s_language = language;
+  }
+
+  static IsChineseLanguage() {
+    let lg = RendererDevice.GetLanguage();
+    return lg == "zh-CN";
   }
 
   static GetLanguage() {
@@ -5136,6 +5923,8 @@ Object.defineProperty(exports, "__esModule", {
 
 const PoolNodeBuilder_1 = __importDefault(__webpack_require__("2be1"));
 
+const RPOUnit_1 = __importDefault(__webpack_require__("c62b"));
+
 const RPONode_1 = __importDefault(__webpack_require__("265e"));
 /*
  * render process object node pool management
@@ -5149,6 +5938,10 @@ class RPONodeBuilder extends PoolNodeBuilder_1.default {
 
   createRPONode() {
     return new RPONode_1.default();
+  }
+
+  createRPOUnit() {
+    return new RPOUnit_1.default();
   }
 
 }
@@ -5194,6 +5987,7 @@ class ROVertexRes {
     this.m_typeList = null;
     this.m_offsetList = null;
     this.m_sizeList = null;
+    this.m_verList = null;
     this.m_vtxUid = -1;
     this.m_gpuBufs = [];
     this.m_gpuBufsTotal = 0;
@@ -5245,46 +6039,53 @@ class ROVertexRes {
   }
 
   updateToGpu(rc) {
-    let len = this.m_gpuBufs.length;
+    let len = this.m_gpuBufs.length; // console.log("ROVertexRes::updateToGpu(), len > 0: ", len > 0);
 
     if (len > 0) {
-      let vtx = this.m_vtx;
+      let vtx = this.m_vtx; // console.log("ROVertexRes::updateToGpu(), this.version != vtx.vertexVer: ", this.version != vtx.vertexVer);
 
       if (this.version != vtx.vertexVer) {
+        let fvs = null;
         let usage = vtx.getBufDataUsage();
-        let fvs;
         let sizeList = this.m_sizeList;
 
         for (let i = 0; i < len; ++i) {
-          fvs = vtx.getF32DataAt(i);
+          const ver = vtx.getF32DataVerAt(i); // console.log("updateToGpu(), i:", i, ", ver: ", ver, ", this.m_verList[i]: ", this.m_verList[i]);
 
-          if (sizeList[i] >= fvs.length) {
-            rc.bindArrBuf(this.m_gpuBufs[i]);
-            rc.arrBufSubData(fvs, 0);
-          } else {
-            rc.bindArrBuf(this.m_gpuBufs[i]);
-            rc.arrBufData(fvs, usage);
-            sizeList[i] = fvs.length;
+          if (this.m_verList[i] != ver) {
+            this.m_verList[i] = ver; // console.log("updateToGpu() updating data i: ", i);
+
+            fvs = vtx.getF32DataAt(i); // console.log("sizeList[i], fvs.length: ", sizeList[i], fvs.length);
+
+            if (sizeList[i] >= fvs.byteLength) {
+              rc.bindArrBuf(this.m_gpuBufs[i]);
+              rc.arrBufSubData(fvs, 0);
+            } else {
+              rc.bindArrBuf(this.m_gpuBufs[i]);
+              rc.arrBufData(fvs, usage);
+              sizeList[i] = fvs.byteLength;
+            }
           }
         }
 
         this.version = vtx.vertexVer;
       }
     }
-  } //private m_preCombinedSize: number = 0;
-
+  }
 
   uploadCombined(rc, shdp) {
     let vtx = this.m_vtx;
-    let fvs = vtx.getF32DataAt(0); //console.log("uploadCombined combSize: ",this.m_preCombinedSize, fvs.length);
-    //this.m_preCombinedSize = fvs.length;
+    let fvs = vtx.getF32DataAt(0); // console.log("uploadCombined(), combSize: ",this.m_preCombinedSize, fvs.length);
 
     this.m_gpuBufs.push(rc.createBuf());
-    rc.bindArrBuf(this.m_gpuBufs[0]); // console.log("uploadCombined, this.m_gpuBufs: "+this.m_gpuBufs);
-
+    rc.bindArrBuf(this.m_gpuBufs[0]);
     rc.arrBufData(fvs, vtx.getBufDataUsage());
     this.m_gpuBufsTotal = 1;
-    this.m_sizeList = [fvs.length];
+    this.m_sizeList = [fvs.byteLength];
+
+    if (this.m_verList == null) {
+      this.m_verList = [0];
+    }
 
     if (this.m_typeList == null) {
       this.m_bufIVS = shdp.getLocationIVS();
@@ -5319,13 +6120,20 @@ class ROVertexRes {
     this.m_sizeList = new Array(this.m_attribsTotal);
     this.m_bufIVS = shdp.getLocationIVS(); // console.log("uploadSeparated, this.m_gpuBufs: "+this.m_gpuBufs);
 
+    if (this.m_verList == null) {
+      this.m_verList = new Array(this.m_attribsTotal);
+      this.m_verList.fill(0);
+    }
+
     if (vtx.bufData == null) {
       for (; i < this.m_attribsTotal; ++i) {
         buf = rc.createBuf();
         this.m_gpuBufs.push(buf);
-        rc.bindArrBuf(buf);
+        rc.bindArrBuf(buf); // const ver = vtx.getF32DataVerAt(i);
+        // console.log("uploadSeparated(), i:", i, ", ver: ", ver);
+
         rc.arrBufData(vtx.getF32DataAt(i), dataUsage);
-        this.m_sizeList[i] = vtx.getF32DataAt(i).length;
+        this.m_sizeList[i] = vtx.getF32DataAt(i).byteLength;
       }
     } else {
       //console.log(">>>>>>>>vtxSepbuf use (this.bufData == null) : "+(this.bufData == null));
@@ -5333,7 +6141,6 @@ class ROVertexRes {
       let j = 0;
       let tot = 0;
       let offset = 0;
-      let dataSize = 0;
 
       for (; i < this.m_attribsTotal; ++i) {
         buf = rc.createBuf(); //console.log("this.bufData.getAttributeDataTotalBytesAt("+i+"): "+this.bufData.getAttributeDataTotalBytesAt(i));
@@ -5342,17 +6149,15 @@ class ROVertexRes {
         rc.bindArrBuf(buf);
         rc.arrBufDataMem(vtx.bufData.getAttributeDataTotalBytesAt(i), dataUsage);
         offset = 0;
-        dataSize = 0;
         tot = vtx.bufData.getAttributeDataTotalAt(i);
 
         for (j = 0; j < tot; ++j) {
           fs32 = vtx.bufData.getAttributeDataAt(i, j);
-          dataSize += fs32.length;
           rc.arrBufSubData(fs32, offset);
           offset += fs32.byteLength;
         }
 
-        this.m_sizeList[i] = dataSize;
+        this.m_sizeList[i] = offset;
       }
     }
 
@@ -5369,9 +6174,11 @@ class ROVertexRes {
           this.m_typeList[i] = typeList[i];
         }
       } else {
+        const floatSize = 4;
+
         for (let i = 0; i < this.m_attribsTotal; ++i) {
           this.m_offsetList[i] = this.m_wholeStride;
-          this.m_wholeStride += shdp.getLocationSizeByIndex(i) * 4;
+          this.m_wholeStride += shdp.getLocationSizeByIndex(i) * floatSize;
           this.m_typeList[i] = shdp.getLocationTypeByIndex(i);
         }
       }
@@ -5714,6 +6521,10 @@ class ShdUniformTool {
     this.m_emptyUniform = new ShaderUniform_1.ShaderUniform();
   }
 
+  clear() {
+    this.m_uniformDict.clear();
+  }
+
   appendUniformBuilder(builder) {
     if (!this.m_uniformDict.has(builder.getIDNS())) {
       this.m_builders.push(builder);
@@ -5828,7 +6639,8 @@ class ShdUniformTool {
 
           for (i = 0; i < pdata.uniformSize; ++i) {
             pdata.types.push(shdp.getUniformTypeByNS(pdata.uniformNameList[i]));
-            pdata.locations.push(shdp.getUniformLocationByNS(pdata.uniformNameList[i]));
+            pdata.locations.push(shdp.getUniformLocationByNS(pdata.uniformNameList[i])); // let ul = shdp.getUniformLocationByNS(pdata.uniformNameList[i]);
+            // pdata.locations.push(ul);
           } //console.log("global uniform names: "+pdata.uniformNameList);
           //console.log("global uniform types: "+pdata.types);
           //console.log("global uniform locations: "+pdata.locations);
@@ -6093,9 +6905,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-const RCExtension_1 = __importDefault(__webpack_require__("030e")); //import RCExtension = RCExtensionT.vox.render.RCExtension;
-//import RAdapterContext = RAdapterContextT.vox.render.RAdapterContext;
-
+const RCExtension_1 = __importDefault(__webpack_require__("030e"));
 
 class RenderFBOProxy {
   static SetRenderer(pr) {
@@ -6205,7 +7015,7 @@ exports.default = TextureTarget;
 /*                                                                         */
 
 /***************************************************************************/
-// 用于对 RPOBlock 进行必要的组织, 例如 合批或者按照 shader不同来分类, 以及依据其他机制分类等等
+// 用于对 MaterialRPOBlock 进行必要的组织, 例如 合批或者按照 shader不同来分类, 以及依据其他机制分类等等
 // 目前一个block内的所有node 所使用的shader program 是相同的
 
 var __importDefault = this && this.__importDefault || function (mod) {
@@ -6220,21 +7030,15 @@ Object.defineProperty(exports, "__esModule", {
 
 const RendererDevice_1 = __importDefault(__webpack_require__("3b73"));
 
-const RPONodeLinker_1 = __importDefault(__webpack_require__("df9d"));
-
-const RenderColorMask_1 = __webpack_require__("070b");
-
-const RenderStateObject_1 = __webpack_require__("a5ba");
-
-const PassProcess_1 = __importDefault(__webpack_require__("34cd")); //import DebugFlag from "../debug/DebugFlag";
+const SortNodeLinker_1 = __webpack_require__("f571"); //import DebugFlag from "../debug/DebugFlag";
 
 
-class RPOBlock {
+class RPOBlock extends SortNodeLinker_1.SortNodeLinkerNode {
   constructor(shader) {
-    this.m_uid = -1; // 用于唯一记录运行时的自己(RPOBlock实例)唯一id
-
-    this.m_nodeLinker = new RPONodeLinker_1.default();
+    super();
+    this.m_uid = -1;
     this.m_shader = null;
+    this.m_sorter = null;
     this.index = -1; // 记录自身在 RenderProcess blocks数组中的序号
 
     this.shdUid = -1; // 记录 material 对应的 shader program uid
@@ -6246,303 +7050,42 @@ class RPOBlock {
     this.rpoNodeBuilder = null;
     this.rpoUnitBuilder = null;
     this.vtxResource = null;
-    this.m_passProcess1 = new PassProcess_1.default();
-    this.m_shdUpdate = false;
+    this.sortEnabled = true;
     this.m_shader = shader;
     this.m_uid = RPOBlock.s_uid++;
   }
 
-  showInfo() {
-    this.m_nodeLinker.showInfo();
+  showInfo() {}
+
+  getType() {
+    return -1;
   }
 
-  addNode(node) {
-    this.m_nodeLinker.addNodeAndSort(node);
+  setSorter(sorter) {
+    this.m_sorter = sorter;
   }
 
-  rejoinNode(node) {
-    if (this.m_nodeLinker.containsNode(node)) {
-      this.m_nodeLinker.removeNodeAndSort(node);
-      this.m_nodeLinker.addNodeAndSort(node);
-    }
-  }
+  sort() {}
 
-  removeNode(node) {
-    this.m_nodeLinker.removeNodeAndSort(node);
-  }
+  addNode(node) {}
+
+  rejoinNode(node) {}
+
+  removeNode(node) {}
 
   isEmpty() {
-    return this.m_nodeLinker.getBegin() == null;
+    return true;
   }
 
-  run(rc) {
-    switch (this.runMode) {
-      case 2:
-        this.run2(rc);
-        break;
+  run(rc) {}
 
-      case 1:
-        this.run1(rc);
-        break;
-
-      case 0:
-        this.run0(rc);
-        break;
-
-      default:
-        break;
-    }
-  }
-
-  run0(rc) {
-    let nextNode = this.m_nodeLinker.getBegin();
-
-    if (nextNode != null) {
-      this.m_shader.bindToGpu(this.shdUid);
-      this.m_shader.resetUniform();
-      let unit = null;
-      this.m_shdUpdate = false; // console.log("run0");
-
-      while (nextNode) {
-        if (nextNode.drawEnabled) {
-          unit = nextNode.unit;
-          unit.updateVtx();
-
-          if (unit.drawEnabled) {
-            if (unit.rgraph && unit.rgraph.isEnabled()) {
-              const proc = this.m_passProcess1;
-              proc.units = [unit];
-              proc.rc = rc;
-              proc.vtxFlag = true;
-              proc.texFlag = true;
-              unit.rgraph.run(proc);
-              this.m_shdUpdate = true;
-            } else {
-              if (this.m_shdUpdate) {
-                unit.applyShader(true);
-                this.m_shdUpdate = false;
-              }
-
-              unit.run(rc);
-              unit.draw(rc);
-            }
-          }
-        }
-
-        nextNode = nextNode.next;
-      }
-    }
-  }
-
-  run1(rc) {
-    let nextNode = this.m_nodeLinker.getBegin();
-
-    if (nextNode != null) {
-      this.m_shader.bindToGpu(this.shdUid);
-      this.m_shader.resetUniform();
-      let linker = this.m_nodeLinker;
-      let unit = null;
-      let vtxTotal = linker.getVtxTotalAt(nextNode.rvroI);
-      let texTotal = linker.getTexTotalAt(nextNode.rtroI);
-      let vtxFlag = vtxTotal > 0;
-      let texFlag = texTotal > 0;
-      this.m_shdUpdate = false; // console.log("run1", vtxFlag, texFlag, this.procuid);
-
-      while (nextNode != null) {
-        if (vtxTotal < 1) {
-          vtxTotal = linker.getVtxTotalAt(nextNode.rvroI);
-          vtxFlag = true;
-        }
-
-        vtxTotal--;
-
-        if (texTotal < 1) {
-          texTotal = linker.getTexTotalAt(nextNode.rtroI);
-          texFlag = true;
-        }
-
-        texTotal--; // if(DebugFlag.Flag_0 > 0) console.log("nextNode.drawEnabled: ",nextNode.drawEnabled);
-
-        if (nextNode.drawEnabled) {
-          unit = nextNode.unit; // if(DebugFlag.Flag_0 > 0) console.log("unit.drawEnabled: ",unit.drawEnabled);
-          // console.log("unit.rdp.getUid(): ", unit.rdp.getUid(), unit.vdrInfo.rdp.getUid());
-
-          vtxFlag = unit.updateVtx() || vtxFlag;
-
-          if (unit.drawEnabled) {
-            if (unit.rgraph && unit.rgraph.isEnabled()) {
-              const proc = this.m_passProcess1;
-              proc.units = [unit];
-              proc.rc = rc;
-              proc.vtxFlag = vtxFlag;
-              proc.texFlag = texFlag;
-              unit.rgraph.run(proc);
-              this.m_shdUpdate = true;
-            } else {
-              this.draw1(rc, unit, vtxFlag, texFlag);
-            }
-
-            vtxFlag = false;
-            texFlag = false;
-          }
-        }
-
-        nextNode = nextNode.next;
-      }
-    }
-  }
-
-  draw1(rc, unit, vtxFlag, texFlag) {
-    if (this.m_shdUpdate) {
-      unit.applyShader(true);
-      this.m_shdUpdate = false;
-    }
-
-    if (vtxFlag) {
-      unit.vro.run();
-      vtxFlag = false;
-    }
-
-    if (texFlag) {
-      unit.tro.run();
-      texFlag = false;
-    }
-
-    unit.run2(rc);
-    unit.draw(rc);
-  }
-
-  run2(rc) {
-    let nextNode = this.m_nodeLinker.getBegin();
-
-    if (nextNode != null) {
-      const shader = this.m_shader;
-      shader.bindToGpu(this.shdUid);
-      shader.resetUniform();
-      let unit = null;
-      RenderStateObject_1.RenderStateObject.UseRenderState(nextNode.unit.renderState);
-      RenderColorMask_1.RenderColorMask.UseRenderState(nextNode.unit.rcolorMask);
-      let vtxTotal = this.m_nodeLinker.getVtxTotalAt(nextNode.rvroI);
-      let texTotal = this.m_nodeLinker.getTexTotalAt(nextNode.rtroI);
-      let vtxFlag = vtxTotal > 0;
-      let texFlag = texTotal > 0;
-
-      while (nextNode != null) {
-        if (vtxTotal < 0) {
-          vtxTotal = this.m_nodeLinker.getVtxTotalAt(nextNode.rvroI);
-          vtxFlag = true;
-        }
-
-        vtxTotal--;
-
-        if (texTotal < 0) {
-          texTotal = this.m_nodeLinker.getTexTotalAt(nextNode.rtroI);
-          texFlag = true;
-        }
-
-        texTotal--;
-
-        if (nextNode.drawEnabled) {
-          unit = nextNode.unit;
-          vtxFlag = unit.updateVtx() || vtxFlag;
-
-          if (unit.drawEnabled) {
-            if (vtxFlag) {
-              unit.vro.run();
-              vtxFlag = false;
-            }
-
-            if (texFlag) {
-              unit.tro.run();
-              texFlag = false;
-            }
-
-            if (unit.ubo != null) {
-              unit.ubo.run(rc);
-            }
-
-            shader.useTransUniform(unit.transUniform);
-            shader.useUniform(unit.uniform);
-            unit.draw(rc);
-          }
-        }
-
-        nextNode = nextNode.next;
-      }
-    }
-  }
-
-  runLockMaterial(rc) {
-    let nextNode = this.m_nodeLinker.getBegin();
-
-    if (nextNode != null) {
-      this.m_shader.bindToGpu(this.shdUid);
-      this.m_shader.resetUniform();
-      let texUnlock = this.m_shader.isTextureUnLocked();
-      rc.Texture.unlocked = texUnlock;
-      let unit = null;
-
-      if (this.batchEnabled) {
-        let vtxTotal = this.m_nodeLinker.getVtxTotalAt(nextNode.rvroI);
-        let vtxFlag = vtxTotal > 0;
-
-        while (nextNode != null) {
-          if (vtxTotal < 1) {
-            vtxTotal = this.m_nodeLinker.getVtxTotalAt(nextNode.rvroI);
-            vtxFlag = true;
-          }
-
-          vtxTotal--;
-
-          if (nextNode.drawEnabled) {
-            unit = nextNode.unit;
-            vtxFlag = unit.updateVtx() || vtxFlag;
-
-            if (unit.drawEnabled) {
-              if (vtxFlag) {
-                unit.vro.run();
-                vtxFlag = false;
-              }
-
-              if (texUnlock) {
-                unit.tro.run();
-              }
-
-              unit.runLockMaterial2(null);
-              unit.draw(rc);
-            }
-          }
-
-          nextNode = nextNode.next;
-        }
-      } else {
-        while (nextNode != null) {
-          if (nextNode.drawEnabled) {
-            unit = nextNode.unit;
-            unit.updateVtx();
-
-            if (unit.drawEnabled) {
-              unit.runLockMaterial();
-
-              if (texUnlock) {
-                nextNode.tro.run();
-              }
-
-              unit.draw(rc);
-            }
-          }
-
-          nextNode = nextNode.next;
-        }
-      }
-
-      rc.Texture.unlocked = false;
-    }
-  } // 在锁定material的时候,直接绘制单个unit
+  runLockMaterial(rc) {} // 在锁定material的时候,直接绘制单个unit
 
 
   drawUnit(rc, unit, disp) {
-    if (unit.drawEnabled) {
+    unit.updateVtx();
+
+    if (unit.drawing) {
       this.m_shader.bindToGpu(unit.shdUid);
       unit.updateVtx();
       unit.run(rc);
@@ -6554,7 +7097,7 @@ class RPOBlock {
   drawLockMaterialByUnit(rc, unit, disp, useGlobalUniform, forceUpdateUniform) {
     unit.updateVtx();
 
-    if (unit.drawEnabled) {
+    if (unit.drawing) {
       if (forceUpdateUniform) {
         this.m_shader.resetUniform();
       } // console.log("****** drawLockMaterialByUnit(), unit: ",unit);
@@ -6576,33 +7119,15 @@ class RPOBlock {
   }
 
   reset() {
-    let nextNode = this.m_nodeLinker.getBegin();
-    let node = null;
-
-    if (nextNode != null) {
-      let runit;
-
-      while (nextNode != null) {
-        node = nextNode;
-        nextNode = nextNode.next;
-        this.rpoUnitBuilder.setRPNodeParam(node.__$ruid, this.procuid, -1);
-        node.reset();
-        runit = node.unit;
-
-        if (this.rpoNodeBuilder.restore(node)) {
-          this.rpoUnitBuilder.restore(runit);
-        }
-      }
-    }
-
     this.index = -1;
     this.shdUid = -1;
     this.procuid = -1;
-    this.m_nodeLinker.clear();
     this.rpoNodeBuilder = null;
     this.rpoUnitBuilder = null;
     this.vtxResource = null;
   }
+
+  clear() {}
 
   destroy() {
     this.reset();
@@ -6941,6 +7466,7 @@ class FrameBufferObject {
     this.m_uid = -1; // renderer context unique id
 
     this.m_rcuid = 0;
+    this.m_texRes = null;
     this.m_COLOR_ATTACHMENT0 = 0x0;
     this.m_fbo = null;
     this.m_depthStencilRBO = null;
@@ -6974,6 +7500,19 @@ class FrameBufferObject {
 
     this.m_resizeW = 2;
     this.m_resizeH = 2;
+    let fs = FrameBufferObject.s_bindFT;
+
+    if (fs == null) {
+      fs = new Array(128);
+      fs.fill(null);
+    }
+
+    if (fs[rcuid] == null) {
+      fs[rcuid] = new Int16Array(4);
+      fs[rcuid].fill(-9);
+    }
+
+    FrameBufferObject.s_bindFT = fs;
     this.m_rcuid = rcuid;
     this.m_texRes = texResource;
     this.m_bufferLType = frameBufType;
@@ -7004,39 +7543,19 @@ class FrameBufferObject {
 
   getAttachmentTotal() {
     return this.m_attachmentMaskList.length;
-  }
+  } // bindToBackbuffer(frameBufferType: number): void {
+  // 	switch (frameBufferType) {
+  // 		case FrameBufferType.DRAW_FRAMEBUFFER:
+  // 			this.m_gl.bindFramebuffer(this.m_gl.DRAW_FRAMEBUFFER, null);
+  // 			break;
+  // 		case FrameBufferType.READ_FRAMEBUFFER:
+  // 			this.m_gl.indFramebuffer(this.m_gl.READ_FRAMEBUFFER, null);
+  // 			break;
+  // 		default:
+  // 			this.m_gl.bindFramebuffer(this.m_gl.FRAMEBUFFER, null);
+  // 	}
+  // }
 
-  bindToBackbuffer(frameBufferType) {
-    switch (frameBufferType) {
-      case FrameBufferType_1.default.DRAW_FRAMEBUFFER:
-        this.m_gl.bindFramebuffer(this.m_gl.DRAW_FRAMEBUFFER, null);
-        break;
-
-      case FrameBufferType_1.default.READ_FRAMEBUFFER:
-        this.m_gl.indFramebuffer(this.m_gl.READ_FRAMEBUFFER, null);
-        break;
-
-      default:
-        this.m_gl.bindFramebuffer(this.m_gl.FRAMEBUFFER, null);
-    }
-  }
-
-  bind(frameBufferType) {
-    if (this.m_fbo != null) {
-      switch (frameBufferType) {
-        case FrameBufferType_1.default.DRAW_FRAMEBUFFER:
-          this.m_gl.bindFramebuffer(this.m_gl.DRAW_FRAMEBUFFER, this.m_fbo);
-          break;
-
-        case FrameBufferType_1.default.READ_FRAMEBUFFER:
-          this.m_gl.bindFramebuffer(this.m_gl.READ_FRAMEBUFFER, this.m_fbo);
-          break;
-
-        default:
-          this.m_gl.bindFramebuffer(this.m_gl.FRAMEBUFFER, this.m_fbo);
-      }
-    }
-  }
 
   getFBO() {
     return this.m_fbo;
@@ -7077,8 +7596,9 @@ class FrameBufferObject {
     if (attachmentIndex == 0) {
       this.m_preFTIndex = 0;
       this.m_haveDepthTex = false; // 注意, 防止多次重复调用的没必要重设
+      // this.m_gl.bindFramebuffer(this.m_fboTarget, this.m_fbo);
 
-      this.m_gl.bindFramebuffer(this.m_fboTarget, this.m_fbo);
+      this.bind(this.m_bufferLType);
 
       if (inFormat != TextureFormat_1.default.DEPTH_COMPONENT && inFormat != TextureFormat_1.default.DEPTH_STENCIL) {
         this.m_activeAttachmentTotal = 0;
@@ -7087,15 +7607,16 @@ class FrameBufferObject {
     }
 
     let targetType = -1;
-    let rTex = null; //trace("FrameBufferObject::use(), texProxy != null: "+(texProxy != null));
+    let rTex = null; // console.log("$$$$$ FrameBufferObject::use(), texProxy != null: ",(texProxy != null));
 
     if (texProxy != null) {
       targetType = texProxy.getTargetType();
-      rTex = this.m_texRes.getGpuBuffer(texProxy.getResUid());
       texProxy.uploadFromFbo(this.m_texRes, this.m_width, this.m_height);
+      rTex = this.m_texRes.getGpuBuffer(texProxy.getResUid());
     } else {
       targetType = this.m_texTargetTypes[this.m_activeAttachmentTotal];
-    }
+    } // console.log("$$$$$ renderToTexAt() rTex: ", rTex);
+
 
     this.framebufferTextureBind(rgl, targetType, inFormat, rTex);
   }
@@ -7139,8 +7660,7 @@ class FrameBufferObject {
         /*
         if(this.m_attachmentMaskList[this.m_activeAttachmentTotal])
         {
-            
-            //rgl.framebufferTexture2D(this.m_fboTarget, this.m_COLOR_ATTACHMENT0 + this.m_attachmentIndex, rgl.TEXTURE_2D, rTex, this.textureLevel);
+              //rgl.framebufferTexture2D(this.m_fboTarget, this.m_COLOR_ATTACHMENT0 + this.m_attachmentIndex, rgl.TEXTURE_2D, rTex, this.textureLevel);
             this.glFramebufferTex2D(this.m_COLOR_ATTACHMENT0 + this.m_attachmentIndex, rTex);
             ++this.m_attachmentIndex;
             if (rTex != null)
@@ -7242,7 +7762,7 @@ class FrameBufferObject {
   use(rgl) {
     this.m_gl = rgl;
 
-    if (this.m_fbo != null) {
+    if (this.m_fbo) {
       //console.log("this.m_preAttachIndex,this.m_attachmentIndex: ",this.m_preAttachIndex,this.m_attachmentIndex,this.m_activeAttachmentTotal);
       if (this.m_activeAttachmentTotal > 1) {
         if (this.m_preAttachIndex != this.m_attachmentIndex) {
@@ -7258,7 +7778,7 @@ class FrameBufferObject {
               this.m_gl.framebufferTexture2D(this.m_fboTarget, this.m_preAttachments[i], this.m_preTragets[i], null, 0);
             }
           } // support webgl2 and webgl1
-          //console.log("AAA attachments 0: ",attachments);
+          // console.log("AAA attachments 0: ",attachments);
 
 
           RenderFBOProxy_1.default.DrawBuffers(attachments);
@@ -7267,11 +7787,12 @@ class FrameBufferObject {
       } else if (this.m_preAttachIndex != this.m_attachmentIndex) {
         if (this.m_preAttachIndex > this.m_attachmentIndex) {
           for (let i = 1; i < this.m_preAttachIndex; ++i) {
+            // console.log( "AAA attachments 1 a: ",this.m_preAttachments[i], this.m_preTragets[i] );
             this.m_gl.framebufferTexture2D(this.m_fboTarget, this.m_preAttachments[i], this.m_preTragets[i], null, 0);
           }
         }
 
-        let attachments = [this.m_COLOR_ATTACHMENT0]; //console.log("AAA attachments 1: ",attachments);
+        let attachments = [this.m_COLOR_ATTACHMENT0]; // console.log( "AAA attachments 1: ",attachments );
 
         RenderFBOProxy_1.default.DrawBuffers(attachments);
         this.m_preAttachIndex = this.m_attachmentIndex;
@@ -7472,7 +7993,8 @@ class FrameBufferObject {
       rgl.renderbufferStorage(rgl.RENDERBUFFER, rgl.RGBA8, pw, ph);
     }
 
-    rgl.framebufferRenderbuffer(this.m_fboTarget, this.m_COLOR_ATTACHMENT0, rgl.RENDERBUFFER, this.m_colorRBO);
+    rgl.framebufferRenderbuffer(this.m_fboTarget, rgl.COLOR_ATTACHMENT0, rgl.RENDERBUFFER, this.m_colorRBO); // console.log("this.m_COLOR_ATTACHMENT0: ", this.m_COLOR_ATTACHMENT0);
+
     console.log("FrameBufferObject create only color buf...this.multisampleEnabled: " + this.multisampleEnabled + ",this.multisampleLevel:" + this.multisampleLevel);
   }
 
@@ -7486,25 +8008,23 @@ class FrameBufferObject {
     this.m_resizeH = ph; //trace("XXXXXXXXXXXXXX ready create framebuf, m_fbo: ", m_fbo);
 
     if (boo) this.m_fbo = rgl.createFramebuffer(); //trace("XXXXXXXXXXXXXX doing create framebuf, m_fbo: ", m_fbo);
+    // switch (this.m_bufferLType) {
+    // 	case FrameBufferType.DRAW_FRAMEBUFFER:
+    // 		this.m_fboTarget = rgl.DRAW_FRAMEBUFFER;
+    // 		//console.log("create FrameBufferType is DRAW_FRAMEBUFFER.");
+    // 		break;
+    // 	case FrameBufferType.READ_FRAMEBUFFER:
+    // 		this.m_fboTarget = rgl.READ_FRAMEBUFFER;
+    // 		//console.log("create FrameBufferType is READ_FRAMEBUFFER.");
+    // 		break;
+    // 	default:
+    // 		this.m_fboTarget = rgl.FRAMEBUFFER;
+    // 		//console.log("create FrameBufferType is FRAMEBUFFER.");
+    // 		break;
+    // }
+    // rgl.bindFramebuffer(this.m_fboTarget, this.m_fbo);
 
-    switch (this.m_bufferLType) {
-      case FrameBufferType_1.default.DRAW_FRAMEBUFFER:
-        this.m_fboTarget = rgl.DRAW_FRAMEBUFFER; //console.log("create FrameBufferType is DRAW_FRAMEBUFFER.");
-
-        break;
-
-      case FrameBufferType_1.default.READ_FRAMEBUFFER:
-        this.m_fboTarget = rgl.READ_FRAMEBUFFER; //console.log("create FrameBufferType is READ_FRAMEBUFFER.");
-
-        break;
-
-      default:
-        this.m_fboTarget = rgl.FRAMEBUFFER; //console.log("create FrameBufferType is FRAMEBUFFER.");
-
-        break;
-    }
-
-    rgl.bindFramebuffer(this.m_fboTarget, this.m_fbo); //console.log("FrameBufferObject::initialize() writeDepthEnabled: "+this.writeDepthEnabled+", writeDepthEnabled: " , this.writeDepthEnabled+" ,size("+pw + "," ,ph+")");
+    this.m_fboTarget = this.bind(this.m_bufferLType); //console.log("FrameBufferObject::initialize() writeDepthEnabled: "+this.writeDepthEnabled+", writeDepthEnabled: " , this.writeDepthEnabled+" ,size("+pw + "," ,ph+")");
 
     if (this.writeDepthEnabled) {
       //trace("FrameBufferObject writeStencilEnabled: " ,this.writeStencilEnabled);
@@ -7519,12 +8039,11 @@ class FrameBufferObject {
     } else if (this.writeStencilEnabled) {
       this.buildStencilRBO(rgl, pw, ph);
     } else {
-      console.log("fffrfrfrfrfrfr");
       this.buildColorRBO(rgl, pw, ph);
     }
 
     if (boo) {
-      let e = rgl.checkFramebufferStatus(this.m_fboTarget); //trace("XXXXX   XXXXXXXXx Err: "+e+", rgl.FRAMEBUFFER_COMPLETE: "+rgl.FRAMEBUFFER_COMPLETE);
+      let e = rgl.checkFramebufferStatus(this.m_fboTarget);
 
       if (e !== rgl.FRAMEBUFFER_COMPLETE) {
         console.error("FrameBufferObject::createNewFBO(), Error: create failure!!!!");
@@ -7533,28 +8052,81 @@ class FrameBufferObject {
       }
     }
 
-    FrameBufferObject.BindToBackbuffer(rgl, this.m_bufferLType);
+    FrameBufferObject.BindToBackbuffer(rgl, this.m_bufferLType, this.m_rcuid);
   }
 
-  static BindToBackbuffer(rc, frameBufferType) {
+  bind(frameBufferType) {
+    if (this.m_fbo) {
+      // console.log("bind fbo to ..., frameBufferType: ", frameBufferType);
+      const fs = FrameBufferObject.s_bindFT[this.m_rcuid];
+      const gl = this.m_gl;
+      let type = gl.FRAMEBUFFER;
+      let i = 1;
+
+      switch (frameBufferType) {
+        case FrameBufferType_1.default.DRAW_FRAMEBUFFER:
+          i = 2;
+          type = gl.DRAW_FRAMEBUFFER;
+          break;
+
+        case FrameBufferType_1.default.READ_FRAMEBUFFER:
+          i = 3;
+          type = gl.READ_FRAMEBUFFER;
+          break;
+
+        default:
+          break;
+      }
+
+      if (fs[i] != this.m_uid) {
+        fs[i] = this.m_uid; // console.log("bind fbo to OK..., gl.FRAMEBUFFER: ", gl.FRAMEBUFFER, type);
+
+        gl.bindFramebuffer(type, this.m_fbo);
+      }
+
+      return type;
+    }
+
+    return 0;
+  }
+
+  static BindToBackbuffer(rc, frameBufferType, rcuid) {
+    const fs = FrameBufferObject.s_bindFT[rcuid]; // console.log("bind fbo to BindToBackbuffer:(), frameBufferType: ", frameBufferType);
+
     switch (frameBufferType) {
       case FrameBufferType_1.default.DRAW_FRAMEBUFFER:
+        fs[2] = -9;
         rc.bindFramebuffer(rc.DRAW_FRAMEBUFFER, null);
         break;
 
       case FrameBufferType_1.default.READ_FRAMEBUFFER:
+        fs[3] = -9;
         rc.indFramebuffer(rc.READ_FRAMEBUFFER, null);
         break;
 
       default:
+        fs[1] = -9;
         rc.bindFramebuffer(rc.FRAMEBUFFER, null);
         break;
     }
   }
 
+  static IsFBORunning(rcuid) {
+    if (FrameBufferObject.s_bindFT) {
+      const fs = FrameBufferObject.s_bindFT[rcuid];
+
+      if (fs) {
+        return fs[1] >= 0 || fs[2] >= 0 || fs[3] >= 0;
+      }
+    }
+
+    return false;
+  }
+
 }
 
 FrameBufferObject.s_uid = 0;
+FrameBufferObject.s_bindFT = null;
 exports.default = FrameBufferObject;
 
 /***/ }),
@@ -7951,6 +8523,11 @@ class ROVertexResource {
     this.m_gl = gl;
     this.m_vtxBuilder = vtxBuilder;
   }
+
+  setGLCtx(gl) {
+    this.m_gl = gl;
+    this.m_vtxBuilder.setGLCtx(gl);
+  }
   /**
    * set the updating times total that update vertex data to gpu in one frame time
    * @param total updating times total, the min value is 4, the default value is 16
@@ -8175,9 +8752,11 @@ Object.defineProperty(exports, "__esModule", {
 
 const RenderSortBlock_1 = __importDefault(__webpack_require__("264c"));
 
-const RPOBlock_1 = __importDefault(__webpack_require__("5f3c"));
+const MaterialRPOBlock_1 = __importDefault(__webpack_require__("3420"));
 
-const ROTransPool_1 = __importDefault(__webpack_require__("9156"));
+const SortNodeLinker_1 = __webpack_require__("f571");
+
+const ContainerRPOBlock_1 = __importDefault(__webpack_require__("91da"));
 
 class RenderProcess {
   constructor(shader, rpoNodeBuilder, rpoUnitBuilder, vtxResource, batchEnabled, processFixedState) {
@@ -8187,13 +8766,15 @@ class RenderProcess {
     this.m_rpIndex = -1;
     this.m_nodesLen = 0;
     this.m_enabled = true;
-    this.m_blockList = []; // 记录以相同shader的node为一个集合对象(RPOBlock) 的数组
+    this.m_blockList = []; // 记录以相同shader的node为一个集合对象(MaterialRPOBlock) 的数组
 
     this.m_blockListLen = 0;
-    this.m_blockFList = new Int8Array(RenderProcess.s_max_shdTotal); // 记录以相同shader的node为一个集合对象(RPOBlock)的构建状态 的数组
+    this.m_blockFList = new Int8Array(RenderProcess.s_max_shdTotal); // 记录以相同shader的node为一个集合对象(MaterialRPOBlock)的构建状态 的数组
 
     this.m_blockFListLen = RenderProcess.s_max_shdTotal; // 假定引擎中同时存在的最多的shader 有1024种
 
+    this.m_containerBlocks = [];
+    this.m_scTotal = 0;
     this.m_shader = null;
     this.m_rpoNodeBuilder = null;
     this.m_rpoUnitBuilder = null;
@@ -8202,6 +8783,7 @@ class RenderProcess {
     this.m_fixBlock = null;
     this.m_sortBlock = null;
     this.m_sorter = null;
+    this.m_blockLinker = new SortNodeLinker_1.SortNodeLinker();
     this.m_batchEnabled = true;
     this.m_fixedState = true;
     this.m_sortEnabled = false;
@@ -8221,7 +8803,7 @@ class RenderProcess {
   }
 
   createBlock() {
-    let block = new RPOBlock_1.default(this.m_shader);
+    let block = new MaterialRPOBlock_1.default(this.m_shader);
     block.rpoNodeBuilder = this.m_rpoNodeBuilder;
     block.rpoUnitBuilder = this.m_rpoUnitBuilder;
     block.vtxResource = this.m_vtxResource;
@@ -8260,7 +8842,7 @@ class RenderProcess {
   setSorter(sorter) {
     this.m_sorter = sorter;
 
-    if (this.m_sortBlock != null) {
+    if (this.m_sortBlock) {
       this.m_sortBlock.setSorter(sorter);
     }
   }
@@ -8268,7 +8850,7 @@ class RenderProcess {
   setSortEnabled(sortEnabled) {
     if (this.m_nodesLen < 1) {
       this.m_sortEnabled = sortEnabled;
-    } else if (this.m_sortBlock != null) {
+    } else if (this.m_sortBlock) {
       this.m_sortBlock.sortEnabled = sortEnabled;
     }
   }
@@ -8310,11 +8892,12 @@ class RenderProcess {
       block.procuid = this.m_rpIndex;
       this.m_blockList.push(block);
       this.m_blockFList[node.shdUid] = this.m_blockListLen;
-      ++this.m_blockListLen; //  console.log("RenderProcess::addDisp(), this.uid: ",this.getUid());
-      //  console.log("RenderProcess::addDisp(), create a new RPOBlock instance, block: ",block);
-      //  console.log("RenderProcess::addDisp(), create a new RPOBlock instance, this.m_blockList: ",this.m_blockList);
+      ++this.m_blockListLen;
+      this.m_blockLinker.addNode(block); //  console.log("RenderProcess::addDisp(), this.uid: ",this.getUid());
+      //  console.log("RenderProcess::addDisp(), create a new MaterialRPOBlock instance, block: ",block);
+      //  console.log("RenderProcess::addDisp(), create a new MaterialRPOBlock instance, this.m_blockList: ",this.m_blockList);
     } else {
-      //console.log("RenderProcess::addDisp(), use old RPOBlock instance, m_blockFList["+node.shdUid+"]: "+this.m_blockFList[node.shdUid]);
+      //console.log("RenderProcess::addDisp(), use old MaterialRPOBlock instance, m_blockFList["+node.shdUid+"]: "+this.m_blockFList[node.shdUid]);
       block = this.m_blockList[this.m_blockFList[node.shdUid]];
     }
 
@@ -8323,54 +8906,140 @@ class RenderProcess {
   }
 
   rejoinRunitForTro(runit) {
-    let node = this.m_rpoNodeBuilder.getNodeByUid(runit.__$rpuid);
+    if (!this.m_sortBlock) {
+      let node = this.m_rpoNodeBuilder.getNodeByUid(runit.__$rpuid);
 
-    if (node != null) {
-      node.tro = runit.tro;
-      node.texMid = node.unit.texMid;
-      this.m_blockList[node.index].rejoinNode(node);
+      if (node) {
+        node.tro = runit.tro;
+        node.texMid = node.unit.texMid;
+        this.m_blockList[node.index].rejoinNode(node);
+      }
     }
   }
 
   rejoinRunitForVro(runit) {
-    let node = this.m_rpoNodeBuilder.getNodeByUid(runit.__$rpuid);
+    if (!this.m_sortBlock) {
+      let node = this.m_rpoNodeBuilder.getNodeByUid(runit.__$rpuid);
 
-    if (node != null) {
-      // node.insCount = runit.insCount;
-      node.vtxUid = runit.vtxUid;
-      node.vro = runit.vro;
-      this.m_blockList[node.index].rejoinNode(node);
-      this.m_version++;
+      if (node) {
+        node.vtxUid = runit.vtxUid;
+        node.vro = runit.vro;
+        this.m_blockList[node.index].rejoinNode(node);
+        this.m_version++;
+      }
     }
+  }
+
+  addContainer(container) {
+    // console.log("RenderProcess::addContainer() this.m_sortBlock: ", this.m_sortBlock);
+    this.createSortBlock();
+
+    if (this.m_sortBlock) {
+      if (this.m_sortBlock.addContainer(container)) {
+        this.m_scTotal++;
+      }
+    } else {
+      const ls = this.m_containerBlocks;
+      let i = ls.length - 1;
+      let flag = ls.length > 0;
+
+      for (; i >= 0; --i) {
+        if (ls[i].isEmpty() && flag) {
+          ls[i].addContainer(container);
+          flag = true;
+          break;
+        }
+
+        flag = false;
+
+        if (ls[i].hasContainer(container)) {
+          break;
+        }
+      }
+
+      if (i == -1 && !flag) {
+        let block = new ContainerRPOBlock_1.default(this.m_shader);
+        block.addContainer(container);
+        this.m_blockLinker.addNode(block);
+        ls.push(block);
+      }
+    }
+  }
+
+  removeContainer(container) {
+    if (this.m_sortBlock) {
+      if (this.m_sortBlock.removeContainer(container)) {
+        this.m_scTotal--;
+      }
+    } else {
+      const ls = this.m_containerBlocks;
+      let i = 0;
+
+      for (; i < ls.length; ++i) {
+        if (ls[i].hasContainer(container)) {
+          ls[i].removeContainer(container);
+        }
+      }
+    }
+  }
+
+  createSortBlock() {
+    if (this.m_sortEnabled && !this.m_sortBlock) {
+      this.m_sortBlock = new RenderSortBlock_1.default(this.m_shader);
+      this.m_sortBlock.setSorter(this.m_sorter);
+      this.m_blockLinker.addNode(this.m_sortBlock);
+    } // if (this.m_sortBlock) {
+    // 	this.m_sortBlock.addNode(node);
+    // } else {
+    // 	this.m_sortBlock = new RenderSortBlock(this.m_shader);
+    // 	this.m_sortBlock.setSorter(this.m_sorter);
+    // 	this.m_sortBlock.addNode(node);
+    // 	this.m_blockLinker.addNode(this.m_sortBlock);
+    // }
+
   }
 
   addDisp(disp) {
     if (disp != null) {
-      if (disp.__$$runit != null && disp.__$$runit.getRPROUid() < 0) {
+      if (disp.__$$runit && disp.__$$runit.getRPROUid() < 0) {
+        const re = disp.__$$runit.rentity;
+
+        let parent = re.__$getParent();
+
+        while (parent) {
+          if (!parent.hasParent() && parent.getREType() >= 20) {
+            // console.log("RenderProcess(" + this.uid + ")::addDisp(), 容器内驱动渲染，不需要直接加入渲染 process.");
+            return;
+            break;
+          }
+
+          parent = parent.getParent();
+        }
+
         if (disp.__$$runit.getRPROUid() != this.uid) {
-          // console.log("RenderProcess(" + this.uid + ")::addDisp(): ", disp.ivsCount, disp, disp.drawMode);
+          // console.log("XX--XX RenderProcess(" + this.uid + ")::addDisp(): ", disp.ivsCount, disp, disp.drawMode);
           let node = this.m_rpoNodeBuilder.create();
-          node.unit = this.m_rpoUnitBuilder.getNodeByUid(disp.__$ruid);
-          node.unit.shader = this.m_shader;
+          node.unit = this.m_rpoUnitBuilder.getNodeByUid(disp.__$ruid); // node.unit.shader = this.m_shader;
+
           node.unit.__$rprouid = this.uid;
           disp.__$rpuid = node.uid;
           node.__$ruid = disp.__$ruid;
           node.unit.__$rpuid = node.uid;
           node.updateData();
-          ++this.m_nodesLen; //this.m_rpoUnitBuilder.setRPNodeParam(disp.__$ruid, this.m_rpIndex, node.uid);
-
+          ++this.m_nodesLen;
           this.m_rpoUnitBuilder.setRPNodeParam(disp.__$ruid, this.getUid(), node.uid);
 
           if (this.m_sortEnabled) {
-            console.log("sort process add a disp...");
-
-            if (this.m_sortBlock != null) {
-              this.m_sortBlock.addNode(node);
-            } else {
-              this.m_sortBlock = new RenderSortBlock_1.default(this.m_shader);
-              this.m_sortBlock.setSorter(this.m_sorter);
-              this.m_sortBlock.addNode(node);
-            }
+            // console.log("sort process add a disp...");
+            this.createSortBlock();
+            this.m_sortBlock.addNode(node); // if (this.m_sortBlock) {
+            // 	this.m_sortBlock.addNode(node);
+            // } else {
+            // 	this.m_sortBlock = new RenderSortBlock(this.m_shader);
+            // 	this.m_sortBlock.setSorter(this.m_sorter);
+            // 	this.m_blockLinker.addNode(this.m_sortBlock);
+            // 	this.m_sortBlock.addNode(node);
+            // }
           } else {
             this.addNodeToBlock(node);
           }
@@ -8384,51 +9053,63 @@ class RenderProcess {
   }
 
   updateDispMateiral(disp) {
-    if (disp.__$$runit != null) {
-      let nodeUId = disp.__$$runit.getRPOUid();
+    if (disp.__$$runit) {
+      if (!this.m_sortBlock) {
+        let nodeUId = disp.__$$runit.getRPOUid();
 
-      let node = this.m_rpoNodeBuilder.getNodeByUid(nodeUId); // material info etc.
+        let node = this.m_rpoNodeBuilder.getNodeByUid(nodeUId); // material info etc.
 
-      node.shdUid = node.unit.shdUid;
-      node.texMid = node.unit.texMid;
-      node.tro = node.unit.tro;
-      let block = this.m_blockList[node.index];
-      block.removeNode(node);
-      this.addNodeToBlock(node);
+        node.shdUid = node.unit.shdUid;
+        node.texMid = node.unit.texMid;
+        node.tro = node.unit.tro;
+        let block = this.m_blockList[node.index];
+        block.removeNode(node);
+        this.addNodeToBlock(node);
+      }
     }
   }
 
   removeDisp(disp) {
-    if (disp != null) {
-      if (disp.__$$runit != null) {
+    if (disp) {
+      if (disp.__$$runit) {
+        // const re = (disp.__$$runit as RPOUnit).rentity as IRenderEntity;
+        // let parent = re.__$getParent();
+        // console.log("removeDisp() B ............");
+        // while (parent) {
+        // 	if (!parent.hasParent() && parent.getREType() >= 20) {
+        // 		console.log("RenderProcess(" + this.uid + ")::removeDisp(), 容器内驱动渲染，不需要直接从渲染 process 移除.");
+        // 		return;
+        // 		break;
+        // 	}
+        // 	parent = parent.getParent();
+        // }
         let nodeUId = disp.__$$runit.getRPOUid();
 
         let node = this.m_rpoNodeBuilder.getNodeByUid(nodeUId); // console.log("RenderProcess("+this.uid+")::removeDisp(), nodeUId: ",nodeUId,disp);
         // console.log("removeDisp(), node != null: "+(node != null),", this.m_blockList: ",this.m_blockList);
 
-        if (node != null) {
+        if (node) {
           let runit = node.unit;
           let transU = runit.transUniform;
 
-          if (transU != null) {
-            ROTransPool_1.default.RemoveTransUniform(transU.key);
+          if (transU) {
+            // ROTransPool.RemoveTransUniform(transU.key);
+            this.m_rc.rdataBuilder.transPool.removeTransUniform(transU.key);
           }
 
-          if (this.m_sortBlock == null) {
+          if (this.m_sortBlock) {
+            this.m_sortBlock.removeNode(node);
+          } else {
             let block = this.m_blockList[node.index];
             block.removeNode(node);
-          } else {
-            this.m_sortBlock.removeNode(node);
-          } // this.m_rpoUnitBuilder.setRPNodeParam(disp.__$ruid, this.m_rpIndex, -1);
-
+          }
 
           this.m_rpoUnitBuilder.setRPNodeParam(disp.__$ruid, this.getUid(), -1);
           --this.m_nodesLen;
 
           if (this.m_rpoNodeBuilder.restore(node)) {
             this.m_rpoUnitBuilder.restore(runit);
-          } // this.m_vtxResource.__$detachRes(disp.vbuf.getUid());
-
+          }
 
           this.m_vtxResource.__$detachRes(disp.getVtxResUid());
 
@@ -8442,6 +9123,28 @@ class RenderProcess {
     }
   }
 
+  forceRemoveDisp(disp) {
+    if (disp && disp.__$$runit) {
+      // console.log("RenderProcess(" + this.uid + ")::forceRemoveDisp(), 容器内驱动渲染，不需要直接从渲染 process 移除.");
+      let runit = disp.__$$runit;
+      let transU = runit.transUniform;
+
+      if (transU) {
+        // ROTransPool.RemoveTransUniform(transU.key);
+        this.m_rc.rdataBuilder.transPool.removeTransUniform(transU.key);
+      }
+
+      this.m_rpoUnitBuilder.setRPNodeParam(disp.__$ruid, this.getUid(), -1);
+      this.m_rpoUnitBuilder.restore(runit);
+
+      this.m_vtxResource.__$detachRes(disp.getVtxResUid());
+
+      disp.__$$runit = null;
+      disp.__$ruid = -1;
+      this.m_version++;
+    }
+  }
+
   getStatus() {
     return this.m_version;
   }
@@ -8451,18 +9154,17 @@ class RenderProcess {
 
 
   removeDispUnit(disp) {
-    if (disp != null) {
+    if (disp) {
       if (disp.__$ruid > -1) {
         let nodeUId = disp.__$$runit.getRPOUid();
 
         let node = this.m_rpoNodeBuilder.getNodeByUid(nodeUId);
 
-        if (node != null) {
-          if (this.m_sortBlock == null) {
-            let block = this.m_blockList[node.index];
-            block.removeNode(node);
-          } else {
+        if (node) {
+          if (this.m_sortBlock) {
             this.m_sortBlock.removeNode(node);
+          } else {
+            this.m_blockList[node.index].removeNode(node);
           }
 
           this.m_rpoUnitBuilder.setRPNodeParam(disp.__$ruid, this.m_rpIndex, -1);
@@ -8475,42 +9177,60 @@ class RenderProcess {
   }
 
   update() {
-    if (this.m_enabled && this.m_nodesLen > 0) {
-      if (this.m_sortBlock != null) {
+    const total = this.m_nodesLen + this.m_containerBlocks.length + this.m_scTotal;
+
+    if (this.m_enabled && total > 0) {
+      if (this.m_sortBlock) {
         this.m_sortBlock.update();
       }
     }
   }
 
   run() {
-    if (this.m_enabled && this.m_nodesLen > 0) {
-      let rc = this.m_rc;
+    const total = this.m_nodesLen + this.m_containerBlocks.length + this.m_scTotal;
 
-      if (this.m_sortBlock == null) {
-        if (this.m_shader.isUnLocked()) {
-          for (let i = 0; i < this.m_blockListLen; ++i) {
-            this.m_blockList[i].run(rc);
-          }
-        } else {
-          for (let i = 0; i < this.m_blockListLen; ++i) {
-            this.m_blockList[i].runLockMaterial(rc);
-          }
+    if (this.m_enabled && total > 0) {
+      // console.log("run, proc uid: ", this.uid);
+      const rc = this.m_rc;
+      const linker = this.m_blockLinker;
+      let node = linker.getBegin();
+
+      if (this.m_shader.isUnLocked()) {
+        while (node) {
+          node.run(rc);
+          node = node.next;
         }
       } else {
-        if (this.m_shader.isUnLocked()) {
-          this.m_sortBlock.run(rc);
-        } else {
-          this.m_sortBlock.runLockMaterial(rc);
+        while (node) {
+          node.runLockMaterial(rc);
+          node = node.next;
         }
-      }
+      } // if (this.m_sortBlock) {
+      // 	if (this.m_shader.isUnLocked()) {
+      // 		this.m_sortBlock.run(rc);
+      // 	} else {
+      // 		this.m_sortBlock.runLockMaterial(rc);
+      // 	}
+      // } else {
+      // 	if (this.m_shader.isUnLocked()) {
+      // 		for (let i = 0; i < this.m_blockListLen; ++i) {
+      // 			this.m_blockList[i].run(rc);
+      // 		}
+      // 	} else {
+      // 		for (let i = 0; i < this.m_blockListLen; ++i) {
+      // 			this.m_blockList[i].runLockMaterial(rc);
+      // 		}
+      // 	}
+      // }
+
     }
   }
 
   drawDisp(disp, useGlobalUniform = false, forceUpdateUniform = true) {
-    if (disp != null) {
+    if (disp) {
       let unit = disp.__$$runit;
 
-      if (unit != null) {
+      if (unit) {
         if (this.m_shader.isUnLocked()) {
           if (forceUpdateUniform) {
             this.m_shader.resetUniform();
@@ -8522,21 +9242,18 @@ class RenderProcess {
         }
       }
     }
-  }
-  /**
-   * Deprecated(不推荐使用)
-   */
+  } // /**
+  //  * Deprecated(不推荐使用)
+  //  */
+  // drawLockMaterialByDisp(disp: IRODisplay, useGlobalUniform: boolean = false, forceUpdateUniform: boolean = true): void {
+  // 	if (disp != null) {
+  // 		let unit = disp.__$$runit as RPOUnit;
+  // 		if (unit != null) {
+  // 			this.m_fixBlock.drawLockMaterialByUnit(this.m_rc, unit, disp, useGlobalUniform, forceUpdateUniform);
+  // 		}
+  // 	}
+  // }
 
-
-  drawLockMaterialByDisp(disp, useGlobalUniform = false, forceUpdateUniform = true) {
-    if (disp != null) {
-      let unit = disp.__$$runit;
-
-      if (unit != null) {
-        this.m_fixBlock.drawLockMaterialByUnit(this.m_rc, unit, disp, useGlobalUniform, forceUpdateUniform);
-      }
-    }
-  }
 
   reset() {
     this.m_sortEnabled = false;
@@ -8545,9 +9262,8 @@ class RenderProcess {
     this.m_rpIndex = -1;
     this.m_rcuid = -1;
     this.m_rpIndex = -1;
-    let i = 0;
 
-    for (; i < this.m_blockListLen; ++i) {
+    for (let i = 0; i < this.m_blockListLen; ++i) {
       this.m_blockList[i].reset();
     }
 
@@ -8565,9 +9281,7 @@ class RenderProcess {
   }
 
   showInfo() {
-    let i = 0;
-
-    for (; i < this.m_blockListLen; ++i) {
+    for (let i = 0; i < this.m_blockListLen; ++i) {
       this.m_blockList[i].showInfo();
     }
   }
@@ -8577,21 +9291,154 @@ class RenderProcess {
   }
 
   setEnabled(boo) {
+    // console.log("setEnabled, proc uid: ", this.uid, ", boo: ", boo);
     this.m_enabled = boo;
   }
 
-  getEnabled() {
+  isEnabled() {
     return this.m_enabled;
-  }
-
-  toString() {
-    return "[RenderProcess(uid = " + this.m_rpIndex + ")]";
   }
 
 }
 
 RenderProcess.s_max_shdTotal = 1024;
 exports.default = RenderProcess;
+
+/***/ }),
+
+/***/ "7f1c":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/***************************************************************************/
+
+/*                                                                         */
+
+/*  Copyright 2019-2022 by                                                 */
+
+/*  Vily(vily313@126.com)                                                  */
+
+/*                                                                         */
+
+/***************************************************************************/
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+const PassProcess_1 = __importDefault(__webpack_require__("34cd"));
+/**
+ * 渲染器渲染运行时核心关键执行显示单元,一个unit代表着一个draw call所渲染的所有数据
+ * renderer rendering runtime core executable display unit.
+ */
+
+
+class ContainerFlowRenderer {
+  constructor() {
+    this.passProc = new PassProcess_1.default();
+    this.shdUpdate = false;
+    this.shader = null;
+  }
+
+  runContainer(rc, container) {
+    const els = container.getEntities();
+    const elen = els.length;
+
+    if (elen > 0) {
+      const proc = this.passProc;
+      proc.shader = this.shader; // 可能需要排序
+
+      for (let i = 0; i < elen; ++i) {
+        const et = els[i];
+
+        if (et.isPolyhedral() && et.isVisible() && et.isInRenderer()) {
+          const unit = et.getDisplay().__$$runit;
+
+          if (unit && unit.rendering) {
+            this.shader.bindToGpu(unit.shdUid);
+            unit.updateVtx();
+
+            if (unit.drawing) {
+              if (unit.rgraph && unit.rgraph.isEnabled()) {
+                proc.units = [unit];
+                proc.rc = rc;
+                proc.vtxFlag = true;
+                proc.texFlag = true;
+                unit.rgraph.run(proc);
+                this.shdUpdate = true;
+              } else {
+                if (this.shdUpdate) {
+                  unit.applyShader(true);
+                  this.shdUpdate = false;
+                }
+
+                unit.run(rc);
+                unit.draw(rc);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    const cls = container.getContainers();
+    const clen = cls.length;
+
+    if (clen > 0) {
+      for (let i = 0; i < clen; ++i) {
+        this.runContainer(rc, cls[i]);
+      }
+    }
+  }
+
+  runContainerLock(rc, container) {
+    const els = container.getEntities();
+    const elen = els.length;
+
+    if (elen > 0) {
+      const proc = this.passProc;
+      proc.shader = this.shader; // 可能需要排序
+
+      for (let i = 0; i < elen; ++i) {
+        const et = els[i];
+
+        if (et.isPolyhedral() && et.isVisible() && et.isInRenderer()) {
+          const unit = et.getDisplay().__$$runit;
+
+          if (unit && unit.rendering) {
+            this.shader.bindToGpu(unit.shdUid);
+            unit.updateVtx();
+
+            if (unit.drawing) {
+              unit.vro.run();
+              unit.runLockMaterial2(null);
+              unit.draw(rc);
+            }
+          }
+        }
+      }
+    }
+
+    const cls = container.getContainers();
+    const clen = cls.length;
+
+    if (clen > 0) {
+      for (let i = 0; i < clen; ++i) {
+        this.runContainerLock(rc, cls[i]);
+      }
+    }
+  }
+
+}
+
+exports.default = ContainerFlowRenderer;
 
 /***/ }),
 
@@ -8672,6 +9519,35 @@ class StageParamUniformBuilder {
 }
 
 exports.default = StageParamUniformBuilder;
+
+/***/ }),
+
+/***/ "8414":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/***************************************************************************/
+
+/*                                                                         */
+
+/*  Copyright 2018-2022 by                                                 */
+
+/*  Vily(vily313@126.com)                                                  */
+
+/*                                                                         */
+
+/***************************************************************************/
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+class VtxNormalType {}
+
+VtxNormalType.FLAT = 210;
+VtxNormalType.GOURAND = 310;
+exports.default = VtxNormalType;
 
 /***/ }),
 
@@ -8806,6 +9682,41 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 /***/ }),
 
+/***/ "899a":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/***************************************************************************/
+
+/*                                                                         */
+
+/*  Copyright 2018-2022 by                                                 */
+
+/*  Vily(vily313@126.com)                                                  */
+
+/*                                                                         */
+
+/***************************************************************************/
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+class DebugFlag {
+  constructor() {}
+
+  static Reset() {
+    DebugFlag.Flag_0 = 0x0;
+  }
+
+}
+
+DebugFlag.Flag_0 = 0x0;
+exports.default = DebugFlag;
+
+/***/ }),
+
 /***/ "8a0a":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -8834,6 +9745,10 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 const BitConst_1 = __importDefault(__webpack_require__("ca6c"));
+
+const VtxNormalType_1 = __importDefault(__webpack_require__("8414"));
+
+exports.VtxNormalType = VtxNormalType_1.default;
 
 class VtxBufConst {
   static ToGL(gl, param) {
@@ -9039,12 +9954,6 @@ VtxBufConst.VBUF_CVS_NS = "a_cvs";
 VtxBufConst.VBUF_CVS2_NS = "a_cvs2";
 VtxBufConst.VBUF_TVS_NS = "a_tvs";
 VtxBufConst.VBUF_TVS2_NS = "a_tvs2";
-
-class VtxNormalType {}
-
-VtxNormalType.FLAT = 210;
-VtxNormalType.GOURAND = 310;
-exports.VtxNormalType = VtxNormalType;
 exports.default = VtxBufConst;
 
 /***/ }),
@@ -9086,6 +9995,8 @@ const RDM = RenderDrawMode_1.default;
 class BufRData {
   constructor() {
     this.m_uid = BufRData.s_uid++;
+    this.m_common = true;
+    this.rc = null;
     this.buf = null;
     this.ivsSize = 0;
     this.ivsInitSize = 0;
@@ -9097,17 +10008,17 @@ class BufRData {
     this.stride = 2;
     this.initDrawMode = RDM.ELEMENTS_TRIANGLES;
     this.drawMode = RDM.ELEMENTS_TRIANGLES;
-    this.m_common = true;
     this.bufType = 0;
     this.ivsOffset = 0;
     this.rdpIndex = 0;
     this.trisNumber = 0;
     this.insCount = 0;
+    this.bytesSize = 0;
     /**
      * gl draw mode
      */
 
-    this.gldm = 0;
+    this.gldm = 0; // console.log("bufRData this.m_uid: ", this.m_uid);
   }
 
   getUid() {
@@ -9129,6 +10040,7 @@ class BufRData {
     rd.m_common = this.m_common;
     rd.bufType = this.bufType;
     rd.rdpIndex = this.rdpIndex;
+    rd.bytesSize = this.bytesSize;
     return rd;
   }
 
@@ -9147,23 +10059,31 @@ class BufRData {
       const strip = im == RDM.ELEMENTS_TRIANGLE_STRIP || im == RDM.ELEMENTS_LINES_STRIP;
 
       if (flag || strip) {
+        const rc = this.rc;
+
+        if (rc == null) {
+          throw Error("illegal operations ...");
+        }
+
+        const cm = this.m_common;
+
         if (strip) {
-          this.gldm = this.m_common ? this.rc.TRIANGLE_STRIP : this.rc.LINE_STRIP;
+          this.gldm = cm ? rc.TRIANGLE_STRIP : rc.LINE_STRIP;
         } else {
-          this.gldm = this.m_common ? this.rc.TRIANGLES : this.rc.LINES;
+          this.gldm = cm ? rc.TRIANGLES : rc.LINES;
         }
 
         if (this.insCount < 1) {
           if (strip) {
-            this.drawMode = this.m_common ? RDM.ELEMENTS_TRIANGLES : RDM.ELEMENTS_LINES;
+            this.drawMode = cm ? RDM.ELEMENTS_TRIANGLES : RDM.ELEMENTS_LINES;
           } else {
-            this.drawMode = this.m_common ? RDM.ELEMENTS_TRIANGLE_STRIP : RDM.ELEMENTS_LINES_STRIP;
+            this.drawMode = cm ? RDM.ELEMENTS_TRIANGLE_STRIP : RDM.ELEMENTS_LINES_STRIP;
           }
         } else {
           if (strip) {
-            this.drawMode = this.m_common ? RDM.ELEMENTS_INSTANCED_TRIANGLES_STRIP : RDM.ELEMENTS_INSTANCED_LINES_STRIP;
+            this.drawMode = cm ? RDM.ELEMENTS_INSTANCED_TRIANGLES_STRIP : RDM.ELEMENTS_INSTANCED_LINES_STRIP;
           } else {
-            this.drawMode = this.m_common ? RDM.ELEMENTS_INSTANCED_TRIANGLES : RDM.ELEMENTS_INSTANCED_LINES;
+            this.drawMode = cm ? RDM.ELEMENTS_INSTANCED_TRIANGLES : RDM.ELEMENTS_INSTANCED_LINES;
           }
         }
       }
@@ -9176,8 +10096,10 @@ class BufRData {
   }
 
   setInsCount(insCount) {
-    this.insCount = insCount;
-    this.updateDrawMode();
+    if (this.insCount != insCount) {
+      this.insCount = insCount;
+      this.updateDrawMode();
+    }
   }
 
   setIvsParam(ivsIndex, ivsSize) {
@@ -9198,7 +10120,7 @@ class BufRData {
     rd.ivsIndex = rd.isCommon() ? ivsIndex : ivsIndex * 2;
     if (rd.ivsIndex < 0) rd.ivsIndex = 0;else if (rd.ivsIndex >= this.ivsInitSize) rd.ivsIndex = this.ivsInitSize - 1;
     rd.ivsOffset = rd.ivsIndex * rd.stride; // console.log(" >>> #### !rd.common: ", !rd.common, ", uid: ",this.getUid());
-    // console.log("!rd.common: ", !rd.common, pI, pS);
+    // console.log("!rd.isCommon(): ", !rd.isCommon(), pI, pS, ", ivsInitSize: ", this.ivsInitSize);
 
     if (!rd.isCommon()) {
       ivsSize *= 2;
@@ -9242,7 +10164,9 @@ class BufRDataPair {
     this.rd = null;
     this.buf = null;
     this.roiRes = null;
+    this.ivdVer = 0;
     this.ver = 0;
+    this.lifeTime = 0;
     this.m_rdpIndex = index;
   }
 
@@ -9255,15 +10179,20 @@ class BufRDataPair {
   }
 
   destroy(vrc) {
-    if (this.r0 != null) this.r0.destroy(vrc);
-    if (this.r1 != null) this.r1.destroy(vrc);
+    // if (this.r0 != null) this.r0.destroy(vrc);
+    // if (this.r1 != null) this.r1.destroy(vrc);
     this.r0 = null;
     this.r1 = null;
     this.rd = null;
     this.buf = null;
+    this.roiRes = null;
   }
 
   clearBuf() {
+    if (this.lifeTime == 0) {
+      throw Error("illegal operation!!!");
+    }
+
     if (this.r0 != null) {
       this.r0.clear();
       this.r1.clear();
@@ -9286,12 +10215,18 @@ class BufRDataPair {
 
   setIvsParam(ivsIndex, ivsSize) {
     // console.log(">>> >>>>>>>>>>>> #### BufRDataPair::setIvsParam(), uid: ", this.getUid());
+    // console.log("				A0 ivsIndex: ", ivsIndex,", ivsSize: ", ivsSize);
+    // console.log("				this.r0 != this.r1: ", this.r0 != this.r1);
     this.updateStatus();
+    let rdp = this.roiRes.getRDPDataAt(this.m_rdpIndex);
+    this.r0.ivsInitSize = rdp.r0.ivsInitSize;
     this.r0.setIvsParam(ivsIndex, ivsSize);
 
     if (this.r0 != this.r1) {
+      this.r1.ivsInitSize = rdp.r1.ivsInitSize;
       this.r1.setIvsParam(ivsIndex, ivsSize);
-    } // let rd = this.rd;
+    } // console.log("				A1 ivsIndex: ", this.rd.ivsIndex,", ivsSize: ", this.rd.ivsSize);
+    // let rd = this.rd;
     // console.log("BufRDataPair::setIvsParam(), ivsIndex, ivsSize: ", ivsIndex, ivsSize);
     // console.log("****** ###### !rd.common: ", !rd.common, ", rd.getUid(): ",rd.getUid());
     // console.log("BufRDataPair::setIvsParam(), rd.ivsIndex, rd.ivsSize: ", rd.ivsIndex, rd.ivsSize);
@@ -9314,6 +10249,10 @@ class BufRDataPair {
         rd = this.rd; // console.log("AAAA 1 rd.getUid(): ",rd.getUid(), ", r0.getUid(): ",this.r0.getUid(), ", r0.ivsSize: ",  this.r0.ivsSize, ", r0.rdpIndex: ", this.r0.rdpIndex);
       }
     }
+  }
+
+  setInsCount(insCount) {
+    this.rd.setInsCount(insCount);
   }
 
   getVersion() {
@@ -9393,6 +10332,7 @@ class BufRDataPair {
 
   clone() {
     let rdp = new BufRDataPair(this.getRDPIndex());
+    rdp.lifeTime = this.lifeTime + 1;
     this.copyTo(rdp);
     return rdp;
   }
@@ -9406,7 +10346,8 @@ class ROIndicesRes {
   constructor() {
     this.m_uid = ROIndicesRes.s_uid++;
     this.m_vtx = null;
-    this.m_vtxUid = 0; // private m_index = 0;
+    this.m_vtxUid = 0;
+    this.m_disp = null; // private m_index = 0;
 
     this.m_ivsData = null;
     this.m_rdps = [];
@@ -9431,23 +10372,7 @@ class ROIndicesRes {
     }
 
     return null;
-  } // applyRDPAt(index: number): boolean {
-  //     if (this.m_index != index && index >= 0 && index < this.m_rdps.length) {
-  //         let rdp = this.m_rdps[this.m_index];
-  //         this.m_index = index;
-  //         this.rdp = this.m_rdps[index];
-  //         this.m_rdpVer = -2;
-  //         if (rdp.isCommon) {
-  //             this.rdp.toShape();
-  //         } else {
-  //             this.rdp.toWireframe();
-  //         }
-  //         this.initRdp = rdp;
-  //         return true;
-  //     }
-  //     return false;
-  // }
-
+  }
 
   test() {
     return this.m_rdpVer != this.rdp.getVersion();
@@ -9470,35 +10395,47 @@ class ROIndicesRes {
     }
   }
 
-  updateToGpu(rc) {
-    let rd = this.m_rdps.length > 0 ? this.m_rdps[0].r0 : null;
+  updateToGpu(vrc) {
+    const rdp = this.initRdp; // console.log("ROIndicesRes::updateToGpu(), this.getUId(): ", this.getUid());
 
-    if (rc != null && rd.buf != null) {
-      let vtx = this.m_vtx; // console.log("indeces updateToGpu vtx.getUId(): ",vtx.getUid(), ", this.version != vtx.indicesVer: ", this.version != vtx.indicesVer);
+    if (vrc != null) {
+      if (rdp.buf != null) {
+        const vtx = this.m_vtx;
+        const rc = this.m_rc; // console.log("ROIndicesRes::updateToGpu(), vtx.getUId(): ",vtx.getUid(), ", this.version != vtx.indicesVer: ", this.version != vtx.indicesVer,", rc!=null: ", rc!=null);
 
-      if (this.version != vtx.indicesVer) {
-        let ird = vtx.getIvsDataAt();
-        this.m_ivsData = ird;
-        const ivs = ird.ivs;
-        rc.bindEleBuf(rd.buf);
-        let size = this.m_rdps[0].r0.ivsSize;
+        if (this.version != vtx.indicesVer && rc) {
+          let disp = this.m_disp;
 
-        if (size >= ivs.length) {
-          //console.log("A indeces updateToGpu vtx.getUId(): ",vtx.getUid(), ", ivs.length", ivs.length);
-          rc.eleBufSubData(ivs, ird.status);
-        } else {
-          //console.log("B indeces updateToGpu vtx.getUId(): ",vtx.getUid(), ", ivs.length", ivs.length);
-          rc.eleBufData(ivs, vtx.getBufDataUsage());
+          for (let i = 0; i < vtx.getIvsDataTotal(); ++i) {
+            const ird = vtx.getIvsDataAt(i);
+            const rdp = this.m_rdps[i];
+
+            if (rdp.ivdVer != ird.version) {
+              if (rdp.r0 == rdp.r1) {
+                rdp.r0 = this.createBuf(rdp.r0, rdp.getRDPIndex(), rc, vrc, vtx, disp, !rdp.r0.isCommon());
+              } else {
+                rdp.r0 = this.createBuf(rdp.r0, rdp.getRDPIndex(), rc, vrc, vtx, disp, !rdp.r0.isCommon());
+                rdp.r1 = this.createBuf(rdp.r1, rdp.getRDPIndex(), rc, vrc, vtx, disp, !rdp.r1.isCommon());
+              }
+
+              rdp.ivdVer = ird.version;
+            }
+          }
+
+          this.version = vtx.indicesVer;
         }
+      } else {
+        const rd = rdp.rd; // console.log("ROIndicesRes::updateToGpu(), this.getUId(): ",this.getUid(), ", rdp.buf == null: ", rdp.buf == null, "ivsCount: ",this.m_disp.ivsCount);
 
-        rd.ivsSize = ivs.length;
-        this.version = vtx.indicesVer;
+        rd.ivsSize = this.m_disp.ivsCount;
+        rd.ivsInitSize = rd.ivsSize;
       }
     }
   }
 
   initialize(rc, vrc, ivtx, disp) {
-    this.m_vrc = vrc; // let wireframe = false;
+    this.m_vrc = vrc;
+    this.m_rc = rc; // console.log("ROIndicesRes::initialize(), this.getUId(): ", this.getUid());
 
     let rdp = null;
 
@@ -9511,15 +10448,18 @@ class ROIndicesRes {
       rdp = new BufRDataPair(0);
       let rd = new BufRData();
       rd.buf = null;
+      rd.rc = rc;
       rd.ivsSize = disp.ivsCount;
+      rd.ivsInitSize = rd.ivsSize;
       rd.ivsIndex = disp.ivsIndex;
       rd.stride = 2;
       rd.drawMode = disp.drawMode;
       rd.initDrawMode = disp.drawMode;
       rdp.r0 = rd;
-      rdp.r1 = rd;
+      rdp.r1 = rd; // console.log("RoIndicesRes::initialize(), XXXXXXXX rd.ivsSize: ", rd.ivsSize);
     }
 
+    this.m_disp = disp;
     this.rdp = this.m_rdps[0] = rdp;
     this.initRdp = rdp;
     rdp.roiRes = this;
@@ -9545,16 +10485,16 @@ class ROIndicesRes {
     let r1 = null;
 
     if (shape) {
-      r0 = this.createBuf(rdpIndex, rc, vrc, ivtx, disp, false);
+      r0 = this.createBuf(null, rdpIndex, rc, vrc, ivtx, disp, false);
     }
 
     if (wireframe) {
-      r1 = this.createBuf(rdpIndex, rc, vrc, ivtx, disp, wireframe);
+      r1 = this.createBuf(null, rdpIndex, rc, vrc, ivtx, disp, wireframe);
     } // console.log("createRDPAt(), r0: ", r0, ", r1: ", r1);
 
 
     if (r0 == null && r1 == null) {
-      r0 = this.createBuf(rdpIndex, rc, vrc, ivtx, disp, false);
+      r0 = this.createBuf(null, rdpIndex, rc, vrc, ivtx, disp, false);
     }
 
     if (r0 == null) {
@@ -9564,20 +10504,30 @@ class ROIndicesRes {
     }
 
     rdp.r0 = r0;
-    rdp.r1 = r1; // console.log("createRDPAt(), rdpIndex: ", rdpIndex, ", wireframe: ", wireframe,", rdp.r0.getUid(): ", rdp.r0.getUid());
+    rdp.r1 = r1;
+    rdp.ivdVer = ird.version; // console.log("createRDPAt(), rdpIndex: ", rdpIndex, ", wireframe: ", wireframe,", rdp.r0.getUid(): ", rdp.r0.getUid());
     // console.log("       rdp.r0.ivsSize: ", rdp.r0.ivsSize, ", r0.rdpIndex: ",rdp.r0.rdpIndex);
 
     return rdp;
   }
 
-  createBuf(rdpIndex, rc, vrc, ivtx, disp, wireframe = false) {
-    // console.log("createBuf(), wireframe:", wireframe, ivtx);
+  createBuf(rd, rdpIndex, rc, vrc, ivtx, disp, wireframe = false) {
+    // console.log("createBuf(), rdpIndex:", rdpIndex, "ivtx.getUid(): ", ivtx.getUid());
     let ird = ivtx.getIvsDataAt(rdpIndex);
     let ivs = ird.ivs;
     let size = 0;
+    let newBytesSize = ivs.byteLength;
+    let bytesSize = 0;
+    let newBuild = rd == null;
+
+    if (!newBuild) {
+      bytesSize = rd.bytesSize;
+    }
+
     let ivsIndex = disp.ivsIndex;
     let stride = 2;
-    let gbuf = vrc.createBuf();
+    let gbuf = rd != null ? rd.buf : null;
+    if (gbuf == null) gbuf = vrc.createBuf();
     vrc.bindEleBuf(gbuf);
 
     if (ivtx.bufData == null) {
@@ -9585,9 +10535,15 @@ class ROIndicesRes {
         ivs = this.createWireframeIvs(ivs);
       }
 
-      vrc.eleBufData(ivs, ivtx.getBufDataUsage());
+      if (newBytesSize > bytesSize) {
+        vrc.eleBufData(ivs, ivtx.getBufDataUsage());
+      } else {
+        vrc.eleBufSubData(ivs, ivtx.getBufDataUsage());
+      }
+
       size = ivs.length;
       stride = size > 65536 ? 4 : 2;
+      bytesSize = newBytesSize;
     } else {
       let offset = 0;
       let list = [];
@@ -9626,6 +10582,7 @@ class ROIndicesRes {
         size += list[i].byteLength;
       }
 
+      bytesSize = size;
       vrc.eleBufDataMem(size, ivtx.getBufDataUsage());
       offset = 0;
       size = 0;
@@ -9640,8 +10597,13 @@ class ROIndicesRes {
     // gbuf.wireframe = wireframe;
 
 
-    let rd = new BufRData();
+    rd = rd == null ? new BufRData() : rd;
     rd.rc = rc;
+
+    if (rc == null) {
+      throw Error("illegal operations !!!");
+    }
+
     rd.buf = gbuf;
     rd.rdpIndex = rdpIndex;
     rd.ivsSize = size;
@@ -9652,12 +10614,17 @@ class ROIndicesRes {
     rd.setCommon(!wireframe);
     rd.ivsIndex = rd.isCommon() ? ivsIndex : ivsIndex * 2;
     rd.ivsOffset = rd.ivsIndex * rd.stride;
-    rd.bufType = stride != 4 ? rc.UNSIGNED_SHORT : rc.UNSIGNED_INT;
+    rd.bytesSize = bytesSize;
+    rd.bufType = stride != 4 ? rc.UNSIGNED_SHORT : rc.UNSIGNED_INT; // console.log("RoIndicesRes::createBuf(), XXXXXXXX rd.ivsSize: ", rd.ivsSize);
+    // console.log("RoIndicesRes::createBuf(), XXXXXXXX rd.ivsSize: ", rd.ivsSize, ", rd.getUid(): ", rd.getUid());
+
     return rd;
   }
 
   destroy(vrc) {
+    this.m_rc = null;
     this.m_vrc = null;
+    this.m_disp = null;
 
     if (this.m_rdps.length > 0) {
       this.m_vtx = null;
@@ -9667,6 +10634,7 @@ class ROIndicesRes {
       }
 
       this.m_ivsData = null;
+      this.initRdp = null;
       this.rdp = null;
       console.log("ROIndicesRes::destroy() this.m_uid: ", this.m_uid);
     }
@@ -9737,6 +10705,8 @@ Object.defineProperty(exports, "__esModule", {
 
 const VROBase_1 = __importDefault(__webpack_require__("919c"));
 
+const DebugFlag_1 = __importDefault(__webpack_require__("899a"));
+
 class VertexRenderObj extends VROBase_1.default {
   constructor() {
     super();
@@ -9753,7 +10723,10 @@ class VertexRenderObj extends VROBase_1.default {
 
   run() {
     if (this.m_rc.testVROUid(this.m_uid) || this.indicesRes.test()) {
-      //console.log("VertexRenderObj::run(), B:",rc.getUid(),this.m_vtxUid,this.m_uid);
+      if (DebugFlag_1.default.Flag_0 > 0) {
+        console.log("VertexRenderObj::run(), B:", this.getUid(), this.m_vtxUid, this.m_uid);
+      }
+
       if (this.vbuf != null) {
         this.m_rc.useVtxAttribsPtrTypeFloat(this.shdp, this.vbuf, this.attribTypes, this.attribTypesLen, this.wholeOffsetList, this.wholeStride);
       } else {
@@ -9787,11 +10760,6 @@ class VertexRenderObj extends VROBase_1.default {
     VertexRenderObj.Restore(this);
   }
 
-  toString() {
-    return "VertexRenderObj(uid = " + this.m_uid + ", type=" + this.m_mid + ")";
-  } //  private static s_midMap:Map<number,VertexRenderObj> = new Map();
-
-
   static HasMid(mid) {
     return VROBase_1.default.s_midMap.has(mid);
   }
@@ -9814,13 +10782,13 @@ class VertexRenderObj extends VROBase_1.default {
 
     if (index >= 0) {
       unit = VertexRenderObj.s_unitList[index];
-      VertexRenderObj.s_unitFlagList[index] = VertexRenderObj.s_FLAG_BUSY;
+      VertexRenderObj.s_flags[index] = VertexRenderObj.s_FLAG_BUSY;
       unit.setMidAndBufUid(mid, pvtxUid);
     } else {
       unit = new VertexRenderObj();
       unit.setMidAndBufUid(mid, pvtxUid);
       VertexRenderObj.s_unitList.push(unit);
-      VertexRenderObj.s_unitFlagList.push(VertexRenderObj.s_FLAG_BUSY);
+      VertexRenderObj.s_flags.push(VertexRenderObj.s_FLAG_BUSY);
       VertexRenderObj.s_unitListLen++;
     }
 
@@ -9830,10 +10798,10 @@ class VertexRenderObj extends VROBase_1.default {
   }
 
   static Restore(pobj) {
-    if (pobj != null && pobj.m_attachCount < 1 && VertexRenderObj.s_unitFlagList[pobj.getUid()] == VertexRenderObj.s_FLAG_BUSY) {
+    if (pobj != null && pobj.m_attachCount < 1 && VertexRenderObj.s_flags[pobj.getUid()] == VertexRenderObj.s_FLAG_BUSY) {
       let uid = pobj.getUid();
       VertexRenderObj.s_freeIdList.push(uid);
-      VertexRenderObj.s_unitFlagList[uid] = VertexRenderObj.s_FLAG_FREE;
+      VertexRenderObj.s_flags[uid] = VertexRenderObj.s_FLAG_FREE;
 
       pobj.__$destroy();
     }
@@ -9844,7 +10812,7 @@ class VertexRenderObj extends VROBase_1.default {
 VertexRenderObj.s_uid = 0;
 VertexRenderObj.s_FLAG_BUSY = 1;
 VertexRenderObj.s_FLAG_FREE = 0;
-VertexRenderObj.s_unitFlagList = [];
+VertexRenderObj.s_flags = [];
 VertexRenderObj.s_unitListLen = 0;
 VertexRenderObj.s_unitList = [];
 VertexRenderObj.s_freeIdList = [];
@@ -9874,45 +10842,52 @@ Object.defineProperty(exports, "__esModule", {
 });
 
 class ROTransPool {
-  // private static s_tcountMap: Map<number, number> = new Map();
-  static SetTransUniform(mat, uniform, shdp) {
+  constructor() {
+    this.m_transMap = new Map();
+  } // private static s_tcountMap: Map<number, number> = new Map();
+
+
+  setTransUniform(mat, uniform, shdp) {
     let k = (mat.getUid() + 1) * 131 + shdp.getUid();
 
-    if (!ROTransPool.s_transMap.has(k)) {
-      ROTransPool.s_transMap.set(k, uniform);
+    if (!this.m_transMap.has(k)) {
+      this.m_transMap.set(k, uniform);
       uniform.key = k; // let count = ROTransPool.s_tcountMap.get(mat.getUid());
       // ROTransPool.s_tcountMap.set(mat.getUid(), count+1);
-    } // ROTransPool.s_transMap.set(mat.getUid(), uniform);
+    } // this.m_transMap.set(mat.getUid(), uniform);
 
   }
 
-  static GetTransUniform(mat, shdp) {
+  getTransUniform(mat, shdp) {
     if (mat.getUid() < 0) {
       throw Error("mat.getUid() < 0");
     }
 
     let k = (mat.getUid() + 1) * 131 + shdp.getUid();
-    if (ROTransPool.s_transMap.has(k)) return ROTransPool.s_transMap.get(k); // if (ROTransPool.s_transMap.has(mat.getUid())) return ROTransPool.s_transMap.get(mat.getUid());
+    if (this.m_transMap.has(k)) return this.m_transMap.get(k); // if (this.m_transMap.has(mat.getUid())) return this.m_transMap.get(mat.getUid());
 
     return null;
   }
 
-  static HasTransUniform(mat, shdp) {
+  hasTransUniform(mat, shdp) {
     let k = (mat.getUid() + 1) * 131 + shdp.getUid();
-    return ROTransPool.s_transMap.has(k); // return ROTransPool.s_transMap.has(mat.getUid());
+    return this.m_transMap.has(k); // return this.m_transMap.has(mat.getUid());
   }
 
-  static RemoveTransUniform(key) {
-    if (ROTransPool.s_transMap.has(key)) {
+  removeTransUniform(key) {
+    if (this.m_transMap.has(key)) {
       console.log("ROTransPool::RemoveTransUniform(), key: ", key);
-      ROTransPool.s_transMap.delete(key);
-    } // ROTransPool.s_transMap.delete(mat.getUid());
+      this.m_transMap.delete(key);
+    } // this.m_transMap.delete(mat.getUid());
 
+  }
+
+  clear() {
+    this.m_transMap.clear();
   }
 
 }
 
-ROTransPool.s_transMap = new Map();
 exports.default = ROTransPool;
 
 /***/ }),
@@ -10009,10 +10984,7 @@ class VROBase {
 
   static GetByMid(mid) {
     return VROBase.s_midMap.get(mid);
-  } // static Reset(): void {
-  //     VROBase.s_mid = -1;
-  // }
-
+  }
 
   __$resetVRO() {
     VROBase.s_mid = -1;
@@ -10023,6 +10995,122 @@ class VROBase {
 VROBase.s_mid = 0;
 VROBase.s_midMap = new Map();
 exports.default = VROBase;
+
+/***/ }),
+
+/***/ "91da":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/***************************************************************************/
+
+/*                                                                         */
+
+/*  Copyright 2018-2022 by                                                 */
+
+/*  Vily(vily313@126.com)                                                  */
+
+/*                                                                         */
+
+/***************************************************************************/
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+const RPOBlock_1 = __importDefault(__webpack_require__("5f3c"));
+
+const PassProcess_1 = __importDefault(__webpack_require__("34cd"));
+
+const ContainerFlowRenderer_1 = __importDefault(__webpack_require__("7f1c"));
+
+class ContainerRPOBlock extends RPOBlock_1.default {
+  constructor(shader) {
+    super(shader);
+    this.m_unitsTotal = 0;
+    this.m_container = null;
+    this.m_cr = new ContainerFlowRenderer_1.default();
+    this.m_passProc = new PassProcess_1.default();
+  }
+
+  resetCR() {
+    const cr = this.m_cr;
+    cr.passProc = this.m_passProc;
+    cr.shdUpdate = false;
+    cr.shader = this.m_shader;
+  }
+
+  showInfo() {}
+
+  clear() {
+    if (this.m_shader) {
+      this.m_shader = null;
+      this.m_container = null;
+    }
+  }
+
+  update() {
+    if (this.sortEnabled) {
+      this.sort();
+    }
+  }
+
+  addContainer(container) {
+    this.m_container = container;
+  }
+
+  removeContainer(container) {
+    if (container == this.m_container) {
+      this.m_container = null;
+    }
+  }
+
+  hasContainer(container) {
+    return this.m_container == container;
+  }
+
+  isEmpty() {
+    return this.m_container == null;
+  }
+
+  run(rc) {
+    // this.m_shader.resetUniform();
+    const c = this.m_container;
+
+    if (c && c.isVisible()) {
+      this.resetCR();
+      this.m_cr.runContainer(rc, c);
+    }
+  }
+
+  runLockMaterial(rc) {
+    // this.m_shader.resetUniform();
+    const c = this.m_container;
+
+    if (c && c.isVisible()) {
+      this.resetCR();
+      this.m_cr.runContainerLock(rc, c);
+    }
+  }
+
+  getNodesTotal() {
+    return this.m_unitsTotal;
+  }
+
+  addNode(node) {}
+
+  removeNode(node) {}
+
+}
+
+exports.default = ContainerRPOBlock;
 
 /***/ }),
 
@@ -10085,6 +11173,7 @@ class GpuTexObect {
 
 
   bindToGpu(gl) {
+    // console.log("tex gpu buf bind to gpu ... this.sampler, this.texBuf: ", this.sampler, this.texBuf);
     gl.bindTexture(this.sampler, this.texBuf);
   }
 
@@ -10110,6 +11199,12 @@ class ROTextureResource {
     this.unlocked = true;
     this.m_rcuid = rcuid;
     this.m_gl = gl;
+  }
+
+  setGLCtx(gl) {
+    this.m_gl = gl;
+    this.m_resMap.clear();
+    this.m_freeMap.clear();
   }
 
   createBuf() {
@@ -10344,7 +11439,10 @@ class RenderingStencil {
   constructor(rstate) {
     this.m_rstate = null;
     this.m_rstate = rstate;
-  }
+  } // getRDST(): IRODrawState {
+  // 	return this.m_rstate;
+  // }
+
 
   isEnabled() {
     return true;
@@ -10568,7 +11666,15 @@ class RenderStateObject {
     if (RenderStateObject.s_stsMap.has(key)) {
       let po = RenderStateObject.s_stsMap.get(key);
       key = po.getUid();
+
+      if (objName != "") {
+        RenderStateObject.s_stsNameMap.set(objName, po);
+      }
     } else {
+      if (objName == "") {
+        objName = "sys_rst_" + key;
+      }
+
       let po = new RenderStateObject(cullFaceMode, blendMode, depthTestMode);
       key = po.getUid();
       RenderStateObject.s_stsMap.set(key, po);
@@ -10591,7 +11697,7 @@ class RenderStateObject {
 
 
   static UseRenderState(state) {
-    //if(RenderStateObject.s_unlocked && RenderStateObject.Rstate.roState != state)                
+    //if(RenderStateObject.s_unlocked && RenderStateObject.Rstate.roState != state)
     if (RenderStateObject.s_unlocked && RenderStateObject.s_state != state) {
       if (state > -1 && state < RenderStateObject.s_statesLen) {
         RenderStateObject.s_states[state].use();
@@ -11040,7 +12146,7 @@ class TextureRenderObj {
 
 
   run() {
-    //console.log("this.m_texRes.unlocked: ",this.m_texRes.unlocked,this.m_texRes.texMid != this.m_mid);
+    // console.log("this.m_texRes.unlocked: ",this.m_texRes.unlocked,this.m_texRes.texMid != this.m_mid);
     if (this.m_texRes.unlocked && this.m_texRes.texMid != this.m_mid) {
       this.m_texRes.texMid = this.m_mid; // console.log("TextureRenderObj::run(), this.m_mid: ",this.m_mid,this.m_uid, this.m_texList);
 
@@ -11048,7 +12154,7 @@ class TextureRenderObj {
       let texI = gl.TEXTURE0;
 
       if (this.direct) {
-        //console.log("this.m_gtexList: ",this.m_gtexList,", total: "+this.m_texTotal);
+        // console.log("this.m_gtexList: ",this.m_gtexList,", total: ",this.m_texTotal);
         for (let i = 0; i < this.m_texTotal; ++i) {
           gl.activeTexture(texI++);
           gl.bindTexture(this.m_samplers[i], this.m_gtexList[i]);
@@ -11128,10 +12234,12 @@ class TextureRenderObj {
       if (rtoMap.has(key)) {
         tro = rtoMap.get(key);
       } else {
-        if (TextureRenderObj.s_freeTROList.length < 1) {
-          tro = new TextureRenderObj(texRes.getRCUid(), key); //console.log("TextureRenderObj::Create use a new tex mid: " + tro.getMid(),",total: "+shdTexTotal,",key: "+key);
+        const fts = TextureRenderObj.s_freeTROList;
+
+        if (fts.length < 1) {
+          tro = new TextureRenderObj(texRes.getRCUid(), key); // console.log("TextureRenderObj::Create use a new tex mid: " + tro.getMid(),",total: "+shdTexTotal,",key: "+key);
         } else {
-          tro = TextureRenderObj.s_freeTROList.pop(); //console.log("TextureRenderObj::Create use an old tex mid: " + tro.getMid(),",total: "+shdTexTotal,",key: "+key);
+          tro = fts.pop(); // console.log("TextureRenderObj::Create use an old tex mid: " + tro.getMid(),",total: "+shdTexTotal,",key: "+key);
         }
 
         tro.collectTexList(texRes, texList, shdTexTotal);
@@ -11161,6 +12269,16 @@ class TextureRenderObj {
 
   static GetByMid(rcuid, uid) {
     return TextureRenderObj.s_troMaps[rcuid].get(uid);
+  }
+
+  static Clear(rcuid) {
+    let ls = TextureRenderObj.s_troMaps;
+    ls[rcuid].clear(); // for(let i = 0; i < ls.length; ++i) {
+    // 	ls[i].clear();
+    // }
+    // TextureRenderObj.s_freeTROList = [];
+
+    console.log("TextureRenderObj::Clear(), rcuid: ", rcuid);
   }
 
 }
@@ -11264,14 +12382,17 @@ class RViewElement {
     return str;
   }
 
-  createViewEle(pdocument, autoResize, pw, ph) {
+  createViewEle(pdocument, autoResize, pw, ph, autoAttachingHtmlDoc, offscreenCanvas) {
     if (this.m_div == null) {
       this.m_div = document.getElementById("voxEngineDiv");
     }
 
     if (this.m_div == null) {
       this.m_div = pdocument.createElement("div");
-      document.body.appendChild(this.m_div);
+
+      if (autoAttachingHtmlDoc) {
+        document.body.appendChild(this.m_div);
+      }
     }
 
     const style = this.m_div.style;
@@ -11294,8 +12415,15 @@ class RViewElement {
     if (this.m_canvas == null) {
       this.m_canvas = document.createElement("canvas");
       this.m_div.appendChild(this.m_canvas);
-      this.m_canvas.width = 800;
-      this.m_canvas.height = 600;
+
+      if (offscreenCanvas) {
+        this.m_canvas.width = pw;
+        this.m_canvas.height = ph;
+      } else {
+        this.m_canvas.width = 800;
+        this.m_canvas.height = 600;
+      }
+
       this.m_canvas.style.display = "bolck";
       this.m_canvas.style.left = "0px";
       this.m_canvas.style.top = "0px";
@@ -11322,6 +12450,14 @@ class RViewElement {
 
   getCanvas() {
     return this.m_canvas;
+  }
+
+  setCanvas(canvas) {
+    if (canvas && this.m_canvas != canvas) {
+      this.m_div.removeChild(this.m_canvas);
+      this.m_canvas = canvas;
+      this.m_div.appendChild(this.m_canvas);
+    }
   }
 
 }
@@ -11382,18 +12518,24 @@ class RenderShader {
     this.m_uniform = null; // 只有transform相关的信息uniform
 
     this.m_trsu = null;
-    this.m_shdProgramBuilder = null; // 用于记录 renderState(低10位)和ColorMask(高10位) 的状态组合
+    this.m_shdPB = null; // 用于记录 renderState(低10位)和ColorMask(高10位) 的状态组合
 
     this.drawFlag = -1;
     this.__$globalUniform = null;
     this.m_rcuid = rcuid;
     this.m_rc = gl;
     this.m_adapter = adapter;
-    this.m_shdProgramBuilder = shdProgramBuilder;
+    this.m_shdPB = shdProgramBuilder;
   }
 
   createResByParams3(resUid, param0, param1, param2) {
     return false;
+  }
+
+  setGLCtx(gl) {
+    // console.log("RenderShader::setGLCtx(), gl: ", gl);
+    this.m_rc = gl;
+    this.m_sharedUniformList = [];
   }
   /**
    * @returns return system gpu context
@@ -11488,7 +12630,7 @@ class RenderShader {
 
   hasResUid(resUid) {
     // return this.m_shdList[resUid] != null;
-    return this.m_shdProgramBuilder.hasUid(resUid);
+    return this.m_shdPB.hasUid(resUid);
   }
   /**
    * bind the renderer runtime resource(by renderer runtime resource unique id) to the current renderer context
@@ -11498,21 +12640,24 @@ class RenderShader {
 
   bindToGpu(resUid) {
     //if (this.m_unlocked && resUid > -1 && resUid < this.m_shdListLen) {
-    if (this.m_unlocked && this.m_shdProgramBuilder.containsUid(resUid)) {
+    if (this.m_unlocked && this.m_shdPB.containsUid(resUid)) {
       if (this.m_preuid != resUid) {
         this.m_preuid = resUid; //let shd: IShdProgram = this.m_shdList[resUid];
 
-        let shd = this.m_shdProgramBuilder.findShdProgramByUid(resUid);
+        let shd = this.m_shdPB.findShdProgramByUid(resUid);
         this.m_fragOutputTotal = shd.getFragOutputTotal();
 
         if (this.m_fragOutputTotal != this.getActiveAttachmentTotal()) {
-          //if(RendererDevice.SHOWLOG_ENABLED) {
+          // if(RendererDevice.SHOWLOG_ENABLED) {
           console.log("shd.getUniqueShaderName(): string: " + shd.getUniqueShaderName());
           console.log("this.m_fragOutputTotal: " + this.m_fragOutputTotal + ", rc.getActiveAttachmentTotal(): " + this.getActiveAttachmentTotal());
-          console.error("Error: MRT output amount is not equal to current shader( " + shd.toString() + " ) frag shader output amount !!!"); //}
+          console.error("Error: MRT output amount is not equal to current shader( " + shd.toString() + " ) frag shader output amount !!!"); // }
         }
 
-        this.m_gpuProgram = shd.getGPUProgram();
+        this.m_gpuProgram = shd.getGPUProgram(); // if(DebugFlag.Flag_0 > 0) {
+        // 	console.log("this.m_gpuProgram: ", this.m_gpuProgram);
+        // }
+
         this.m_rc.useProgram(this.m_gpuProgram);
         shd.useTexLocation(); // console.log("use a new shader uid: ",shd.getUid(),",uns: ",shd.getUniqueShaderName());
         // if(DebugFlag.Flag_0 > 0) {
@@ -11636,6 +12781,11 @@ class RenderShader {
 
     switch (type) {
       case mc.SHADER_MAT4:
+        // if(DebugFlag.Flag_0 > 0) {
+        // 	console.log("useUniformV2 Mat4, ult:",ult);
+        // 	console.log("useUniformV2 Mat4, rc:",rc);
+        // 	console.log("useUniformV2 Mat4, f32Arr:",f32Arr,", dataSize: ",dataSize);
+        // }
         rc.uniformMatrix4fv(ult, false, f32Arr, offset, dataSize * 16);
         break;
 
@@ -11783,6 +12933,7 @@ const RenderStateObject_1 = __webpack_require__("a5ba");
 class RPOUnit {
   constructor() {
     this.rentity = null;
+    this.retype = 0;
     this.uid = -1;
     this.value = -1; // 记录自身和RPONode的对应关系
 
@@ -11796,8 +12947,17 @@ class RPOUnit {
     this.partTotal = 0; // partTotal = partGroup.length
 
     this.partGroup = null;
+    /**
+     * 是否在渲染过程中可见, the default value is true
+     */
+
     this.visible = true;
-    this.drawEnabled = true;
+    this.drawing = true;
+    /**
+     * 是否对当前unit进行渲染的状态
+     */
+
+    this.rendering = true;
     this.renderState = 0;
     this.rcolorMask = 0; // 用于记录 renderState(低10位)和ColorMask(高10位) 的状态组合
 
@@ -11885,12 +13045,12 @@ class RPOUnit {
       throw Error("illegal operation !!!");
     }
 
-    this.drawEnabled = this.visible && this.rdp.rd.ivsSize > 0;
+    this.drawing = this.visible && this.rdp.rd.ivsSize > 0;
   }
 
   setVisible(boo) {
     this.visible = boo;
-    this.testVisible(); // if(DebugFlag.Flag_0 > 0) console.log("#### setVisible(): ", boo, "this.drawEnabled: ",this.drawEnabled);
+    this.testVisible(); // if(DebugFlag.Flag_0 > 0) console.log("#### setVisible(): ", boo, "this.drawing: ",this.drawing);
   }
 
   setDrawFlag(renderState, rcolorMask) {
@@ -11931,15 +13091,18 @@ class RPOUnit {
   __$$drawThis(rc) {
     const st = rc.status;
     st.drawCallTimes++;
+    const gl = rc.RContext;
     const rd = this.rdp.rd;
     st.drawTrisNumber += rd.trisNumber; // console.log("this.rdp.getUid(): ", this.rdp.getUid());
     // TODO(Vily): 下面这个判断流程需要优化(由于几何数据更改之后上传gpu的动作是一帧上传16个这样的速度下实现的，所以需要下面这句代码来保证不出错: [.WebGL-000037DC02C2B800] GL_INVALID_OPERATION: Insufficient buffer size)
     // let ivsCount = ir.getVTCount();
 
     let ivsCount = rd.ivsSize; // if (this.ivsCount <= ivsCount && ir.isCommon()) ivsCount = this.ivsCount;
-    // console.log("runit::drawThis(), ivsCount: ", ivsCount, ",ivsOffset: ", rd.ivsOffset, this.rdp.getUid(), rd.getUid());
-    // if(DebugFlag.Flag_0 > 0) {
-    //     console.log("runit::drawThis(), ivsCount: ", ivsCount, ",ivsOffset: ", rd.ivsOffset, this.rdp.getUid(), ", rd.getUid(): " ,rd.getUid());
+    // console.log("runit::drawThis(), ivsCount: ", ivsCount, ",ivsOffset: ", rd.ivsOffset, this.rdp.getUid(), rd.getUid(), ",fbo: ",rc.adapter.isFBORunning());
+    // if (DebugFlag.Flag_0 > 0) {
+    // 	console.log("runit::drawThis(), gl: ", gl);
+    // 	console.log("runit::drawThis(), ivsCount: ", ivsCount, ",ivsOffset: ", rd.ivsOffset, this.rdp.getUid(), ", rd.getUid(): ", rd.getUid());
+    // 	//DebugFlag.Flag_0 = 0;
     // }
 
     if (this.polygonOffset != null) {
@@ -11948,15 +13111,14 @@ class RPOUnit {
       rc.resetPolygonOffset();
     }
 
-    const gl = rc.RContext;
-
     switch (rd.drawMode) {
       case RenderConst_1.RenderDrawMode.ELEMENTS_TRIANGLES:
       case RenderConst_1.RenderDrawMode.ELEMENTS_LINES:
       case RenderConst_1.RenderDrawMode.ELEMENTS_TRIANGLE_STRIP:
       case RenderConst_1.RenderDrawMode.ELEMENTS_LINES_STRIP:
         // console.log("rd.gldm: ", rd.gldm);
-        // if(DebugFlag.Flag_0 > 0)console.log("RPOUnit::run(), drawElements(ivsCount="+this.ivsCount+", ivsIndex="+this.ivsIndex+"),drawOffset: "+this.drawOffset);
+        // if(DebugFlag.Flag_0 > 0)console.log("RPOUnit::run(), drawElements(ivsCount="+ivsCount+", ivsOffset="+rd.ivsOffset+")");
+        // console.log("RPOUnit::run(), drawElements(ivsCount="+ivsCount+", ivsOffset="+rd.ivsOffset+")");
         //rc.RContext.drawElements(rc.TRIANGLES, this.ivsCount, rd.ibufType,this.ivsIndex * this.ibufStep);
         gl.drawElements(rd.gldm, ivsCount, rd.bufType, rd.ivsOffset);
         break;
@@ -11977,7 +13139,10 @@ class RPOUnit {
         break;
 
       case RenderConst_1.RenderDrawMode.ARRAYS_LINES:
-        //console.log("RPOUnit::run(), ARRAYS_LINES drawArrays(ivsCount="+this.ivsCount+", ivsIndex="+this.ivsIndex+")");
+        // if (DebugFlag.Flag_0 > 0) {
+        // 	console.log("RPOUnit::run(), ARRAYS_LINES rc.LINES: ", rc.LINES);
+        // 	console.log("RPOUnit::run(), ARRAYS_LINES drawArrays(ivsCount=" + ivsCount + ", ivsIndex=" + rd.ivsOffset + ")");
+        // }
         gl.drawArrays(rc.LINES, rd.ivsIndex, ivsCount);
         break;
 
@@ -12119,13 +13284,14 @@ class RPOUnit {
       this.drawFlag = 0x0;
       this.renderState = 0;
       this.rcolorMask = 0;
-      this.drawEnabled = true;
+      this.drawing = true;
+      this.rendering = true;
       this.shader = null;
       this.bounds = null;
       this.pos = null;
 
       if (this.rdp) {
-        this.rdp.clear();
+        if (this.rdp.lifeTime > 0) this.rdp.clear();
         this.rdp = null;
       }
 
@@ -12692,6 +13858,8 @@ class RendererInstance {
     this.m_roVtxBuilder = null;
     this.m_stage3D = null;
     this.m_fixProcess = null;
+    this.textureBlock = null;
+    this.m_shdProgramBuider = null;
     this.m_uid = RendererInstance.s_uid++;
     this.m_renderInsContext = new RendererInstanceContext_1.RendererInstanceContext(this.m_uid);
   }
@@ -12762,6 +13930,11 @@ class RendererInstance {
   createCamera() {
     return null;
   }
+  /**
+   * @param camera IRenderCamera instance
+   * @param syncCamView the default value is false
+   */
+
 
   useCamera(camera, syncCamView = false) {}
 
@@ -12773,12 +13946,23 @@ class RendererInstance {
     }
   }
 
+  setCanvas(canvas) {
+    if (this.m_renderProxy.setCanvas(canvas)) {
+      this.m_shdProgramBuider.clear();
+      this.m_dataBuilder.setGLCtx(this.m_renderProxy.RContext);
+      return true;
+    }
+
+    return false;
+  }
+
   initialize(param = null, camera = null, shdProgramBuider = null) {
     if (this.m_dataBuilder == null && camera != null) {
       this.m_batchEnabled = param.batchEnabled;
       this.m_processFixedState = param.processFixedState;
       this.m_renderProxy = this.m_renderInsContext.getRenderProxy();
       this.m_uid = this.m_renderProxy.getUid();
+      this.m_shdProgramBuider = shdProgramBuider;
       this.m_dataBuilder = new RODataBuilder_1.default(shdProgramBuider);
       this.m_roVtxBuilder = new ROVtxBuilder_1.default();
       this.m_renderInsContext.setCameraParam(param.camProjParam.x, param.camProjParam.y, param.camProjParam.z);
@@ -12834,16 +14018,32 @@ class RendererInstance {
   setEntityManaListener(listener) {
     this.m_entity3DMana.setListener(listener);
   }
+
+  addContainer(container, processIndex = 0) {
+    if (container) {
+      if (processIndex > -1 && processIndex < this.m_processesLen) {
+        this.m_entity3DMana.addContainer(container, this.m_processes[processIndex].getUid());
+      }
+    }
+  }
+
+  removeContainer(container, processIndex = 0) {
+    if (container) {
+      if (processIndex > -1 && processIndex < this.m_processesLen) {
+        this.m_entity3DMana.removeContainer(container, this.m_processes[processIndex].getUid());
+      }
+    }
+  }
   /**
    * add an entity to the renderer process of the renderer instance
    * @param entity IRenderEntity instance(for example: DisplayEntity class instance)
-   * @param processIndex this destination renderer process index of the m_processes array.
-   * @param deferred if the value is true,the entity will not to be immediately add to the renderer process by its id
+   * @param processIndex this destination renderer process index of the m_processes array, the defaule value is 0
+   * @param deferred if the value is true,the entity will not to be immediately add to the renderer process by its id, the defaule value is true
    */
 
 
   addEntity(entity, processIndex = 0, deferred = true) {
-    if (entity != null) {
+    if (entity) {
       if (entity.__$testRendererEnabled()) {
         if (processIndex > -1 && processIndex < this.m_processesLen) {
           this.m_entity3DMana.addEntity(entity, this.m_processes[processIndex].getUid(), deferred);
@@ -12853,7 +14053,7 @@ class RendererInstance {
   }
 
   addEntityToProcess(entity, process, deferred = true) {
-    if (process != null && entity != null) {
+    if (process && entity) {
       if (entity.__$testRendererEnabled()) {
         if (process.getRCUid() == this.m_uid) {
           this.m_entity3DMana.addEntity(entity, process.getUid(), deferred);
@@ -12868,7 +14068,7 @@ class RendererInstance {
 
 
   moveEntityToProcessAt(entity, dstProcessIndex) {
-    if (entity != null && entity.getRendererUid() == this.m_uid) {
+    if (entity && entity.getRendererUid() == this.m_uid) {
       if (entity.isInRendererProcess()) {
         if (dstProcessIndex > -1 && dstProcessIndex < this.m_processesLen) {
           let srcUid = entity.getDisplay().__$$runit.getRPROUid();
@@ -12887,7 +14087,7 @@ class RendererInstance {
   }
 
   moveEntityToProcess(entity, dstProcess) {
-    if (dstProcess != null && entity != null && entity.getRendererUid() == this.m_uid) {
+    if (dstProcess && entity && entity.getRendererUid() == this.m_uid) {
       if (entity.isInRendererProcess()) {
         let srcUid = entity.getDisplay().__$$runit.getRPROUid();
 
@@ -12909,7 +14109,7 @@ class RendererInstance {
 
 
   removeEntity(entity) {
-    if (entity != null && entity.getRendererUid() == this.m_uid) {
+    if (entity && entity.getRendererUid() == this.m_uid) {
       this.m_entity3DMana.removeEntity(entity);
 
       entity.__$setRenderProxy(null);
@@ -12923,8 +14123,8 @@ class RendererInstance {
 
 
   removeEntityFromProcess(entity, process) {
-    if (process != null && process.getRCUid() == this.m_uid) {
-      if (entity != null && entity.getRendererUid() == this.m_uid) {
+    if (process && process.getRCUid() == this.m_uid) {
+      if (entity && entity.getRendererUid() == this.m_uid) {
         process.removeDisp(entity.getDisplay());
 
         entity.__$setRenderProxy(null);
@@ -12940,7 +14140,7 @@ class RendererInstance {
 
   removeEntityByProcessIndex(entity, processIndex) {
     if (processIndex >= 0 && processIndex < this.m_processesLen) {
-      if (entity != null && entity.getRendererUid() == this.m_uid) {
+      if (entity && entity.getRendererUid() == this.m_uid) {
         this.m_processes[processIndex].removeDisp(entity.getDisplay());
 
         entity.__$setRenderProxy(null);
@@ -12955,9 +14155,8 @@ class RendererInstance {
   }
 
   setProcessSortEnabled(process, sortEnabled) {
-    if (process != null && process.getRCUid() == this.m_uid) {
-      let p = process;
-      p.setSortEnabled(sortEnabled);
+    if (process && process.getRCUid() == this.m_uid) {
+      process.setSortEnabled(sortEnabled);
     }
   }
   /**
@@ -13006,6 +14205,13 @@ class RendererInstance {
     }
   }
 
+  setProcessEnabledAt(i, enabled) {
+    if (i > -1 && i < this.m_processesLen) {
+      // console.log("r ins, setProcessEnabledAt, i: ", i, enabled, ", uid: ", this.m_processes[i].uid);
+      this.m_processes[i].setEnabled(enabled);
+    }
+  }
+
   getProcessAt(index) {
     if (index > -1 && index < this.m_processesLen) {
       return this.m_processes[index];
@@ -13028,25 +14234,12 @@ class RendererInstance {
     this.m_dataBuilder.getRenderShader().useUniformToCurrentShd(material.__$uniform);
   }
   /**
-   * Deprecated(废弃, 不推荐使用)
-   * 绘制已经完全加入渲染器了渲染资源已经准备完毕的entity
-   * 要锁定Material才能用这种绘制方式,再者这个,这种方式比较耗性能，只能用在特殊的地方
-   */
-
-
-  drawEntityByLockMaterial(entity, useGlobalUniform = false, forceUpdateUniform = true) {
-    if (entity != null && entity.getVisible() && entity.getRendererUid() == this.m_uid && !this.m_renderProxy.isContextLost()) {
-      this.m_fixProcess.drawLockMaterialByDisp(entity.getDisplay(), useGlobalUniform, forceUpdateUniform);
-    }
-  }
-  /**
    * 在任意阶段绘制一个指定的 entity,只要其资源数据准备完整
    */
 
 
   drawEntity(entity, useGlobalUniform = false, forceUpdateUniform = true) {
-    if (entity != null && entity.getVisible() && !this.m_renderProxy.isContextLost()) {
-      // console.log("***8** rendewrer ins drawEntity(), entity: ",entity, entity.getRendererUid() == this.m_uid);
+    if (entity && entity.getVisible() && !this.m_renderProxy.isContextLost()) {
       if (entity.getRendererUid() == this.m_uid) {
         this.m_fixProcess.drawDisp(entity.getDisplay(), useGlobalUniform, forceUpdateUniform);
       } else if (entity.__$testRendererEnabled()) {
@@ -13106,9 +14299,11 @@ class RendererInstance {
     this.m_renderProxy.flush();
   }
 
-  toString() {
-    return "[RendererInstance(uid = " + this.m_uid + ")]";
-  }
+  prependRenderNode(node) {}
+
+  appendRenderNode(node) {}
+
+  removeRenderNode(node) {}
 
 }
 
@@ -13236,7 +14431,7 @@ class RenderProxy {
     this.m_uid = 0;
     this.m_camUBO = null;
     this.m_adapter = null;
-    this.m_adapterContext = new RAdapterContext_1.default();
+    this.m_actx = new RAdapterContext_1.default();
     this.m_rc = null;
     this.m_perspectiveEnabled = true;
     this.m_viewPortRect = new AABB2D_1.default(0, 0, 800, 600);
@@ -13246,12 +14441,16 @@ class RenderProxy {
     this.m_maxWebGLVersion = 2;
     this.m_WEBGL_VER = 2; // main camera
 
-    this.m_camera = null;
+    this.m_cam = null;
     this.m_camSwitched = false; // 是否舞台尺寸和view自动同步一致
 
     this.m_autoSynViewAndStage = true;
     this.m_initMainCamera = true;
     this.m_uid = rcuid;
+  }
+
+  applyStencil(st) {
+    st.apply(this.RDrawState);
   }
   /**
    * @returns return system gpu context
@@ -13299,35 +14498,35 @@ class RenderProxy {
   }
 
   cameraLock() {
-    this.m_camera.lock();
+    this.m_cam.lock();
   }
 
   cameraUnlock() {
-    this.m_camera.unlock();
+    this.m_cam.unlock();
   }
 
   getCamera() {
-    return this.m_camera;
+    return this.m_cam;
   }
 
   updateCamera() {
-    return this.m_camera.update();
+    return this.m_cam.update();
   }
 
   createCameraUBO(shd) {//  if(this.m_camUBO == null)
     //  {
     //      this.m_camUBO = ShaderUBOBuilder.createUBOWithDataFloatsCount("UBlock_Camera", shd, 32);
-    //      this.m_camUBO.setSubDataArrAt(0, m_camera.getViewMatrix().getLocalFS32());
-    //      this.m_camUBO.setSubDataArrAt(16, m_camera.getProjectMatrix().getLocalFS32());
+    //      this.m_camUBO.setSubDataArrAt(0, m_cam.getViewMatrix().getLocalFS32());
+    //      this.m_camUBO.setSubDataArrAt(16, m_cam.getProjectMatrix().getLocalFS32());
     //      this.m_camUBO.run();
     //  }
   }
 
   updateCameraDataFromCamera(camera) {
     if (camera != null) {
-      if (this.m_camSwitched || camera != this.m_camera) {
-        this.m_camSwitched = camera != this.m_camera;
-        camera.updateCamMatToUProbe(this.m_camera.matUProbe);
+      if (this.m_camSwitched || camera != this.m_cam) {
+        this.m_camSwitched = camera != this.m_cam;
+        camera.updateCamMatToUProbe(this.m_cam.matUProbe);
 
         if (this.m_camUBO != null) {
           this.m_camUBO.setSubDataArrAt(0, camera.matUProbe.getFS32At(0));
@@ -13349,7 +14548,7 @@ class RenderProxy {
   }
 
   drawInstanced(count, offset, instanceCount) {
-    if (this.m_WEBGL_VER == 2) {
+    if (this.isWebGL2()) {
       this.m_rc.drawElementsInstanced(this.TRIANGLES, count, this.UNSIGNED_SHORT, offset, instanceCount);
     } else {
       RCExtension_1.default.ANGLE_instanced_arrays.drawElementsInstancedANGLE(this.TRIANGLES, count, offset, instanceCount);
@@ -13393,11 +14592,11 @@ class RenderProxy {
   }
 
   getContext() {
-    return this.m_adapterContext;
+    return this.m_actx;
   }
 
   getStage3D() {
-    return this.m_adapterContext.getStage();
+    return this.m_actx.getStage();
   }
 
   getRenderAdapter() {
@@ -13415,8 +14614,8 @@ class RenderProxy {
   }
 
   getMouseXYWorldRay(rl_position, rl_tv) {
-    let stage = this.m_adapterContext.getStage();
-    this.m_camera.getWorldPickingRayByScreenXY(stage.mouseX, stage.mouseY, rl_position, rl_tv);
+    let stage = this.m_actx.getStage();
+    this.m_cam.getWorldPickingRayByScreenXY(stage.mouseX, stage.mouseY, rl_position, rl_tv);
   }
 
   testViewPortChanged(px, py, pw, ph) {
@@ -13424,7 +14623,11 @@ class RenderProxy {
   }
 
   testRCViewPortChanged(px, py, pw, ph) {
-    return this.m_adapterContext.testViewPortChanged(px, py, pw, ph);
+    return this.m_actx.testViewPortChanged(px, py, pw, ph);
+  }
+
+  getDevicePixelRatio() {
+    return this.adapter.getDevicePixelRatio();
   }
 
   getViewX() {
@@ -13446,19 +14649,19 @@ class RenderProxy {
   setViewPort(px, py, pw, ph) {
     this.m_autoSynViewAndStage = false;
     this.m_viewPortRect.setTo(px, py, pw, ph);
-    let stage = this.m_adapterContext.getStage();
+    let stage = this.m_actx.getStage();
 
     if (stage) {
       stage.setViewPort(pw, py, pw, ph);
       this.updateCameraView();
     }
 
-    this.m_adapterContext.setViewport(px, py, pw, ph);
+    this.m_actx.setViewport(px, py, pw, ph);
   }
 
   setRCViewPort(px, py, pw, ph, autoSynViewAndStage = false) {
     this.m_autoSynViewAndStage = autoSynViewAndStage;
-    this.m_adapterContext.setViewport(px, py, pw, ph);
+    this.m_actx.setViewport(px, py, pw, ph);
   }
 
   reseizeRCViewPort() {
@@ -13467,10 +14670,10 @@ class RenderProxy {
   }
 
   updateCameraView() {
-    if (this.m_camera != null) {
+    if (this.m_cam) {
       let rect = this.m_viewPortRect;
-      this.m_camera.setViewXY(rect.x, rect.y);
-      this.m_camera.setViewSize(rect.width, rect.height);
+      this.m_cam.setViewXY(rect.x, rect.y);
+      this.m_cam.setViewSize(rect.width, rect.height);
     }
   }
 
@@ -13478,10 +14681,10 @@ class RenderProxy {
     // console.log("XXX resizeCallback(), m_autoSynViewAndStage: "+this.m_autoSynViewAndStage);
     if (this.m_autoSynViewAndStage) {
       let rect = this.m_viewPortRect;
-      rect.setSize(this.m_adapterContext.getRCanvasWidth(), this.m_adapterContext.getRCanvasHeight());
+      rect.setSize(this.m_actx.getRCanvasWidth(), this.m_actx.getRCanvasHeight());
       this.createMainCamera();
       console.log("resizeCallback(), viewW,viewH: ", rect.width + "," + rect.height);
-      this.m_adapterContext.setViewport(rect.x, rect.y, rect.width, rect.height);
+      this.m_actx.setViewport(rect.x, rect.y, rect.width, rect.height);
       this.updateCameraView();
     }
   }
@@ -13489,13 +14692,14 @@ class RenderProxy {
   createMainCamera() {
     if (this.m_initMainCamera) {
       this.m_initMainCamera = false;
-      this.m_camera.uniformEnabled = true;
+      this.m_cam.uniformEnabled = true;
       let rect = this.m_viewPortRect;
+      console.log("RenderProxy::createMainCamera(), this.m_perspectiveEnabled: ", this.m_perspectiveEnabled);
 
       if (this.m_perspectiveEnabled) {
-        this.m_camera.perspectiveRH(Math.PI * this.m_cameraFov / 180.0, rect.width / rect.height, this.m_cameraNear, this.m_cameraFar);
+        this.m_cam.perspectiveRH(Math.PI * this.m_cameraFov / 180.0, rect.width / rect.height, this.m_cameraNear, this.m_cameraFar);
       } else {
-        this.m_camera.orthoRH(this.m_cameraNear, this.m_cameraFar, -0.5 * rect.height, 0.5 * rect.height, -0.5 * rect.width, 0.5 * rect.width);
+        this.m_cam.orthoRH(this.m_cameraNear, this.m_cameraFar, -0.5 * rect.height, 0.5 * rect.height, -0.5 * rect.width, 0.5 * rect.width);
       }
 
       this.updateCameraView();
@@ -13510,8 +14714,16 @@ class RenderProxy {
     return this.m_WEBGL_VER;
   }
 
+  isWebGL2() {
+    return this.m_WEBGL_VER == 2;
+  }
+
+  isWebGL1() {
+    return this.m_WEBGL_VER == 1;
+  }
+
   buildCameraParam() {
-    let camera = this.m_camera;
+    let camera = this.m_cam;
 
     if (camera.matUProbe == null) {
       camera.matUProbe = this.uniformContext.createShaderUniformProbe();
@@ -13530,25 +14742,44 @@ class RenderProxy {
     }
   }
 
+  setCanvas(canvas) {
+    if (this.m_actx.setCanvas(canvas)) {
+      this.m_rc = this.m_actx.getRC();
+      let gl = this.m_rc;
+      let selfT = this;
+      selfT.adapter.updateGLCtx();
+      selfT.Vertex.setGLCtx(gl);
+      selfT.Texture.setGLCtx(gl);
+      selfT.rshader.setGLCtx(gl);
+      selfT.rshader.renderBegin();
+      selfT.RDrawState.updateGLCtx();
+      selfT.RContext = this.m_rc;
+      return true;
+    }
+
+    return false;
+  }
+
   initialize(param, camera, stage, proxyParam) {
     if (this.m_rc != null) {
       return;
     }
 
-    this.m_camera = camera;
+    this.m_cam = camera;
     let posV3 = param.camPosition;
     let lookAtPosV3 = param.camLookAtPos;
     let upV3 = param.camUpDirect;
     if (stage != null) stage.uProbe = proxyParam.uniformContext.createUniformVec4Probe(1);
     this.m_perspectiveEnabled = param.cameraPerspectiveEnabled;
-    this.m_adapterContext.autoSyncRenderBufferAndWindowSize = param.autoSyncRenderBufferAndWindowSize;
-    this.m_adapterContext.setResizeCallback(() => {
+    this.m_actx.autoSyncRenderBufferAndWindowSize = param.autoSyncRenderBufferAndWindowSize;
+    this.m_actx.offscreenRenderEnabled = param.offscreenRenderEnabled;
+    this.m_actx.setResizeCallback(() => {
       this.resizeCallback();
     });
-    this.m_adapterContext.setWebGLMaxVersion(this.m_maxWebGLVersion);
-    this.m_adapterContext.initialize(this.m_uid, stage, param);
-    this.m_WEBGL_VER = this.m_adapterContext.getWebGLVersion();
-    this.m_rc = this.m_adapterContext.getRC();
+    this.m_actx.setWebGLMaxVersion(this.m_maxWebGLVersion);
+    this.m_actx.initialize(this.m_uid, stage, param);
+    this.m_WEBGL_VER = this.m_actx.getWebGLVersion();
+    this.m_rc = this.m_actx.getRC();
     let selfT = this;
     let gl = this.m_rc;
     let vtxRes = new ROVertexResource_1.default(this.m_uid, gl, proxyParam.vtxBuilder);
@@ -13560,24 +14791,23 @@ class RenderProxy {
     selfT.VtxBufUpdater = proxyParam.vtxBufUpdater;
     selfT.uniformContext = proxyParam.uniformContext;
     let rstate = new RODrawState_1.RODrawState();
-    rstate.setRenderContext(this.m_adapterContext); // RendererState.Initialize(rstate, new VROBase());
-
+    rstate.setRenderContext(this.m_actx);
     let obj = RendererState_1.default;
     new RSTBuilder_1.default().initialize(obj, rstate, new VROBase_1.default());
-    selfT.RState = rstate;
+    selfT.RDrawState = rstate;
     selfT.RContext = this.m_rc;
     selfT.stencil = new RenderingStencil_1.RenderingStencil(rstate);
     selfT.renderingState = new RenderingState_1.RenderingState(RendererState_1.default);
     selfT.colorMask = new RenderingColorMask_1.RenderingColorMask(RendererState_1.default);
     this.buildCameraParam();
     let rect = this.m_viewPortRect;
-    rect.setSize(this.m_adapterContext.getRCanvasWidth(), this.m_adapterContext.getRCanvasHeight());
+    rect.setSize(this.m_actx.getRCanvasWidth(), this.m_actx.getRCanvasHeight());
     this.m_adapter = new RenderAdapter_1.default(this.m_uid, texRes);
-    this.m_adapter.initialize(this.m_adapterContext, param, rstate, this.uniformContext.createUniformVec4Probe(1));
+    this.m_adapter.initialize(this.m_actx, param, rstate, this.uniformContext.createUniformVec4Probe(1));
     selfT.adapter = this.m_adapter;
 
     if (this.m_autoSynViewAndStage) {
-      let stage = this.m_adapterContext.getStage();
+      let stage = this.m_actx.getStage();
 
       if (stage != null) {
         rect.setSize(rect.width, rect.height);
@@ -13585,9 +14815,9 @@ class RenderProxy {
     }
 
     this.createMainCamera();
-    this.m_adapterContext.setViewport(rect.x, rect.y, rect.width, rect.height);
-    this.m_camera.lookAtRH(posV3, lookAtPosV3, upV3);
-    this.m_camera.update();
+    this.m_actx.setViewport(rect.x, rect.y, rect.width, rect.height);
+    this.m_cam.lookAtRH(posV3, lookAtPosV3, upV3);
+    this.m_cam.update();
     selfT.RGBA = gl.RGBA;
     selfT.UNSIGNED_BYTE = gl.UNSIGNED_BYTE;
     selfT.TRIANGLE_STRIP = gl.TRIANGLE_STRIP;
@@ -13621,7 +14851,7 @@ class RenderProxy {
     classRenderMaskBitfield.COLOR_BUFFER_BIT = gl.COLOR_BUFFER_BIT;
     classRenderMaskBitfield.DEPTH_BUFFER_BIT = gl.DEPTH_BUFFER_BIT;
     classRenderMaskBitfield.STENCIL_BUFFER_BIT = gl.STENCIL_BUFFER_BIT;
-    RenderFBOProxy_1.default.SetRenderer(this.m_adapterContext);
+    RenderFBOProxy_1.default.SetRenderer(this.m_actx);
   }
 
   flush() {
@@ -13689,7 +14919,7 @@ class RenderProxy {
   }
 
   renderBegin() {
-    this.m_camera.update();
+    this.m_cam.update();
     this.m_adapter.renderBegin();
   }
 
@@ -13700,11 +14930,11 @@ class RenderProxy {
   }
 
   setScissorEnabled(boo) {
-    this.m_adapterContext.setScissorEnabled(boo);
+    this.m_actx.setScissorEnabled(boo);
   }
 
   setScissorRect(px, py, pw, ph) {
-    this.m_adapterContext.setScissorRect(px, py, pw, ph);
+    this.m_actx.setScissorRect(px, py, pw, ph);
   }
 
   useRenderColorMask(state) {
@@ -13790,10 +15020,6 @@ class RenderProxy {
     this.m_adapter.setViewProbeValue(x, y, width, height);
   }
 
-  toString() {
-    return "[Object RenderProxy()]";
-  }
-
 }
 
 exports.RenderProxy = RenderProxy;
@@ -13824,7 +15050,7 @@ Object.defineProperty(exports, "__esModule", {
 
 class RPONodeLinker {
   constructor() {
-    this.m_uid = -1; // 用于唯一记录运行时的自己唯一id
+    this.m_uid = RPONodeLinker.s_uid++; // 用于唯一记录运行时的自己唯一id
 
     this.m_begin = null;
     this.m_end = null;
@@ -13842,7 +15068,6 @@ class RPONodeLinker {
     this.m_texfreeIList = [];
     this.m_texList = [];
     this.m_texListLen = 0;
-    this.m_uid = RPONodeLinker.s_uid++;
   }
 
   getFreeVtxId() {
@@ -14540,6 +15765,8 @@ class AABB2D {
   constructor(px = 0.0, py = 0.0, pwidth = 100.0, pheight = 100.0) {
     this.m_right = 100;
     this.m_top = 100;
+    this.m_cx = 0;
+    this.m_cy = 0;
     this.x = 0;
     this.y = 0;
     this.width = 100;
@@ -14551,13 +15778,70 @@ class AABB2D {
     this.update();
   }
 
-  copyFrom(dst) {
-    this.x = dst.x;
-    this.y = dst.y;
-    this.width = dst.width;
-    this.height = dst.height;
-    this.m_right = dst.m_right;
-    this.m_top = dst.m_top;
+  getCenterX() {
+    return this.m_cx;
+  }
+
+  getCenterY() {
+    return this.m_cy;
+  }
+
+  moveCenterTo(px, py) {
+    this.x += px - this.m_cx;
+    this.y += py - this.m_cy;
+    this.update();
+    return this;
+  }
+
+  scaleBy(s) {
+    this.x *= s;
+    this.y *= s;
+    this.width *= s;
+    this.height *= s;
+    this.m_right = this.x + this.width;
+    this.m_top = this.y + this.height;
+    this.m_cx = this.x + this.width * 0.5;
+    this.m_cy = this.y + this.height * 0.5;
+    return this;
+  }
+
+  union(r) {
+    this.addXY(r.x, r.y);
+    this.addXY(r.getRight(), r.getTop());
+    return this;
+  }
+
+  addXY(pvx, pvy) {
+    if (this.x > pvx) this.x = pvx;
+    if (this.m_right < pvx) this.m_right = pvx;
+    if (this.y > pvy) this.y = pvy;
+    if (this.m_top < pvy) this.m_top = pvy;
+    this.width = this.m_right - this.x;
+    this.height = this.m_top - this.y;
+    this.m_cx = this.x + this.width * 0.5;
+    this.m_cy = this.y + this.height * 0.5;
+    return this;
+  }
+
+  reset() {
+    this.x = this.y = 0xfffffff;
+    this.m_right = this.m_top = -0xfffffff;
+    this.width = this.height = 0;
+    this.m_cx = 0;
+    this.m_cy = 0;
+    return this;
+  }
+
+  copyFrom(src) {
+    this.x = src.x;
+    this.y = src.y;
+    this.width = src.width;
+    this.height = src.height;
+    this.m_right = src.getRight();
+    this.m_top = src.getTop();
+    this.m_cx = src.getCenterX();
+    this.m_cy = src.getCenterY();
+    return this;
   }
 
   clone() {
@@ -14578,14 +15862,14 @@ class AABB2D {
   }
   /**
    * 当前矩形是否包含目标矩形
-   * @param dst 目标矩形
+   * @param src 目标矩形
    * @returns 返回当前矩形是否包含目标矩形
    */
 
 
-  contains(dst) {
-    if (dst.x >= this.x && dst.m_right <= this.m_right) {
-      if (dst.y >= this.y && dst.m_top <= this.m_top) {
+  contains(src) {
+    if (src.x >= this.x && src.getRight() <= this.m_right) {
+      if (src.y >= this.y && src.getTop() <= this.m_top) {
         return true;
       }
     }
@@ -14594,16 +15878,16 @@ class AABB2D {
   }
   /**
    * 当前矩形是否和目标矩形相交
-   * @param dst 目标矩形
+   * @param src 目标矩形
    * @returns 返回当前矩形是否和目标矩形相交
    */
 
 
-  intersect(dst) {
-    if (dst.x > this.m_right) return false;
-    if (dst.m_right < this.x) return false;
-    if (dst.y > this.m_top) return false;
-    if (dst.m_top < this.y) return false;
+  intersect(src) {
+    if (src.x > this.m_right) return false;
+    if (src.getRight() < this.x) return false;
+    if (src.y > this.m_top) return false;
+    if (src.getTop() < this.y) return false;
     return true;
   }
 
@@ -14614,6 +15898,9 @@ class AABB2D {
     this.height = height;
     this.m_right = this.width + this.x;
     this.m_top = this.height + this.y;
+    this.m_cx = this.x + this.width * 0.5;
+    this.m_cy = this.y + this.height * 0.5;
+    return this;
   }
 
   setSize(width, height) {
@@ -14621,10 +15908,13 @@ class AABB2D {
     this.height = height;
     this.m_right = this.width + this.x;
     this.m_top = this.height + this.y;
+    this.m_cx = this.x + this.width * 0.5;
+    this.m_cy = this.y + this.height * 0.5;
+    return this;
   }
 
-  testEqual(dst) {
-    return this.x != dst.x || this.y != dst.y || this.width != dst.width || this.height != dst.height;
+  testEqual(src) {
+    return this.x != src.x || this.y != src.y || this.width != src.width || this.height != src.height;
   }
 
   testEqualWithParams(px, py, pw, ph) {
@@ -14634,12 +15924,15 @@ class AABB2D {
   update() {
     this.m_right = this.width + this.x;
     this.m_top = this.height + this.y;
+    this.m_cx = this.x + this.width * 0.5;
+    this.m_cy = this.y + this.height * 0.5;
+    return this;
   }
 
   flipY(height) {
-    this.y = height = this.y;
-    this.m_right = this.width + this.x;
-    this.m_top = this.height + this.y;
+    this.y = height - this.y;
+    this.update();
+    return this;
   }
 
   getX() {
@@ -14661,6 +15954,84 @@ class AABB2D {
 }
 
 exports.default = AABB2D;
+
+/***/ }),
+
+/***/ "e39a":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/***************************************************************************/
+
+/*                                                                         */
+
+/*  Copyright 2019-2022 by                                                 */
+
+/*  Vily(vily313@126.com)                                                  */
+
+/*                                                                         */
+
+/***************************************************************************/
+
+var __importDefault = this && this.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+const RPOUnit_1 = __importDefault(__webpack_require__("c62b"));
+
+const PassProcess_1 = __importDefault(__webpack_require__("34cd"));
+
+const ContainerFlowRenderer_1 = __importDefault(__webpack_require__("7f1c"));
+
+class RPOUnitCont extends RPOUnit_1.default {
+  constructor() {
+    super();
+    this.m_passProc = new PassProcess_1.default();
+    this.m_cr = new ContainerFlowRenderer_1.default();
+  }
+
+  resetCR() {
+    const cr = this.m_cr;
+    cr.passProc = this.m_passProc;
+    cr.shdUpdate = false;
+    cr.shader = this.shader;
+  }
+
+  run(rc) {
+    const c = this.rentity;
+
+    if (c && c.isVisible()) {
+      this.resetCR();
+      this.m_cr.runContainer(rc, c);
+    }
+  }
+
+  runLockMaterial2(puniform) {
+    const c = this.rentity;
+
+    if (c && c.isVisible()) {
+      this.resetCR();
+      this.m_cr.runContainerLock(this.shader.getRC(), c);
+    }
+  }
+
+  reset() {
+    this.shader = null;
+    this.rentity = null;
+    this.bounds = null;
+    this.pos = null;
+  }
+
+}
+
+exports.default = RPOUnitCont;
 
 /***/ }),
 
@@ -14753,9 +16124,13 @@ class RODrawState {
     this.roColorMask = -11;
   }
 
+  updateGLCtx() {
+    this.m_gl = this.m_context.getRC();
+  }
+
   setRenderContext(context) {
     this.m_context = context;
-    this.m_gl = context.getRC();
+    this.m_gl = this.m_context.getRC();
     let rcui = this.m_gl.rcuid;
     this.m_unit = this.m_units[rcui];
 
@@ -15005,13 +16380,12 @@ Object.defineProperty(exports, "__esModule", {
 
 const PoolNodeBuilder_1 = __importDefault(__webpack_require__("2be1"));
 
-const RPOUnit_1 = __importDefault(__webpack_require__("c62b")); //import PoolNodeBuilder = PoolNodeBuilderT.vox.base.PoolNodeBuilder;
-// 这个类的实例，和每一个RPOUnit或者RODisplay关联(通过唯一的uid)
+const RPOUnit_1 = __importDefault(__webpack_require__("c62b")); // 这个类的实例，和每一个RPOUnit或者RODisplay关联(通过唯一的uid)
 
 
 class RCRPObj {
   constructor() {
-    // 这里假定最多有 16 个 RenerProcess, 每一个数组元素存放的是 RPONode 的uid, 数组的序号对应的是RenerProcess 的uid
+    // 这里假定最多有 16 个 RenderProcess, 每一个数组元素存放的是 RPONode 的uid, 数组的序号对应的是RenerProcess 的uid
     this.idsFlag = 0x0;
     this.count = 0; // 如果只有加入一个process的时候则有效
 
@@ -15090,6 +16464,219 @@ exports.RPOUnitBuilder = RPOUnitBuilder;
 
 /***/ }),
 
+/***/ "f571":
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/***************************************************************************/
+
+/*                                                                         */
+
+/*  Copyright 2018-2022 by                                                 */
+
+/*  Vily(vily313@126.com)                                                  */
+
+/*                                                                         */
+
+/***************************************************************************/
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+class SortNodeLinkerNode {
+  constructor() {
+    this.value = 0;
+    this.uid = -1;
+    this.prev = null;
+    this.next = null;
+  }
+
+}
+
+exports.SortNodeLinkerNode = SortNodeLinkerNode;
+
+class SortNodeLinker {
+  constructor() {
+    this.m_begin = null;
+    this.m_end = null;
+    this.m_next = null;
+    this.m_node = null;
+    this.m_nodes = [];
+    this.m_nodesTotal = 0;
+  }
+
+  showInfo() {
+    let info = "";
+    let next = this.m_begin;
+
+    while (next != null) {
+      info += "(" + next.value + "," + next.uid + "),"; //info += next.value+",";
+
+      next = next.next;
+    }
+
+    console.log("SortNodeLinker info: \n", info);
+  }
+
+  clear() {
+    this.m_nodes = [];
+    let next = this.m_begin;
+    let curr = null;
+
+    while (next != null) {
+      curr = next;
+      next = next.next;
+      curr.prev = null;
+      curr.next = null;
+    }
+
+    this.m_begin = this.m_end = null;
+    this.m_nodesTotal = 0;
+  }
+
+  sort() {
+    if (this.m_nodesTotal > 0) {
+      //console.log("this.m_nodesTotal: ",this.m_nodesTotal);
+      // 如果是remove实际上是不需要排序的
+      let next = this.m_begin;
+
+      if (this.m_nodes.length < this.m_nodesTotal) {
+        this.m_nodes = new Array(Math.round(this.m_nodesTotal * 1.1) + 1);
+      }
+
+      let i = 0;
+
+      while (next != null) {
+        this.m_nodes[i] = next;
+        next = next.next;
+        ++i;
+      }
+
+      this.snsort(0, this.m_nodesTotal - 1);
+      this.m_begin = this.m_nodes[0];
+      this.m_begin.uid = 2;
+      this.m_begin.next = null;
+      this.m_begin.prev = null;
+      let prev = this.m_begin;
+
+      for (i = 1; i < this.m_nodesTotal; ++i) {
+        next = this.m_nodes[i];
+        next.uid = 2 + i;
+        next.prev = prev;
+        prev.next = next;
+        next.next = null;
+        prev = next;
+      }
+
+      this.m_end = this.m_nodes[this.m_nodesTotal - 1];
+      this.m_next = this.m_begin;
+    }
+  }
+
+  sorting(low, high) {
+    let arr = this.m_nodes;
+    this.m_node = arr[low];
+
+    while (low < high) {
+      while (low < high && arr[high].value >= this.m_node.value) {
+        --high;
+      }
+
+      arr[low] = arr[high];
+
+      while (low < high && arr[low].value <= this.m_node.value) {
+        ++low;
+      }
+
+      arr[high] = arr[low];
+    }
+
+    arr[low] = this.m_node;
+    return low;
+  }
+
+  snsort(low, high) {
+    if (low < high) {
+      let pos = this.sorting(low, high);
+      this.snsort(low, pos - 1);
+      this.snsort(pos + 1, high);
+    }
+  }
+
+  getNodesTotal() {
+    return this.m_nodesTotal;
+  }
+
+  getBegin() {
+    this.m_next = this.m_begin;
+    return this.m_begin;
+  }
+
+  getNext() {
+    if (this.m_next != null) {
+      this.m_next = this.m_next.next;
+    }
+
+    return this.m_next;
+  }
+
+  isEmpty() {
+    return this.m_nodesTotal < 1; // return this.m_begin == null;
+  }
+
+  addNode(node) {
+    if (node.prev == null && node.next == null) {
+      if (this.m_begin == null) {
+        this.m_end = this.m_begin = node;
+      } else {
+        if (this.m_end.prev != null) {
+          this.m_end.next = node;
+          node.prev = this.m_end;
+          this.m_end = node;
+        } else {
+          this.m_begin.next = node;
+          node.prev = this.m_end;
+          this.m_end = node;
+        }
+      }
+
+      this.m_end.next = null;
+      this.m_nodesTotal++;
+    }
+  }
+
+  removeNode(node) {
+    if (node.prev != null || node.next != null) {
+      if (node == this.m_begin) {
+        if (node == this.m_end) {
+          this.m_begin = this.m_end = null;
+        } else {
+          this.m_begin = node.next;
+          this.m_begin.prev = null;
+        }
+      } else if (node == this.m_end) {
+        this.m_end = node.prev;
+        this.m_end.next = null;
+      } else {
+        node.next.prev = node.prev;
+        node.prev.next = node.next;
+      }
+
+      node.prev = null;
+      node.next = null;
+      this.m_nodesTotal--;
+    }
+  }
+
+}
+
+exports.SortNodeLinker = SortNodeLinker;
+exports.default = SortNodeLinker;
+
+/***/ }),
+
 /***/ "fa60":
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -15132,7 +16719,9 @@ class VaoVertexRenderObj extends VROBase_1.default {
 
   run() {
     if (this.m_rc.testVROUid(this.m_uid) || this.indicesRes.test()) {
-      // console.log("VaoVertexRenderObj::run(), rcuid: ",this.m_rc.getRCUid(),this.m_vtxUid, this.m_uid);
+      // if(DebugFlag.Flag_0 > 0) {
+      // 	console.log("VaoVertexRenderObj::run(), rcuid: ",this.m_rc.getRCUid(),this.m_vtxUid, this.m_uid);
+      // }
       this.m_rc.bindVertexArray(this.vao);
       this.indicesRes.bindToGPU(VROBase_1.default.s_mid != this.m_mid);
       VROBase_1.default.s_mid = this.m_mid; // if (this.m_rc.testRIOUid(this.m_vtxUid) || VROBase.s_mid != this.m_mid) {
@@ -15286,23 +16875,27 @@ class PassMaterialWrapper {
   build(m) {
     if (m.hasShaderData()) {
       if (this.m_mt != m) {
-        if (this.m_mt != null) {
+        if (this.m_mt) {
           this.m_mt.__$detachThis();
         }
 
         this.m_mt = m;
         const builder = this.rdataBuilder;
 
-        if (this.m_mt != null) {
+        if (this.m_mt) {
           this.m_mt.__$attachThis();
 
           if (this.unit == null) {
             this.unit = builder.createRPOUnit();
           }
 
-          builder.updateDispMaterial(this.unit, this.m_mt, this.hostUnit.rentity.getDisplay());
+          let entity = this.hostUnit.rentity;
+
+          if (entity.getREType() < 12) {
+            builder.updateDispMaterial(this.unit, this.m_mt, entity.getDisplay());
+          }
         } else {
-          if (this.unit != null) {
+          if (this.unit) {
             this.unit.destroy();
             builder.restoreRPOUnit(this.unit);
             this.unit = null;
@@ -15388,6 +16981,14 @@ class TextureFormat {
         return gl.R8;
         break;
 
+      case tf.R16F:
+        return gl.R16F;
+        break;
+
+      case tf.R32F:
+        return gl.R32F;
+        break;
+
       case tf.RGB:
         return gl.RGB;
         break;
@@ -15452,6 +17053,8 @@ class TextureFormat {
 }
 
 TextureFormat.R8 = 101;
+TextureFormat.R16F = 102;
+TextureFormat.R32F = 102;
 TextureFormat.RGB = 110;
 TextureFormat.RED = 111;
 TextureFormat.RGBA = 121;

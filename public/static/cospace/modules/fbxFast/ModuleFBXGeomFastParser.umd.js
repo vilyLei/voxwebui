@@ -2940,6 +2940,7 @@ class HttpFileLoader {
    * @param progress its value is 0.0 -> 1.0
    */
   onProgress = null, onError = null, responseType = "blob", headRange = "") {
+    // console.log("HttpFileLoader::load(), A url: ", url);
     // console.log("loadBinBuffer, headRange != '': ", headRange != "");
     if (onLoad == null) {
       throw Error("onload == null !!!");
@@ -2948,7 +2949,7 @@ class HttpFileLoader {
     const reader = new FileReader();
 
     reader.onload = e => {
-      if (onLoad != null) onLoad(reader.result, url);
+      if (onLoad) onLoad(reader.result, url);
     };
 
     const request = new XMLHttpRequest();
@@ -2962,9 +2963,32 @@ class HttpFileLoader {
 
     request.onload = e => {
       // console.log("loaded binary buffer request.status: ", request.status, e);
+      // console.log("HttpFileLoader::load(), B url: ", url);
       if (request.status <= 206) {
-        reader.readAsArrayBuffer(request.response);
-      } else if (onError != null) {
+        switch (responseType) {
+          case "arraybuffer":
+          case "blob":
+            reader.readAsArrayBuffer(request.response);
+            break;
+
+          case "json":
+            if (onLoad) onLoad(request.response, url);
+            break;
+
+          case "text":
+            if (onLoad) onLoad(request.response, url);
+            break;
+
+          default:
+            if (onLoad) onLoad(request.response, url);
+            break;
+        } // if(responseType == "blob" || responseType == "arraybuffer") {
+        // 	reader.readAsArrayBuffer(request.response);
+        // }else {
+        // 	if(onLoad) onLoad(<string>request.response, url);
+        // }
+
+      } else if (onError) {
         onError(request.status, url);
       }
     };
@@ -2990,7 +3014,7 @@ class HttpFileLoader {
             console.warn("lengthComputable failed");
           }
         } //let progressInfo = k + "%";
-        //console.log("progress progressInfo: ", progressInfo);			
+        //console.log("progress progressInfo: ", progressInfo);
 
 
         onProgress(k, url);
@@ -3637,6 +3661,13 @@ class Vector3D {
     return new Vector3D(this.x, this.y, this.z, this.w);
   }
 
+  abs() {
+    this.x = Math.abs(this.x);
+    this.y = Math.abs(this.y);
+    this.z = Math.abs(this.z);
+    return this;
+  }
+
   setTo(px, py, pz, pw = 1.0) {
     this.x = px;
     this.y = py;
@@ -4281,6 +4312,7 @@ class BufferBinaryParser {
     const version = reader.getUint32();
 
     if (version < 6400) {
+      alert('FBXLoader: FBX version not supported, FileVersion: ' + version);
       throw new Error('FBXLoader: FBX version not supported, FileVersion: ' + version);
     }
 
@@ -4309,6 +4341,7 @@ class BufferBinaryParser {
     const version = reader.getUint32();
 
     if (version < 6400) {
+      alert('FBXLoader: FBX version not supported, FileVersion: ' + version);
       throw new Error('FBXLoader: FBX version not supported, FileVersion: ' + version);
     }
 
