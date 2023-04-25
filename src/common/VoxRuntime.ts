@@ -27,7 +27,7 @@ export default class VoxRuntime {
         let url7 = "static/cospace/coentity/CoEntity.umd.js";
 
         let loader = new ModuleLoader(2, (): void => {
-            
+
             if (this.isEngineEnabled()) {
                 VoxRScene.initialize();
                 console.log("ready to build render ...");

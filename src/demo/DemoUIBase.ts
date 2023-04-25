@@ -30,6 +30,7 @@ export class DemoUIBase {
 			e.preventDefault();
 		};
 		this.initSysModule();
+		document.body.style.overflow = "hidden";
 	}
 
 	private initSysModule(): void {
