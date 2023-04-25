@@ -24,6 +24,7 @@ interface IColor4 {
     a: number;
 
     clone(): IColor4;
+	gammaCorrect(): IColor4;
     /**
      * example: [0],[1],[2],[3] => r,g,b,a
      */
@@ -61,8 +62,8 @@ interface IColor4 {
     setRGBUint24(rgbUint24: number): IColor4;
     /**
      * @param r example: 40
-     * @param g example: 50 
-     * @param b example: 60 
+     * @param g example: 50
+     * @param b example: 60
      */
     setRGB3Bytes(r: number, g: number, b: number): IColor4;
     getRGBUint24(): number;
@@ -74,9 +75,12 @@ interface IColor4 {
      * @param a example: 1.0
      */
     setRGBA4f(r: number, g: number, b: number, a: number): IColor4;
+    setAlpha(a: number): IColor4;
     copyFrom(c: IColor4): IColor4;
     copyFromRGB(c: IColor4): IColor4;
     scaleBy(s: number): IColor4;
+    rgbSizeTo(size: number): IColor4;
+
     inverseRGB(): IColor4;
     /**
      * @param density the default value is 1.0

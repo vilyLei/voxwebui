@@ -1,18 +1,11 @@
 /***************************************************************************/
 /*                                                                         */
-/*  Copyright 2018-2023 by                                                 */
+/*  Copyright 2019-2022 by                                                 */
 /*  Vily(vily313@126.com)                                                  */
 /*                                                                         */
 /***************************************************************************/
 
-export default interface IROIvsData {
-
-    unitBytes: number
-    status: number;
-    wireframe: boolean;
-    shape: boolean;
-    ivs: Uint16Array | Uint32Array;
-    version: number;
+export default interface ISystemVerify {
     
-    destroy(): void;
+    isEnabled(): boolean;
 }

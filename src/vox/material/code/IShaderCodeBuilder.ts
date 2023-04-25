@@ -12,6 +12,7 @@ import IShaderCodeObject from "../../../vox/material/IShaderCodeObject";
 
 export default interface IShaderCodeBuilder {
 
+	uns: string;
     normalEnabled: boolean;
     normalMapEnabled: boolean;
     mapLodEnabled: boolean;
@@ -20,12 +21,15 @@ export default interface IShaderCodeBuilder {
     fragMatrixInverseEnabled: boolean;
     uniform: IShaderCodeUniform;
     autoBuildHeadCodeEnabled: boolean;
-    reset(): void;
+    /**
+     * @param flag the default value is true
+     */
+    reset(flag?: boolean): void;
     useHighPrecious(): void;
     useMediumPrecious(): void;
     useLowPrecious(): void;
     /**
-     * 
+     *
      * @param name macro name string
      * @param value the default value is "1"
      */
@@ -35,7 +39,7 @@ export default interface IShaderCodeBuilder {
     addFragOutputHighp(type: string, name: string): void;
     addVarying(type: string, name: string): void;
     /**
-     * 
+     *
      * @param type vertex shader unifirm variable type, example: vec4
      * @param name vertex shader uniform variable name
      * @param arrayLength array length. the default value is 0, it is not a array. if the value is greater 0, it is a array.
@@ -44,7 +48,7 @@ export default interface IShaderCodeBuilder {
     addVertUniformParam(unifromParam: IUniformParam): void;
     addUniqueNSKeyString(key: string): void;
     /**
-     * 
+     *
      * @param type vertex shader unifirm variable type, example: vec4
      * @param name vertex shader uniform variable name
      * @param arrayLength array length. the default value is 0, it is not a array. if the value is greater 0, it is a array.

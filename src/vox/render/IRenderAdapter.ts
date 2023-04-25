@@ -10,6 +10,10 @@ import IColor4 from "../material/IColor4";
 
 interface IRenderAdapter {
 	bgColor: Float32Array;
+
+	setSyncBgColor(boo: boolean): void;
+	getSyncBgColor(): boolean;
+
 	//initialize(context: RAdapterContext, param: RendererParam, rState: RODrawState): void;
 	/**
 	 * @param faceFlipped the value is true, frontFace is CW. the value is false, frontFace is CCW.
@@ -60,7 +64,10 @@ interface IRenderAdapter {
 	unlockViewport(): void;
 	renderEnd(): void;
 	update(): void;
-	updateRenderBufferSize(): void;
+	/**
+	 * @param sync the default value is true
+	 */
+	updateRenderBufferSize(sync?: boolean): void;
 	destroy(): void;
 	getDevicePixelRatio(): number;
 
@@ -79,7 +86,7 @@ interface IRenderAdapter {
 
 	synFBOSizeWithViewport(): void;
 	asynFBOSizeWithViewport(): void;
-	
+
 	/**
 	 * if synFBOSizeWithViewport is true, fbo size = factor * view port size;
 	 * @param factor exmple: the value of factor is 0.5
@@ -94,6 +101,7 @@ interface IRenderAdapter {
 	syncHtmlBodyColor(): void;
 
 	getFBOAttachmentTotal(): number;
+	isFBORunning(): boolean;
 	/**
 	 * bind a texture to fbo attachment by attachment index
 	 * @param texProxy  IRenderTexture instance

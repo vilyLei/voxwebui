@@ -25,6 +25,8 @@ import IRenderShader from "../../vox/render/IRenderShader";
 import IRODataBuilder from "../../vox/render/IRODataBuilder";
 
 import { IRPStatus } from "./status/IRPStatus";
+import { IRODrawState } from "./rendering/IRODrawState";
+import { IStencil } from "./rendering/IStencil";
 
 export default interface IRenderProxy {
 
@@ -45,6 +47,7 @@ export default interface IRenderProxy {
     readonly MAX: number;
     readonly MIN: number;
     readonly RContext: any;
+    readonly RDrawState: IRODrawState;
 
     readonly Vertex: IRenderResource;
     readonly Texture: IRenderTexResource;
@@ -60,6 +63,7 @@ export default interface IRenderProxy {
     readonly status: IRPStatus;
     readonly adapter: IRenderAdapter;
 
+	applyStencil(st: IStencil): void;
     /**
      * @returns return system gpu context
      */
@@ -74,8 +78,8 @@ export default interface IRenderProxy {
 
     lockViewport(): void;
     unlockViewport(): void;
-    getDiv(): any;
-    getCanvas(): any;
+    getDiv(): HTMLDivElement;
+    getCanvas(): HTMLCanvasElement;
     cameraLock(): void;
     cameraUnlock(): void;
     getCamera(): IRenderCamera;
@@ -101,6 +105,7 @@ export default interface IRenderProxy {
     getMouseXYWorldRay(rl_position: IVector3D, rl_tv: IVector3D): void;
     testViewPortChanged(px: number, py: number, pw: number, ph: number): boolean;
     testRCViewPortChanged(px: number, py: number, pw: number, ph: number): boolean;
+	getDevicePixelRatio(): number;
     getViewX(): number;
     getViewY(): number;
     getViewWidth(): number;
@@ -111,8 +116,10 @@ export default interface IRenderProxy {
 
     readPixels(px: number, py: number, width: number, height: number, format: number, dataType: number, pixels: Uint8Array): void;
     getGLVersion(): number;
+    isWebGL2(): boolean;
+    isWebGL1(): boolean;
     flush(): void;
-    
+
     setClearRGBColor3f(pr: number, pg: number, pb: number): void;
     setClearColor(color: IColor4): void;
     /**

@@ -14,6 +14,7 @@ declare var CoEntity: ICoEntity;
 
 import { ICoRScene } from "../voxengine/ICoRScene";
 import IDisplayEntity from "../../vox/entity/IDisplayEntity";
+import IColor4 from "../../vox/material/IColor4";
 declare var CoRScene: ICoRScene;
 
 interface I_CoEntity {
@@ -57,6 +58,14 @@ class T_CoEntity {
 		return CoEntity.createDisplayEntityFromModel(model, pmaterial, texEnabled);
 	}
 
+	/**
+	 * @param beginV line begin position
+	 * @param endV line begin position
+	 * @param color line color, the default value is null
+	 */
+	createLine(beginV: IVector3D, endV: IVector3D, color: IColor4 = null): IMouseEventEntity {
+		return CoEntity.createLine(beginV, endV, color);
+	}
 	createFreeAxis3DEntity(minV: IVector3D, maxV: IVector3D): ITransformEntity {
 		return CoEntity.createFreeAxis3DEntity(minV, maxV);
 	}
@@ -150,8 +159,8 @@ class T_CoEntity {
 	 * @param alignYRatio the default value is -0.5
 	 * @returns a cylinder entity
 	 */	
-	createCylinder(radius: number, height: number, longitudeNumSegments: number = 20, material: IRenderMaterial = null, texEnabled: boolean = false, alignYRatio: number = -0.5): IMouseEventEntity {
-		return CoEntity.createCylinder(radius, height, longitudeNumSegments, material, texEnabled, alignYRatio);
+	createCylinder(radius: number, height: number, longitudeNumSegments: number = 20, material: IRenderMaterial = null, texEnabled: boolean = false, uvType: number = 1, alignYRatio: number = -0.5): IMouseEventEntity {
+		return CoEntity.createCylinder(radius, height, longitudeNumSegments, material, texEnabled, uvType, alignYRatio);
 	}
 	/**
      * @param radius tube radius

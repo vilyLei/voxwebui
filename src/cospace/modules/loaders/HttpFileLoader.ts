@@ -11,12 +11,12 @@ class HttpFileLoader {
 	crossOrigin = 'anonymous';
 	constructor() {
 	}
-	
+
 	setCrossOrigin( crossOrigin: string ): void  {
 		this.crossOrigin = crossOrigin;
 	}
 	async load(url: string,
-		onLoad: (buf: ArrayBuffer, url: string) => void,
+		onLoad: (buf: ArrayBuffer | string | object, url: string) => void,
 		/**
 		 * @param progress its value is 0.0 -> 1.0
 		 */
@@ -25,13 +25,14 @@ class HttpFileLoader {
 		responseType: XMLHttpRequestResponseType = "blob",
 		headRange: string = ""
 	) {
+		// console.log("HttpFileLoader::load(), A url: ", url);
 		// console.log("loadBinBuffer, headRange != '': ", headRange != "");
 		if(onLoad == null) {
 			throw Error("onload == null !!!");
 		}
 		const reader = new FileReader();
 		reader.onload = (e) => {
-			if(onLoad != null) onLoad(<ArrayBuffer>reader.result, url);
+			if(onLoad) onLoad(<ArrayBuffer>reader.result, url);
 		};
 		const request = new XMLHttpRequest();
 		request.open("GET", url, true);
@@ -42,14 +43,34 @@ class HttpFileLoader {
 
 		request.onload = (e) => {
 			// console.log("loaded binary buffer request.status: ", request.status, e);
+			// console.log("HttpFileLoader::load(), B url: ", url);
 			if (request.status <= 206) {
-				reader.readAsArrayBuffer(request.response);
-			} else if(onError != null){
+				switch(responseType) {
+					case "arraybuffer":
+					case "blob":
+						reader.readAsArrayBuffer(request.response);
+						break;
+					case "json":
+						if(onLoad) onLoad(<object>request.response, url);
+						break;
+					case "text":
+						if(onLoad) onLoad(<string>request.response, url);
+						break;
+					default:
+						if(onLoad) onLoad(<any>request.response, url);
+						break;
+				}
+				// if(responseType == "blob" || responseType == "arraybuffer") {
+				// 	reader.readAsArrayBuffer(request.response);
+				// }else {
+				// 	if(onLoad) onLoad(<string>request.response, url);
+				// }
+			} else if(onError){
 				onError(request.status, url);
 			}
 		};
 		if(onProgress != null) {
-			request.onprogress = (evt: ProgressEvent) => {	
+			request.onprogress = (evt: ProgressEvent) => {
 				// console.log("progress evt: ", evt);
 				// console.log("progress total: ", evt.total, ", loaded: ", evt.loaded);
 				let k = 0.0;
@@ -68,7 +89,7 @@ class HttpFileLoader {
 					}
 				}
 				//let progressInfo = k + "%";
-				//console.log("progress progressInfo: ", progressInfo);			
+				//console.log("progress progressInfo: ", progressInfo);
 				onProgress(k, url);
 			}
 		}
