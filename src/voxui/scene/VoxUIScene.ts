@@ -60,13 +60,13 @@ class VoxUIScene implements IVoxUIScene {
 			let stage = crscene.getStage3D();
 
 			crscene.addEventListener(CoRScene.EventBase.RESIZE, this, this.resizeHandle);
-			let rparam = graph.createRendererSceneParam();//CoRScene.createRendererSceneParam();
+			let rparam = graph.createRendererSceneParam();
 			rparam.cameraPerspectiveEnabled = false;
 			rparam.setAttriAlpha(false);
 			rparam.setCamProject(45.0, 0.1, 3000.0);
 			rparam.setCamPosition(0.0, 0.0, 1500.0);
 
-			let subScene = graph.createSubScene( rparam, renderProcessesTotal, true );//crscene.createSubScene(rparam, renderProcessesTotal, true);
+			let subScene = graph.createSubScene( rparam, renderProcessesTotal, true );
 			subScene.enableMouseEvent(true);
 			let t: any = this;
 			t.rscene = subScene;

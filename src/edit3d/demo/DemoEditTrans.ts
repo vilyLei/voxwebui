@@ -151,7 +151,7 @@ export class DemoEditTrans {
 		RD.SHADERCODE_TRACE_ENABLED = false;
 		RD.VERT_SHADER_PRECISION_GLOBAL_HIGHP_ENABLED = true;
 
-		let graph = (this.m_graph = VoxRScene.createRendererSceneGraph());
+		let graph = this.m_graph = VoxRScene.createRendererSceneGraph();
 
 		let rparam = graph.createRendererSceneParam();
 		rparam.setAttriAntialias(true);
@@ -177,7 +177,7 @@ export class DemoEditTrans {
 
 		let uisc = (this.m_uiScene = VoxUI.createUIScene(this.m_graph));
 		uisc.texAtlasNearestFilter = true;
-		uisc.initialize(this.m_graph);
+		// uisc.initialize(this.m_graph);
 
 		uisc.rscene.addEventListener(MouseEvent.MOUSE_BG_DOWN, this, this.uiMouseDownListener);
 		uisc.rscene.addEventListener(MouseEvent.MOUSE_UP, this, this.uiMouseUpListener);
@@ -256,10 +256,13 @@ export class DemoEditTrans {
 		// let axis = VoxEntity.createAxis3DEntity(300);
 		// rsc.addEntity(axis);
 		// let sph = VoxEntity.createSphere(50, 20, 20);
+
 		let sph = VoxEntity.createCube(100);
 		let mesh = sph.getMesh() as IDataMesh;
 		// rsc.addEntity(sph);
-		this.createEntity({indices: mesh.getIVS(), vertices: mesh.getVS()});
+		let entity = this.createEntity({indices: mesh.getIVS(), vertices: mesh.getVS()});
+		entity.setXYZ(200,0,100);
+		entity = this.createEntity({indices: mesh.getIVS(), vertices: mesh.getVS()});
 	}
 
 	private m_transCtr: TransformController = null;

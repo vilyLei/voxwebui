@@ -99,11 +99,11 @@ function createUIScene(graph: IRendererSceneGraph, uiConfig: IUIConfig = null, a
 	initialize();
 	let uisc = new VoxUIScene();
 	__$$$currUISCene = uisc;
-	if(graph != null) {
+	if(graph) {
 		uisc.initialize(graph, atlasSize, renderProcessesTotal);
 	}
 	uisc.uiConfig = uiConfig;
-	if (uiConfig != null) {
+	if (uiConfig) {
 		let promptSys = new PromptSystem();
 		promptSys.initialize(uisc);
 		uisc.prompt = promptSys;
