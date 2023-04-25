@@ -34,6 +34,7 @@ import { VoxMaterial } from "../cospace/voxmaterial/VoxMaterial";
 import { VoxEntity } from "../cospace/voxentity/VoxEntity";
 import { VoxMesh } from "../cospace/voxmesh/VoxMesh";
 import { VoxRenderer } from "../cospace/voxengine/VoxRenderer";
+import { UIEntityContainer } from "./entity/UIEntityContainer";
 let __$$__init = true;
 function initialize(): void {
 	if(__$$__init) {
@@ -81,7 +82,9 @@ function createTextButton(width: number, height: number, idns: string, texAtlas:
 	return ButtonBuilder.createTextButton(width, height, idns, texAtlas, textParam, colors);
 }
 
-
+function createUIContainer(): UIEntityContainer {
+	return new UIEntityContainer(true);
+}
 function createUIPanel(): UIPanel {
 	return new UIPanel();
 }
@@ -108,7 +111,7 @@ function createUIScene(graph: IRendererSceneGraph, uiConfig: IUIConfig = null, a
 		tipsSys.initialize(uisc);
 		uisc.tips = tipsSys;
 	}
-	
+
 	let panelSys = new PanelSystem();
 	panelSys.initialize(uisc);
 	uisc.panel = panelSys;
@@ -160,6 +163,7 @@ function createTextLabelButton(uuid: string, text: string, width: number = 90, h
 	// return btn;
 }
 export {
+
 	initialize,
 	createColorLabel,
 	createUILayout,
@@ -175,6 +179,7 @@ export {
 	createTextButton,
 	createTextLabelButton,
 
+	createUIContainer,
 	createUIPanel,
 	createPromptPanel,
 	createParamCtrlPanel,

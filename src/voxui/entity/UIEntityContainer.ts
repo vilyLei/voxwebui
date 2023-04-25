@@ -7,9 +7,13 @@ import IVector3D from "../../vox/math/IVector3D";
 declare var CoRScene: ICoRScene;
 
 class UIEntityContainer extends UIEntityBase implements IUIEntityContainer {
-
 	protected m_uientities: IUIEntity[] = [];
-	constructor() { super(); }
+	constructor(init: boolean = false) {
+		super();
+		if(init) {
+			this.init();
+		}
+	}
 
 	protected init(): void {
 		if (this.isIniting()) {
@@ -17,17 +21,13 @@ class UIEntityContainer extends UIEntityBase implements IUIEntityContainer {
 			this.m_rcontainer = CoRScene.createDisplayEntityContainer();
 		}
 	}
-	protected addedEntity(entity: IUIEntity): void {
-
-	}
-	protected removedEntity(entity: IUIEntity): void {
-
-	}
+	protected addedEntity(entity: IUIEntity): void {}
+	protected removedEntity(entity: IUIEntity): void {}
 	update(): void {
 		for (let i = 0; i < this.m_uientities.length; ++i) {
 			this.m_uientities[i].update();
 		}
-		if(this.m_rcontainer != null) {
+		if (this.m_rcontainer != null) {
 			this.m_rcontainer.update();
 		}
 		super.update();
