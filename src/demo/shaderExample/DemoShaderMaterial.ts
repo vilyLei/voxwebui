@@ -127,7 +127,8 @@ export class DemoShaderMaterial {
 		let baseUrl = "static/private/";
 		let url = baseUrl + "fbx/base4.fbx";
 		// url = baseUrl + "fbx/hat_ok.fbx";
-		url = baseUrl + "obj/apple_01.obj";
+		// url = baseUrl + "obj/apple_01.obj";
+		url = baseUrl + "obj/base.obj";
 		// url = baseUrl + "ctm/errorNormal.ctm";
 
 		this.loadModels([url]);
