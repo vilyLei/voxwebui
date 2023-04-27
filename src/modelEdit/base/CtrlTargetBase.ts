@@ -26,7 +26,7 @@ class CtrlTargetBase implements ICtrTarget {
 		this.m_tars = null;
 	}
 	addCtrlEntity(entity: IEntityTransform): void {
-		if (entity != null) {
+		if (entity) {
 			this.m_controllers.push(entity);
 			this.m_flags.push(true);
 		}
@@ -37,19 +37,11 @@ class CtrlTargetBase implements ICtrTarget {
 	}
 
 	setCtrlScaleXYZ(sx: number, sy: number, sz: number): void {
-		if (this.container == null) {
-			const ls = this.m_controllers;
-			for (let i = 0; i < ls.length; ++i) {
-				this.m_flags[i] = true;
+		this.container.setScaleXYZ(sx, sy, sz);
+		const ls = this.m_controllers;
+		for (let i = 0; i < ls.length; ++i) {
+			if (ls[i].transFlag && ls[i].transFlag > 0) {
 				ls[i].setScaleXYZ(sx, sy, sz);
-			}
-		} else {
-			this.container.setScaleXYZ(sx, sy, sz);
-			const ls = this.m_controllers;
-			for (let i = 0; i < ls.length; ++i) {
-				if((ls[i] as any).scaleEnabled) {
-					ls[i].setScaleXYZ(sx, sy, sz);
-				}
 			}
 		}
 	}
@@ -61,11 +53,7 @@ class CtrlTargetBase implements ICtrTarget {
 		return this;
 	}
 	getPosition(pv: IVector3D): IVector3D {
-		if (this.container == null) {
-			return this.container.getPosition(pv);
-		}
-		pv.copyFrom(this.position);
-		return pv;
+		return this.container.getPosition(pv);
 	}
 	setRotation3(r: IVector3D): CtrlTargetBase {
 		return this;
@@ -99,32 +87,10 @@ class CtrlTargetBase implements ICtrTarget {
 				}
 			}
 		}
-		if (this.container == null) {
-			let ls = this.m_controllers;
-			for (let i = 0; i < ls.length; ++i) {
-				if (this.m_flags[i]) {
-					// t++;
-					this.m_flags[i] = false;
-					ls[i].update();
-				}
-			}
-		} else {
-			this.container.update();
-		}
+		this.container.update();
 	}
 	updateCtrl(): void {
-		if (this.container == null) {
-			let ls = this.m_controllers;
-			for (let i = 0; i < ls.length; ++i) {
-				if (this.m_flags[i]) {
-					this.m_flags[i] = false;
-					ls[i].update();
-				}
-			}
-		} else {
-			this.container.update();
-		}
-		// console.log("t: ", t);
+		this.container.update();
 	}
 	destroy(): void {
 		this.m_tars = null;

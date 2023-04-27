@@ -14,16 +14,13 @@ import { SphereRayTester } from "../base/SphereRayTester";
 import { DashedLineRayTester } from "../base/DashedLineRayTester";
 import { ScaleCtr } from "./ScaleCtr";
 
-import { ICoRScene } from "../../cospace/voxengine/ICoRScene";
 import { ICoMath } from "../../cospace/math/ICoMath";
 import { ICoAGeom } from "../../cospace/ageom/ICoAgeom";
 import { ICoMesh } from "../../cospace/voxmesh/ICoMesh";
 import { ICoMaterial } from "../../cospace/voxmaterial/ICoMaterial";
 import { ICoEntity } from "../../cospace/voxentity/ICoEntity";
-import IColorMaterial from "../../vox/material/mcase/IColorMaterial";
 import IDisplayEntityContainer from "../../vox/entity/IDisplayEntityContainer";
 
-declare var CoRScene: ICoRScene;
 declare var CoMath: ICoMath;
 declare var CoAGeom: ICoAGeom;
 declare var CoMesh: ICoMesh;
@@ -101,42 +98,6 @@ class ScaleDragLine extends ScaleCtr implements IRayControl {
     getVisible(): boolean {
         return this.m_entity.getVisible();
     }
-    setXYZ(px: number, py: number, pz: number): ScaleDragLine {
-        this.m_entity.setXYZ(px, py, pz);
-        return this;
-    }
-    setRotation3(r: IVector3D): ScaleDragLine {
-		throw Error("illegal operations !!!");
-        this.m_entity.setRotation3(r);
-        return this;
-    }
-    setRotationXYZ(rx: number, ry: number, rz: number): ScaleDragLine {
-		throw Error("illegal operations !!!");
-        this.m_entity.setRotationXYZ(rx, ry, rz);
-        return this;
-    }
-    setScaleXYZ(sx: number, sy: number, sz: number): ScaleDragLine {
-		throw Error("illegal operations !!!");
-        this.m_entity.setScaleXYZ(sx, sy, sz);
-        return this;
-    }
-
-    getScaleXYZ(pv: IVector3D): IVector3D {
-		throw Error("illegal operations !!!");
-        this.m_entity.getScaleXYZ(pv);
-        return pv;
-    }
-    getRotationXYZ(pv: IVector3D): IVector3D {
-		throw Error("illegal operations !!!");
-        this.m_entity.getRotationXYZ(pv);
-        return pv;
-    }
-    localToGlobal(pv: IVector3D): void {
-        this.m_entity.localToGlobal(pv);
-    }
-    globalToLocal(pv: IVector3D): void {
-        this.m_entity.globalToLocal(pv);
-    }
 
     showOverColor(): void {
 
@@ -173,22 +134,7 @@ class ScaleDragLine extends ScaleCtr implements IRayControl {
         }
 		this.m_container = null;
     }
-    setPosition(pos: IVector3D): ScaleDragLine {
-		throw Error("illegal operations !!!");
-        this.m_entity.setPosition(pos);
-        return this;
-    }
-    getPosition(pv: IVector3D): IVector3D {
-		throw Error("illegal operations !!!");
-        this.m_entity.getPosition(pv);
-        return pv;
-    }
-    update(): void {
-        // this.m_entity.update();
-        // this.m_box.update();
-    }
 
-    // private m_flag: number = -1;
     private m_line_pv: IVector3D = CoMath.createVec3();
     private m_initPos: IVector3D = CoMath.createVec3();
     private m_dv: IVector3D = CoMath.createVec3();
@@ -207,12 +153,14 @@ class ScaleDragLine extends ScaleCtr implements IRayControl {
             CoAGeom.Line.CalcTwoSLCloseV2(rpv, rtv, this.m_line_pv, this.tv, outV);
             mat4 = this.m_mat4;
             mat4.transformVector3Self(outV);
+			let container = this.m_target.container;
+			container.globalToLocal(outV);
         }
     }
     private m_rpv = CoMath.createVec3();
     private m_rtv = CoMath.createVec3();
     private m_sv = CoMath.createVec3();
-    moveByRay(rpv: IVector3D, rtv: IVector3D): void {
+    moveByRay(rpv: IVector3D, rtv: IVector3D, force: boolean = false): void {
 
         if (this.isEnabled()) {
             if (this.isSelected()) {

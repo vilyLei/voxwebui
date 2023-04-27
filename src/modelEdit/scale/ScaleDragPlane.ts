@@ -6,7 +6,6 @@
 /***************************************************************************/
 
 import IVector3D from "../../vox/math/IVector3D";
-import IAABB from "../../vox/geom/IAABB";
 import ITransformEntity from "../../vox/entity/ITransformEntity";
 import { IRayControl } from "../base/IRayControl";
 import { ScaleCtr } from "./ScaleCtr";
@@ -135,67 +134,8 @@ export default class ScaleDragPlane extends ScaleCtr implements IRayControl {
     getVisible(): boolean {
         return this.m_entity.getVisible();
     }
-    setXYZ(px: number, py: number, pz: number): ScaleDragPlane {
-		throw Error("illegal operations !!!");
-        this.m_entity.setXYZ(px, py, pz);
-        this.m_frameEntity.setXYZ(px, py, pz);
-        return this;
-    }
-    setPosition(pv: IVector3D): ScaleDragPlane {
-		throw Error("illegal operations !!!");
-        this.m_entity.setPosition(pv);
-        this.m_frameEntity.setPosition(pv);
-        return this;
-    }
-    getPosition(pv: IVector3D): IVector3D {
-		throw Error("illegal operations !!!");
-        this.m_entity.getPosition(pv);
-        return pv;
-    }
-    setScaleXYZ(sx: number, sy: number, sz: number): ScaleDragPlane {
-		throw Error("illegal operations !!!");
-        this.m_entity.setScaleXYZ(sx, sy, sz);
-        this.m_frameEntity.setScaleXYZ(sx, sy, sz);
-        return this;
-    }
 
-    getScaleXYZ(pv: IVector3D): IVector3D {
-		throw Error("illegal operations !!!");
-        return this.m_entity.getScaleXYZ(pv);
-    }
-    setRotation3(r: IVector3D): ScaleDragPlane {
-        // this.m_entity.setRotation3(r);
-        // this.m_frameEntity.setRotation3(r);
-		throw Error("illegal operations !!!");
-        return this;
-    }
-    setRotationXYZ(rx: number, ry: number, rz: number): ScaleDragPlane {
-        // this.m_entity.setRotationXYZ(rx, ry, rz);
-        // this.m_frameEntity.setRotationXYZ(rx, ry, rz);
-		throw Error("illegal operations !!!");
-        return this;
-    }
-    getRotationXYZ(pv: IVector3D): IVector3D {
-        return this.m_entity.getRotationXYZ(pv);
-    }
-
-    getGlobalBounds(): IAABB {
-        return this.m_entity.getGlobalBounds();
-    }
-    getLocalBounds(): IAABB {
-        return this.m_entity.getGlobalBounds();
-    }
-    localToGlobal(pv: IVector3D): void {
-        this.m_entity.localToGlobal(pv);
-    }
-    globalToLocal(pv: IVector3D): void {
-        this.m_entity.globalToLocal(pv);
-    }
-    update(): void {
-        // this.m_entity.update();
-        // this.m_frameEntity.update();
-    }
-    destroy(): void {
+	destroy(): void {
         super.destroy();
         if(this.m_container) {
             this.m_container.removeEntity(this.m_entity);
@@ -228,7 +168,7 @@ export default class ScaleDragPlane extends ScaleCtr implements IRayControl {
     private m_rtv = CoMath.createVec3();
     private m_sv = CoMath.createVec3();
     private m_dis = 1.0;
-    moveByRay(rpv: IVector3D, rtv: IVector3D): void {
+    moveByRay(rpv: IVector3D, rtv: IVector3D, force: boolean = false): void {
 
         if (this.isEnabled()) {
             if (this.isSelected()) {
@@ -272,6 +212,7 @@ export default class ScaleDragPlane extends ScaleCtr implements IRayControl {
             }
         }
     }
+	private m_initNV: IVector3D = CoMath.createVec3();
     /**
      * set plane world onrmal vactor3
      * @param nv
@@ -279,14 +220,17 @@ export default class ScaleDragPlane extends ScaleCtr implements IRayControl {
     setPlaneNormal(nv: IVector3D): void {
         this.m_planeNV.copyFrom(nv);
         this.m_planeNV.normalize();
+		this.m_initNV.copyFrom(this.m_planeNV);
     }
     selectByParam(raypv: IVector3D, raytv: IVector3D, wpos: IVector3D): void {
-
 
         this.m_rpv.copyFrom(raypv);
         this.m_rtv.copyFrom(raytv);
         this.m_planePos.copyFrom(wpos);
 
+		this.m_planeNV.copyFrom( this.m_initNV );
+		let invMat = this.m_entity.getMatrix();
+		invMat.deltaTransformVectorSelf(this.m_planeNV);
         this.m_planeNV.normalize();
 
         this.m_planeDis = this.m_planePos.dot(this.m_planeNV);

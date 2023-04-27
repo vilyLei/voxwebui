@@ -20,7 +20,11 @@ interface IDragRotationController extends IUserEditController {
     fixSize: number;
     radius: number;
     pickTestAxisRadius: number;
-
-    moveByRay(rpv: IVector3D, rtv: IVector3D): void;
+	/**
+	 * @param rpv
+	 * @param rtv
+	 * @param force the default value is false
+	 */
+    moveByRay(rpv: IVector3D, rtv: IVector3D, force?: boolean): void;
 }
 export { IDragRotationController }

@@ -11,10 +11,10 @@ import { ICoRScene } from "../../cospace/voxengine/ICoRScene";
 import IEvtNode from "../../vox/event/IEvtNode";
 import IColor4 from "../../vox/material/IColor4";
 import IColorMaterial from "../../vox/material/mcase/IColorMaterial";
-import IDisplayEntityContainer from "../../vox/entity/IDisplayEntityContainer";
+
 declare var CoRScene: ICoRScene;
 
-class UserEditCtr {
+class UserEditCtr implements IEntityTransform {
 
     private m_evtMap: Map<number, IEvtNode>;
     protected m_enabled = false;
@@ -27,7 +27,7 @@ class UserEditCtr {
     runningVisible = true;
     uuid = "editCtrl";
     moveSelfEnabled = true;
-	scaleEnabled = false;
+	transFlag = 0;
     constructor() {
 
         let m = new Map();
@@ -85,7 +85,7 @@ class UserEditCtr {
             this.setAllVisible(true);
         }
     }
-    setVisible(visible: boolean): UserEditCtr {
+    setVisible(visible: boolean): IEntityTransform {
         return this;
     }
     getVisible(): boolean {
@@ -163,7 +163,7 @@ class UserEditCtr {
     }
 
 
-    run(camera: IRenderCamera, rtv: IVector3D): void {
+    run(camera: IRenderCamera, rtv: IVector3D, force: boolean): void {
 
     }
     destroy(): void {
@@ -206,38 +206,47 @@ class UserEditCtr {
         }
     }
 
-    // setXYZ(px: number, py: number, pz: number): ITransformEntity {
-	// 	throw Error("illegal operations !!!");
-    //     return null;
-    // }
-    // setPosition(pv: IVector3D): ITransformEntity {
-	// 	throw Error("illegal operations !!!");
-    //     return null;
-    // }
-    // getScaleXYZ(pv: IVector3D): IVector3D {
-	// 	throw Error("illegal operations !!!");
-    //     return pv
-    // }
-    // setRotation3(r: IVector3D): ITransformEntity {
-	// 	throw Error("illegal operations !!!");
-    //     return null;
-    // }
-    // setRotationXYZ(rx: number, ry: number, rz: number): ITransformEntity {
-	// 	throw Error("illegal operations !!!");
-    //     return null;
-    // }
-    // getRotationXYZ(pv: IVector3D): IVector3D {
-	// 	throw Error("illegal operations !!!");
-    //     return null;
-    // }
-    // getPosition(pv: IVector3D): IVector3D {
-	// 	throw Error("illegal operations !!!");
-    //     return pv;
-    // }
-    // setScaleXYZ(sx: number, sy: number, sz: number): ITransformEntity {
-	// 	throw Error("illegal operations !!!");
-    //     return null;
-	// }
+    setXYZ(px: number, py: number, pz: number): IEntityTransform {
+		throw Error("illegal operations !!!");
+        return null;
+    }
+    setPosition(pv: IVector3D): IEntityTransform {
+		throw Error("illegal operations !!!");
+        return null;
+    }
+    getScaleXYZ(pv: IVector3D): IVector3D {
+		throw Error("illegal operations !!!");
+        return pv
+    }
+    setRotation3(r: IVector3D): IEntityTransform {
+		throw Error("illegal operations !!!");
+        return null;
+    }
+    setRotationXYZ(rx: number, ry: number, rz: number): IEntityTransform {
+		throw Error("illegal operations !!!");
+        return null;
+    }
+    getRotationXYZ(pv: IVector3D): IVector3D {
+		throw Error("illegal operations !!!");
+        return null;
+    }
+    getPosition(pv: IVector3D): IVector3D {
+		throw Error("illegal operations !!!");
+        return pv;
+    }
+    setScaleXYZ(sx: number, sy: number, sz: number): IEntityTransform {
+		throw Error("illegal operations !!!");
+        return null;
+	}
+	localToGlobal(pv: IVector3D): void {
+		throw Error("illegal operations !!!");
+	}
+    globalToLocal(pv: IVector3D): void {
+		throw Error("illegal operations !!!");
+	}
+    update(): void {
+		throw Error("illegal operations !!!");
+	}
 }
 
 export { UserEditCtr };

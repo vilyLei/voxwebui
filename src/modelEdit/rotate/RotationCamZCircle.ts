@@ -74,7 +74,6 @@ class RotationCamZCircle extends RotationCtr implements IRayControl {
 
             this.m_editRS = rs;
 			this.m_container = container;
-            // this.m_editRSPI = rspi;
 
             this.m_ring = new RotationRing();
             this.m_entity = CoEntity.createDisplayEntity();
@@ -101,9 +100,9 @@ class RotationCamZCircle extends RotationCtr implements IRayControl {
         }
     }
     private m_camVer = -7;
-    run(camera: IRenderCamera, rtv: IVector3D): void {
+    run(camera: IRenderCamera, rtv: IVector3D, force: boolean = false): void {
 
-        if (this.m_camVer != camera.version) {
+        if (this.m_camVer != camera.version || force) {
             this.m_camVer = camera.version;
 
             // 圆面朝向摄像机
@@ -113,6 +112,9 @@ class RotationCamZCircle extends RotationCtr implements IRayControl {
             et.getScaleXYZ(sv);
 
             this.m_camPos.copyFrom(camera.getPosition());
+			let container = this.m_target.container;
+			container.globalToLocal(this.m_camPos);
+
             this.m_srcDV.setXYZ(1, 0, 0);
             this.m_dstDV.subVecsTo(this.m_camPos, this.m_posV);
 
@@ -144,44 +146,6 @@ class RotationCamZCircle extends RotationCtr implements IRayControl {
     getVisible(): boolean {
         return this.m_entity.getVisible();
     }
-    setXYZ(px: number, py: number, pz: number): RotationCamZCircle {
-		throw Error("illegal operations !!!");
-        this.m_entity.setXYZ(px, py, pz);
-        this.m_camVer = -7;
-        return this;
-    }
-    setRotation3(r: IVector3D): RotationCamZCircle {
-		throw Error("illegal operations !!!");
-        return this;
-    }
-    setRotationXYZ(rx: number, ry: number, rz: number): RotationCamZCircle {
-		throw Error("illegal operations !!!");
-        return this;
-    }
-    setScaleXYZ(sx: number, sy: number, sz: number): RotationCamZCircle {
-		throw Error("illegal operations !!!");
-        this.m_entity.setScaleXYZ(sx, sy, sz);
-        this.m_camVer = -7;
-        this.run(this.m_editRS.getCamera(), null);
-        return this;
-    }
-
-    getScaleXYZ(pv: IVector3D): IVector3D {
-		throw Error("illegal operations !!!");
-        return pv;
-    }
-    getRotationXYZ(pv: IVector3D): IVector3D {
-		throw Error("illegal operations !!!");
-        return pv;
-    }
-
-    localToGlobal(pv: IVector3D): void {
-        this.m_entity.localToGlobal(pv);
-    }
-    globalToLocal(pv: IVector3D): void {
-        this.m_entity.globalToLocal(pv);
-    }
-
     enable(): void {
         super.enable();
         this.m_entity.mouseEnabled = true;
@@ -222,22 +186,8 @@ class RotationCamZCircle extends RotationCtr implements IRayControl {
         this.m_cv = null;
         this.m_planeNV = null;
     }
-    setPosition(pos: IVector3D): RotationCamZCircle {
-		throw Error("illegal operations !!!");
-        this.m_entity.setPosition(pos);
-        return this;
-    }
-    getPosition(pv: IVector3D): IVector3D {
-		throw Error("illegal operations !!!");
-        this.m_entity.getPosition(pv);
-        return pv;
-    }
-    update(): void {
-        // this.m_entity.update();
-        // this.m_ring.update();
-    }
 
-    moveByRay(rpv: IVector3D, rtv: IVector3D): void {
+    moveByRay(rpv: IVector3D, rtv: IVector3D, force: boolean = false): void {
 
         if (this.isEnabled()) {
             if (this.isSelected()) {
@@ -249,7 +199,7 @@ class RotationCamZCircle extends RotationCtr implements IRayControl {
                 this.m_ring.setProgress(degree / 360.0);
 
                 let et = this.m_target;
-                if (et != null) {
+                if (et) {
 
                     let mat = this.m_mat0;
                     let axis = this.m_dstDV;
@@ -266,7 +216,7 @@ class RotationCamZCircle extends RotationCtr implements IRayControl {
             }
         }
     }
-    // private m_axisEntity: ITransformEntity = null;
+
     protected mouseDownListener(evt: any): void {
 
         console.log("RotationCamZCircle::mouseDownListener() ..., evt: ", evt);

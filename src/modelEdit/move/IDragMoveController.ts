@@ -10,8 +10,12 @@ interface IDragMoveController extends IUserEditController {
     planeSize: number;
     planeAlpha: number;
     pickTestAxisRadius: number;
-
-    moveByRay(rpv: IVector3D, rtv: IVector3D): void;
+	/**
+	 * @param rpv
+	 * @param rtv
+	 * @param force the default value is false
+	 */
+    moveByRay(rpv: IVector3D, rtv: IVector3D, force?: boolean): void;
 }
 
 export { IDragMoveController };

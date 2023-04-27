@@ -44,7 +44,7 @@ export default class DragScaleRayCrossPlane extends ScaleCtr implements IRayCont
 
         if (this.m_entity == null) {
 
-			this.scaleEnabled = true;
+			this.transFlag = 1;
             this.m_rscene = rscene;
             this.m_container = container;
 
@@ -120,36 +120,6 @@ export default class DragScaleRayCrossPlane extends ScaleCtr implements IRayCont
     getVisible(): boolean {
         return this.m_entity.getVisible();
     }
-
-    setXYZ(px: number, py: number, pz: number): DragScaleRayCrossPlane {
-		throw Error("illegal operations !!!");
-        return this;
-    }
-    setPosition(pv: IVector3D): DragScaleRayCrossPlane {
-		throw Error("illegal operations !!!");
-        return this;
-    }
-    getScaleXYZ(pv: IVector3D): IVector3D {
-		throw Error("illegal operations !!!");
-        return pv;
-    }
-    setRotation3(r: IVector3D): DragScaleRayCrossPlane {
-		throw Error("illegal operations !!!");
-        return this;
-    }
-    setRotationXYZ(rx: number, ry: number, rz: number): DragScaleRayCrossPlane {
-		throw Error("illegal operations !!!");
-        return this;
-    }
-    getRotationXYZ(pv: IVector3D): IVector3D {
-		throw Error("illegal operations !!!");
-        return pv;
-    }
-    getPosition(pv: IVector3D): IVector3D {
-		throw Error("illegal operations !!!");
-        return pv;
-    }
-
     setScaleXYZ(sx: number, sy: number, sz: number): DragScaleRayCrossPlane {
         this.m_entity.setScaleXYZ(sx, sy, sz);
         this.m_circle.setScaleXY(sx, sy);
@@ -160,23 +130,6 @@ export default class DragScaleRayCrossPlane extends ScaleCtr implements IRayCont
         return this;
     }
 
-    getGlobalBounds(): IAABB {
-        return this.m_entity.getGlobalBounds();
-    }
-    getLocalBounds(): IAABB {
-        return this.m_entity.getGlobalBounds();
-    }
-    localToGlobal(pv: IVector3D): void {
-        this.m_entity.localToGlobal(pv);
-    }
-    globalToLocal(pv: IVector3D): void {
-        this.m_entity.globalToLocal(pv);
-    }
-    update(): void {
-        // this.m_entity.update();
-        // this.m_circle.update();
-        // this.m_billPos.update();
-    }
     destroy(): void {
 
         super.destroy();
@@ -214,7 +167,7 @@ export default class DragScaleRayCrossPlane extends ScaleCtr implements IRayCont
     private m_rtv = CoMath.createVec3();
     private m_sv = CoMath.createVec3();
     private m_dis = 1.0;
-    moveByRay(rpv: IVector3D, rtv: IVector3D): void {
+    moveByRay(rpv: IVector3D, rtv: IVector3D, force: boolean = false): void {
 
         if (this.isEnabled()) {
             if (this.isSelected()) {

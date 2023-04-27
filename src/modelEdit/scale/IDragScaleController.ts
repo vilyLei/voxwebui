@@ -11,8 +11,12 @@ interface IDragScaleController extends IUserEditController {
     planeAlpha: number;
     pickTestAxisRadius: number;
     camZCircleRadius: number;
-
-    moveByRay(rpv: IVector3D, rtv: IVector3D): void;
+	/**
+	 * @param rpv
+	 * @param rtv
+	 * @param force the default value is false
+	 */
+    moveByRay(rpv: IVector3D, rtv: IVector3D, force?:boolean): void;
 
 }
 

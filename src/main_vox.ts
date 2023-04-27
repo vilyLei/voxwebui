@@ -26,7 +26,8 @@ pwin["VoxVerify"] = new VVF();
 ///////////////////////////////  modelEdit  ////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
 
-import {DemoModelEditTrans as Demo} from "./modelEdit/demo/DemoModelEditTrans";
+// import {DemoModelEditTrans as Demo} from "./modelEdit/demo/DemoModelEditTrans";
+import {DemoModelEditTrans2 as Demo} from "./modelEdit/demo/DemoModelEditTrans2";
 
 
 document.title = "Vox Web UI";

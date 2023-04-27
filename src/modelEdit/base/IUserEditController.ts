@@ -19,7 +19,10 @@ interface IUserEditController extends IEntityTransform {
     enable(): void;
     disable(): void;
     isEnabled(): boolean;
-    run(): void;
+	/**
+	 * @param force the default value is false
+	 */
+    run(force?: boolean): void;
     isSelected(): boolean;
     select(targets: IEntityTransform[]): void;
     getTargets(): IEntityTransform[];

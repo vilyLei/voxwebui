@@ -13,8 +13,13 @@ import { IRenderCamera } from "../../vox/render/IRenderCamera";
  * the behavior normalization of an entity that controlled by ray
  */
 interface IRayControl extends ISelectable {
-    moveByRay(rpv: IVector3D, rtv: IVector3D): void;
-    run(camera: IRenderCamera, rtv: IVector3D): void;
+	/**
+	 * @param rpv
+	 * @param rtv
+	 * @param force the default value is false
+	 */
+    moveByRay(rpv: IVector3D, rtv: IVector3D, force?: boolean): void;
+    run(camera: IRenderCamera, rtv: IVector3D, force: boolean): void;
     addEventListener(type: number, listener: any, func: (evt: any) => void, captureEnabled?: boolean, bubbleEnabled?: boolean): void;
     removeEventListener(type: number, listener: any, func: (evt: any) => void): void;
     enable(): void;

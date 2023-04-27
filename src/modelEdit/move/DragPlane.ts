@@ -89,8 +89,7 @@ export default class DragPlane extends MoveCtr implements IRayControl {
             }
 
             et.setRenderState(CoRScene.RendererState.NONE_TRANSPARENT_STATE);
-            // rs.addEntity(et, rspi, true);
-            // rs.addEntity(etL, 0, true);
+
 			container.addChild( et );
 			container.addChild( etL );
             this.showOutColor();
@@ -125,65 +124,7 @@ export default class DragPlane extends MoveCtr implements IRayControl {
     getVisible(): boolean {
         return this.m_entity.getVisible();
     }
-    setXYZ(px: number, py: number, pz: number): DragPlane {
-		throw Error("illegal operations !!!");
-        this.m_entity.setXYZ(px, py, pz);
-        this.m_frameEntity.setXYZ(px, py, pz);
-        return this;
-    }
-    setPosition(pv: IVector3D): DragPlane {
-		throw Error("illegal operations !!!");
-        this.m_entity.setPosition(pv);
-        this.m_frameEntity.setPosition(pv);
-        return this;
-    }
-    getPosition(pv: IVector3D): IVector3D {
-		throw Error("illegal operations !!!");
-        this.m_entity.getPosition(pv);
-        return pv;
-    }
-    setScaleXYZ(sx: number, sy: number, sz: number): DragPlane {
-		throw Error("illegal operations !!!");
-        this.m_entity.setScaleXYZ(sx, sy, sz);
-        this.m_frameEntity.setScaleXYZ(sx, sy, sz);
-        return this;
-    }
 
-    getScaleXYZ(pv: IVector3D): IVector3D {
-		throw Error("illegal operations !!!");
-        this.m_entity.getScaleXYZ(pv);
-        return pv;
-    }
-    setRotation3(r: IVector3D): DragPlane {
-		throw Error("illegal operations !!!");
-        // this.m_entity.setRotation3(r);
-        // this.m_frameEntity.setRotation3(r);
-        return this;
-    }
-    setRotationXYZ(rx: number, ry: number, rz: number): DragPlane {
-		throw Error("illegal operations !!!");
-        // this.m_entity.setRotationXYZ(rx, ry, rz);
-        // this.m_frameEntity.setRotationXYZ(rx, ry, rz);
-        return this;
-    }
-    getRotationXYZ(rv: IVector3D): IVector3D {
-		throw Error("illegal operations !!!");
-        this.m_entity.getRotationXYZ(rv);
-        return rv;
-    }
-
-    localToGlobal(pv: IVector3D): void {
-        this.m_entity.localToGlobal(pv);
-    }
-    globalToLocal(pv: IVector3D): void {
-        this.m_entity.globalToLocal(pv);
-    }
-
-    update(): void {
-		throw Error("illegal operations !!!");
-        // this.m_entity.update();
-        // this.m_frameEntity.update();
-    }
     destroy(): void {
         super.destroy();
         if(this.m_container) {
@@ -213,7 +154,7 @@ export default class DragPlane extends MoveCtr implements IRayControl {
     }
     private m_rpv = CoMath.createVec3();
     private m_rtv = CoMath.createVec3();
-    moveByRay(rpv: IVector3D, rtv: IVector3D): void {
+    moveByRay(rpv: IVector3D, rtv: IVector3D, force: boolean = false): void {
 
         if (this.isEnabled()) {
             if (this.isSelected()) {
@@ -249,6 +190,7 @@ export default class DragPlane extends MoveCtr implements IRayControl {
             this.selectByParam(evt.raypv, evt.raytv, evt.wpos);
         }
     }
+	private m_initNV: IVector3D = CoMath.createVec3();
     /**
      * set plane world onrmal vactor3
      * @param nv
@@ -256,15 +198,20 @@ export default class DragPlane extends MoveCtr implements IRayControl {
     setPlaneNormal(nv: IVector3D): void {
         this.m_planeNV.copyFrom(nv);
         this.m_planeNV.normalize();
+		this.m_initNV.copyFrom( this.m_planeNV );
     }
     private selectByParam(raypv: IVector3D, raytv: IVector3D, wpos: IVector3D): void {
 
         this.m_rpv.copyFrom(raypv);
         this.m_rtv.copyFrom(raytv);
         this.m_planePos.copyFrom(wpos);
+
+		this.m_planeNV.copyFrom( this.m_initNV );
         if (this.crossRay) {
             this.m_planeNV.copyFrom(this.m_rtv);
         }
+		let invMat = this.m_entity.getMatrix();
+		invMat.deltaTransformVectorSelf(this.m_planeNV);
         this.m_planeNV.normalize();
 
         this.m_planeDis = this.m_planePos.dot(this.m_planeNV);

@@ -19,11 +19,12 @@ interface IEntityTransform {
     getScaleXYZ(pv?: IVector3D): IVector3D;
     localToGlobal(pv: IVector3D): void;
     globalToLocal(pv: IVector3D): void;
-    
+
     getGlobalBounds(): IAABB;
     getLocalBounds(): IAABB;
     update(): void;
     destroy(): void;
+	transFlag?: number;
 }
 
 export default IEntityTransform;

@@ -42,9 +42,9 @@ class MovedTarget extends CtrlTargetBase implements ICtrTarget {
 	}
 	setPosition(pv: IVector3D): MovedTarget {
 		this.version++;
-		let tars = this.m_tars;
+		const tars = this.m_tars;
 		if (tars) {
-			let vs = this.m_vs;
+			const vs = this.m_vs;
 			const v3 = this.m_v3;
 			let dv = CoMath.createVec3();
 			let pos = CoMath.createVec3();
@@ -56,15 +56,7 @@ class MovedTarget extends CtrlTargetBase implements ICtrTarget {
 				tars[i].setPosition(v3);
 			}
 		}
-		if (this.container == null) {
-			let ls = this.m_controllers;
-			for (let i = 0; i < ls.length; ++i) {
-				ls[i].setPosition(pv);
-				this.m_flags[i] = true;
-			}
-		} else {
-			this.container.setPosition(pv);
-		}
+		this.container.setPosition(pv);
 		this.position.copyFrom(pv);
 		this.m_changed = true;
 		return this;

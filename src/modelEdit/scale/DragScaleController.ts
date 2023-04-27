@@ -68,8 +68,7 @@ class DragScaleController extends DragTransController implements IDragScaleContr
         line.showOutColor();
 
         line.setTarget(this.m_target);
-        // this.m_container.addEntity(line.getEntity());
-        // this.m_container.addEntity(line.getBox());
+
         this.m_target.addCtrlEntity(line.getEntity());
         this.m_target.addCtrlEntity(line.getBox());
         this.m_controllers.push(line);

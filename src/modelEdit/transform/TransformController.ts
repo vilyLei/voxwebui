@@ -33,7 +33,7 @@ class TransformController implements ITransformController {
     private m_controllers: IUserEditController[] = [null, null, null];
     private m_pv: IVector3D;
     private m_wpos: IVector3D;
-    // private m_preV: IVector3D;
+
     private m_camVer = -7;
     private m_ctrVer = -7;
     private m_scale = 0.015;
@@ -62,6 +62,10 @@ class TransformController implements ITransformController {
     setScale(s: number): void {
         this.m_scale = s;
     }
+
+	getContainer(): IDisplayEntityContainer {
+		return this.m_bodyContainer;
+	}
     initialize(rsc: IRendererScene, processid: number = 0): void {
 
         if (this.m_rsc == null) {
@@ -165,7 +169,7 @@ class TransformController implements ITransformController {
                     if (targets == null) {
                         targets = ls[t].getTargets();
                     }
-                    // ls[t].getPosition(this.m_wpos);
+
 					this.m_bodyContainer.getPosition( this.m_wpos );
                     ls[t].decontrol();
                     ls[t].disable();
@@ -214,8 +218,7 @@ class TransformController implements ITransformController {
     }
     select(targets: IEntityTransform[], wpos: IVector3D = null, autoEnabled: boolean = true): void {
 
-        if (targets != null) {
-
+        if (targets) {
             if (this.m_type >= 0) {
                 if (wpos == null) {
                     let pos = this.m_wpos;
@@ -229,7 +232,7 @@ class TransformController implements ITransformController {
                     this.m_wpos.copyFrom(wpos);
                 }
                 this.m_camVer = -7;
-                let ctr = this.m_controllers[this.m_type];
+                const ctr = this.m_controllers[this.m_type];
                 if (autoEnabled && !ctr.isEnabled()) {
                     this.m_enabled = true;
                     ctr.enable();
@@ -248,12 +251,11 @@ class TransformController implements ITransformController {
             console.error("targets == null");
         }
     }
-    private updateSize(sc: IRendererScene, ct: IUserEditController): void {
+    private updateSize(sc: IRendererScene, ct: IUserEditController, force: boolean = false): void {
         sc.updateCamera();
         let cam = sc.getCamera();
-        if (this.m_camVer != cam.version || this.m_ctrVer != ct.getVersion()) {
+        if (this.m_camVer != cam.version || this.m_ctrVer != ct.getVersion() || force) {
             const pv = this.m_pv;
-            // ct.getPosition(pv);
 			this.m_bodyContainer.getPosition(pv);
             let vm = cam.getViewMatrix();
             vm.transformVector3Self(pv);
@@ -266,13 +268,13 @@ class TransformController implements ITransformController {
             this.m_ctrVer = ct.getVersion();
         }
     }
-    run(): void {
+    run(force:boolean = false): void {
         let sc = this.m_rsc;
-        if (sc != null) {
+        if (sc) {
             if (this.m_enabled && this.m_type >= 0) {
                 let ct = this.m_controllers[this.m_type];
-                this.updateSize(sc, ct);
-                ct.run();
+                this.updateSize(sc, ct, force);
+                ct.run(force);
             }
         }
     }

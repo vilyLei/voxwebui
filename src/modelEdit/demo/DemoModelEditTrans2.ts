@@ -34,44 +34,37 @@ import { CoEntityLayouter } from "../../cospace/app/common/CoEntityLayouter";
 
 // declare var CoMath: ICoMath;
 
-
 class SceneAccessor implements IRendererSceneAccessor {
-	constructor() { }
+	constructor() {}
 	renderBegin(rendererScene: IRendererScene): void {
 		let p = rendererScene.getRenderProxy();
 		p.clearDepth(1.0);
 	}
-	renderEnd(rendererScene: IRendererScene): void {
-	}
+	renderEnd(rendererScene: IRendererScene): void {}
 }
 /**
  * cospace renderer
  */
-export class DemoModelEditTrans {
-    private m_teamLoader = new CoModelTeamLoader();
+export class DemoModelEditTrans2 {
+	private m_teamLoader = new CoModelTeamLoader();
 	private m_edit3DUIRScene: IRendererScene = null;
 	private m_outline: PostOutline;
 	private m_scale = 20.0;
 
-	constructor() { }
+	constructor() {}
 
 	initialize(): void {
-
-
-		document.oncontextmenu = function (e) {
+		document.oncontextmenu = function(e) {
 			e.preventDefault();
-		}
+		};
 
-		console.log("DemoModelEditTrans::initialize() ...");
+		console.log("DemoModelEditTrans2::initialize() ...");
 
 		this.initEngineModule();
 	}
 	private initEngineModule(): void {
-
-		// let url = "static/cospace/engine/mouseInteract/CoMouseInteraction.umd.js";
 		let url = "static/cospace/engine/uiInteract/CoUIInteraction.umd.js";
-		let uiInteractML = new ModuleLoader(2, (): void => {
-		});
+		let uiInteractML = new ModuleLoader(2, (): void => {});
 
 		let url0 = "static/cospace/engine/renderer/CoRenderer.umd.js";
 		let url1 = "static/cospace/engine/rscene/CoRScene.umd.js";
@@ -82,14 +75,13 @@ export class DemoModelEditTrans {
 		let url7 = "static/cospace/particle/CoParticle.umd.js";
 		let url8 = "static/cospace/coMaterial/CoMaterial.umd.js";
 		let url9 = " static/cospace/cotexture/CoTexture.umd.js";
-        let url10 = "static/cospace/ui/Lib_VoxUI.umd.js";
+		let url10 = "static/cospace/ui/Lib_VoxUI.umd.js";
 
 		new ModuleLoader(2, (): void => {
 			if (VoxRScene.isEnabled()) {
 				console.log("engine modules loaded ...");
 
 				new ModuleLoader(3, (): void => {
-
 					console.log("math module loaded ...");
 
 					new ModuleLoader(5, (): void => {
@@ -102,14 +94,19 @@ export class DemoModelEditTrans {
 						this.initMouseInteract();
 						this.createEditEntity();
 						this.initUIScene();
-
-					}).load(url3).load(url6).load(url7).load(url9).load(url10);
-
-				}).load(url2).load(url5).load(url8);
-
-
+					})
+						.load(url3)
+						.load(url6)
+						.load(url7)
+						.load(url9)
+						.load(url10);
+				})
+					.load(url2)
+					.load(url5)
+					.load(url8);
 			}
-		}).addLoader(uiInteractML)
+		})
+			.addLoader(uiInteractML)
 			.load(url0)
 			.load(url1);
 
@@ -124,7 +121,6 @@ export class DemoModelEditTrans {
 		mi.initialize(this.m_rscene, 2).setAutoRunning(true);
 	}
 	private initRenderer(): void {
-
 		document.body.style.overflow = "hidden";
 
 		let RD = RendererDevice;
@@ -134,7 +130,7 @@ export class DemoModelEditTrans {
 		RD.SHADERCODE_TRACE_ENABLED = false;
 		RD.VERT_SHADER_PRECISION_GLOBAL_HIGHP_ENABLED = true;
 
-		let graph = this.m_graph = VoxRScene.createRendererSceneGraph();
+		let graph = (this.m_graph = VoxRScene.createRendererSceneGraph());
 
 		let rparam = graph.createRendererSceneParam();
 		rparam.setAttriAntialias(true);
@@ -144,7 +140,7 @@ export class DemoModelEditTrans {
 		this.m_rscene = graph.createScene(rparam);
 		this.m_rscene.enableMouseEvent(true);
 		// graph.setAutoRunning(true);
-		VoxRScene.setRendererScene( this.m_rscene );
+		VoxRScene.setRendererScene(this.m_rscene);
 
 		let subScene = this.m_rscene.createSubScene(rparam, 3, false);
 		subScene.enableMouseEvent(true);
@@ -159,8 +155,7 @@ export class DemoModelEditTrans {
 		this.init3DScene();
 	}
 	private initUIScene(): void {
-
-		let uisc = this.m_uiScene = VoxUI.createUIScene(this.m_graph);
+		let uisc = (this.m_uiScene = VoxUI.createUIScene(this.m_graph));
 		uisc.texAtlasNearestFilter = true;
 
 		uisc.rscene.addEventListener(MouseEvent.MOUSE_BG_DOWN, this, this.uiMouseDownListener);
@@ -190,7 +185,6 @@ export class DemoModelEditTrans {
 	private m_btnGroup: ISelectButtonGroup;
 
 	private createBtn(uuid: string, text: string, px: number, py: number): IButton {
-
 		let textColor = VoxMaterial.createColor4(1, 1, 1, 1);
 
 		let btn = VoxUI.createTextLabelButton(uuid, text, 170, 50, textColor);
@@ -205,10 +199,14 @@ export class DemoModelEditTrans {
 
 		this.m_btnGroup = VoxUI.createSelectButtonGroup();
 
-		let selectBtn = this.createBtn("select", "框选", 200, 310);
-		let moveBtn = this.createBtn("move", "移动", 200, 240);
-		let rotateBtn = this.createBtn("rotate", "旋转", 200, 170);
-		let scaleBtn = this.createBtn("scale", "缩放", 200, 100);
+		let ty = 60;
+		let localBtn = this.createBtn("local", 			"局部", 		200,	ty + 450);
+		let globalBtn = this.createBtn("global", 		"全局", 		200,	ty + 380);
+		let selectBtn = this.createBtn("select", 		"框选", 		200,	ty + 310);
+		let moveBtn = this.createBtn("move", 			"移动", 		200,	ty + 240);
+		let rotateBtn = this.createBtn("rotate", 		"旋转", 		200,	ty + 170);
+		let scaleBtn = this.createBtn("scale", 			"缩放", 		200,	ty + 100);
+		let resetBtn = this.createBtn("reset", 			"复位", 		200,	ty + 30);
 
 		this.m_btnGroup.setSelectedFunction(
 			(btn: IButton): void => {
@@ -224,33 +222,32 @@ export class DemoModelEditTrans {
 		}
 	}
 	private applySelectColors(btn: IButton): void {
-
 		let colorHexList = [0x4caf50, 0xaaac6a, 0x6ccf70];
 
 		let label = btn.getLable() as IClipColorLabel;
 		label.setColorsWithHex(colorHexList);
-
 	}
 	private applyDeselectColors(btn: IButton): void {
-
 		let colorHexList = [0x5dbea3, 0x33b249, 0x5adbb5];
 		let label = btn.getLable() as IClipColorLabel;
 		label.setColorsWithHex(colorHexList);
 	}
+	private m_entity: IRenderEntity = null;
 	private init3DScene(): void {
-
-		this.loadModels();
-		return;
+		// this.loadModels();
+		// return;
 		const rsc = this.m_rscene;
 
 		let material = VoxRScene.createDefaultMaterial(true);
 		material.setRGB3f(0.7, 0.7, 0.7);
-		material.setTextureList([ this.createTexByUrl()]);
+		material.setTextureList([this.createTexByUrl()]);
 
-		let sph = VoxEntity.createCube(100, material);
-		let mesh = sph.getMesh() as IDataMesh;
+		// let sentity = VoxEntity.createCube(100, material);
+		let sentity = VoxEntity.createCylinder(50, 130, 20, material);
+		let mesh = sentity.getMesh() as IDataMesh;
 		let uvsList = [mesh.getUVS()];
-		let entity = this.createEntity({indices: mesh.getIVS(), vertices: mesh.getVS(), uvsList: uvsList});
+		let entity = this.createEntity({ indices: mesh.getIVS(), vertices: mesh.getVS(), uvsList: uvsList });
+		this.m_entity = entity;
 		// entity.setXYZ(200,0,100);
 		// entity = this.createEntity({indices: mesh.getIVS(), vertices: mesh.getVS(), uvsList: uvsList});
 	}
@@ -260,7 +257,6 @@ export class DemoModelEditTrans {
 	private m_keyInterac: ICoKeyboardInteraction;
 	private m_recoder: ICoTransformRecorder;
 	private createEditEntity(): void {
-
 		let edit3dsc = this.m_edit3DUIRScene;
 
 		this.m_transCtr = new TransformController();
@@ -283,15 +279,13 @@ export class DemoModelEditTrans {
 	}
 
 	private keyCtrlZDown(evt: any): void {
-
-		console.log("DemoModelEditTrans::keyCtrlZDown() ..., evt.keyCode: ", evt.keyCode);
+		console.log("DemoModelEditTrans2::keyCtrlZDown() ..., evt.keyCode: ", evt.keyCode);
 		this.m_recoder.undo();
 		let list = this.m_recoder.getCurrList();
 		this.selectEntities(list);
 	}
 	private keyCtrlYDown(evt: any): void {
-
-		console.log("DemoModelEditTrans::keyCtrlYDown() ..., evt.keyCode: ", evt.keyCode);
+		console.log("DemoModelEditTrans2::keyCtrlYDown() ..., evt.keyCode: ", evt.keyCode);
 		this.m_recoder.redo();
 		let list = this.m_recoder.getCurrList();
 		this.selectEntities(list);
@@ -311,27 +305,25 @@ export class DemoModelEditTrans {
 		let st = this.m_rscene.getStage3D();
 		this.m_currPos.setXYZ(st.mouseX, st.mouseY, 0);
 		if (Vector3D.Distance(this.m_prevPos, this.m_currPos) > 0.5) {
-
 			console.log("XXXXXXXX Edit transforming success ...");
 			let list = evt.currentTarget.getTargetEntities();
 			console.log("XXXXXXXX Edit transforming entity list: ", list);
 			this.m_recoder.saveEnd(list);
-
 		} else {
 			this.m_recoder.saveEnd(null);
 		}
 		this.m_selectFrame.enable();
 	}
 	private uiMouseDownListener(evt: any): void {
-		console.log("DemoModelEditTrans::uiMouseDownListener(), evt: ", evt);
+		console.log("DemoModelEditTrans2::uiMouseDownListener(), evt: ", evt);
 		this.m_selectFrame.begin(evt.mouseX, evt.mouseY);
 	}
 	private uiMouseUpListener(evt: any): void {
-		console.log("DemoModelEditTrans::uiMouseUpListener(), evt: ", evt);
+		console.log("DemoModelEditTrans2::uiMouseUpListener(), evt: ", evt);
 		// console.log("ui up (x, y): ", evt.mouseX, evt.mouseY);
 		if (this.m_selectFrame.isSelectEnabled()) {
 			let b = this.m_selectFrame.bounds;
-			console.log("DemoModelEditTrans::uiMouseUpListener(), b: ", b);
+			console.log("DemoModelEditTrans2::uiMouseUpListener(), b: ", b);
 			let list = this.m_entityQuery.getEntities(b.min, b.max);
 			console.log("list: ", list);
 			this.selectEntities(list);
@@ -339,15 +331,28 @@ export class DemoModelEditTrans {
 		this.m_selectFrame.end(evt.mouseX, evt.mouseY);
 	}
 	private uiMouseMoveListener(evt: any): void {
-		// console.log("DemoModelEditTrans::uiMouseMoveListener(), evt: ", evt);
+		// console.log("DemoModelEditTrans2::uiMouseMoveListener(), evt: ", evt);
 		// console.log("ui move (x, y): ", evt.mouseX, evt.mouseY);
 		this.m_selectFrame.move(evt.mouseX, evt.mouseY);
 	}
 	private btnMouseUpListener(evt: any): void {
-
 		console.log("btnMouseUpListener(), evt.uuid: ", evt.uuid);
+		let container = this.m_transCtr.getContainer();
+		let rv = VoxMath.createVec3();
 		let uuid = evt.uuid;
 		switch (uuid) {
+			case "local":
+				let entity = this.m_entity;
+				entity.getRotationXYZ(rv);
+				container.setRotation3(rv);
+				container.update();
+				this.m_transCtr.run(true);
+				break;
+			case "global":
+				container.setRotation3(rv);
+				container.update();
+				this.m_transCtr.run(true);
+				break;
 			case "move":
 				this.m_transCtr.toTranslation();
 				break;
@@ -356,11 +361,13 @@ export class DemoModelEditTrans {
 				break;
 			case "rotate":
 				this.m_transCtr.toRotation();
-				this
+				this;
 				break;
 
-			case "select":
+			case "reset":
 
+				break;
+			case "select":
 				// this.m_selectFrame.enable();
 				break;
 			default:
@@ -369,19 +376,17 @@ export class DemoModelEditTrans {
 		// this.selectBtn(evt.currentTarget as IButton);
 	}
 	private createTexByUrl(url: string = ""): IRenderTexture {
-
 		let tex = this.m_rscene.textureBlock.createImageTex2D(64, 64, false);
 		let img = new Image();
 		img.onload = (evt: any): void => {
 			tex.setDataFromImage(img, 0, 0, 0, false);
-		}
+		};
 		img.src = url != "" ? url : "static/assets/box.jpg";
 		return tex;
 	}
 
 	private keyDown(evt: any): void {
-
-		console.log("DemoModelEditTrans::keyDown() ..., evt.keyCode: ", evt.keyCode);
+		console.log("DemoModelEditTrans2::keyDown() ..., evt.keyCode: ", evt.keyCode);
 
 		let KEY = Keyboard;
 		switch (evt.keyCode) {
@@ -400,32 +405,29 @@ export class DemoModelEditTrans {
 	}
 	private m_layouter = new CoEntityLayouter();
 	private loadModels(): void {
-
 		let baseUrl: string = "static/private/obj/";
 		let url = baseUrl + "base.obj";
 		url = baseUrl + "base4.obj";
 		console.log("loadModels() init...");
 
 		let loader = this.m_teamLoader;
-        loader.load([url], (models: CoGeomDataType[], transforms: Float32Array[]): void => {
-
-            this.m_layouter.layoutReset();
-            for (let i = 0; i < models.length; ++i) {
-                this.createEntity(models[i], transforms != null ? transforms[i] : null, 1.0);
-            }
-            this.m_layouter.layoutUpdate(300, VoxMath.createVec3(-400, 0, 0));
-        });
+		loader.load([url], (models: CoGeomDataType[], transforms: Float32Array[]): void => {
+			this.m_layouter.layoutReset();
+			for (let i = 0; i < models.length; ++i) {
+				this.createEntity(models[i], transforms != null ? transforms[i] : null, 1.0);
+			}
+			this.m_layouter.layoutUpdate(300, VoxMath.createVec3(-400, 0, 0));
+		});
 	}
 	private m_entityQuery: RectFrameQuery = null;
 	private m_entities: ITransformEntity[] = [];
 	private createEntity(model: CoGeomDataType, transform: Float32Array = null, index: number = 1.0): ITransformEntity {
-
 		console.log("XXX XXXX model: ", model);
 		let material = VoxRScene.createDefaultMaterial(true);
 		// material.initializeByCodeBuf(false);
 		material.setRGB3f(0.7, 0.7, 0.7);
-		material.setTextureList([ this.createTexByUrl()]);
-		material.initializeByCodeBuf( true );
+		material.setTextureList([this.createTexByUrl()]);
+		material.initializeByCodeBuf(true);
 
 		let mesh = VoxRScene.createDataMeshFromModel(model, material);
 		let entity = VoxRScene.createMouseEventEntity();
@@ -455,11 +457,8 @@ export class DemoModelEditTrans {
 	}
 	private mouseDownTargetListener(evt: any): void {
 		console.log("mouseDownTargetListener()..., evt: ", evt);
-		let entity = evt.target as ITransformEntity;
-		this.selectEntities([entity], evt.wpos);
 	}
 	private selectEntities(list: IRenderEntity[], hitPV: IVector3D = null): void {
-
 		if (list && list.length > 0) {
 			let transCtr = this.m_transCtr;
 
@@ -478,15 +477,15 @@ export class DemoModelEditTrans {
 	}
 	private mouseUpTargetListener(evt: any): void {
 		console.log("mouseUpTargetListener() mouse up...");
+		let entity = evt.target as ITransformEntity;
+		this.selectEntities([entity], evt.wpos);
 	}
 	private mouseUpListener(evt: any): void {
-
 		if (this.m_transCtr) {
 			this.m_transCtr.decontrol();
 		}
 	}
 	private mouseClickListener(evt: any): void {
-
 		if (this.m_transCtr) {
 			this.m_transCtr.disable();
 		}
@@ -503,4 +502,4 @@ export class DemoModelEditTrans {
 	}
 }
 
-export default DemoModelEditTrans;
+export default DemoModelEditTrans2;

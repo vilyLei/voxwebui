@@ -110,7 +110,7 @@ class DragTransController {
     isEnabled(): boolean {
         return this.m_enabled;
     }
-    run(): void {
+    run(force: boolean = true): void {
 
         if (this.m_enabled) {
 
@@ -122,7 +122,7 @@ class DragTransController {
 
             for (let i = 0; i < ls.length; ++i) {
                 if (ls[i].getVisible()) {
-                    ls[i].run(cam, this.m_rtv);
+                    ls[i].run(cam, this.m_rtv, force);
                 }
             }
             this.m_mv1.setXYZ(stage.mouseX, stage.mouseY, 0);
@@ -163,7 +163,6 @@ class DragTransController {
         for (let i = 0; i < this.m_controllers.length; ++i) {
             this.m_controllers[i].deselect();
         }
-        this.setVisible(true);
     }
 
     getTargets(): IEntityTransform[] {

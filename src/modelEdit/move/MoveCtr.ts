@@ -9,7 +9,6 @@ import {UserEditCtr} from "../base/UserEditCtr";
 import IRendererScene from "../../vox/scene/IRendererScene";
 
 import { ICoMaterial } from "../../cospace/voxmaterial/ICoMaterial";
-import IDisplayEntityContainer from "../../vox/entity/IDisplayEntityContainer";
 declare var CoMaterial: ICoMaterial;
 
 

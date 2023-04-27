@@ -31,17 +31,13 @@ declare var CoEntity: ICoEntity;
  */
 class DragLine extends MoveCtr implements IRayControl {
 
-    // private m_target: IMovedTarget = null;
-    // private m_dispatcher: IEvtDispatcher;
-
     private m_entity: ITransformEntity = null;
     private m_cone: ITransformEntity = null;
-
-    innerSphereRadius = 30.0;
 
     readonly tv = CoMath.createVec3(1.0, 0.0, 0.0);
     readonly coneTransMat4 = CoMath.createMat4();
 
+    innerSphereRadius = 30.0;
     coneScale = 1.0;
     constructor() {
         super();
@@ -64,18 +60,20 @@ class DragLine extends MoveCtr implements IRayControl {
             this.m_entity.setMaterial(material);
             this.m_entity.setMesh(mesh);
 
-            if (mesh != null) {
+            if (mesh) {
                 let lineTester = new DashedLineRayTester(mesh.getVS(), 1, r);
                 lineTester.setPrevTester(new SphereRayTester(this.innerSphereRadius));
                 mesh.setRayTester(lineTester);
             }
             this.applyEvent(this.m_entity);
 
+			const coneB = CoMesh.cone;
             material = CoMaterial.createDefaultMaterial();
             material.initializeByCodeBuf(false);
-            CoMesh.cone.setBufSortFormat(material.getBufSortFormat());
-            CoMesh.cone.transMatrix = this.coneTransMat4;
-            mesh = CoMesh.cone.create(this.coneScale * 0.5 * r, this.coneScale * 1.5 * r, 10, 0.0);
+            coneB.setBufSortFormat(material.getBufSortFormat());
+            coneB.transMatrix = this.coneTransMat4;
+
+            mesh = coneB.create(this.coneScale * 0.5 * r, this.coneScale * 1.5 * r, 10, 0.0);
             this.m_cone = CoEntity.createDisplayEntity();
             this.m_cone.setMaterial(material);
             this.m_cone.setMesh(mesh);
@@ -96,59 +94,15 @@ class DragLine extends MoveCtr implements IRayControl {
     getVisible(): boolean {
         return this.m_entity.getVisible();
     }
-    setXYZ(px: number, py: number, pz: number): DragLine {
-        // this.m_entity.setXYZ(px, py, pz);
-        return this;
-    }
-    setRotation3(r: IVector3D): DragLine {
-        // this.m_entity.setRotation3(r);
-        return this;
-    }
-    setRotationXYZ(rx: number, ry: number, rz: number): DragLine {
-		throw Error("illegal operations !!!");
-        // this.m_entity.setRotationXYZ(rx, ry, rz);
-        return this;
-    }
-    setScaleXYZ(sx: number, sy: number, sz: number): DragLine {
-		throw Error("illegal operations !!!");
-        // this.m_entity.setScaleXYZ(sx, sy, sz);
-        return this;
-    }
 
-    getScaleXYZ(pv: IVector3D): IVector3D {
-        // this.m_entity.getScaleXYZ(pv);
-		throw Error("illegal operations !!!");
-        return pv
-    }
-    getRotationXYZ(pv: IVector3D): IVector3D {
-		throw Error("illegal operations !!!");
-        this.m_entity.getRotationXYZ(pv);
-        return pv
-    }
-    localToGlobal(pv: IVector3D): void {
-		throw Error("illegal operations !!!");
-        this.m_entity.localToGlobal(pv);
-    }
-    globalToLocal(pv: IVector3D): void {
-		throw Error("illegal operations !!!");
-        this.m_entity.globalToLocal(pv);
-    }
     showOverColor(): void {
 
         this.setEntityColor(this.m_entity, this.overColor);
         this.setEntityColor(this.m_cone, this.overColor);
-        // let m = this.m_entity.getMaterial() as IColorMaterial;
-        // m.setColor(this.overColor);
-        // m = this.m_cone.getMaterial() as IColorMaterial;
-        // m.setColor(this.overColor);
     }
     showOutColor(): void {
         this.setEntityColor(this.m_entity, this.outColor);
         this.setEntityColor(this.m_cone, this.outColor);
-        // let m = this.m_entity.getMaterial() as IColorMaterial;
-        // m.setColor(this.outColor);
-        // m = this.m_cone.getMaterial() as IColorMaterial;
-        // m.setColor(this.outColor);
     }
 
     enable(): void {
@@ -163,56 +117,43 @@ class DragLine extends MoveCtr implements IRayControl {
     }
     destroy(): void {
         super.destroy();
-        if (this.m_entity != null) {
+        if (this.m_entity) {
             this.m_entity.destroy();
             this.m_entity = null;
         }
-        if (this.m_cone != null) {
+        if (this.m_cone) {
             this.m_cone.destroy();
             this.m_cone = null;
         }
-
-    }
-    setPosition(pos: IVector3D): DragLine {
-		// throw Error("illegal operations !!!");
-        // this.m_entity.setPosition(pos);
-        return this;
-    }
-    getPosition(outPos: IVector3D): IVector3D {
-        // this.m_entity.getPosition(outPos);
-		throw Error("illegal operations !!!");
-        return outPos;
-    }
-    update(): void {
-		throw Error("illegal operations !!!");
-        // this.m_entity.update();
-        // this.m_cone.update();
     }
 
-    private m_line_pv: IVector3D = CoMath.createVec3();
-    private m_initPos: IVector3D = CoMath.createVec3();
-    private m_pos: IVector3D = CoMath.createVec3();
-    private m_dv: IVector3D = CoMath.createVec3();
-    private m_outV: IVector3D = CoMath.createVec3();
-    private m_initV: IVector3D = CoMath.createVec3();
+    private m_line_pv = CoMath.createVec3();
+    private m_initPos = CoMath.createVec3();
+    private m_pos = CoMath.createVec3();
+    private m_dv = CoMath.createVec3();
+    private m_outV = CoMath.createVec3();
+    private m_initV = CoMath.createVec3();
 
-    private m_mat4: IMatrix4 = CoMath.createMat4();
-    private m_invMat4: IMatrix4 = CoMath.createMat4();
+    private m_mat4 = CoMath.createMat4();
+    private m_invMat4 = CoMath.createMat4();
+
     private calcClosePos(rpv: IVector3D, rtv: IVector3D): void {
 
         if (this.isSelected()) {
             let mat4 = this.m_invMat4;
+			// world to local
             mat4.transformVector3Self(rpv);
             mat4.deltaTransformVectorSelf(rtv);
-            let outV = this.m_outV;
+            const outV = this.m_outV;
             CoAGeom.Line.CalcTwoSLCloseV2(rpv, rtv, this.m_line_pv, this.tv, outV);
             mat4 = this.m_mat4;
+			// to world pos
             mat4.transformVector3Self(outV);
         }
     }
     private m_rpv = CoMath.createVec3();
     private m_rtv = CoMath.createVec3();
-    moveByRay(rpv: IVector3D, rtv: IVector3D): void {
+    moveByRay(rpv: IVector3D, rtv: IVector3D, force: boolean = false): void {
 
         if (this.isEnabled()) {
             if (this.isSelected()) {
@@ -241,16 +182,13 @@ class DragLine extends MoveCtr implements IRayControl {
         if (this.isEnabled()) {
 
             this.editBegin();
-
             this.setThisVisible(true);
 
             this.m_target.select(this);
-
-            let trans = this.m_entity.getTransform();
+            const trans = this.m_entity.getTransform();
 
             this.m_mat4.copyFrom(trans.getMatrix());
             this.m_invMat4.copyFrom(trans.getInvMatrix());
-
             this.m_rpv.copyFrom(evt.raypv);
             this.m_rtv.copyFrom(evt.raytv);
 

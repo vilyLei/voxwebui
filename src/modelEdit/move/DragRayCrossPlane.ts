@@ -43,7 +43,7 @@ export default class DragRayCrossPlane extends MoveCtr implements IRayControl {
     initialize(rscene: IRendererScene, container: IDisplayEntityContainer, size: number = 30): void {
 
         if (this.m_entity == null) {
-			this.scaleEnabled = true;
+			this.transFlag = 1;
             this.m_rscene = rscene;
             this.m_container = container;
 
@@ -120,19 +120,6 @@ export default class DragRayCrossPlane extends MoveCtr implements IRayControl {
         return this.m_entity.getVisible();
     }
 
-    setXYZ(px: number, py: number, pz: number): DragRayCrossPlane {
-		throw Error("illegal operations !!!");
-        return this;
-    }
-    setPosition(pv: IVector3D): DragRayCrossPlane {
-		throw Error("illegal operations !!!");
-        return this;
-    }
-    getPosition(pv: IVector3D): IVector3D {
-		throw Error("illegal operations !!!");
-        this.m_entity.getPosition(pv);
-        return pv;
-    }
     setScaleXYZ(sx: number, sy: number, sz: number): DragRayCrossPlane {
         this.m_entity.setScaleXYZ(sx, sy, sz);
         this.m_circle.setScaleXY(sx, sy);
@@ -143,34 +130,6 @@ export default class DragRayCrossPlane extends MoveCtr implements IRayControl {
         return this;
     }
 
-    getScaleXYZ(pv: IVector3D): IVector3D {
-		throw Error("illegal operations !!!");
-        this.m_entity.getScaleXYZ(pv);
-        return pv;
-    }
-    setRotation3(r: IVector3D): DragRayCrossPlane {
-		throw Error("illegal operations !!!");
-        this.m_entity.setRotation3(r);
-        return this;
-    }
-    setRotationXYZ(rx: number, ry: number, rz: number): DragRayCrossPlane {
-		throw Error("illegal operations !!!");
-        this.m_entity.setRotationXYZ(rx, ry, rz);
-        return this;
-    }
-    getRotationXYZ(pv: IVector3D): IVector3D {
-		throw Error("illegal operations !!!");
-        this.m_entity.getRotationXYZ(pv);
-        return pv;
-    }
-    localToGlobal(pv: IVector3D): void {
-        this.m_entity.localToGlobal(pv);
-    }
-    globalToLocal(pv: IVector3D): void {
-        this.m_entity.globalToLocal(pv);
-    }
-    update(): void {
-    }
     destroy(): void {
         super.destroy();
         if (this.m_entity) {
@@ -201,7 +160,7 @@ export default class DragRayCrossPlane extends MoveCtr implements IRayControl {
     }
     private m_rpv = CoMath.createVec3();
     private m_rtv = CoMath.createVec3();
-    moveByRay(rpv: IVector3D, rtv: IVector3D): void {
+    moveByRay(rpv: IVector3D, rtv: IVector3D, force: boolean = false): void {
 
         if (this.isEnabled()) {
             if (this.isSelected()) {

@@ -14,7 +14,6 @@ import IRawMesh from "../../vox/mesh/IRawMesh";
 import { IRayControl } from "../base/IRayControl";
 import IRendererScene from "../../vox/scene/IRendererScene";
 
-import { ICoRScene } from "../../cospace/voxengine/ICoRScene";
 import { ICoMaterial } from "../../cospace/voxmaterial/ICoMaterial";
 import { ICoEntity } from "../../cospace/voxentity/ICoEntity";
 import { ICoMath } from "../../cospace/math/ICoMath";
@@ -24,7 +23,6 @@ import { IRenderCamera } from "../../vox/render/IRenderCamera";
 import { ScaleCtr } from "./ScaleCtr";
 import IDisplayEntityContainer from "../../vox/entity/IDisplayEntityContainer";
 
-declare var CoRScene: ICoRScene;
 declare var CoMaterial: ICoMaterial;
 declare var CoMath: ICoMath;
 declare var CoEntity: ICoEntity;
@@ -93,18 +91,19 @@ class ScaleCamZCircle extends ScaleCtr implements IRayControl {
         }
     }
     private m_camVer = -7;
-    run(camera: IRenderCamera, rtv: IVector3D): void {
+    run(camera: IRenderCamera, rtv: IVector3D, force: boolean = false): void {
 
-        if (this.m_camVer != camera.version) {
+        if (this.m_camVer != camera.version || force) {
             this.m_camVer = camera.version;
 
             // 圆面朝向摄像机
-            const sv = this.m_scaleV;
             let et = this.m_entity;
-            et.getPosition(this.m_posV);
-            et.getScaleXYZ(sv);
+			this.m_target.getPosition(this.m_posV);
 
             this.m_camPos.copyFrom(camera.getPosition());
+			let container = this.m_target.container;
+			container.globalToLocal(this.m_camPos);
+
             this.m_srcDV.setXYZ(1, 0, 0);
             this.m_dstDV.subVecsTo(this.m_camPos, this.m_posV);
 
@@ -131,41 +130,6 @@ class ScaleCamZCircle extends ScaleCtr implements IRayControl {
     }
     getVisible(): boolean {
         return this.m_entity.getVisible();
-    }
-    setXYZ(px: number, py: number, pz: number): ScaleCamZCircle {
-		throw Error("illegal operations !!!");
-        this.m_entity.setXYZ(px, py, pz);
-        this.m_camVer = -7;
-        return this;
-    }
-    setRotation3(r: IVector3D): ScaleCamZCircle {
-		throw Error("illegal operations !!!");
-        return this;
-    }
-    setRotationXYZ(rx: number, ry: number, rz: number): ScaleCamZCircle {
-		throw Error("illegal operations !!!");
-        return this;
-    }
-    setScaleXYZ(sx: number, sy: number, sz: number): ScaleCamZCircle {
-		throw Error("illegal operations !!!");
-        this.m_entity.setScaleXYZ(sx, sy, sz);
-        this.m_camVer = -7;
-        this.run(this.m_editRS.getCamera(), null);
-        return this;
-    }
-
-    getScaleXYZ(pv: IVector3D): IVector3D {
-        return pv;
-    }
-    getRotationXYZ(pv: IVector3D): IVector3D {
-        return pv;
-    }
-
-    localToGlobal(pv: IVector3D): void {
-        this.m_entity.localToGlobal(pv);
-    }
-    globalToLocal(pv: IVector3D): void {
-        this.m_entity.globalToLocal(pv);
     }
 
     enable(): void {
@@ -203,23 +167,9 @@ class ScaleCamZCircle extends ScaleCtr implements IRayControl {
         this.m_cv = null;
         this.m_planeNV = null;
     }
-    setPosition(pos: IVector3D): ScaleCamZCircle {
-		throw Error("illegal operations !!!");
-        this.m_entity.setPosition(pos);
-        return this;
-    }
-    getPosition(pv: IVector3D): IVector3D {
-		throw Error("illegal operations !!!");
-        this.m_entity.getPosition(pv);
-        return pv;
-    }
-    update(): void {
-        // this.m_entity.update();
-    }
-
     private m_sv = CoMath.createVec3();
     private m_dis: number = 0;
-    moveByRay(rpv: IVector3D, rtv: IVector3D): void {
+    moveByRay(rpv: IVector3D, rtv: IVector3D, force: boolean = false): void {
 
         if (this.isEnabled()) {
             if (this.isSelected()) {

@@ -33,8 +33,6 @@ class RotationRing {
     private m_container: IDisplayEntityContainer = null;
     private m_ring: ITransformEntity = null;
     private m_material: IColorMaterial = null;
-    private m_editRS: IRendererScene = null;
-    private m_editRSPI: number = 0;
     private m_type = 0;
     private m_total = 0;
 	private m_parentContainer: IDisplayEntityContainer = null;
@@ -51,7 +49,6 @@ class RotationRing {
 
         if (this.m_container == null) {
 
-            this.m_editRS = rs;
             this.m_parentContainer = container;
 
             let ring = CoEntity.createDisplayEntity();
@@ -158,38 +155,18 @@ class RotationRing {
     getVisible(): boolean {
         return this.m_container.getVisible();
     }
-    setXYZ(px: number, py: number, pz: number): void {
-        this.m_container.setXYZ(px, py, pz);
-    }
+
     setRotation3(r: IVector3D): void {
         this.m_container.setRotation3(r);
-    }
-    setRotationXYZ(rx: number, ry: number, rz: number): void {
-        this.m_container.setRotationXYZ(rx, ry, rz);
     }
     setScale3(s: IVector3D): void{
         this.m_container.setScale3(s);
     }
-    setScaleXYZ(sx: number, sy: number, sz: number): void {
-        this.m_container.setScaleXYZ(sx, sy, sz);
-    }
-
-    getScaleXYZ(pv: IVector3D): void {
-        this.m_container.getScaleXYZ(pv);
-    }
-    getRotationXYZ(pv: IVector3D): void {
-        this.m_container.getRotationXYZ(pv);
-    }
-
-    localToGlobal(pv: IVector3D): void {
-        this.m_container.localToGlobal(pv);
-    }
-    globalToLocal(pv: IVector3D): void {
-        this.m_container.globalToLocal(pv);
-    }
     setColor(color: IColor4): void {
-
         (this.m_ring.getMaterial() as IColorMaterial).setColor(color);
+    }
+    setPosition(pos: IVector3D): void {
+        this.m_container.setPosition(pos);
     }
     destroy(): void {
 
@@ -198,17 +175,7 @@ class RotationRing {
             this.m_container.destroy();
             this.m_container = null;
         }
-		this.m_parentContainer = null
-        this.m_editRS = null;
-    }
-    setPosition(pos: IVector3D): void {
-        this.m_container.setPosition(pos);
-    }
-    getPosition(outPos: IVector3D): void {
-        this.m_container.getPosition(outPos);
-    }
-    update(): void {
-        this.m_container.update();
+		this.m_parentContainer = null;
     }
 }
 

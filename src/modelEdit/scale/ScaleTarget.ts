@@ -53,14 +53,7 @@ class ScaleTarget extends CtrlTargetBase implements ICtrTarget {
 		}
 	}
 	setPosition(pv: IVector3D): ScaleTarget {
-		if (this.container == null) {
-			for (let i = 0; i < this.m_controllers.length; ++i) {
-				this.m_controllers[i].setPosition(pv);
-				this.m_flags[i] = true;
-			}
-		} else {
-			this.container.setPosition(pv);
-		}
+		this.container.setPosition(pv);
 		return this;
 	}
 	setScaleXYZ(sx: number, sy: number, sz: number): ScaleTarget {

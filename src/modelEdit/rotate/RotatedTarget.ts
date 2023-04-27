@@ -59,14 +59,7 @@ class RotatedTarget extends CtrlTargetBase implements ICtrTarget {
 	}
 
 	setPosition(pv: IVector3D): RotatedTarget {
-		if (this.container == null) {
-			for (let i = 0; i < this.m_controllers.length; ++i) {
-				this.m_controllers[i].setPosition(pv);
-				this.m_flags[i] = true;
-			}
-		} else {
-			this.container.setPosition(pv);
-		}
+		this.container.setPosition(pv);
 		return this;
 	}
 	getPosition(pv: IVector3D): IVector3D {
