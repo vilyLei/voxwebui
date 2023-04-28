@@ -491,6 +491,7 @@ export class DemoModelEditTrans3 {
 }
 
 class VecValueFilter implements ICtrlValueFilter {
+	private m_absorb = false;
 	constructor(){}
 	private filterScale(s: number): number {
 		if(Math.abs(s) < 1.0) {
@@ -505,28 +506,35 @@ class VecValueFilter implements ICtrlValueFilter {
 		}
 		return s;
 	}
+	absorb(): void {
+		this.m_absorb = true;
+	}
+	unabsorb(): void {
+		this.m_absorb = false;
+	}
 	ctrlValueFilter(type: number, pv: IVector3D): void {
 
 		console.log("VecValueFilter, A pv: ", pv);
-
-		switch(type) {
-			case 0:
-				pv.x = Math.round(pv.x / 10.0) * 10.0;
-				pv.y = Math.round(pv.y / 10.0) * 10.0;
-				pv.z = Math.round(pv.z / 10.0) * 10.0;
-				break;
-			case 1:
-				pv.x = this.filterScale(pv.x);
-				pv.y = this.filterScale(pv.y);
-				pv.z = this.filterScale(pv.z);
-				break;
-			case 2:
-				pv.x = Math.round(pv.x / 5.0) * 5.0;
-				pv.y = Math.round(pv.y / 5.0) * 5.0;
-				pv.z = Math.round(pv.z / 5.0) * 5.0;
-				break;
-			default:
-				break;
+		if(this.m_absorb) {
+			switch(type) {
+				case 0:
+					pv.x = Math.round(pv.x / 10.0) * 10.0;
+					pv.y = Math.round(pv.y / 10.0) * 10.0;
+					pv.z = Math.round(pv.z / 10.0) * 10.0;
+					break;
+				case 1:
+					pv.x = this.filterScale(pv.x);
+					pv.y = this.filterScale(pv.y);
+					pv.z = this.filterScale(pv.z);
+					break;
+				case 2:
+					pv.x = Math.round(pv.x / 5.0) * 5.0;
+					pv.y = Math.round(pv.y / 5.0) * 5.0;
+					pv.z = Math.round(pv.z / 5.0) * 5.0;
+					break;
+				default:
+					break;
+			}
 		}
 		console.log("VecValueFilter, B pv: ", pv);
 	}
