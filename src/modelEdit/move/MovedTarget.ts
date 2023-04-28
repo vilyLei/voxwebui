@@ -41,6 +41,9 @@ class MovedTarget extends CtrlTargetBase implements ICtrTarget {
 		}
 	}
 	setPosition(pv: IVector3D): MovedTarget {
+		if(this.valueFilter) {
+			this.valueFilter.ctrlValueFilter(this.type, pv);
+		}
 		this.version++;
 		const tars = this.m_tars;
 		if (tars) {

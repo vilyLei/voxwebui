@@ -7,6 +7,8 @@
 import IRendererScene from "../../vox/scene/IRendererScene";
 import IEntityTransform from "../../vox/entity/IEntityTransform";
 import IVector3D from "../../vox/math/IVector3D";
+import IDisplayEntityContainer from "../../vox/entity/IDisplayEntityContainer";
+import { ICtrlValueFilter } from "../base/ICtrlValueFilter";
 
 /**
  * renderable entity transform 编辑控制器
@@ -25,6 +27,13 @@ interface ITransformController {
      * the type vaule is 2
      */
     readonly ROTATION: number;// = 2;
+	setCtrlValueFilter(filter: ICtrlValueFilter): void;
+	isLocal(): boolean;
+	isGlobal(): boolean;
+	toLocal(): void;
+	toGlobal(): void;
+	getContainer(): IDisplayEntityContainer;
+
     /**
      * @param rsc IRendererScene instance
      * @param processid the defualt value is 0
@@ -56,6 +65,7 @@ interface ITransformController {
      * @param force the default value is false
      */
     disable(force?: boolean): void;
+	getTargetRotation(): IVector3D;
     decontrol(): void;
     select(targets: IEntityTransform[], wpos?: IVector3D, autoEnabled?: boolean): void;
     run(): void;

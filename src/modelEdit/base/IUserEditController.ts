@@ -1,6 +1,7 @@
 import IRendererScene from "../../vox/scene/IRendererScene";
 import IEntityTransform from "../../vox/entity/IEntityTransform";
 import IDisplayEntityContainer from "../../vox/entity/IDisplayEntityContainer";
+import { ICtrTarget } from "../base/ICtrTarget";
 
 interface IUserEditController extends IEntityTransform {
 
@@ -26,6 +27,7 @@ interface IUserEditController extends IEntityTransform {
     isSelected(): boolean;
     select(targets: IEntityTransform[]): void;
     getTargets(): IEntityTransform[];
+    getCtrlTarget(): ICtrTarget;
     deselect(): void;
     setVisible(visible: boolean): void;
     getVisible(): boolean;

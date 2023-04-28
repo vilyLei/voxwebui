@@ -2537,6 +2537,8 @@ class SelectButtonGroup {
     this.m_deselectFunc = null;
     this.m_mouseUpSelect = true;
     this.m_btn = null;
+    this.m_selectColorHexList = [0x4caf50, 0xaaac6a, 0x6ccf70];
+    this.m_deselectColorHexList = [0x5dbea3, 0x33b249, 0x5adbb5];
     this.m_mouseUpSelect = mouseUpSelect;
   }
 
@@ -2554,6 +2556,12 @@ class SelectButtonGroup {
       } else {
         btn.addEventListener(ME.MOUSE_DOWN, this, this.mouseEvtFunc);
       }
+
+      if (this.m_deselectFunc) {
+        this.m_deselectFunc(btn);
+      } else {
+        this.applyDeselectColors(btn);
+      }
     }
   }
 
@@ -2566,24 +2574,80 @@ class SelectButtonGroup {
     this.m_deselectFunc = deselectFunc;
   }
 
+  selectButton(btn) {
+    if (btn) {
+      this.select(btn.uuid);
+    }
+  }
+
   select(uuid) {
     if (this.m_map != null && this.m_map.has(uuid)) {
       let btn = this.m_map.get(uuid);
 
       if (this.m_btn != btn) {
-        if (this.m_btn != null) {
-          if (this.m_deselectFunc != null) {
+        if (this.m_btn) {
+          if (this.m_deselectFunc) {
             this.m_deselectFunc(this.m_btn);
+          } else {
+            this.applyDeselectColors(this.m_btn);
           }
         }
 
         this.m_btn = btn;
 
-        if (this.m_selectFunc != null) {
+        if (this.m_selectFunc) {
           this.m_selectFunc(btn);
+        } else {
+          this.applySelectColors(btn);
         }
       }
     }
+  }
+  /**
+   * @param colorHexList for example: [0x4caf50, 0xaaac6a, 0x6ccf70]
+   */
+
+
+  setSelectColors(colorHexList) {
+    if (colorHexList) {
+      let ls = this.m_selectColorHexList;
+      let len = Math.min(colorHexList.length, ls.length);
+
+      for (let i = 0; i < len; ++i) {
+        ls[i] = colorHexList[i];
+      }
+    }
+  }
+  /**
+   * @param colorHexList for example: [0x4caf50, 0xaaac6a, 0x6ccf70]
+   */
+
+
+  setDeselectColors(colorHexList) {
+    if (colorHexList) {
+      let ls = this.m_deselectColorHexList;
+      let len = Math.min(colorHexList.length, ls.length);
+
+      for (let i = 0; i < len; ++i) {
+        ls[i] = colorHexList[i];
+      }
+    }
+  }
+
+  setBtnColors(btn, colorHexList) {
+    let label = btn.getLable();
+
+    if (label.setColorsWithHex) {
+      label.setColorsWithHex(colorHexList);
+    }
+  }
+
+  applySelectColors(btn) {
+    this.setBtnColors(btn, this.m_selectColorHexList);
+  }
+
+  applyDeselectColors(btn) {
+    this.setBtnColors(btn, this.m_deselectColorHexList);
   }
 
   destroy() {
@@ -3449,13 +3513,13 @@ function createUIScene(graph, uiConfig = null, atlasSize = 512, renderProcessesT
   let uisc = new VoxUIScene_1.VoxUIScene();
   __$$$currUISCene = uisc;
 
-  if (graph != null) {
+  if (graph) {
     uisc.initialize(graph, atlasSize, renderProcessesTotal);
   }
 
   uisc.uiConfig = uiConfig;
 
-  if (uiConfig != null) {
+  if (uiConfig) {
     let promptSys = new PromptSystem_1.PromptSystem();
     promptSys.initialize(uisc);
     uisc.prompt = promptSys;
@@ -3843,14 +3907,12 @@ class VoxUIScene {
       let crscene = graph.getSceneAt(0);
       let stage = crscene.getStage3D();
       crscene.addEventListener(CoRScene.EventBase.RESIZE, this, this.resizeHandle);
-      let rparam = graph.createRendererSceneParam(); //CoRScene.createRendererSceneParam();
-
+      let rparam = graph.createRendererSceneParam();
       rparam.cameraPerspectiveEnabled = false;
       rparam.setAttriAlpha(false);
       rparam.setCamProject(45.0, 0.1, 3000.0);
       rparam.setCamPosition(0.0, 0.0, 1500.0);
-      let subScene = graph.createSubScene(rparam, renderProcessesTotal, true); //crscene.createSubScene(rparam, renderProcessesTotal, true);
-
+      let subScene = graph.createSubScene(rparam, renderProcessesTotal, true);
       subScene.enableMouseEvent(true);
       let t = this;
       t.rscene = subScene;
@@ -5414,6 +5476,10 @@ var RendererState = null;
 exports.RendererState = RendererState;
 var TextureConst = null;
 exports.TextureConst = TextureConst;
+var Keyboard = null;
+exports.Keyboard = Keyboard;
+var KeyboardEvent = null;
+exports.KeyboardEvent = KeyboardEvent;
 var RenderDrawMode = null;
 exports.RenderDrawMode = RenderDrawMode;
 var CullFaceMode = null;
@@ -5437,22 +5503,27 @@ class T_CoRScene {
   }
 
   init() {
-    if (typeof CoRScene !== "undefined") {
-      exports.RendererDevice = RendererDevice = CoRScene.RendererDevice;
-      exports.SelectionEvent = SelectionEvent = CoRScene.SelectionEvent;
-      exports.ProgressDataEvent = ProgressDataEvent = CoRScene.ProgressDataEvent;
-      exports.EventBase = EventBase = CoRScene.EventBase;
-      exports.MouseEvent = MouseEvent = CoRScene.MouseEvent;
-      exports.RendererState = RendererState = CoRScene.RendererState;
-      exports.TextureConst = TextureConst = CoRScene.TextureConst;
-      exports.RenderDrawMode = RenderDrawMode = CoRenderer.RenderDrawMode;
-      exports.CullFaceMode = CullFaceMode = CoRenderer.CullFaceMode;
-      exports.DepthTestMode = DepthTestMode = CoRenderer.DepthTestMode;
-      exports.RenderBlendMode = RenderBlendMode = CoRenderer.RenderBlendMode;
-      exports.GLStencilFunc = GLStencilFunc = CoRenderer.GLStencilFunc;
-      exports.GLStencilOp = GLStencilOp = CoRenderer.GLStencilOp;
-      exports.GLBlendMode = GLBlendMode = CoRenderer.GLBlendMode;
-      exports.GLBlendEquation = GLBlendEquation = CoRenderer.GLBlendEquation;
+    const RC = CoRScene;
+    const RD = CoRenderer;
+
+    if (typeof RC !== "undefined") {
+      exports.RendererDevice = RendererDevice = RC.RendererDevice;
+      exports.SelectionEvent = SelectionEvent = RC.SelectionEvent;
+      exports.ProgressDataEvent = ProgressDataEvent = RC.ProgressDataEvent;
+      exports.EventBase = EventBase = RC.EventBase;
+      exports.MouseEvent = MouseEvent = RC.MouseEvent;
+      exports.RendererState = RendererState = RC.RendererState;
+      exports.TextureConst = TextureConst = RC.TextureConst;
+      exports.Keyboard = Keyboard = RC.Keyboard;
+      exports.KeyboardEvent = KeyboardEvent = RC.KeyboardEvent;
+      exports.RenderDrawMode = RenderDrawMode = RD.RenderDrawMode;
+      exports.CullFaceMode = CullFaceMode = RD.CullFaceMode;
+      exports.DepthTestMode = DepthTestMode = RD.DepthTestMode;
+      exports.RenderBlendMode = RenderBlendMode = RD.RenderBlendMode;
+      exports.GLStencilFunc = GLStencilFunc = RD.GLStencilFunc;
+      exports.GLStencilOp = GLStencilOp = RD.GLStencilOp;
+      exports.GLBlendMode = GLBlendMode = RD.GLBlendMode;
+      exports.GLBlendEquation = GLBlendEquation = RD.GLBlendEquation;
     }
   }
 

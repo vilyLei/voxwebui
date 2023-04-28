@@ -2,12 +2,14 @@ import IVector3D from "../../vox/math/IVector3D";
 import IAABB from "../../vox/geom/IAABB";
 import IEntityTransform from "../../vox/entity/IEntityTransform";
 import { ICtrTarget } from "../base/ICtrTarget";
+import IDisplayEntityContainer from "../../vox/entity/IDisplayEntityContainer";
+import {ICtrlValueFilter} from "./ICtrlValueFilter";
 
 import { ICoMath } from "../../cospace/math/ICoMath";
-import IDisplayEntityContainer from "../../vox/entity/IDisplayEntityContainer";
 declare var CoMath: ICoMath;
 
 class CtrlTargetBase implements ICtrTarget {
+
 	protected m_controllers: IEntityTransform[] = [];
 	protected m_tars: IEntityTransform[] = null;
 	protected m_vs: IVector3D[] = [];
@@ -15,6 +17,9 @@ class CtrlTargetBase implements ICtrTarget {
 	protected m_changed = false;
 	protected m_v3 = CoMath.createVec3();
 
+	valueFilter: ICtrlValueFilter = null;
+	type = -1;
+	rotation = CoMath.createVec3();
 	container: IDisplayEntityContainer = null;
 	position = CoMath.createVec3();
 	version = 0;

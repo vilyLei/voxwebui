@@ -60,6 +60,12 @@ class ScaleTarget extends CtrlTargetBase implements ICtrTarget {
 		if (this.m_tars) {
 			this.version++;
 			this.m_sv.setXYZ(sx, sy, sz);
+			if(this.valueFilter) {
+				this.valueFilter.ctrlValueFilter(this.type, this.m_sv);
+				sx = this.m_sv.x;
+				sy = this.m_sv.y;
+				sz = this.m_sv.z;
+			}
 			const vs = this.m_vs;
 			const svs = this.m_svs;
 			const cv = this.position;

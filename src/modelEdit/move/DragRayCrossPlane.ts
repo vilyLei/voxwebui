@@ -55,6 +55,7 @@ export default class DragRayCrossPlane extends MoveCtr implements IRayControl {
             bounds.setBounds(minV, maxV);
             bounds.setRayTester(new SphereRayTester(radius));
             this.applyEvent(bounds);
+			bounds.mouseEnabled = false;
 
 			container.addChild( bounds );
             this.m_entity = bounds;
@@ -204,6 +205,7 @@ export default class DragRayCrossPlane extends MoveCtr implements IRayControl {
     }
     protected mouseDownListener(evt: any): void {
 
+		console.log("DragRayCrossPlane::mouseDownListener() this.isEnabled(): ", this.isEnabled());
         if (this.isEnabled()) {
 
             console.log("DragRayCrossPlane::mouseDownListener() ...");

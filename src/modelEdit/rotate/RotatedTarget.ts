@@ -8,8 +8,9 @@ declare var CoMath: ICoMath;
 
 class RotatedTarget extends CtrlTargetBase implements ICtrTarget {
 	private m_rvs: IVector3D[] = [];
-	private m_rv: IVector3D = CoMath.createVec3();
-	private m_pv: IVector3D = CoMath.createVec3();
+	private m_rv = CoMath.createVec3();
+	private m_pv = CoMath.createVec3();
+	private m_rotv = CoMath.createVec3();
 	private m_mat0 = CoMath.createMat4();
 	private m_mat1 = CoMath.createMat4();
 
@@ -43,7 +44,7 @@ class RotatedTarget extends CtrlTargetBase implements ICtrTarget {
 
 	setTargets(targets: IEntityTransform[]): void {
 		this.m_tars = targets;
-		if (targets != null) {
+		if (targets) {
 			if (this.m_vs == null || this.m_vs.length < targets.length) {
 				this.m_vs = new Array(targets.length);
 				this.m_rvs = new Array(targets.length);
@@ -52,6 +53,9 @@ class RotatedTarget extends CtrlTargetBase implements ICtrTarget {
 					this.m_rvs[i] = CoMath.createVec3();
 				}
 			}
+			this.m_rotv.setXYZ(0, 0, 0);
+			this.rotation.setXYZ(0, 0, 0);
+			console.log("Rotation Reset ...");
 		} else {
 			this.m_vs = [];
 			this.m_rvs = [];
@@ -69,7 +73,7 @@ class RotatedTarget extends CtrlTargetBase implements ICtrTarget {
 
 	setRotation3(pr: IVector3D): RotatedTarget {
 		// console.log("setRotationXYZ(), rx, ry, rz: ", rx, ry, rz);
-		if (this.m_tars != null) {
+		if (this.m_tars) {
 			this.version++;
 			let tars = this.m_tars;
 			// console.log("setRotation3(), pr: ", pr);
@@ -77,6 +81,11 @@ class RotatedTarget extends CtrlTargetBase implements ICtrTarget {
 			let piOver180 = Math.PI / 180.0;
 			let k180overPI = 180.0 / Math.PI;
 			let ir = this.m_rv;
+
+			if(this.valueFilter) {
+				this.valueFilter.ctrlValueFilter(this.type, pr);
+			}
+
 			ir.copyFrom(pr).scaleBy(piOver180);
 
 			let mt0 = this.m_mat0;
@@ -88,20 +97,46 @@ class RotatedTarget extends CtrlTargetBase implements ICtrTarget {
 			pv.setXYZ(0, 0, 0);
 			let dv = CoMath.createVec3();
 			let pos = CoMath.createVec3();
-
+			let rv = this.m_rotv;
 			let eulerType = CoMath.OrientationType.EULER_ANGLES;
+
+			mt0.identity();
+			mt0.setRotationEulerAngle(rv.x, rv.y, rv.z);
+			mt1.identity();
+			mt1.setRotationEulerAngle(ir.x, ir.y, ir.z);
+			mt0.append(mt1);
+			let prv = mt0.decompose(eulerType)[1];
+			prv.scaleBy(k180overPI);
+			// if(this.valueFilter) {
+			// 	this.valueFilter.ctrlValueFilter(this.type, prv);
+			// }
+			this.rotation.copyFrom(prv);
+
 			for (let i = 0; i < tars.length; ++i) {
-				const rv = rvs[i];
+				rv = rvs[i];
 				mt0.identity();
 				mt0.setRotationEulerAngle(rv.x, rv.y, rv.z);
 				mt1.identity();
 				mt1.setRotationEulerAngle(ir.x, ir.y, ir.z);
 				mt0.append(mt1);
-				let ls = mt0.decompose(eulerType);
-				let prv = ls[1];
+				prv = mt0.decompose(eulerType)[1];
 				prv.scaleBy(k180overPI);
 				tars[i].setRotation3(prv);
+				tars[i].update();
+				prv = (tars[i] as any).getMatrix().decompose(eulerType)[1].scaleBy(k180overPI);
+
+				// if(this.valueFilter) {
+				// 	this.valueFilter.ctrlValueFilter(this.type, prv);
+				// 	tars[i].setRotation3(prv);
+				// 	tars[i].update();
+				// }
 			}
+			if(tars.length == 1) {
+				this.rotation.copyFrom( prv );
+			}
+			// console.log("this.rotation: ", this.rotation);
+			// console.log("prv: ", prv);
+
 			for (let i = 0; i < tars.length; ++i) {
 				mt0.identity();
 				mt0.setRotationEulerAngle(ir.x, ir.y, ir.z);

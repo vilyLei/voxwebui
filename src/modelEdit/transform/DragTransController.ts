@@ -94,6 +94,9 @@ class DragTransController {
             this.m_controllers[i].removeEventListener(type, listener, func);
         }
     }
+	getCtrlTarget(): ICtrTarget {
+		return this.m_target;
+	}
     enable(): void {
         this.m_enabled = true;
         for (let i = 0; i < this.m_controllers.length; ++i) {
@@ -189,7 +192,6 @@ class DragTransController {
     setXYZ(px: number, py: number, pz: number): DragTransController {
         return this;
     }
-
     setPosition(pv: IVector3D): DragTransController {
         this.m_target.setPosition(pv);
         this.m_target.update();

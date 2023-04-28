@@ -1,19 +1,20 @@
-import IAABB from "../../../vox/geom/IAABB";
-import IVector3D from "../../../vox/math/IVector3D";
-import IRendererScene from "../../../vox/scene/IRendererScene";
+import IAABB from "../../vox/geom/IAABB";
+import IVector3D from "../../vox/math/IVector3D";
+import IRendererScene from "../../vox/scene/IRendererScene";
 
-import { ICoMesh } from "../../../cospace/voxmesh/ICoMesh";
-import { ICoEntity } from "../../../cospace/voxentity/ICoEntity";
-import { ICoMaterial } from "../../../cospace/voxmaterial/ICoMaterial";
-import { ICoMath } from "../../../cospace/math/ICoMath";
-import ITransformEntity from "../../../vox/entity/ITransformEntity";
+import { ICoMesh } from "../../cospace/voxmesh/ICoMesh";
+import { ICoEntity } from "../../cospace/voxentity/ICoEntity";
+import { ICoMaterial } from "../../cospace/voxmaterial/ICoMaterial";
+import { ICoMath } from "../../cospace/math/ICoMath";
+import ITransformEntity from "../../vox/entity/ITransformEntity";
+import { IUIRectLine } from "./IUIRectLine";
 
 declare var CoMesh: ICoMesh;
 declare var CoMaterial: ICoMaterial;
 declare var CoEntity: ICoEntity;
 declare var CoMath: ICoMath;
 
-class UIRectLine {
+class UIRectLine implements IUIRectLine {
 
 	private m_rscene: IRendererScene;
 	private m_entity: ITransformEntity = null;

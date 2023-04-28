@@ -1,13 +1,17 @@
 import IVector3D from "../../vox/math/IVector3D";
 import IEntityTransform from "../../vox/entity/IEntityTransform";
 import IDisplayEntityContainer from "../../vox/entity/IDisplayEntityContainer";
+import {ICtrlValueFilter} from "./ICtrlValueFilter";
 
 interface ICtrTarget extends IEntityTransform {
 
+	valueFilter: ICtrlValueFilter;
+	type: number;
     /**
      * center
      */
     position: IVector3D;
+    rotation: IVector3D;
     version: number;
 	container: IDisplayEntityContainer;
     select(controller?: IEntityTransform): void;
