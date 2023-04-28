@@ -30,6 +30,7 @@ import { IRectFrameQuery, ITransformController, IUIRectLine, VoxModelEdit } from
 import { CoModelTeamLoader } from "../../cospace/app/common/CoModelTeamLoader";
 import { CoEntityLayouter } from "../../cospace/app/common/CoEntityLayouter";
 import RenderStatusDisplay from "../../vox/scene/RenderStatusDisplay";
+import { ICtrlValueFilter } from "../base/ICtrlValueFilter";
 
 // declare var CoMath: ICoMath;
 
@@ -245,7 +246,7 @@ export class DemoModelEditTrans3 {
 	private m_selectFrame: IUIRectLine = null;
 	private m_keyInterac: ICoKeyboardInteraction;
 	private m_recoder: ICoTransformRecorder;
-
+	private m_valueFilter = new VecValueFilter();
 	private createEditEntity(): void {
 
 		let edit3dsc = this.m_edit3DUIRScene;
@@ -255,7 +256,7 @@ export class DemoModelEditTrans3 {
 		tc.initialize(edit3dsc);
 		tc.addEventListener(UserEditEvent.EDIT_BEGIN, this, this.trans3DEditBegin);
 		tc.addEventListener(UserEditEvent.EDIT_END, this, this.trans3DEditEnd);
-
+		this.m_transCtr.setCtrlValueFilter( this.m_valueFilter );
 		this.m_prevPos = VoxMath.createVec3();
 		this.m_currPos = VoxMath.createVec3();
 
@@ -489,4 +490,45 @@ export class DemoModelEditTrans3 {
 	}
 }
 
+class VecValueFilter implements ICtrlValueFilter {
+	constructor(){}
+	private filterScale(s: number): number {
+		if(Math.abs(s) < 1.0) {
+			if(s < 0) {
+				s = -1;
+			}else if(s > 0){
+				s = 1;
+			}
+		}else {
+			console.log(s.toFixed(2), "Math.floor(s): ", Math.floor(s));
+			s = Math.floor(s);
+		}
+		return s;
+	}
+	ctrlValueFilter(type: number, pv: IVector3D): void {
+
+		console.log("VecValueFilter, A pv: ", pv);
+
+		switch(type) {
+			case 0:
+				pv.x = Math.round(pv.x / 10.0) * 10.0;
+				pv.y = Math.round(pv.y / 10.0) * 10.0;
+				pv.z = Math.round(pv.z / 10.0) * 10.0;
+				break;
+			case 1:
+				pv.x = this.filterScale(pv.x);
+				pv.y = this.filterScale(pv.y);
+				pv.z = this.filterScale(pv.z);
+				break;
+			case 2:
+				pv.x = Math.round(pv.x / 5.0) * 5.0;
+				pv.y = Math.round(pv.y / 5.0) * 5.0;
+				pv.z = Math.round(pv.z / 5.0) * 5.0;
+				break;
+			default:
+				break;
+		}
+		console.log("VecValueFilter, B pv: ", pv);
+	}
+}
 export default DemoModelEditTrans3;
