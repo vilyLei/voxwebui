@@ -6,7 +6,6 @@ import { ButtonItem, CompEntityBase } from "./CompEntityBase";
 
 class SelectionEntity extends CompEntityBase {
 
-	private m_dispatcher: IEvtDispatcher = null;
 	private m_currEvent: ISelectionEvent = null;
 
 	private m_nameItem: ButtonItem = null;
@@ -16,8 +15,10 @@ class SelectionEntity extends CompEntityBase {
 	private m_enabled = true;
 	private m_nameWidth = 0.0;
 
-	uuid = "SelectionEntity";
-	constructor() { super(); }
+	constructor() {
+		super();
+		this.uuid = "SelectionEntity";
+	}
 	enable(): void {
 		this.m_enabled = true;
 	}
@@ -37,12 +38,6 @@ class SelectionEntity extends CompEntityBase {
 		return !this.isVisible();
 	}
 
-	addEventListener(type: number, listener: any, func: (evt: any) => void, captureEnabled: boolean = true, bubbleEnabled: boolean = false): void {
-		this.m_dispatcher.addEventListener(type, listener, func, captureEnabled, bubbleEnabled);
-	}
-	removeEventListener(type: number, listener: any, func: (evt: any) => void): void {
-		this.m_dispatcher.removeEventListener(type, listener, func);
-	}
 	/**
 	 * 选中
 	 * @param sendEvtEnabled 是否发送选中的事件。 如果不发送事件，则只会改变状态。
@@ -120,23 +115,33 @@ class SelectionEntity extends CompEntityBase {
 	getNameWidth(): number {
 		return this.m_nameWidth;
 	}
-	initialize(uisc: IVoxUIScene, barName: string = "select", select_name: string = "Yes", deselect_name: string = "No", fontSize: number = 30.0, nameWidth: number = 70, flagWidth: number = 50, height: number = 40): void {
+	/**
+	 * @param uisc IVoxUIScene instance
+	 * @param btnName btn name, the default value is "select"
+	 * @param select_name btn selecting status name, the default value is "Yes"
+	 * @param deselect_name btn deselecting status name, the default value is "No"
+	 * @param fontSize font size, the default value is 30
+	 * @param nameWidth btn name part width, the default value is 70
+	 * @param statusWidth btn status part width, the default value is 50
+	 * @param height btn height, the default value is 40
+	 */
+	initialize(uisc: IVoxUIScene, btnName: string = "select", select_name: string = "Yes", deselect_name: string = "No", fontSize: number = 30.0, nameWidth: number = 70, statusWidth: number = 50, height: number = 40): void {
 
 		if (this.isIniting()) {
 			this.init();
 			let dis = 2.0;
 			this.m_dispatcher = VoxRScene.createEventBaseDispatcher();
 			this.m_currEvent = VoxRScene.createSelectionEvent();
-			if (barName != "") {
-				let nameItem = this.createBtn("name",uisc, [barName], fontSize, nameWidth, height);
+			if (btnName != "") {
+				let nameItem = this.createBtn("name",uisc, [btnName], fontSize, nameWidth, height);
 				this.addEntity(nameItem.button);
 				this.m_nameWidth = nameItem.button.getWidth();
 				this.m_nameItem = nameItem;
 				nameItem.button.addEventListener(MouseEvent.MOUSE_DOWN, this, this.nameBtnMouseDown);
 			}
 
-			let flagItem = this.createBtn("flag",uisc, [select_name, deselect_name], fontSize, flagWidth, height);
-			if (barName != "") {
+			let flagItem = this.createBtn("flag",uisc, [select_name, deselect_name], fontSize, statusWidth, height);
+			if (btnName != "") {
 				flagItem.button.setX(this.m_nameWidth + dis);
 			}
 			this.addEntity(flagItem.button);

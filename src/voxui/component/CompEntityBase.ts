@@ -5,6 +5,7 @@ import { ClipColorLabel } from "../entity/ClipColorLabel";
 import { ClipLabel } from "../entity/ClipLabel";
 import { UIEntityContainer } from "../entity/UIEntityContainer";
 import { IVoxUIScene } from "../scene/IVoxUIScene";
+import IEvtDispatcher from "../../vox/event/IEvtDispatcher";
 
 class ButtonItem {
 
@@ -34,26 +35,25 @@ class ButtonItem {
 }
 class CompEntityBase extends UIEntityContainer {
 
-
+	protected m_dispatcher: IEvtDispatcher = null;
 	protected m_fontColor: IColor4 = null;
 	protected m_fontBgColor: IColor4 = null;
 	protected m_bgColors: IColor4[] = null;
 
+	uuid = "CompEntityBase";
 	constructor() { super(); }
 	getNameWidth(): number {
 		return 0.0;
 	}
+	addEventListener(type: number, listener: any, func: (evt: any) => void, captureEnabled: boolean = true, bubbleEnabled: boolean = false): void {
+		this.m_dispatcher.addEventListener(type, listener, func, captureEnabled, bubbleEnabled);
+	}
+	removeEventListener(type: number, listener: any, func: (evt: any) => void): void {
+		this.m_dispatcher.removeEventListener(type, listener, func);
+	}
 	setFontColor(fontColor: IColor4, bgColor: IColor4): void {
 		this.m_fontColor = fontColor;
 		this.m_fontBgColor = bgColor;
-		// if (this.m_fontColor == null) this.m_fontColor = VoxMaterial.createColor4();
-		// if (this.m_fontBgColor == null) this.m_fontBgColor = VoxMaterial.createColor4();
-		// if (fontColor) {
-		// 	this.m_fontColor.copyFrom(fontColor);
-		// }
-		// if (bgColor) {
-		// 	this.m_fontBgColor.copyFrom(bgColor);
-		// }
 	}
 	setBGColors(colors: IColor4[]): void {
 		if (colors == null) {
