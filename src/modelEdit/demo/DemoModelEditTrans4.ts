@@ -15,7 +15,7 @@ import { IButton } from "../../voxui/button/IButton";
 import { PostOutline } from "./effect/PostOutline";
 import IRenderEntity from "../../vox/render/IRenderEntity";
 import { ICoTransformRecorder } from "../recorde/ICoTransformRecorder";
-import { KeyboardEvent, Keyboard, MouseEvent, RendererDevice, VoxRScene } from "../../cospace/voxengine/VoxRScene";
+import { SelectionEvent, KeyboardEvent, Keyboard, MouseEvent, RendererDevice, VoxRScene } from "../../cospace/voxengine/VoxRScene";
 
 import { VoxUIInteraction } from "../../cospace/voxengine/ui/VoxUIInteraction";
 import { ISelectButtonGroup } from "../../voxui/button/ISelectButtonGroup";
@@ -31,6 +31,8 @@ import { CoModelTeamLoader } from "../../cospace/app/common/CoModelTeamLoader";
 import { CoEntityLayouter } from "../../cospace/app/common/CoEntityLayouter";
 import RenderStatusDisplay from "../../vox/scene/RenderStatusDisplay";
 import { ICtrlValueFilter } from "../base/ICtrlValueFilter";
+import { ISelectionEntity } from "../../voxui/component/ISelectionEntity";
+import ISelectionEvent from "../../vox/event/ISelectionEvent";
 
 // declare var CoMath: ICoMath;
 
@@ -200,21 +202,26 @@ export class DemoModelEditTrans4 {
 		return btn;
 	}
 	
-    // private createSelectBtn(ns: string, uuid: string, selectNS: string, deselectNS: string, flag: boolean, visibleAlways: boolean = false): SelectionEntity {
+    private createSelectBtn(px: number, py: number, ns: string, uuid: string, selectNS: string, deselectNS: string, flag: boolean): ISelectionEntity {
 
-    //     let selectBar = new VoxUI.createSelectButtonGroup();
-    //     selectBar.uuid = uuid;
-    //     selectBar.initialize(this.m_ruisc, ns, selectNS, deselectNS, this.m_fontSize);
-    //     selectBar.addEventListener(SelectionEvent.SELECT, this, this.selectChange);
-    //     if (flag) {
-    //         selectBar.select(false);
-    //     }
-    //     else {
-    //         selectBar.deselect(false);
-    //     }
-    //     this.m_uiScene.addEntity(selectBar);
-    //     return selectBar;
-    // }
+        let selectBar = VoxUI.createSelectionEntity();
+        selectBar.uuid = uuid;
+        selectBar.initialize(this.m_uiScene, ns, selectNS, deselectNS, 30);
+        selectBar.addEventListener(SelectionEvent.SELECT, this, this.selectChange);
+        if (flag) {
+            selectBar.select(false);
+        }
+        else {
+            selectBar.deselect(false);
+        }
+		selectBar.setXY(px, py);
+        this.m_uiScene.addEntity(selectBar);
+        return selectBar;
+    }
+	private selectChange(evt: ISelectionEvent): void {
+		console.log("selectChange(), evt.flag: ", evt.flag);
+		this.m_valueFilter.setAbsorbing(evt.flag);
+	}
 	private initUIEntities(): void {
 
 		this.m_btnGroup0 = VoxUI.createSelectButtonGroup();
@@ -223,7 +230,7 @@ export class DemoModelEditTrans4 {
 
 		let tx = 100;
 		let ty = 110;
-		let absorbBtn = this.createBtn("absorb", "吸附", tx, ty + 30 + 520, this.m_btnGroup0);
+		let absorbBtn = this.createSelectBtn(tx, ty + 30 + 520, "吸附","absorb", "ON", "OFF", false);
 
 		let localBtn = this.createBtn("local", "局部坐标", tx, ty + 30 + 450, this.m_btnGroup0);
 		let globalBtn = this.createBtn("global", "全局坐标", tx, ty + 30 + 380, this.m_btnGroup0);
@@ -523,11 +530,8 @@ class VecValueFilter implements ICtrlValueFilter {
 		}
 		return s;
 	}
-	absorb(): void {
-		this.m_absorb = true;
-	}
-	unabsorb(): void {
-		this.m_absorb = false;
+	setAbsorbing(absorb: boolean): void {
+		this.m_absorb = absorb;
 	}
 	ctrlValueFilter(type: number, pv: IVector3D): void {
 
