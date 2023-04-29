@@ -145,46 +145,5 @@ class SelectionEntity extends CompEntityBase {
 
 		}
 	}
-	/*
-	private createBtn(uisc: IVoxUIScene, urls: string[], fontSize: number, pw: number, ph: number): ButtonItem {
-
-		let img: HTMLCanvasElement;
-		let tta = uisc.transparentTexAtlas;
-
-		let bgLabel = new ClipColorLabel();
-		bgLabel.initializeWithoutTex(pw, ph, 4);
-		let sls = this.m_bgColors;
-		if (sls == null) {
-			bgLabel.getColorAt(0).setRGB3f(0.2, 0.2, 0.2);
-			bgLabel.getColorAt(1).setRGB3f(0.3, 0.3, 0.3);
-			bgLabel.getColorAt(2).setRGB3f(0.2, 0.6, 1.0);
-			bgLabel.getColorAt(3).setRGB3f(0.3, 0.3, 0.3);
-		} else {
-			let dcls = bgLabel.getColors();
-			for(let i = 0; i < dcls.length; ++i) {
-				dcls[i].copyFrom(sls[i]);
-			}
-		}
-
-		let fontColor = this.m_fontColor != null ? this.m_fontColor : VoxMaterial.createColor4(1, 1, 1, 1);
-		let bgColor = this.m_fontBgColor != null ? this.m_fontBgColor : VoxMaterial.createColor4(1, 1, 1, 0);
-
-		for (let i = 0; i < urls.length; ++i) {
-			img = tta.createCharsCanvasFixSize(pw, ph, urls[i], fontSize, fontColor, bgColor);
-			tta.addImageToAtlas(urls[i], img);
-		}
-
-		let nameLabel = new ClipLabel();
-		nameLabel.transparent = true;
-		nameLabel.premultiplyAlpha = true;
-		nameLabel.initialize(tta, urls);
-
-		let btn = new Button();
-		btn.syncLabelClip = false;
-		btn.addLabel(nameLabel);
-		btn.initializeWithLable(bgLabel);
-		return { button: btn, label: nameLabel };
-	}
-	//*/
 }
 export { SelectionEntity };
