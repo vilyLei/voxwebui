@@ -45,7 +45,7 @@ class SceneAccessor implements IRendererSceneAccessor {
 /**
  * cospace renderer
  */
-export class DemoModelEditTrans3 {
+export class DemoModelEditTrans4 {
 	private m_teamLoader = new CoModelTeamLoader();
 	private m_edit3DUIRScene: IRendererScene = null;
 	private m_outline: PostOutline;
@@ -57,7 +57,7 @@ export class DemoModelEditTrans3 {
 			e.preventDefault();
 		};
 
-		console.log("DemoModelEditTrans3::initialize() ...");
+		console.log("DemoModelEditTrans4::initialize() ...");
 
 		this.initEngineModule();
 	}
@@ -199,6 +199,22 @@ export class DemoModelEditTrans3 {
 		group.addButton(btn);
 		return btn;
 	}
+	
+    // private createSelectBtn(ns: string, uuid: string, selectNS: string, deselectNS: string, flag: boolean, visibleAlways: boolean = false): SelectionEntity {
+
+    //     let selectBar = new VoxUI.createSelectButtonGroup();
+    //     selectBar.uuid = uuid;
+    //     selectBar.initialize(this.m_ruisc, ns, selectNS, deselectNS, this.m_fontSize);
+    //     selectBar.addEventListener(SelectionEvent.SELECT, this, this.selectChange);
+    //     if (flag) {
+    //         selectBar.select(false);
+    //     }
+    //     else {
+    //         selectBar.deselect(false);
+    //     }
+    //     this.m_uiScene.addEntity(selectBar);
+    //     return selectBar;
+    // }
 	private initUIEntities(): void {
 
 		this.m_btnGroup0 = VoxUI.createSelectButtonGroup();
@@ -207,6 +223,8 @@ export class DemoModelEditTrans3 {
 
 		let tx = 100;
 		let ty = 110;
+		let absorbBtn = this.createBtn("absorb", "吸附", tx, ty + 30 + 520, this.m_btnGroup0);
+
 		let localBtn = this.createBtn("local", "局部坐标", tx, ty + 30 + 450, this.m_btnGroup0);
 		let globalBtn = this.createBtn("global", "全局坐标", tx, ty + 30 + 380, this.m_btnGroup0);
 		ty += 50;
@@ -311,15 +329,15 @@ export class DemoModelEditTrans3 {
 	}
 	private uiMouseDownListener(evt: any): void {
 
-		console.log("DemoModelEditTrans3::uiMouseDownListener(), evt: ", evt);
+		console.log("DemoModelEditTrans4::uiMouseDownListener(), evt: ", evt);
 		this.m_selectFrame.begin(evt.mouseX, evt.mouseY);
 	}
 	private uiMouseUpListener(evt: any): void {
 
-		console.log("DemoModelEditTrans3::uiMouseUpListener(), evt: ", evt);
+		console.log("DemoModelEditTrans4::uiMouseUpListener(), evt: ", evt);
 		if (this.m_selectFrame.isSelectEnabled()) {
 			let b = this.m_selectFrame.bounds;
-			console.log("DemoModelEditTrans3::uiMouseUpListener(), b: ", b);
+			console.log("DemoModelEditTrans4::uiMouseUpListener(), b: ", b);
 			let list = this.m_entityQuery.getEntities(b.min, b.max);
 			console.log("list: ", list);
 			this.selectEntities(list);
@@ -327,7 +345,7 @@ export class DemoModelEditTrans3 {
 		this.m_selectFrame.end(evt.mouseX, evt.mouseY);
 	}
 	private uiMouseMoveListener(evt: any): void {
-		// console.log("DemoModelEditTrans3::uiMouseMoveListener(), evt: ", evt);
+		// console.log("DemoModelEditTrans4::uiMouseMoveListener(), evt: ", evt);
 		// console.log("ui move (x, y): ", evt.mouseX, evt.mouseY);
 		this.m_selectFrame.move(evt.mouseX, evt.mouseY);
 	}
@@ -373,7 +391,7 @@ export class DemoModelEditTrans3 {
 	}
 
 	private keyDown(evt: any): void {
-		console.log("DemoModelEditTrans3::keyDown() ..., evt.keyCode: ", evt.keyCode);
+		console.log("DemoModelEditTrans4::keyDown() ..., evt.keyCode: ", evt.keyCode);
 
 		let KEY = Keyboard;
 		switch (evt.keyCode) {
@@ -538,4 +556,4 @@ class VecValueFilter implements ICtrlValueFilter {
 		console.log("VecValueFilter, B pv: ", pv);
 	}
 }
-export default DemoModelEditTrans3;
+export default DemoModelEditTrans4;
