@@ -1339,33 +1339,8 @@ class SelectionEntity extends CompEntityBase_1.CompEntityBase {
     this.m_nameItem = null;
     this.m_flagItem = null;
     this.m_flag = true;
-    this.m_enabled = true;
     this.m_nameWidth = 0.0;
     this.uuid = "SelectionEntity";
-  }
-
-  enable() {
-    this.m_enabled = true;
-  }
-
-  disable() {
-    this.m_enabled = false;
-  }
-
-  open() {
-    this.setVisible(true);
-  }
-
-  close() {
-    this.setVisible(false);
-  }
-
-  isOpen() {
-    return this.isVisible();
-  }
-
-  isClosed() {
-    return !this.isVisible();
   }
   /**
    * 选中
@@ -2298,11 +2273,36 @@ exports.ButtonItem = ButtonItem;
 class CompEntityBase extends UIEntityContainer_1.UIEntityContainer {
   constructor() {
     super();
+    this.m_enabled = true;
     this.m_dispatcher = null;
     this.m_fontColor = null;
     this.m_fontBgColor = null;
     this.m_bgColors = null;
     this.uuid = "CompEntityBase";
+  }
+
+  enable() {
+    this.m_enabled = true;
+  }
+
+  disable() {
+    this.m_enabled = false;
+  }
+
+  open() {
+    this.setVisible(true);
+  }
+
+  close() {
+    this.setVisible(false);
+  }
+
+  isOpen() {
+    return this.isVisible();
+  }
+
+  isClosed() {
+    return !this.isVisible();
   }
 
   getNameWidth() {
@@ -3412,6 +3412,8 @@ const UIEntityContainer_1 = __webpack_require__("23ac");
 
 const SelectionEntity_1 = __webpack_require__("1dcc");
 
+const ProgressEntity_1 = __webpack_require__("822b");
+
 let __$$__init = true;
 
 function initialize() {
@@ -3594,6 +3596,12 @@ function createSelectionEntity() {
 
 exports.createSelectionEntity = createSelectionEntity;
 
+function createProgressEntity() {
+  return new ProgressEntity_1.ProgressEntity();
+}
+
+exports.createProgressEntity = createProgressEntity;
+
 /***/ }),
 
 /***/ "822b":
@@ -3628,7 +3636,6 @@ class ProgressEntity extends CompEntityBase_1.CompEntityBase {
     this.m_progress = 0.0;
     this.m_nameWidth = 0.0;
     this.m_value = 0.0;
-    this.m_enabled = true;
     this.m_minValue = 0.0;
     this.m_maxValue = 1.0;
     this.step = 0.1;
@@ -3636,38 +3643,6 @@ class ProgressEntity extends CompEntityBase_1.CompEntityBase {
     this.m_autoDelay = 0;
     this.m_changeStep = 0;
     this.uuid = "ProgressEntity";
-  }
-
-  enable() {
-    this.m_enabled = true;
-  }
-
-  disable() {
-    this.m_enabled = false;
-  }
-
-  open() {
-    this.setVisible(true);
-  }
-
-  close() {
-    this.setVisible(false);
-  }
-
-  isOpen() {
-    return this.isVisible();
-  }
-
-  isClosed() {
-    return !this.isVisible();
-  }
-
-  addEventListener(type, listener, func, captureEnabled = true, bubbleEnabled = false) {
-    this.m_dispatcher.addEventListener(type, listener, func, captureEnabled, bubbleEnabled);
-  }
-
-  removeEventListener(type, listener, func) {
-    this.m_dispatcher.removeEventListener(type, listener, func);
   }
 
   destroy() {
@@ -3693,8 +3668,17 @@ class ProgressEntity extends CompEntityBase_1.CompEntityBase {
   getNameWidth() {
     return this.m_nameWidth;
   }
+  /**
+   * @param uisc IVoxUIScene instance
+   * @param btnName btn name, the default value is "prog"
+   * @param fontSize font size, the default value 30
+   * @param nameWidth name part width, the default value 30
+   * @param progLength progress bar length, the default value is 200
+   * @param height btn height, the default value is 40
+   */
 
-  initialize(uisc, barName = "prog", fontSize = 30.0, nameWidth = 30, progLength = 200, height = 40) {
+
+  initialize(uisc, btnName = "prog", fontSize = 30.0, nameWidth = 30, progLength = 200, height = 40) {
     if (this.isIniting()) {
       this.init();
       this.m_ruisc = uisc;
@@ -3704,11 +3688,11 @@ class ProgressEntity extends CompEntityBase_1.CompEntityBase {
       let dis = 2.0;
       let px = 0;
 
-      if (barName != "") {
-        let nameItem = this.createBtn("name", uisc, [barName], fontSize, nameWidth, height);
+      if (btnName != "") {
+        let nameItem = this.createBtn("name", uisc, [btnName], fontSize, nameWidth, height);
         this.addEntity(nameItem.button);
         this.m_nameWidth = nameWidth = nameItem.button.getWidth();
-        height = nameItem.button.getHeight(); // console.log(barName, ", nameWidth: ", nameWidth, "height: ",height);
+        height = nameItem.button.getHeight(); // console.log(btnName, ", nameWidth: ", nameWidth, "height: ",height);
 
         this.m_nameItem = nameItem;
         nameItem.button.addEventListener(VoxRScene_1.MouseEvent.MOUSE_DOWN, this, this.nameBtnMouseDown);
@@ -3839,7 +3823,6 @@ class ProgressEntity extends CompEntityBase_1.CompEntityBase {
   }
 
   barEnterFrame(evt) {
-    // console.log("barEnterFrame");
     if (this.m_autoDelay > 20) {
       if (this.m_autoDelay % 7 == 0) {
         this.setProgressLength(this.m_barLength + this.m_changeStep);

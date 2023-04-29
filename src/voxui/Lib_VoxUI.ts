@@ -36,6 +36,7 @@ import { VoxMesh } from "../cospace/voxmesh/VoxMesh";
 import { VoxRenderer } from "../cospace/voxengine/VoxRenderer";
 import { UIEntityContainer } from "./entity/UIEntityContainer";
 import { SelectionEntity } from "./component/SelectionEntity";
+import { ProgressEntity } from "./component/ProgressEntity";
 let __$$__init = true;
 function initialize(): void {
 	if(__$$__init) {
@@ -166,6 +167,9 @@ function createTextLabelButton(uuid: string, text: string, width: number = 90, h
 function createSelectionEntity(): SelectionEntity {
 	return new SelectionEntity();
 }
+function createProgressEntity(): ProgressEntity {
+	return new ProgressEntity();
+}
 export {
 
 	initialize,
@@ -188,6 +192,7 @@ export {
 	createPromptPanel,
 	createParamCtrlPanel,
 	createUIScene,
-	
-	createSelectionEntity
+
+	createSelectionEntity,
+	createProgressEntity
 };

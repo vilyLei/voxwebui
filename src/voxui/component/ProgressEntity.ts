@@ -38,7 +38,7 @@ class ProgressEntity extends CompEntityBase {
 
 	destroy(): void {
 		super.destroy();
-		if(this.m_barPlane != null) {
+		if (this.m_barPlane != null) {
 
 			this.m_dispatcher.destroy();
 			this.m_dispatcher = null;
@@ -81,7 +81,7 @@ class ProgressEntity extends CompEntityBase {
 			let px = 0;
 
 			if (btnName != "") {
-				let nameItem = this.createBtn("name",uisc, [btnName], fontSize, nameWidth, height);
+				let nameItem = this.createBtn("name", uisc, [btnName], fontSize, nameWidth, height);
 				this.addEntity(nameItem.button);
 				this.m_nameWidth = nameWidth = nameItem.button.getWidth();
 				height = nameItem.button.getHeight();
@@ -91,9 +91,9 @@ class ProgressEntity extends CompEntityBase {
 				nameItem.button.addEventListener(MouseEvent.MOUSE_DOWN, this, this.nameBtnMouseDown);
 				px += dis + this.m_nameWidth;
 			}
-			let subItem = this.createBtn("subProg",uisc, ["-"], fontSize, height, height);
-			let addItem = this.createBtn("addProg",uisc, ["+"], fontSize, height, height);
-			
+			let subItem = this.createBtn("subProg", uisc, ["-"], fontSize, height, height);
+			let addItem = this.createBtn("addProg", uisc, ["+"], fontSize, height, height);
+
 			subItem.button.setX(px);
 			this.addEntity(subItem.button);
 
@@ -113,7 +113,7 @@ class ProgressEntity extends CompEntityBase {
 	}
 	private initProg(uisc: IVoxUIScene, posX: number, barLength: number, height: number): void {
 
-		let bgItem = this.createBtn("progBarBg",uisc, [], 0, barLength, height, 0.8);
+		let bgItem = this.createBtn("progBarBg", uisc, [], 0, barLength, height, 0.8);
 		this.m_bgBarItem = bgItem;
 		let bgButon = bgItem.button;
 		bgButon.setX(posX);
@@ -146,7 +146,7 @@ class ProgressEntity extends CompEntityBase {
 	getValue(): number {
 		return this.m_value;
 	}
-	
+
 	setProgress(barProgress: number, sendEvtEnabled: boolean = true): void {
 		this.m_preProgress = -1;
 		this.setProgressV(barProgress, sendEvtEnabled);
@@ -154,7 +154,7 @@ class ProgressEntity extends CompEntityBase {
 	private setProgressV(barProgress: number, sendEvtEnabled: boolean = true): void {
 
 		this.m_progress = MathConst.Clamp(barProgress, 0.0, 1.0);
-		this.m_barLength = this.m_barInitLength * this.m_progress;		
+		this.m_barLength = this.m_barInitLength * this.m_progress;
 
 		this.sendValue(sendEvtEnabled);
 	}
@@ -165,7 +165,7 @@ class ProgressEntity extends CompEntityBase {
 		this.m_value = this.m_minValue + (this.m_maxValue - this.m_minValue) * this.m_progress;
 		if (sendEvtEnabled) {
 			let d = Math.abs(this.m_preProgress - this.m_progress);
-			if(d > MathConst.MATH_MIN_POSITIVE) {
+			if (d > MathConst.MATH_MIN_POSITIVE) {
 				this.m_preProgress = this.m_progress;
 				this.sendEvt(2);
 			}
@@ -185,7 +185,7 @@ class ProgressEntity extends CompEntityBase {
 		t.progress = this.m_progress;
 		t.phase = 1;
 		t.uuid = this.uuid;
-		this.m_dispatcher.dispatchEvt( t );
+		this.m_dispatcher.dispatchEvt(t);
 		t.target = null;
 	}
 	setProgressLength(length: number, sendEvtEnabled: boolean = true): void {
@@ -194,7 +194,7 @@ class ProgressEntity extends CompEntityBase {
 		this.m_progress = this.m_barLength / this.m_barInitLength;
 
 		this.sendValue(sendEvtEnabled);
-		
+
 	}
 	private m_moveMin: number = 0;
 	private nameBtnMouseDown(evt: any): void {
@@ -216,7 +216,7 @@ class ProgressEntity extends CompEntityBase {
 	private m_autoDelay: number = 0;
 	private m_changeStep: number = 0;
 	private barEnterFrame(evt: any): void {
-		// console.log("barEnterFrame");
+
 		if (this.m_autoDelay > 20) {
 			if ((this.m_autoDelay % 7) == 0) {
 				this.setProgressLength(this.m_barLength + this.m_changeStep);
