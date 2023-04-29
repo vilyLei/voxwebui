@@ -206,6 +206,8 @@ export class DemoModelEditTrans4 {
 
         let selectBar = VoxUI.createSelectionEntity();
         selectBar.uuid = uuid;
+		let colors = [0xff5dbea3, 0xff33b249, 0xff5adbb5, 0xFF33b249];
+		selectBar.setBGColorsWithARGBUint32( colors );
         selectBar.initialize(this.m_uiScene, ns, selectNS, deselectNS, 30);
         selectBar.addEventListener(SelectionEvent.SELECT, this, this.selectChange);
         if (flag) {

@@ -2345,12 +2345,12 @@ class CompEntityBase extends UIEntityContainer_1.UIEntityContainer {
     this.m_bgColors = colors;
   }
 
-  setFontColorWithUint24(fontColor, bgColor) {
-    this.m_fontColor = VoxRScene_1.VoxRScene.createColor4().setRGBUint24(fontColor);
-    this.m_fontBgColor = VoxRScene_1.VoxRScene.createColor4().setRGBUint24(bgColor);
+  setFontColorWithARGBUint32(fontColor, bgColor) {
+    this.m_fontColor = VoxRScene_1.VoxRScene.createColor4().setARGBUint32(fontColor);
+    this.m_fontBgColor = VoxRScene_1.VoxRScene.createColor4().setARGBUint32(bgColor);
   }
 
-  setBGColorsWithUint24(colors) {
+  setBGColorsWithARGBUint32(colors) {
     if (colors == null) {
       throw Error("colors == null !!!");
     }
@@ -2362,7 +2362,7 @@ class CompEntityBase extends UIEntityContainer_1.UIEntityContainer {
     this.m_bgColors = [];
 
     for (let i = 0; i < colors.length; ++i) {
-      this.m_bgColors.push(VoxRScene_1.VoxRScene.createColor4().setRGBUint24(colors[i]));
+      this.m_bgColors.push(VoxRScene_1.VoxRScene.createColor4().setARGBUint32(colors[i]));
     }
   }
 
