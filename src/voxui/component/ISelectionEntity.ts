@@ -3,13 +3,6 @@ import { ICompEntityBase } from "./ICompEntityBase";
 
 interface ISelectionEntity extends ICompEntityBase {
 
-	enable(): void;
-	disable(): void;
-	open(): void;
-	close(): void;
-	isOpen(): boolean;
-	isClosed(): boolean;
-
 	/**
 	 * 选中
 	 * @param sendEvtEnabled 是否发送选中的事件。 如果不发送事件，则只会改变状态。

@@ -1,5 +1,4 @@
 import { MouseEvent, SelectionEvent, VoxRScene } from "../../cospace/voxengine/VoxRScene";
-import IEvtDispatcher from "../../vox/event/IEvtDispatcher";
 import ISelectionEvent from "../../vox/event/ISelectionEvent";
 import { IVoxUIScene } from "../scene/IVoxUIScene";
 import { ButtonItem, CompEntityBase } from "./CompEntityBase";
@@ -12,30 +11,11 @@ class SelectionEntity extends CompEntityBase {
 	private m_flagItem: ButtonItem = null;
 
 	private m_flag = true;
-	private m_enabled = true;
 	private m_nameWidth = 0.0;
 
 	constructor() {
 		super();
 		this.uuid = "SelectionEntity";
-	}
-	enable(): void {
-		this.m_enabled = true;
-	}
-	disable(): void {
-		this.m_enabled = false;
-	}
-	open(): void {
-		this.setVisible(true);
-	}
-	close(): void {
-		this.setVisible(false);
-	}
-	isOpen(): boolean {
-		return this.isVisible();
-	}
-	isClosed(): boolean {
-		return !this.isVisible();
 	}
 
 	/**

@@ -4,6 +4,14 @@ import { IUIEntityContainer } from "../entity/IUIEntityContainer";
 interface ICompEntityBase extends IUIEntityContainer {
 
 	uuid: string;
+	
+	enable(): void;
+	disable(): void;
+	open(): void;
+	close(): void;
+	isOpen(): boolean;
+	isClosed(): boolean;
+	
 	/**
 	 * @param type a number type value, it is a event type,for example: MouseEvent.MOUSE_UP
 	 * @param listener a listener instance

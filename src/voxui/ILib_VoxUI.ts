@@ -19,6 +19,7 @@ import IRendererScene from "../vox/scene/IRendererScene";
 import IRendererSceneGraph from "../vox/scene/IRendererSceneGraph";
 import { IParamCtrlPanel } from "./panel/IParamCtrlPanel";
 import { IUIEntityContainer } from "./entity/IUIEntityContainer";
+import { ISelectionEntity } from "./component/ISelectionEntity";
 
 interface ITextParam {
 
@@ -63,5 +64,7 @@ interface ILib_VoxUI {
 	 * @param renderProcessesTotal the default value is 3
 	 */
 	createUIScene(graph: IRendererSceneGraph, uiConfig?: IUIConfig, atlasSize?: number, renderProcessesTotal?: number): IVoxUIScene;
+	
+	createSelectionEntity(): ISelectionEntity;
 }
 export { ITextParam, ILib_VoxUI };

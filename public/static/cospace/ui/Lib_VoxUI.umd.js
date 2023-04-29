@@ -1344,7 +1344,6 @@ const CompEntityBase_1 = __webpack_require__("5ea3");
 class SelectionEntity extends CompEntityBase_1.CompEntityBase {
   constructor() {
     super();
-    this.m_dispatcher = null;
     this.m_currEvent = null;
     this.m_nameItem = null;
     this.m_flagItem = null;
@@ -1376,14 +1375,6 @@ class SelectionEntity extends CompEntityBase_1.CompEntityBase {
 
   isClosed() {
     return !this.isVisible();
-  }
-
-  addEventListener(type, listener, func, captureEnabled = true, bubbleEnabled = false) {
-    this.m_dispatcher.addEventListener(type, listener, func, captureEnabled, bubbleEnabled);
-  }
-
-  removeEventListener(type, listener, func) {
-    this.m_dispatcher.removeEventListener(type, listener, func);
   }
   /**
    * 选中
@@ -1471,25 +1462,36 @@ class SelectionEntity extends CompEntityBase_1.CompEntityBase {
   getNameWidth() {
     return this.m_nameWidth;
   }
+  /**
+   * @param uisc IVoxUIScene instance
+   * @param btnName btn name, the default value is "select"
+   * @param select_name btn selecting status name, the default value is "Yes"
+   * @param deselect_name btn deselecting status name, the default value is "No"
+   * @param fontSize font size, the default value is 30
+   * @param nameWidth btn name part width, the default value is 70
+   * @param statusWidth btn status part width, the default value is 50
+   * @param height btn height, the default value is 40
+   */
 
-  initialize(uisc, barName = "select", select_name = "Yes", deselect_name = "No", fontSize = 30.0, nameWidth = 70, flagWidth = 50, height = 40) {
+
+  initialize(uisc, btnName = "select", select_name = "Yes", deselect_name = "No", fontSize = 30.0, nameWidth = 70, statusWidth = 50, height = 40) {
     if (this.isIniting()) {
       this.init();
       let dis = 2.0;
       this.m_dispatcher = VoxRScene_1.VoxRScene.createEventBaseDispatcher();
       this.m_currEvent = VoxRScene_1.VoxRScene.createSelectionEvent();
 
-      if (barName != "") {
-        let nameItem = this.createBtn("name", uisc, [barName], fontSize, nameWidth, height);
+      if (btnName != "") {
+        let nameItem = this.createBtn("name", uisc, [btnName], fontSize, nameWidth, height);
         this.addEntity(nameItem.button);
         this.m_nameWidth = nameItem.button.getWidth();
         this.m_nameItem = nameItem;
         nameItem.button.addEventListener(VoxRScene_1.MouseEvent.MOUSE_DOWN, this, this.nameBtnMouseDown);
       }
 
-      let flagItem = this.createBtn("flag", uisc, [select_name, deselect_name], fontSize, flagWidth, height);
+      let flagItem = this.createBtn("flag", uisc, [select_name, deselect_name], fontSize, statusWidth, height);
 
-      if (barName != "") {
+      if (btnName != "") {
         flagItem.button.setX(this.m_nameWidth + dis);
       }
 
@@ -2305,25 +2307,28 @@ exports.ButtonItem = ButtonItem;
 class CompEntityBase extends UIEntityContainer_1.UIEntityContainer {
   constructor() {
     super();
+    this.m_dispatcher = null;
     this.m_fontColor = null;
     this.m_fontBgColor = null;
     this.m_bgColors = null;
+    this.uuid = "CompEntityBase";
   }
 
   getNameWidth() {
     return 0.0;
   }
 
+  addEventListener(type, listener, func, captureEnabled = true, bubbleEnabled = false) {
+    this.m_dispatcher.addEventListener(type, listener, func, captureEnabled, bubbleEnabled);
+  }
+
+  removeEventListener(type, listener, func) {
+    this.m_dispatcher.removeEventListener(type, listener, func);
+  }
+
   setFontColor(fontColor, bgColor) {
     this.m_fontColor = fontColor;
-    this.m_fontBgColor = bgColor; // if (this.m_fontColor == null) this.m_fontColor = VoxMaterial.createColor4();
-    // if (this.m_fontBgColor == null) this.m_fontBgColor = VoxMaterial.createColor4();
-    // if (fontColor) {
-    // 	this.m_fontColor.copyFrom(fontColor);
-    // }
-    // if (bgColor) {
-    // 	this.m_fontBgColor.copyFrom(bgColor);
-    // }
+    this.m_fontBgColor = bgColor;
   }
 
   setBGColors(colors) {
@@ -3414,6 +3419,8 @@ const VoxMesh_1 = __webpack_require__("228b");
 
 const UIEntityContainer_1 = __webpack_require__("23ac");
 
+const SelectionEntity_1 = __webpack_require__("1dcc");
+
 let __$$__init = true;
 
 function initialize() {
@@ -3590,6 +3597,12 @@ function createTextLabelButton(uuid, text, width = 90, height = 50, textColor = 
 
 exports.createTextLabelButton = createTextLabelButton;
 
+function createSelectionEntity() {
+  return new SelectionEntity_1.SelectionEntity();
+}
+
+exports.createSelectionEntity = createSelectionEntity;
+
 /***/ }),
 
 /***/ "822b":
@@ -3611,7 +3624,6 @@ const CompEntityBase_1 = __webpack_require__("5ea3");
 class ProgressEntity extends CompEntityBase_1.CompEntityBase {
   constructor() {
     super();
-    this.m_dispatcher = null;
     this.m_currEvent = null;
     this.m_nameItem = null;
     this.m_addItem = null;
@@ -3629,10 +3641,10 @@ class ProgressEntity extends CompEntityBase_1.CompEntityBase {
     this.m_minValue = 0.0;
     this.m_maxValue = 1.0;
     this.step = 0.1;
-    this.uuid = "ProgressEntity";
     this.m_moveMin = 0;
     this.m_autoDelay = 0;
     this.m_changeStep = 0;
+    this.uuid = "ProgressEntity";
   }
 
   enable() {

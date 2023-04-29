@@ -35,6 +35,7 @@ class ButtonItem {
 }
 class CompEntityBase extends UIEntityContainer {
 
+	protected m_enabled = true;
 	protected m_dispatcher: IEvtDispatcher = null;
 	protected m_fontColor: IColor4 = null;
 	protected m_fontBgColor: IColor4 = null;
@@ -42,6 +43,27 @@ class CompEntityBase extends UIEntityContainer {
 
 	uuid = "CompEntityBase";
 	constructor() { super(); }
+
+	
+	enable(): void {
+		this.m_enabled = true;
+	}
+	disable(): void {
+		this.m_enabled = false;
+	}
+	open(): void {
+		this.setVisible(true);
+	}
+	close(): void {
+		this.setVisible(false);
+	}
+	isOpen(): boolean {
+		return this.isVisible();
+	}
+	isClosed(): boolean {
+		return !this.isVisible();
+	}
+	
 	getNameWidth(): number {
 		return 0.0;
 	}

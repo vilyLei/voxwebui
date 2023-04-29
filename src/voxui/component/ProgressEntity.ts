@@ -2,7 +2,6 @@
 import { MathConst, VoxMath } from "../../cospace/math/VoxMath";
 import { MouseEvent, EventBase, ProgressDataEvent, VoxRScene } from "../../cospace/voxengine/VoxRScene";
 import IEventBase from "../../vox/event/IEventBase";
-import IEvtDispatcher from "../../vox/event/IEvtDispatcher";
 import IProgressDataEvent from "../../vox/event/IProgressDataEvent";
 import { ClipColorLabel } from "../entity/ClipColorLabel";
 import { IVoxUIScene } from "../scene/IVoxUIScene";
@@ -11,7 +10,6 @@ import { ButtonItem, CompEntityBase } from "./CompEntityBase";
 
 class ProgressEntity extends CompEntityBase {
 
-	private m_dispatcher: IEvtDispatcher = null;
 	private m_currEvent: IProgressDataEvent = null;
 
 	private m_nameItem: ButtonItem = null;
@@ -28,38 +26,14 @@ class ProgressEntity extends CompEntityBase {
 	private m_nameWidth = 0.0;
 	private m_value = 0.0;
 
-	private m_enabled = true;
 	private m_minValue = 0.0;
 	private m_maxValue = 1.0;
 
 	step = 0.1;
-	uuid = "ProgressEntity";
 
-	constructor() { super(); }
-	enable(): void {
-		this.m_enabled = true;
-	}
-	disable(): void {
-		this.m_enabled = false;
-	}
-	open(): void {
-		this.setVisible(true);
-	}
-	close(): void {
-		this.setVisible(false);
-	}
-	isOpen(): boolean {
-		return this.isVisible();
-	}
-	isClosed(): boolean {
-		return !this.isVisible();
-	}
-
-	addEventListener(type: number, listener: any, func: (evt: any) => void, captureEnabled: boolean = true, bubbleEnabled: boolean = false): void {
-		this.m_dispatcher.addEventListener(type, listener, func, captureEnabled, bubbleEnabled);
-	}
-	removeEventListener(type: number, listener: any, func: (evt: any) => void): void {
-		this.m_dispatcher.removeEventListener(type, listener, func);
+	constructor() {
+		super();
+		this.uuid = "ProgressEntity";
 	}
 
 	destroy(): void {
@@ -85,7 +59,15 @@ class ProgressEntity extends CompEntityBase {
 	getNameWidth(): number {
 		return this.m_nameWidth;
 	}
-	initialize(uisc: IVoxUIScene, barName: string = "prog", fontSize: number = 30.0, nameWidth: number = 30, progLength: number = 200, height: number = 40): void {
+	/**
+	 * @param uisc IVoxUIScene instance
+	 * @param btnName btn name, the default value is "prog" 
+	 * @param fontSize font size, the default value 30
+	 * @param nameWidth name part width, the default value 30 
+	 * @param progLength progress bar length, the default value is 200
+	 * @param height btn height, the default value is 40
+	 */
+	initialize(uisc: IVoxUIScene, btnName: string = "prog", fontSize: number = 30.0, nameWidth: number = 30, progLength: number = 200, height: number = 40): void {
 
 		if (this.isIniting()) {
 			this.init();
@@ -98,12 +80,12 @@ class ProgressEntity extends CompEntityBase {
 			let dis = 2.0;
 			let px = 0;
 
-			if (barName != "") {
-				let nameItem = this.createBtn("name",uisc, [barName], fontSize, nameWidth, height);
+			if (btnName != "") {
+				let nameItem = this.createBtn("name",uisc, [btnName], fontSize, nameWidth, height);
 				this.addEntity(nameItem.button);
 				this.m_nameWidth = nameWidth = nameItem.button.getWidth();
 				height = nameItem.button.getHeight();
-				// console.log(barName, ", nameWidth: ", nameWidth, "height: ",height);
+				// console.log(btnName, ", nameWidth: ", nameWidth, "height: ",height);
 
 				this.m_nameItem = nameItem;
 				nameItem.button.addEventListener(MouseEvent.MOUSE_DOWN, this, this.nameBtnMouseDown);

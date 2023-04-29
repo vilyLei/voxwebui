@@ -35,6 +35,7 @@ import { VoxEntity } from "../cospace/voxentity/VoxEntity";
 import { VoxMesh } from "../cospace/voxmesh/VoxMesh";
 import { VoxRenderer } from "../cospace/voxengine/VoxRenderer";
 import { UIEntityContainer } from "./entity/UIEntityContainer";
+import { SelectionEntity } from "./component/SelectionEntity";
 let __$$__init = true;
 function initialize(): void {
 	if(__$$__init) {
@@ -162,6 +163,9 @@ function createTextLabelButton(uuid: string, text: string, width: number = 90, h
 	// this.m_uiScene.addEntity(btn);
 	// return btn;
 }
+function createSelectionEntity(): SelectionEntity {
+	return new SelectionEntity();
+}
 export {
 
 	initialize,
@@ -183,5 +187,7 @@ export {
 	createUIPanel,
 	createPromptPanel,
 	createParamCtrlPanel,
-	createUIScene
+	createUIScene,
+	
+	createSelectionEntity
 };
