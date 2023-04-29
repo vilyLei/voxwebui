@@ -2,8 +2,9 @@ import { MouseEvent, SelectionEvent, VoxRScene } from "../../cospace/voxengine/V
 import ISelectionEvent from "../../vox/event/ISelectionEvent";
 import { IVoxUIScene } from "../scene/IVoxUIScene";
 import { ButtonItem, CompEntityBase } from "./CompEntityBase";
+import { ISelectionEntity } from "./ISelectionEntity";
 
-class SelectionEntity extends CompEntityBase {
+class SelectionEntity extends CompEntityBase implements ISelectionEntity {
 
 	private m_currEvent: ISelectionEvent = null;
 

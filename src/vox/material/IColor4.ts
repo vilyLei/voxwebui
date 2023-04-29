@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  Copyright 2018-2022 by                                                 */
+/*  Copyright 2018-2023 by                                                 */
 /*  Vily(vily313@126.com)                                                  */
 /*                                                                         */
 /***************************************************************************/
@@ -60,6 +60,11 @@ interface IColor4 {
      * @param rgbUint24 example: 0xFF88cc
      */
     setRGBUint24(rgbUint24: number): IColor4;
+    /**
+     * @param argbUint32 example: 0xFFFF88cc
+     */
+    setARGBUint32(argbUint32: number): IColor4;
+    getARGBUint32(): number;
     /**
      * @param r example: 40
      * @param g example: 50

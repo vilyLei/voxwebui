@@ -1,5 +1,5 @@
 
-import URLFilter from "./URLFilter";
+import URLFilter from "../../../cospace/app/utils/URLFilter";
 import { ModuleLoader } from "../../modules/loaders/ModuleLoader";
 interface I_CoModuleLoader {
 }

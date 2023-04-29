@@ -11,7 +11,7 @@ interface ICompEntityBase extends IUIEntityContainer {
 	close(): void;
 	isOpen(): boolean;
 	isClosed(): boolean;
-	
+
 	/**
 	 * @param type a number type value, it is a event type,for example: MouseEvent.MOUSE_UP
 	 * @param listener a listener instance
@@ -30,6 +30,8 @@ interface ICompEntityBase extends IUIEntityContainer {
 	getNameWidth(): number;
 	setFontColor(fontColor: IColor4, bgColor: IColor4): void;
 	setBGColors(colors: IColor4[]): void;
+	setFontColorWithARGBUint32(fontColor: number, bgColor: number): void;
+	setBGColorsWithARGBUint32(colors: number[]): void;
 
 	destroy(): void;
 }

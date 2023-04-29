@@ -2242,6 +2242,8 @@ const ClipLabel_1 = __webpack_require__("f35d");
 
 const UIEntityContainer_1 = __webpack_require__("23ac");
 
+const VoxRScene_1 = __webpack_require__("d1de");
+
 class ButtonItem {
   constructor(pbutton, plabel, pBgLabel) {
     this.button = pbutton;
@@ -2332,6 +2334,27 @@ class CompEntityBase extends UIEntityContainer_1.UIEntityContainer {
     }
 
     this.m_bgColors = colors;
+  }
+
+  setFontColorWithUint24(fontColor, bgColor) {
+    this.m_fontColor = VoxRScene_1.VoxRScene.createColor4().setRGBUint24(fontColor);
+    this.m_fontBgColor = VoxRScene_1.VoxRScene.createColor4().setRGBUint24(bgColor);
+  }
+
+  setBGColorsWithUint24(colors) {
+    if (colors == null) {
+      throw Error("colors == null !!!");
+    }
+
+    if (colors.length < 4) {
+      throw Error("colors.length < 4 !!!");
+    }
+
+    this.m_bgColors = [];
+
+    for (let i = 0; i < colors.length; ++i) {
+      this.m_bgColors.push(VoxRScene_1.VoxRScene.createColor4().setRGBUint24(colors[i]));
+    }
   }
 
   destroy() {

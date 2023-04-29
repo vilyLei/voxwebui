@@ -1,6 +1,6 @@
 /***************************************************************************/
 /*                                                                         */
-/*  Copyright 2018-2022 by                                                 */
+/*  Copyright 2018-2023 by                                                 */
 /*  Vily(vily313@126.com)                                                  */
 /*                                                                         */
 /***************************************************************************/
@@ -19,7 +19,7 @@ interface IEntityTransform {
     getScaleXYZ(pv?: IVector3D): IVector3D;
     localToGlobal(pv: IVector3D): void;
     globalToLocal(pv: IVector3D): void;
-
+    
     getGlobalBounds(): IAABB;
     getLocalBounds(): IAABB;
     update(): void;

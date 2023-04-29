@@ -7,8 +7,9 @@ import { ClipColorLabel } from "../entity/ClipColorLabel";
 import { IVoxUIScene } from "../scene/IVoxUIScene";
 
 import { ButtonItem, CompEntityBase } from "./CompEntityBase";
+import { IProgressEntity } from "./IProgressEntity";
 
-class ProgressEntity extends CompEntityBase {
+class ProgressEntity extends CompEntityBase implements IProgressEntity {
 
 	private m_currEvent: IProgressDataEvent = null;
 

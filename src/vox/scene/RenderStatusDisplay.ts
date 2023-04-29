@@ -5,10 +5,9 @@
 /*                                                                         */
 /***************************************************************************/
 
-import IEventBase from "../event/IEventBase";
 import IRendererScene from "./IRendererScene";
+import IEventBase from "../event/IEventBase";
 import { ICoRScene } from "../../cospace/voxengine/ICoRScene";
-
 declare var CoRScene: ICoRScene;
 class RenderStatusDisplay {
     private m_rsc: IRendererScene;

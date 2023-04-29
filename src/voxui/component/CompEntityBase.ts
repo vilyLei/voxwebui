@@ -6,6 +6,8 @@ import { ClipLabel } from "../entity/ClipLabel";
 import { UIEntityContainer } from "../entity/UIEntityContainer";
 import { IVoxUIScene } from "../scene/IVoxUIScene";
 import IEvtDispatcher from "../../vox/event/IEvtDispatcher";
+import { VoxRScene } from "../../cospace/voxengine/VoxRScene";
+import { ICompEntityBase } from "./ICompEntityBase";
 
 class ButtonItem {
 
@@ -33,7 +35,7 @@ class ButtonItem {
 		}
 	}
 }
-class CompEntityBase extends UIEntityContainer {
+class CompEntityBase extends UIEntityContainer implements ICompEntityBase {
 
 	protected m_enabled = true;
 	protected m_dispatcher: IEvtDispatcher = null;
@@ -63,7 +65,7 @@ class CompEntityBase extends UIEntityContainer {
 	isClosed(): boolean {
 		return !this.isVisible();
 	}
-	
+
 	getNameWidth(): number {
 		return 0.0;
 	}
@@ -87,6 +89,22 @@ class CompEntityBase extends UIEntityContainer {
 		this.m_bgColors = colors;
 	}
 
+	setFontColorWithARGBUint32(fontColor: number, bgColor: number): void {
+		this.m_fontColor = VoxRScene.createColor4().setARGBUint32(fontColor);
+		this.m_fontBgColor = VoxRScene.createColor4().setARGBUint32(bgColor);
+	}
+	setBGColorsWithARGBUint32(colors: number[]): void {
+		if (colors == null) {
+			throw Error("colors == null !!!");
+		}
+		if (colors.length < 4) {
+			throw Error("colors.length < 4 !!!");
+		}
+		this.m_bgColors = [];
+		for(let i = 0; i < colors.length; ++i) {
+			this.m_bgColors.push(VoxRScene.createColor4().setARGBUint32(colors[i]));
+		}
+	}
 	destroy(): void {
 
 		super.destroy();
