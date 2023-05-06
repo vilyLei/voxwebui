@@ -422,6 +422,7 @@ export class DemoModelEditTrans4 {
 		let baseUrl: string = "static/private/";
 		let url = baseUrl + "obj/base.obj";
 		url = baseUrl + "fbx/base4.fbx";
+		url = "static/assets/fbx/base4.fbx";
 		console.log("loadModels() init...");
 
 		let loader = this.m_teamLoader;
