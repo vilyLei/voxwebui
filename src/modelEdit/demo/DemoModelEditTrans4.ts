@@ -415,7 +415,7 @@ export class DemoModelEditTrans4 {
 			tex.setDataFromImage(img, 0, 0, 0, false);
 		};
 		url = url != "" ? url : "static/assets/box.jpg";
-		url = URLFilter.filterUrl(url);
+		// url = URLFilter.filterUrl(url);
 		img.src = url;
 		return tex;
 	}
