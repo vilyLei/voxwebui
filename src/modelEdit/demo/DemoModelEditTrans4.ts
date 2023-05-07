@@ -1,7 +1,7 @@
 import IVector3D from "../../vox/math/IVector3D";
 import { IVoxUIScene } from "../../voxui/scene/IVoxUIScene";
 
-import { ModuleLoader } from "../../cospace/modules/loaders/ModuleLoader";
+import { CoModuleVersion, CoModuleLoader } from "../../cospace/app/utils/CoModuleLoader";
 import IRenderTexture from "../../vox/render/texture/IRenderTexture";
 import ITransformEntity from "../../vox/entity/ITransformEntity";
 import { CoGeomDataType } from "../../cospace/app/CoSpaceAppData";
@@ -33,6 +33,8 @@ import RenderStatusDisplay from "../../vox/scene/RenderStatusDisplay";
 import { ICtrlValueFilter } from "../base/ICtrlValueFilter";
 import { ISelectionEntity } from "../../voxui/component/ISelectionEntity";
 import ISelectionEvent from "../../vox/event/ISelectionEvent";
+import URLFilter from "../../cospace/app/utils/URLFilter";
+import { HttpFileLoader } from "../../cospace/modules/loaders/HttpFileLoader";
 
 // declare var CoMath: ICoMath;
 
@@ -48,6 +50,7 @@ class SceneAccessor implements IRendererSceneAccessor {
  * cospace renderer
  */
 export class DemoModelEditTrans4 {
+	private m_verTool: CoModuleVersion = null;
 	private m_teamLoader = new CoModelTeamLoader();
 	private m_edit3DUIRScene: IRendererScene = null;
 	private m_outline: PostOutline;
@@ -61,12 +64,28 @@ export class DemoModelEditTrans4 {
 
 		console.log("DemoModelEditTrans4::initialize() ...");
 
-		this.initEngineModule();
+		// this.initEngineModule();
+		this.loadInfo();
+	}
+	private loadInfo(): void {
+
+		let url = "static/cospace/info.json";
+		url = URLFilter.filterUrl(url);
+		let httpLoader = new HttpFileLoader();
+		httpLoader.load(url, (data: object, url: string): void => {
+			console.log("loadInfo loaded data: ", data);
+			this.m_verTool = new CoModuleVersion( data );
+			this.initEngineModule();
+		},
+		null,
+		null,
+		"json"
+		);
 	}
 	private initEngineModule(): void {
 
 		let url = "static/cospace/engine/uiInteract/CoUIInteraction.umd.js";
-		let uiInteractML = new ModuleLoader(2, (): void => {});
+		let uiInteractML = new CoModuleLoader(2, (): void => {});
 
 		let url0 = "static/cospace/engine/renderer/CoRenderer.umd.js";
 		let url1 = "static/cospace/engine/rscene/CoRScene.umd.js";
@@ -80,13 +99,13 @@ export class DemoModelEditTrans4 {
 		let url10 = "static/cospace/ui/Lib_VoxUI.umd.js";
 		let url11 = "static/cospace/modelEdit/Lib_VoxModelEdit.umd.js";
 
-		new ModuleLoader(2, (): void => {
+		new CoModuleLoader(2, (): void => {
 
 			if (VoxRScene.isEnabled()) {
 
-				new ModuleLoader(3, (): void => {
+				new CoModuleLoader(3, (): void => {
 
-					new ModuleLoader(6, (): void => {
+					new CoModuleLoader(6, (): void => {
 						console.log("modules loaded ...");
 
 						VoxRScene.initialize();
