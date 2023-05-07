@@ -408,15 +408,50 @@ export class DemoModelEditTrans4 {
 				break;
 		}
 	}
+	private m_map: Map<string, IRenderTexture> = new Map();
 	private createTexByUrl(url: string = ""): IRenderTexture {
-		let tex = this.m_rscene.textureBlock.createImageTex2D();
-		let img = new Image();
-		img.onload = (evt: any): void => {
-			tex.setDataFromImage(img, 0, 0, 0, false);
-		};
+		let map = this.m_map;
 		url = url != "" ? url : "static/assets/box.jpg";
-		// url = URLFilter.filterUrl(url);
-		img.src = url;
+		url = URLFilter.filterUrl(url);
+		if(map.has(url)) {
+			return map.get(url);
+		}
+		let tex = this.m_rscene.textureBlock.createImageTex2D();
+		map.set(url, tex);
+		const request = new XMLHttpRequest();
+		request.open("GET", url, true);
+		request.responseType = "blob";
+		request.onload = (e) => {
+			let img = new Image();
+			img.onload = (evt: any): void => {
+				tex.setDataFromImage(img, 0, 0, 0, false);
+				
+			}
+			let pwin: any = window;
+			var imageUrl = (pwin.URL || pwin.webkitURL).createObjectURL(request.response);
+			img.src = imageUrl;
+		};
+		request.onerror = e => {
+			console.error("load error binary image buffer request.status: ", request.status, "url:", url);
+		};
+		request.send(null);
+		// let httpLoader = new HttpFileLoader();
+		// httpLoader.load(url, (buf: ArrayBuffer, purl: string) : void => {
+		// 	let img = new Image();
+		// 	img.onload = (evt: any): void => {
+		// 		tex.setDataFromImage(img, 0, 0, 0, false);
+		// 	}
+		// 	let pwin: any = window;
+        //     img.src = (pwin.URL || pwin.webkitURL).createObjectURL(buf);
+		// });
+
+		// let img = new Image();
+		// img.onload = (evt: any): void => {
+		// 	tex.setDataFromImage(img, 0, 0, 0, false);
+		// };
+		// url = url != "" ? url : "static/assets/box.jpg";
+		// // url = URLFilter.filterUrl(url);
+		// img.src = url;
 		return tex;
 	}
 

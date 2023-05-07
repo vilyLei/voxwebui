@@ -72,18 +72,6 @@ export class CoDataModule {
 					nodes[i].path = urlChecker(nodes[i].path);
 				}
 			}
-			// if (this.verTool) {
-			// 	for (let i = 0; i < modules.length; ++i) {
-			// 		modules[i].url = this.verTool.filterUrl(modules[i].url);
-			// 		console.log("VVVVVVV PP0 VVVVVV modules[i].url: ", modules[i].url);
-			// 	}
-			// 	console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-			// 	let nodes = (dependencyGraphObj as any).nodes;
-			// 	for (let i = 0; i < nodes.length; ++i) {
-			// 		nodes[i].path = this.verTool.filterUrl(nodes[i].path);
-			// 		console.log("VVVVVVV PP1 VVVVVV nodes[i].path: ", nodes[i].path);
-			// 	}
-			// }
 			if (!deferredInit) {
 				this.loadSys();
 			}
