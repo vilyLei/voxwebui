@@ -5,6 +5,7 @@ import IOcclusionPostOutline from "../../../renderingtoy/mcase/outline/IOcclusio
 import { ModuleLoader } from "../../../cospace/modules/loaders/ModuleLoader";
 
 import { IOccPostOutlineModule } from "../../../cospace/renderEffect/outline/IOccPostOutlineModule";
+import { CoModuleVersion, CoModuleLoader } from "../../../cospace/app/utils/CoModuleLoader";
 declare var OccPostOutlineModule: IOccPostOutlineModule;
 
 class PostOutline implements IRenderNode {
@@ -12,13 +13,13 @@ class PostOutline implements IRenderNode {
 	private m_rscene: IRendererScene;
 	private m_postOutline: IOcclusionPostOutline;
 
-	constructor(rscene: IRendererScene, urlChecker: (url: string) => string = null) {
+	constructor(rscene: IRendererScene, verTool: CoModuleVersion = null) {
 
 		this.m_rscene = rscene;
 
 		let url = "static/cospace/renderEffect/occPostOutline/OccPostOutlineModule.umd.js";
 
-		new ModuleLoader(1, null, urlChecker)
+		new CoModuleLoader(1, null, verTool)
 			.setCallback((): void => {
 
 				this.m_postOutline = OccPostOutlineModule.create();

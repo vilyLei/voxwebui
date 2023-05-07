@@ -29,6 +29,8 @@ class CoModuleVersion {
 		let isDL = url.indexOf("/dracoLib/") > 0;
 		if(!isDL) {
 			let name = URLFilter.getFileName(url, true);
+			console.log("XX MMMM XXXX url: ", url);
+			console.log("XX MMMM XXXX name: ", name);
 			if(this.m_verMap.has(name)) {
 				let item = this.m_verMap.get( name );
 				url +="?ver=" + item.ver;
@@ -46,6 +48,8 @@ class CoModuleLoader extends ModuleLoader {
 	constructor(times: number, callback: (m?: ModuleLoader) => void = null, versionFilter: CoModuleVersion = null) {
 		super(times, callback, null);
 		let urlChecker = (url: string): string => {
+			
+			console.log("XX MMMM XXXX init url: ", url);
 			if(url.indexOf(".artvily.") > 0) {
 				return url;
 			}

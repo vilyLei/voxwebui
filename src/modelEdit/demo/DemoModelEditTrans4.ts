@@ -39,12 +39,12 @@ import { HttpFileLoader } from "../../cospace/modules/loaders/HttpFileLoader";
 // declare var CoMath: ICoMath;
 
 class SceneAccessor implements IRendererSceneAccessor {
-	constructor() {}
+	constructor() { }
 	renderBegin(rendererScene: IRendererScene): void {
 		let p = rendererScene.getRenderProxy();
 		p.clearDepth(1.0);
 	}
-	renderEnd(rendererScene: IRendererScene): void {}
+	renderEnd(rendererScene: IRendererScene): void { }
 }
 /**
  * cospace renderer
@@ -55,10 +55,10 @@ export class DemoModelEditTrans4 {
 	private m_edit3DUIRScene: IRendererScene = null;
 	private m_outline: PostOutline;
 
-	constructor() {}
+	constructor() { }
 
 	initialize(): void {
-		document.oncontextmenu = function(e) {
+		document.oncontextmenu = function (e) {
 			e.preventDefault();
 		};
 
@@ -74,18 +74,18 @@ export class DemoModelEditTrans4 {
 		let httpLoader = new HttpFileLoader();
 		httpLoader.load(url, (data: object, url: string): void => {
 			console.log("loadInfo loaded data: ", data);
-			this.m_verTool = new CoModuleVersion( data );
+			this.m_verTool = new CoModuleVersion(data);
 			this.initEngineModule();
 		},
-		null,
-		null,
-		"json"
+			null,
+			null,
+			"json"
 		);
 	}
 	private initEngineModule(): void {
 
 		let url = "static/cospace/engine/uiInteract/CoUIInteraction.umd.js";
-		let uiInteractML = new CoModuleLoader(2, (): void => {});
+		let uiInteractML = new CoModuleLoader(2, (): void => { }, this.m_verTool);
 
 		let url0 = "static/cospace/engine/renderer/CoRenderer.umd.js";
 		let url1 = "static/cospace/engine/rscene/CoRScene.umd.js";
@@ -117,19 +117,19 @@ export class DemoModelEditTrans4 {
 						this.createEditEntity();
 						this.initUIScene();
 
-					})
+					}, this.m_verTool)
 						.load(url3)
 						.load(url6)
 						.load(url7)
 						.load(url9)
 						.load(url10)
 						.load(url11);
-				})
+				}, this.m_verTool)
 					.load(url2)
 					.load(url5)
 					.load(url8);
 			}
-		})
+		}, this.m_verTool)
 			.addLoader(uiInteractML)
 			.load(url0)
 			.load(url1);
@@ -176,7 +176,7 @@ export class DemoModelEditTrans4 {
 
 		this.m_edit3DUIRScene = subScene;
 		graph.addScene(this.m_edit3DUIRScene);
-		this.m_outline = new PostOutline(this.m_rscene);
+		this.m_outline = new PostOutline(this.m_rscene, this.m_verTool);
 
 		this.init3DScene();
 	}
@@ -220,25 +220,25 @@ export class DemoModelEditTrans4 {
 		group.addButton(btn);
 		return btn;
 	}
-	
-    private createSelectBtn(px: number, py: number, ns: string, uuid: string, selectNS: string, deselectNS: string, flag: boolean): ISelectionEntity {
 
-        let selectBar = VoxUI.createSelectionEntity();
-        selectBar.uuid = uuid;
+	private createSelectBtn(px: number, py: number, ns: string, uuid: string, selectNS: string, deselectNS: string, flag: boolean): ISelectionEntity {
+
+		let selectBar = VoxUI.createSelectionEntity();
+		selectBar.uuid = uuid;
 		let colors = [0xff5dbea3, 0xff33b249, 0xff5adbb5, 0xFF33b249];
-		selectBar.setBGColorsWithARGBUint32( colors );
-        selectBar.initialize(this.m_uiScene, ns, selectNS, deselectNS, 30);
-        selectBar.addEventListener(SelectionEvent.SELECT, this, this.selectChange);
-        if (flag) {
-            selectBar.select(false);
-        }
-        else {
-            selectBar.deselect(false);
-        }
+		selectBar.setBGColorsWithARGBUint32(colors);
+		selectBar.initialize(this.m_uiScene, ns, selectNS, deselectNS, 30);
+		selectBar.addEventListener(SelectionEvent.SELECT, this, this.selectChange);
+		if (flag) {
+			selectBar.select(false);
+		}
+		else {
+			selectBar.deselect(false);
+		}
 		selectBar.setXY(px, py);
-        this.m_uiScene.addEntity(selectBar);
-        return selectBar;
-    }
+		this.m_uiScene.addEntity(selectBar);
+		return selectBar;
+	}
 	private selectChange(evt: ISelectionEvent): void {
 		console.log("selectChange(), evt.flag: ", evt.flag);
 		this.m_valueFilter.setAbsorbing(evt.flag);
@@ -251,7 +251,7 @@ export class DemoModelEditTrans4 {
 
 		let tx = 100;
 		let ty = 110;
-		let absorbBtn = this.createSelectBtn(tx, ty + 30 + 520, "吸附","absorb", "ON", "OFF", false);
+		let absorbBtn = this.createSelectBtn(tx, ty + 30 + 520, "吸附", "absorb", "ON", "OFF", false);
 
 		let localBtn = this.createBtn("local", "局部坐标", tx, ty + 30 + 450, this.m_btnGroup0);
 		let globalBtn = this.createBtn("global", "全局坐标", tx, ty + 30 + 380, this.m_btnGroup0);
@@ -302,7 +302,7 @@ export class DemoModelEditTrans4 {
 		tc.initialize(edit3dsc);
 		tc.addEventListener(UserEditEvent.EDIT_BEGIN, this, this.trans3DEditBegin);
 		tc.addEventListener(UserEditEvent.EDIT_END, this, this.trans3DEditEnd);
-		this.m_transCtr.setCtrlValueFilter( this.m_valueFilter );
+		this.m_transCtr.setCtrlValueFilter(this.m_valueFilter);
 		this.m_prevPos = VoxMath.createVec3();
 		this.m_currPos = VoxMath.createVec3();
 
@@ -414,7 +414,9 @@ export class DemoModelEditTrans4 {
 		img.onload = (evt: any): void => {
 			tex.setDataFromImage(img, 0, 0, 0, false);
 		};
-		img.src = url != "" ? url : "static/assets/box.jpg";
+		url = url != "" ? url : "static/assets/box.jpg";
+		url = URLFilter.filterUrl(url);
+		img.src = url;
 		return tex;
 	}
 
@@ -443,8 +445,9 @@ export class DemoModelEditTrans4 {
 		url = baseUrl + "fbx/base4.fbx";
 		url = "static/assets/fbx/base4.fbx";
 		console.log("loadModels() init...");
-
+		url = URLFilter.filterUrl(url);
 		let loader = this.m_teamLoader;
+		loader.verTool = this.m_verTool;
 		loader.load([url], (models: CoGeomDataType[], transforms: Float32Array[]): void => {
 			this.m_layouter.layoutReset();
 			for (let i = 0; i < models.length; ++i) {
@@ -538,15 +541,15 @@ export class DemoModelEditTrans4 {
 
 class VecValueFilter implements ICtrlValueFilter {
 	private m_absorb = false;
-	constructor(){}
+	constructor() { }
 	private filterScale(s: number): number {
-		if(Math.abs(s) < 1.0) {
-			if(s < 0) {
+		if (Math.abs(s) < 1.0) {
+			if (s < 0) {
 				s = -1;
-			}else if(s > 0){
+			} else if (s > 0) {
 				s = 1;
 			}
-		}else {
+		} else {
 			console.log(s.toFixed(2), "Math.floor(s): ", Math.floor(s));
 			s = Math.floor(s);
 		}
@@ -558,8 +561,8 @@ class VecValueFilter implements ICtrlValueFilter {
 	ctrlValueFilter(type: number, pv: IVector3D): void {
 
 		console.log("VecValueFilter, A pv: ", pv);
-		if(this.m_absorb) {
-			switch(type) {
+		if (this.m_absorb) {
+			switch (type) {
 				case 0:
 					pv.x = Math.round(pv.x / 10.0) * 10.0;
 					pv.y = Math.round(pv.y / 10.0) * 10.0;
