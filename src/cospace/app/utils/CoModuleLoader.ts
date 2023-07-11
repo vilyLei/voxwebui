@@ -6,20 +6,25 @@ interface I_CoModuleLoader {
 class CoModuleVersion {
 	private m_infoObj: any = null;
 	private m_verMap: Map<string, any> = new Map();
+
+	forceFiltering = false;
 	constructor(infoObj: any) {
-		this.m_infoObj = infoObj;
-		const versionInfo = this.m_infoObj;
-		const versionInfoMap = this.m_verMap;
-		let items = versionInfo.items;
-		for (let i = 0; i < items.length; ++i) {
-			const ia = items[i];
-			versionInfoMap.set(ia.name, ia);
-			if (ia.type) {
-				if (ia.type == "dir") {
-					let ls = ia.items;
-					for (let i = 0; i < ls.length; ++i) {
-						const ib = ls[i];
-						versionInfoMap.set(ib.name, ib);
+
+		if(infoObj != null) {
+			this.m_infoObj = infoObj;
+			const versionInfo = this.m_infoObj;
+			const versionInfoMap = this.m_verMap;
+			let items = versionInfo.items;
+			for (let i = 0; i < items.length; ++i) {
+				const ia = items[i];
+				versionInfoMap.set(ia.name, ia);
+				if (ia.type) {
+					if (ia.type == "dir") {
+						let ls = ia.items;
+						for (let i = 0; i < ls.length; ++i) {
+							const ib = ls[i];
+							versionInfoMap.set(ib.name, ib);
+						}
 					}
 				}
 			}
@@ -43,7 +48,30 @@ class CoModuleVersion {
 		return url;
 	}
 }
+function toReleaseUrl(url: string, host: string): string {
+
+	let i = url.lastIndexOf("/");
+	let j = url.indexOf(".", i);
+	let fileName = url.slice(i, j);
+	if (url.indexOf(".umd.") > 0) {
+		fileName = fileName.toLocaleLowerCase();
+		url = host + url.slice(0, i) + fileName + ".js";
+	} else {
+		url = host + url;
+	}
+	if (fileName == "") {
+		console.error("err: ", url);
+		console.error("i, j: ", i, j);
+	}
+	console.log("toReleaseUrl(), fileName:-" + fileName + "-");
+	console.log("toReleaseUrl(), new url: ", url);
+
+	return url;
+}
 class CoModuleLoader extends ModuleLoader {
+	forceFiltering = false;
+	static urlHostFilterEnabled = true;
+	static forceReleaseEnabled = false;
 	/**
 	 * @param times 记录总共需要的加载完成操作的响应次数。这个次数可能是由load直接产生，也可能是由于别的地方驱动。
 	 * @param callback 完成所有响应的之后的回调
@@ -58,29 +86,36 @@ class CoModuleLoader extends ModuleLoader {
 			}
 			let hostUrl = window.location.href;
 			url = url.trim();
-			if (hostUrl.indexOf(".artvily.") > 0) {
-				let i = url.lastIndexOf("/");
-				let j = url.indexOf(".", i);
-				// hostUrl = "http://localhost:9000/test/";
-				hostUrl = "http://www.artvily.com:9090/";
-				let fileName = url.slice(i, j);
-				if (url.indexOf(".umd.") > 0) {
-					fileName = fileName.toLocaleLowerCase();
-					url = hostUrl + url.slice(0, i) + fileName + ".js";
-				} else {
-					url = hostUrl + url;
-				}
+			if (hostUrl.indexOf(".artvily.") > 0 || this.forceFiltering) {
 
-				if (fileName == "") {
-					console.error("err: ", url);
-					console.error("i, j: ", i, j);
+				console.log(">>>>> NNNN 1 >>>>>>>>>>>>>>>>");
+				// hostUrl = "http://localhost:9000/test/";
+				if(CoModuleLoader.urlHostFilterEnabled) {
+					if(!this.forceFiltering) {
+						hostUrl = "http://www.artvily.com:9090/";
+					}else {
+						hostUrl = URLFilter.getHostUrl("9090");
+					}
 				}
-				console.log("urlChecker(), fileName:-" + fileName + "-");
-				console.log("urlChecker(), new url: ", url);
+				// let i = url.lastIndexOf("/");
+				// let j = url.indexOf(".", i);
+				// let fileName = url.slice(i, j);
+				// if (url.indexOf(".umd.") > 0) {
+				// 	fileName = fileName.toLocaleLowerCase();
+				// 	url = hostUrl + url.slice(0, i) + fileName + ".js";
+				// } else {
+				// 	url = hostUrl + url;
+				// }
+				url = toReleaseUrl(url, hostUrl);
+
 				if (versionFilter) {
 					url = versionFilter.filterUrl(url);
 				}
 				return url;
+			}else {
+				if(CoModuleLoader.forceReleaseEnabled) {
+					url = toReleaseUrl(url, "");
+				}
 			}
 			if (versionFilter) {
 				url = versionFilter.filterUrl(url);

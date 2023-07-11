@@ -6,6 +6,7 @@ class LoadingTeam {
     private m_total = 0;
     private m_loadedTotal = 0;
     urls: string[];
+	types: string[] = null;
     models: CoGeomDataType[] = [];
     transforms: Float32Array[] = [];
     callback: (models: CoGeomDataType[], transforms: Float32Array[]) => void;
@@ -47,18 +48,21 @@ class CoModelTeamLoader {
     }
     private initialize(): void {
         this.m_modelLoader.setListener(
-            (models: CoGeomDataType[], transforms: Float32Array[]): void => {
+            (models: CoGeomDataType[], transforms: Float32Array[], format: CoDataFormat, url?: string): void => {
                 // console.log("CoModelTeamLoader, loaded model.");
                 if (this.m_team != null) {
                     for (let i = 0; i < models.length; ++i) {
-                        if(models[i] != null && models[i].vertices != null) {
-                            if (transforms) {
-                                this.m_team.transforms.push(transforms[i]);
-                            }else {
-                                this.m_team.transforms.push(null);
-                            }
-                            this.m_team.models.push(models[i]);
-                        }
+						if(models[i] != null) {
+							models[i].url = url;
+							if(models[i].vertices != null) {
+								if (transforms) {
+									this.m_team.transforms.push(transforms[i]);
+								}else {
+									this.m_team.transforms.push(null);
+								}
+								this.m_team.models.push(models[i]);
+							}
+						}
                     }
                 }
             },
@@ -76,8 +80,12 @@ class CoModelTeamLoader {
             let team = this.m_teams.shift();
             this.m_team = team;
             this.m_enabled = false;
-            console.log("CoModelTeamLoader, begin load urls: ", team.urls);
-            this.m_modelLoader.load(team.urls);
+            console.log("CoModelTeamLoader, begin load urls: ", team.urls, ", team.types: ", team.types);
+			if(team.types) {
+				this.m_modelLoader.loadWithType(team.urls, team.types);
+			}else {
+				this.m_modelLoader.load(team.urls);
+			}
         }
     }
     load(urls: string[], callback: (models: CoGeomDataType[], transforms: Float32Array[]) => void): void {
@@ -87,7 +95,15 @@ class CoModelTeamLoader {
         this.m_teams.push(team);
         this.loadNext();
     }
+    loadWithTypes(urls: string[], types: string[], callback: (models: CoGeomDataType[], transforms: Float32Array[]) => void): void {
+        this.m_modelLoader.verTool = this.verTool;
+        let team = new LoadingTeam(urls);
+		team.types = types;
+        team.callback = callback;
+        this.m_teams.push(team);
+        this.loadNext();
+    }
     // loadWithTeam(urls: string[], callback: (models: CoGeomDataType[], transforms: Float32Array[]) => void): void {
     // }
 }
-export { CoGeomDataType, CoModelTeamLoader };
+export { CoModuleVersion, CoGeomDataType, CoModelTeamLoader };

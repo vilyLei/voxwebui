@@ -32,7 +32,10 @@ pwin["VoxVerify"] = new VVF();
 // import {DemoModelEditTrans as Demo} from "./modelEdit/demo/DemoModelEditTrans";
 // import {DemoModelEditTrans2 as Demo} from "./modelEdit/demo/DemoModelEditTrans2";
 // import {DemoModelEditTrans3 as Demo} from "./modelEdit/demo/DemoModelEditTrans3";
-import {DemoModelEditTrans4 as Demo} from "./modelEdit/demo/DemoModelEditTrans4";
+// import {DemoModelEditTrans4 as Demo} from "./modelEdit/demo/DemoModelEditTrans4";
+
+// import {DsrdViewerDemo as Demo} from "./modelEdit/dsrd/DsrdViewerDemo";
+import {DsrdViewerLoaderDemo as Demo} from "./modelEdit/dsrd/DsrdViewerLoaderDemo";
 
 
 document.title = "Vox Web GPU UI";
