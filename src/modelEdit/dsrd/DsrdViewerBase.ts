@@ -61,7 +61,6 @@ class DsrdViewerBase {
 		);
 	}
 	private initEngineModule(): void {
-
 		let url = "static/cospace/engine/uiInteract/CoUIInteraction.umd.js";
 		let uiInteractML = new CoModuleLoader(2, (): void => {}, this.m_verTool);
 
@@ -145,8 +144,7 @@ class DsrdViewerBase {
 		div.style.position = "absolute";
 		return div;
 	}
-	protected initRenderer(): void {
-	}
+	protected initRenderer(): void {}
 	protected initUIScene(): void {
 		let uisc = (this.m_uiScene = VoxUI.createUIScene(this.m_graph));
 		uisc.texAtlasNearestFilter = true;
@@ -357,7 +355,7 @@ class DsrdViewerBase {
 			return map.get(url);
 		}
 		let tex = this.m_rscene.textureBlock.createImageTex2D();
-		if(saving) {
+		if (saving) {
 			map.set(url, tex);
 		}
 		const request = new XMLHttpRequest();
@@ -419,7 +417,6 @@ class DsrdViewerBase {
 	private m_entities: ITransformEntity[] = [];
 	protected m_modelTexUrl = "";
 	protected createEntity(model: CoGeomDataType, transform: Float32Array = null, index: number = 1.0, url = ""): ITransformEntity {
-
 		let material = VoxRScene.createDefaultMaterial(true);
 		material.setRGB3f(0.85, 0.85, 0.85);
 		material.setTextureList([this.createTexByUrl(this.m_modelTexUrl)]);
@@ -427,7 +424,7 @@ class DsrdViewerBase {
 
 		let mesh = VoxRScene.createDataMeshFromModel(model, material);
 		let entity = VoxRScene.createMouseEventEntity();
-		if(url != "") {
+		if (url != "") {
 			entity.uuid = url;
 		}
 		entity.setMaterial(material);
@@ -435,9 +432,9 @@ class DsrdViewerBase {
 		// entity.setPosition(cv);
 		// entity.setRenderState(rst.NONE_CULLFACE_NORMAL_STATE);
 		entity.update();
-		if(this.m_entityContainer == null) {
+		if (this.m_entityContainer == null) {
 			this.m_rscene.addEntity(entity);
-		}else {
+		} else {
 			this.m_entityContainer.addEntity(entity);
 		}
 
@@ -473,6 +470,16 @@ class DsrdViewerBase {
 			}
 			pos.scaleBy(1.0 / list.length);
 
+			if (list.length > 0) {
+				if (this.m_modelSelectCall) {
+					let urls: string[] = [];
+					for (let i = 0; i < list.length; i++) {
+						urls.push(list[i].uuid);
+					}
+					console.log("modelSelectCall, urls: ", urls);
+					this.m_modelSelectCall(urls);
+				}
+			}
 			if (transCtr && list.length > 0) {
 				// 暂时注释掉，后续功能完善了再启用
 				// transCtr.select(list as ITransformEntity[], pos);
@@ -485,9 +492,13 @@ class DsrdViewerBase {
 	setMouseUpListener(mouseUpCall: (evt: any) => void): void {
 		this.m_mouseUpCall = mouseUpCall;
 	}
+	private m_modelSelectCall: (urls: string[]) => void;
+	setModelSelectListener(modelSelectCall: (urls: string[]) => void): void {
+		this.m_modelSelectCall = modelSelectCall;
+	}
 	private mouseUpTargetListener(evt: any): void {
-		console.log("mouseUpTargetListener() mouse up...");
-		if(this.m_mouseUpCall) {
+		// console.log("mouseUpTargetListener() mouse up...");
+		if (this.m_mouseUpCall) {
 			this.m_mouseUpCall(evt);
 		}
 		let entity = evt.target as ITransformEntity;
@@ -503,8 +514,12 @@ class DsrdViewerBase {
 			this.m_transCtr.disable();
 		}
 		this.m_outline.deselect();
-		if(this.m_mouseUpCall) {
+		if (this.m_mouseUpCall) {
 			this.m_mouseUpCall(evt);
+		}
+
+		if (this.m_modelSelectCall) {
+			this.m_modelSelectCall([]);
 		}
 	}
 
@@ -518,4 +533,4 @@ class DsrdViewerBase {
 	}
 }
 
-export {DsrdViewerBase}
+export { DsrdViewerBase };

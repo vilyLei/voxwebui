@@ -50,14 +50,18 @@ export class DsrdViewerLoaderDemo {
 		if(this.onaction) {
 			this.onaction("rsc_viewer_loaded", "finish")
 		}
-		rscViewer.setMouseUpListener((evt: any): void => {
-			console.log("upupup XXX, evt: ", evt);
-			if(evt.uuid == "") {
-				console.log("clear ops !!!");
-			}else {
-				console.log("select ops !!!");
-			}
+		//setModelSelectListener
+		rscViewer.setModelSelectListener((urls: string[]): void => {
+			console.log("setModelSelectListener(), urls: ", urls);
 		});
+		// rscViewer.setMouseUpListener((evt: any): void => {
+		// 	console.log("upupup XXX, evt: ", evt);
+		// 	if(evt.uuid == "") {
+		// 		console.log("clear ops !!!");
+		// 	}else {
+		// 		console.log("select ops !!!");
+		// 	}
+		// });
 	}
 	private loadModule(purl: string): void {
 		let codeLoader = new XMLHttpRequest();
