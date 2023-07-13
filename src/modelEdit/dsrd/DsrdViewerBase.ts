@@ -32,6 +32,7 @@ import { HttpFileLoader } from "../../cospace/modules/loaders/HttpFileLoader";
 import { VecValueFilter } from "./VecValueFilter";
 import { EntityLayouter } from "../../cospace/app/common/EntityLayouter";
 import IDisplayEntityContainer from "../../vox/entity/IDisplayEntityContainer";
+import { IMouseInteraction } from "../../cospace/voxengine/ui/IMouseInteraction";
 
 /**
  * cospace renderer
@@ -125,10 +126,16 @@ class DsrdViewerBase {
 	protected m_graph: IRendererSceneGraph = null;
 	protected m_rscene: IRendererScene = null;
 	protected m_uiScene: IVoxUIScene = null;
+	protected m_mi: IMouseInteraction = null;
 
+	private m_posV0:IVector3D = null;
+	private m_posV1:IVector3D = null;
 	private initMouseInteract(): void {
 		const mi = VoxUIInteraction.createMouseInteraction();
-		mi.initialize(this.m_rscene, 2).setAutoRunning(true, 1);
+		mi.initialize(this.m_rscene, 0).setAutoRunning(true, 1);
+		this.m_mi = mi;
+		this.m_posV0 = VoxMath.createVec3();
+		this.m_posV1 = VoxMath.createVec3();
 	}
 
 	protected createDiv(px: number, py: number, pw: number, ph: number): HTMLDivElement {
@@ -296,18 +303,18 @@ class DsrdViewerBase {
 	}
 	private uiMouseDownListener(evt: any): void {
 		console.log("DsrdViewer::uiMouseDownListener(), evt: ", evt);
-		this.m_selectFrame.begin(evt.mouseX, evt.mouseY);
+		// this.m_selectFrame.begin(evt.mouseX, evt.mouseY);
 	}
 	private uiMouseUpListener(evt: any): void {
 		console.log("DsrdViewer::uiMouseUpListener(), evt: ", evt);
-		if (this.m_selectFrame.isSelectEnabled()) {
-			let b = this.m_selectFrame.bounds;
-			console.log("DsrdViewer::uiMouseUpListener(), b: ", b);
-			let list = this.m_entityQuery.getEntities(b.min, b.max);
-			console.log("list: ", list);
-			this.selectEntities(list);
-		}
-		this.m_selectFrame.end(evt.mouseX, evt.mouseY);
+		// if (this.m_selectFrame.isSelectEnabled()) {
+		// 	let b = this.m_selectFrame.bounds;
+		// 	console.log("DsrdViewer::uiMouseUpListener(), b: ", b);
+		// 	let list = this.m_entityQuery.getEntities(b.min, b.max);
+		// 	console.log("list: ", list);
+		// 	this.selectEntities(list);
+		// }
+		// this.m_selectFrame.end(evt.mouseX, evt.mouseY);
 	}
 	private uiMouseMoveListener(evt: any): void {
 		// console.log("DsrdViewer::uiMouseMoveListener(), evt: ", evt);
@@ -449,7 +456,6 @@ class DsrdViewerBase {
 
 		return entity;
 	}
-
 	private mouseOverTargetListener(evt: any): void {
 		// console.log("mouseOverTargetListener()..., evt.target: ", evt.target);
 	}
@@ -458,6 +464,9 @@ class DsrdViewerBase {
 	}
 	private mouseDownTargetListener(evt: any): void {
 		console.log("mouseDownTargetListener()..., evt: ", evt);
+		this.m_posV0.setXYZ(evt.mouseX, evt.mouseY, 0);
+		this.m_posV1.copyFrom(this.m_posV0);
+		this.m_mi.drager.attach();
 	}
 	private selectEntities(list: IRenderEntity[], hitPV: IVector3D = null): void {
 		if (list && list.length > 0) {
@@ -497,12 +506,16 @@ class DsrdViewerBase {
 		this.m_modelSelectCall = modelSelectCall;
 	}
 	private mouseUpTargetListener(evt: any): void {
+		this.m_posV1.setXYZ(evt.mouseX, evt.mouseY, 0);
+		this.m_posV0.subtractBy(this.m_posV1);
+		if(this.m_posV0.getLength() < 0.5) {
+			let entity = evt.target as ITransformEntity;
+			this.selectEntities([entity], evt.wpos);
+		}
 		// console.log("mouseUpTargetListener() mouse up...");
 		if (this.m_mouseUpCall) {
 			this.m_mouseUpCall(evt);
 		}
-		let entity = evt.target as ITransformEntity;
-		this.selectEntities([entity], evt.wpos);
 	}
 	private mouseUpListener(evt: any): void {
 		if (this.m_transCtr) {
