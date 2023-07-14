@@ -94,7 +94,7 @@ function walkSync(currentDirPath, dstDir, callback) {
     });
 }
 function test(url) {
-    
+
     // let keyStr = "\\button\\plane\\";
     let keyStr = "\\button\\ButtonBuilder.ts";
     if (url.indexOf(keyStr) > 0) return false;
@@ -144,5 +144,9 @@ function copy_lib_interface(srcDir) {
 function copy_voxui() {
     forceCopy = false;
     copy_lib_interface('../src/voxui/');
+}function copy_modelEdit() {
+    forceCopy = false;
+    copy_lib_interface('../src/modelEdit/');
 }
 copy_voxui();
+copy_modelEdit();
